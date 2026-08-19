@@ -7,6 +7,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-08-19
+
 ### Added
 
 - `/health` viser nå hvilke valgfrie funksjoner som er aktive (AI, Discord,
@@ -14,6 +16,27 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   om miljøvariablene faktisk nådde containeren
 - Rank-grafen har fått et arealfyll under linjen (`rankGraph` returnerer
   `area`)
+
+### Changed
+
+- **UI-makeover «Matchday» fullført.** Dashboardets hero er nå et
+  broadcast-scoreboard: GW-merke, store Archivo-sifre som selve overskriften og
+  en grønn-til-magenta hairline i bunnkanten
+- Ett kort- og tabellsystem på alle sider, med sticky tabellhode når innholdet
+  scroller inne i kortet
+- Spillersiden: tydeligere filterfelt, «Viser X av Y» høyrestilt i panelet og
+  grønn markering av kolonnen det sorteres på
+- Lagsiden: banen har klippestriper, 16-meter og midtsirkel, kapteinen har
+  magenta ring, og rank-grafen har grunnlinjer og arealfyll
+- Live-siden: kampene vises som scoreboard-kort med stor stilling og
+  statuspille; kampen som ruller nå får magenta ramme
+- Ligasiden: din egen rad har grønn kantstripe så den er synlig også når
+  tabellen scrolles vannrett
+- AI-generert innhold er merket likt på dashboardet, /brief og /nyheter — eget
+  kort med «AI»-merke og magenta kantstripe, adskilt fra rådataene
+- Tomtilstandene sier hva som skjedde og hva du kan gjøre, ikke bare «ingen
+  data». AI-rådgiveren viser en animert ventelinje mens den tenker
+- All bevegelse ligger bak `prefers-reduced-motion`
 
 ### Fixed
 

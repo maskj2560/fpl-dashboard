@@ -82,8 +82,8 @@ committet (og pushet hvis remote finnes).
 - [x] Usage-logging per AI-kall (modell + inn/ut-tokens) for kostnadskontroll
 - [x] Lokal pre-flight av alle fire AI-funksjonene mot ekte API
 - [x] Auto-briefen verifisert mot ekte Discord-webhook (inkl. anti-spam-guard)
-- [ ] `ANTHROPIC_API_KEY` + `DISCORD_WEBHOOK_URL` + `FPL_TEAM_ID` i Coolify
-- [ ] Naturlig auto-brief onsdag 20. aug ~19:30 verifisert
+- [x] `ANTHROPIC_API_KEY` + `DISCORD_WEBHOOK_URL` + `FPL_TEAM_ID` i Coolify
+- [ ] Naturlig auto-brief torsdag 20. aug ~19:30 verifisert
 - [ ] Kostnadskontroll etter 2–3 dager i drift
 
 ## v1.1.0 — UI-makeover «Matchday» (Milepæl 2 + 3)
@@ -91,10 +91,10 @@ committet (og pushet hvis remote finnes).
 - [x] View-render-tester for alle sider med mockdata og tomtilstander,
       inkludert låsing av XSS-escapingen i live/news/brief (sikkerhetsnett)
 - [x] Lokal Archivo-font + kontrastverifisert tokenpalett
-- [x] Én-linjes scrollbar navigasjon med sticky topbar (hero gjenstår)
-- [ ] Enhetlig kort- og tabellsystem på alle sider
-- [ ] /spillere, /lag (pitch + arealgraf), /live, /liga, /brief, /nyheter
-- [ ] Gjennomdesignede tom- og feiltilstander, mobil-finpuss
+- [x] Én-linjes scrollbar navigasjon, hero som broadcast-scoreboard
+- [x] Enhetlig kort- og tabellsystem på alle sider
+- [x] /spillere, /lag (pitch + arealgraf), /live, /liga, /brief, /nyheter
+- [x] Gjennomdesignede tom- og feiltilstander, mobil-finpuss
 - [ ] QA-runder 1–5 hos bruker
 
 ## Senere / idéer (ikke planlagt)
