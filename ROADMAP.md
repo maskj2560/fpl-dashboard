@@ -16,8 +16,8 @@ committet (og pushet hvis remote finnes).
 
 ## v0.2.0 — Spillere
 
-- [ ] /spillere: full tabell med sortering, filtrering og søk
-- [ ] Vanilla JS for sortering/filter uten sidelasting
+- [x] /spillere: full tabell med sortering, filtrering og søk
+- [x] Vanilla JS for sortering/filter uten sidelasting
 
 ## v0.3.0 — Mitt lag og anbefalinger
 

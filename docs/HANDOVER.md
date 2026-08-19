@@ -3,11 +3,14 @@
 > Levende overleveringsfil. Oppdateres ved hver milepæl og ved arbeidsstans.
 > Ny AI-økt: les denne + CLAUDE.md + ROADMAP.md, fortsett der «Neste steg» sier.
 
-**Sist oppdatert:** 2026-08-19 (økt 1, v0.1.0 ferdig)
+**Sist oppdatert:** 2026-08-19 (økt 2, v0.2.0 ferdig)
 
 ## Status
 
-- Plan godkjent av bruker. Full plan: `C:\Users\mariu\.claude\plans\full-claude-code-prompt-ancient-crescent.md`
+- **Aktiv implementeringsplan: `docs/superpowers/plans/2026-08-19-fpl-dashboard-v02-v10.md`**
+  — den inneholder ferdigspesifiserte oppgaver med komplett kode for v0.2.0 → v1.0.0.
+  Avkryssing skjer i plan-filen (per steg) og i ROADMAP.md (per milepæl).
+- Full opprinnelig plan: `C:\Users\mariu\.claude\plans\full-claude-code-prompt-ancient-crescent.md`
   (essensen ligger i CLAUDE.md + ROADMAP.md — de er autoritative)
 - **v0.1.0 FERDIG og tagget**: dashboard (/), /health, cache (SWR+dedup),
   fplClient (retry/503), mørkt tema, Dockerfile. 18/18 tester grønne, lint grønn.
@@ -19,23 +22,11 @@
   UI-oppsett selv (oppskrift i README) eller automatisering via Coolify-API
   (trenger API-token i fil + eksisterende GitHub App-source i Coolify).
   DNS: A-post for fpl.marsk.no må pekes mot serveren (hvis ikke wildcard finnes).
-- **v0.2.0 PÅBEGYNT, avbrutt av bruker («Stopp»)**. Nøyaktig WIP-status:
-  - `src/routes/players.js` skrevet ✅ (rute ferdig, sortert på total_points)
-  - `views/players.ejs` skrevet ✅ (full tabell + filter-form med id-er:
-    filter-search/position/team/price/reset/count, tabell id=players-table,
-    th har data-type="num|text" + aria-sort; rader har data-name/pos/team/price)
-  - Rute montert i `src/server.js` + nav-lenke i `views/layout.ejs` ✅
-    (røyk-testet: `/spillere` gir 200, HTML inneholder `players-table`)
-  - GJENSTÅR for v0.2.0:
-    3. `public/app.js`: modul for #players-table — kolonnesortering (klikk på th,
-       toggle asc/desc, parseFloat for data-type=num, oppdater aria-sort) +
-       filtrering (søk mot data-name, posisjon mot data-pos, lag mot data-team,
-       maks pris mot data-price, teller «Viser X av Y» i #filter-count, Nullstill)
-    4. `public/style.css`: stiler for .page-head, .filters (labels, inputs,
-       selects, button — mørkt tema-tokens finnes i :root) og th-sortering
-       (cursor pointer, pil-indikator på aria-sort)
-    5. Røyk-test /spillere, lint+test, CHANGELOG under [Unreleased] → [0.2.0],
-       huk av i ROADMAP, commit + tag v0.2.0 (+ bump package.json version)
+- **v0.2.0 FERDIG og tagget**: `/spillere` montert med nav-lenke, full tabell,
+  klientside-sortering på alle kolonner og filtrering (søk/posisjon/lag/maks pris)
+  uten sidelasting, stiler for filterpanel og sorterbare overskrifter.
+  18/18 tester grønne, lint grønn, røyk-testet lokalt (200 på `/spillere`,
+  `players-table` i HTML, `/style.css` og `/app.js` serveres).
 
 ## Brukerens beslutninger (fra brainstorming, IKKE re-spør)
 
@@ -49,9 +40,12 @@
 
 ## Neste steg (i rekkefølge)
 
-1. `git init` + commit `chore: initial project docs` (Steg 0 ferdig)
-2. Milepæl v0.1.0 etter planen i ROADMAP.md — commit-rekkefølge:
-   scaffolding → config.js → cache.js+tester → fplClient.js → server/dashboard → analysis-tester → Docker/README → release 0.1.0 + tag
+1. **Milepæl v0.3.0 — /lag med anbefalinger.** Følg plan-filen fra «Task 3.1»:
+   TDD-funksjoner i `analysis.js` (`averageFdr`, `playProbability`,
+   `captainSuggestions`, `transferOutCandidates`, `transferInCandidates`,
+   `rankGraph`) → `src/routes/team.js` + `views/no-team.ejs` → `views/team.ejs`
+   + CSS → release v0.3.0.
+2. Deretter v0.4.0 (/liga) og videre i plan-filens rekkefølge.
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 

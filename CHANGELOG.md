@@ -7,9 +7,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-08-19
+
 ### Added
 
-- Spillerside (`/spillere`) montert med egen nav-lenke
+- Spillerside (`/spillere`) med full tabell: navn, lag, posisjon, pris, form,
+  poeng, poeng per kamp, eierandel, xG, xA og status
 - Klientside-sortering på alle kolonner i spillertabellen (klikk eller
   tastatur på kolonneoverskriften, med retningsindikator)
 - Filtrering på posisjon, lag og maks pris + tekstsøk, alt uten sidelasting

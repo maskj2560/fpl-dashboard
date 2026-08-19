@@ -330,12 +330,12 @@ table.sortable th[aria-sort='ascending']::after {
 
 ### Task 2.4: Release v0.2.0
 
-- [ ] **Steg 1:** `npm test` (18 grønne) + `npm run lint` (grønn)
-- [ ] **Steg 2:** `CHANGELOG.md`: under `## [Unreleased]` legg `## [0.2.0] - <dagens dato>` med `### Added`-punkter: spillertabell med alle kolonner (navn, lag, pos, pris, form, poeng, ppg, eierandel, xG, xA, status); klientside-sortering på alle kolonner; filtrering på posisjon/lag/maks pris + tekstsøk uten sidelasting
-- [ ] **Steg 3:** `ROADMAP.md`: huk av begge punktene under v0.2.0
-- [ ] **Steg 4:** `package.json`: `"version": "0.2.0"`
-- [ ] **Steg 5:** `docs/HANDOVER.md`: oppdater status (v0.2.0 ferdig, neste v0.3.0), fjern WIP-seksjonen for v0.2.0
-- [ ] **Steg 6:** Commit `docs: release v0.2.0`; `git tag v0.2.0`; `git push origin main --tags`
+- [x] **Steg 1:** `npm test` (18 grønne) + `npm run lint` (grønn)
+- [x] **Steg 2:** `CHANGELOG.md`: under `## [Unreleased]` legg `## [0.2.0] - <dagens dato>` med `### Added`-punkter: spillertabell med alle kolonner (navn, lag, pos, pris, form, poeng, ppg, eierandel, xG, xA, status); klientside-sortering på alle kolonner; filtrering på posisjon/lag/maks pris + tekstsøk uten sidelasting
+- [x] **Steg 3:** `ROADMAP.md`: huk av begge punktene under v0.2.0
+- [x] **Steg 4:** `package.json`: `"version": "0.2.0"`
+- [x] **Steg 5:** `docs/HANDOVER.md`: oppdater status (v0.2.0 ferdig, neste v0.3.0), fjern WIP-seksjonen for v0.2.0
+- [x] **Steg 6:** Commit `docs: release v0.2.0`; `git tag v0.2.0`; `git push origin main --tags`
 - [ ] **Steg 7:** Verifiser prod etter ~2 min: `(Invoke-WebRequest https://fpl.marsk.no/spillere -UseBasicParsing).StatusCode` → 200
 
 ---
