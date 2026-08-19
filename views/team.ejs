@@ -1,6 +1,6 @@
 <section class="page-head">
   <h1><%= entry.name %></h1>
-  <p class="dim"><%= entry.player_first_name %> <%= entry.player_last_name %> · Gameweek <%= gw || '–' %><% if (squadView?.activeChip) { %> · Chip: <%= squadView.activeChip %><% } %></p>
+  <p class="dim"><%= entry.player_first_name %> <%= entry.player_last_name %><% if (gw) { %> · Gameweek <%= gw %><% } %><% if (squadView?.activeChip) { %> · Chip: <%= squadView.activeChip %><% } %></p>
 </section>
 
 <div class="stat-strip">

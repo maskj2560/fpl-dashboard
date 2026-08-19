@@ -7,6 +7,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+- **Undertittelen på /lag skriver ikke «Gameweek –».** Gameweek-leddet utelates
+  helt når det ikke finnes en runde å vise
+
 - **Statstripa på /lag lyver ikke om tall som mangler.** «Totalt» og «Overall
   rank» viste tall fra forrige sesong før troppen finnes — nå står det `–` i
   hele stripa, som for de tre andre feltene
