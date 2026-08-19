@@ -88,7 +88,8 @@ committet (og pushet hvis remote finnes).
 
 ## v1.1.0 — UI-makeover «Matchday» (Milepæl 2 + 3)
 
-- [ ] View-render-tester for alle 11 views med mockdata (sikkerhetsnett)
+- [x] View-render-tester for alle sider med mockdata og tomtilstander,
+      inkludert laasing av XSS-escapingen i live/news/brief (sikkerhetsnett)
 - [ ] Lokal Archivo-font + kontrastverifisert tokenpalett
 - [ ] Én-linjes scrollbar navigasjon, hero som broadcast-scoreboard
 - [ ] Enhetlig kort- og tabellsystem på alle sider

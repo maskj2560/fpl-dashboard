@@ -332,7 +332,7 @@ rett i prod. Null nye avhengigheter: `ejs` er alt en dependency.
 - Produces: `renderView(name, locals)` — intern hjelper i testen;
   fixtures-modulen eksporterer ett locals-objekt per view
 
-- [ ] **Steg 1:** Les hvert view i `views/` og lag `test/fixtures/views.js`
+- [x] **Steg 1:** Les hvert view i `views/` og lag `test/fixtures/views.js`
       med ett komplett locals-objekt per view. Formatfunksjonene gjenbrukes
       fra `src/services/format.js` (ikke mock dem). Start slik (dashboard og
       team er ferdige her — de øvrige avledes av view-kildene på samme måte):
@@ -410,7 +410,7 @@ export const team = {
       start så testen ikke må endres. `live`-fixturen må ha lagnavn med `<`
       i seg for å bevise at escapingen i `views/live.ejs` består
       (f.eks. `name: 'Lag <script>'`).
-- [ ] **Steg 2:** Opprett `test/views.test.js`:
+- [x] **Steg 2:** Opprett `test/views.test.js`:
 
 ```js
 import test from 'node:test';
@@ -455,10 +455,34 @@ test('live.ejs escaper < i lagnavn inne i script-blokken', async () => {
       fixtures skrives — juster markører til tekst som faktisk finnes i viewet.
       `layout.ejs` testes ikke isolert (krever `body`-sammensetting fra
       `renderPage`); den dekkes indirekte av røyk-testen i Task 3.12.
-- [ ] **Steg 3:** `npm test` → alle view-testene grønne (39 + ~11 nye).
+- [x] **Steg 3:** `npm test` → alle view-testene grønne (39 + ~11 nye).
       Feiler noen: fiks FIXTUREN (viewet er fasit), ikke viewet.
-- [ ] **Steg 4:** `npm run lint` → 0 feil. Commit:
+- [x] **Steg 4:** `npm run lint` → 0 feil. Commit:
       `test: render-tester for alle views med mockdata`
+
+      **Avvik fra planen (fire, alle fordi viewene/kildene er fasit):**
+      1) `formatPrice` ligger i `analysis.js`, ikke `format.js` (som bare har
+      `formatDateTime` og `formatNumber`), og `STATUS_LABELS` er ikke eksportert
+      i det hele tatt — den er definert lokalt i både `routes/index.js` og
+      `routes/players.js`. Fixturen importerer derfor `formatPrice`,
+      `POSITIONS` og `POSITIONS_SHORT` fra `analysis.js` og definerer
+      `STATUS_LABELS` selv.
+      2) `views/error.ejs` tar ingen locals og inneholder ikke ordet «feil».
+      Case-en er derfor `['error', {}, 'Noe gikk galt']`.
+      3) Escaping-testen er skjerpet: fixturens lagnavn er
+      `Lag </script><img src=x onerror=alert(1)>`, og testen sjekker både at
+      `</script><img` IKKE finnes i HTML-en, at `</script` finnes, og at
+      JSON-en fortsatt parses tilbake til det opprinnelige navnet. I tillegg
+      er det lagt til tre tester som låser escapingen i `news.ejs` og
+      `brief.ejs` (`**fet**` bevares, `<script>` og `&` escapes,
+      `javascript:`-lenker blir `#`) — avviksnotatene i forrige plan sier
+      eksplisitt at denne escapingen ikke skal fjernes.
+      4) 17 render-cases i stedet for ~11: hvert view med tomtilstand
+      (dashboard uten deadline, team uten tropp, liga uten ligaer + tom
+      differensial, brief uten AI og uten FPL_TEAM_ID, live uten gameweek,
+      nyheter uten saker) rendres som egen case, slik at makeoveren ikke kan
+      brekke en gren som ikke vises i prod før sesongstart.
+      Resultat: `npm test` 61/61 grønne (39 + 22 nye), `npm run lint` 0 feil.
 
 ---
 
