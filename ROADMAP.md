@@ -21,10 +21,10 @@ committet (og pushet hvis remote finnes).
 
 ## v0.3.0 — Mitt lag og anbefalinger
 
-- [ ] /lag: oppstilling, benk, kaptein, lagverdi, rank-graf
-- [ ] `analysis.js`: kapteinsanbefaling med begrunnelse (topp 3)
-- [ ] `analysis.js`: transfers ut + inn-kandidater innenfor budsjett
-- [ ] Tester for all analyselogikk
+- [x] /lag: oppstilling, benk, kaptein, lagverdi, rank-graf
+- [x] `analysis.js`: kapteinsanbefaling med begrunnelse (topp 3)
+- [x] `analysis.js`: transfers ut + inn-kandidater innenfor budsjett
+- [x] Tester for all analyselogikk
 
 ## v0.4.0 — Miniliga
 

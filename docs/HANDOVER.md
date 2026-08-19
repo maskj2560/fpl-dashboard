@@ -3,7 +3,7 @@
 > Levende overleveringsfil. Oppdateres ved hver milepæl og ved arbeidsstans.
 > Ny AI-økt: les denne + CLAUDE.md + ROADMAP.md, fortsett der «Neste steg» sier.
 
-**Sist oppdatert:** 2026-08-19 (økt 2, v0.2.0 ferdig)
+**Sist oppdatert:** 2026-08-19 (økt 2, v0.3.0 ferdig)
 
 ## Status
 
@@ -25,7 +25,20 @@
   klientside-sortering på alle kolonner og filtrering (søk/posisjon/lag/maks pris)
   uten sidelasting, stiler for filterpanel og sorterbare overskrifter.
   18/18 tester grønne, lint grønn, røyk-testet lokalt (200 på `/spillere`,
-  `players-table` i HTML, `/style.css` og `/app.js` serveres).
+  `players-table` i HTML, `/style.css` og `/app.js` serveres). Verifisert i prod.
+- **v0.3.0 FERDIG og tagget**: `/lag` med oppstilling per rekke, benk, C/V-merker,
+  statstripe (GW-poeng, totalt, overall rank, lagverdi, bank), SVG-rank-graf,
+  kapteinsanbefaling topp 3 med begrunnelse og salgskandidater med erstattere
+  innenfor budsjett. Ny analyselogikk (`averageFdr`, `playProbability`,
+  `captainSuggestions`, `transferOutCandidates`, `transferInCandidates`,
+  `rankGraph`) med TDD — 24/24 tester grønne, lint grønn.
+- **VIKTIG om sesongen:** 2026/27 har ikke startet. FPL melder neste GW = 1 med
+  deadline 2026-08-21T17:30Z. Før den er passert har FPL ingen picks, ingen
+  historikk og ingen ligatabeller: `/lag` viser tomtilstanden «Fant ingen
+  lagoppstilling ennå», og `/liga` vil trolig gjøre noe tilsvarende. Grener som
+  krever tropp må derfor verifiseres med mockdata-rendring lokalt (se
+  `views/team.ejs`-verifiseringen i plan-filen, Task 3.3 Steg 3) fram til
+  21. august — ikke tolk tomme sider som feil.
 
 ## Brukerens beslutninger (fra brainstorming, IKKE re-spør)
 
@@ -39,12 +52,10 @@
 
 ## Neste steg (i rekkefølge)
 
-1. **Milepæl v0.3.0 — /lag med anbefalinger.** Følg plan-filen fra «Task 3.1»:
-   TDD-funksjoner i `analysis.js` (`averageFdr`, `playProbability`,
-   `captainSuggestions`, `transferOutCandidates`, `transferInCandidates`,
-   `rankGraph`) → `src/routes/team.js` + `views/no-team.ejs` → `views/team.ejs`
-   + CSS → release v0.3.0.
-2. Deretter v0.4.0 (/liga) og videre i plan-filens rekkefølge.
+1. **Milepæl v0.4.0 — /liga med differensial-analyse.** Følg plan-filen fra
+   «Task 4.1»: `differentials()` i `analysis.js` (TDD) → `src/routes/league.js`
+   + `views/league.ejs` → release v0.4.0.
+2. Deretter v0.5.0 (/brief) og videre i plan-filens rekkefølge.
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 
