@@ -6,12 +6,12 @@ committet (og pushet hvis remote finnes).
 
 ## v0.1.0 — Deploybart skjelett (MVP)
 
-- [ ] Prosjektoppsett: package.json, ESLint, mappestruktur fra CLAUDE.md
-- [ ] `fplClient.js` med TTL-cache, stale-while-revalidate, dedup og 503-håndtering
+- [x] Prosjektoppsett: package.json, ESLint, mappestruktur fra CLAUDE.md
+- [x] `fplClient.js` med TTL-cache, stale-while-revalidate, dedup og 503-håndtering
 - [ ] Dashboard-side (/): deadline-nedtelling, flagg/skader, topp form, mest kjøpt/solgt, FDR-matrise
-- [ ] `/health`-endepunkt
+- [x] `/health`-endepunkt
 - [ ] Dockerfile + .dockerignore + README med Coolify-oppskrift
-- [ ] Tester for cache.js
+- [x] Tester for cache.js
 - [ ] **→ Deploy til Coolify med auto-deploy skjer her**
 
 ## v0.2.0 — Spillere

@@ -28,6 +28,17 @@
 2. Milepæl v0.1.0 etter planen i ROADMAP.md — commit-rekkefølge:
    scaffolding → config.js → cache.js+tester → fplClient.js → server/dashboard → analysis-tester → Docker/README → release 0.1.0 + tag
 
+## Logg over brukerbeskjeder (alle økter — føres løpende)
+
+- 2026-08-19: «Ikke limit deg så mye — lag det så bra du kan med gode nok modeller»
+- 2026-08-19: «Men selve AI-en i fantasy må være relativt billig å bruke for én person»
+- 2026-08-19: «Bruk brainstorming mens du lager det» → brainstorming kjørt, tre AI-funksjoner + Sonnet 5 valgt
+- 2026-08-19: «Nærmer jeg meg maks usage i 5-timersvindu: stopp ~95 %, lag ekstremt detaljert handover som neste AI finner uten forklaring» → denne filen + CLAUDE.md-instruks
+- 2026-08-19: «Husk å koble det til GitHuben min» → gh CLI installert men IKKE innlogget; bruker må kjøre `gh auth login`, deretter: opprett repo, koble remote, push
+- 2026-08-19: «Si ifra hvis du trenger at jeg gjør noe»
+- 2026-08-19: «Ta notat av alt jeg sier» → denne loggen
+- 2026-08-19: «Kan jeg konstant se oppdatert todo-liste?» → ROADMAP.md hukes av fortløpende (ikke bare ved milepæl-slutt); bruker åpner den i VS Code markdown-preview
+
 ## Miljø
 
 - Windows 11, PowerShell. Node v24.11.1, npm 11.6.2, git 2.45.1

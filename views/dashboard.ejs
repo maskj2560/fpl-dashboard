@@ -1,0 +1,159 @@
+<% if (deadlineEvent) { %>
+  <section class="hero">
+    <p class="eyebrow"><%= deadlineEvent.name %></p>
+    <h1>Neste deadline</h1>
+    <p class="hero-date"><%= formatDateTime(deadlineEvent.deadline_time) %></p>
+    <div class="countdown" data-deadline="<%= deadlineEvent.deadline_time %>">
+      <div class="unit"><span class="val" data-unit="d">–</span><span class="lbl">dager</span></div>
+      <div class="unit"><span class="val" data-unit="h">–</span><span class="lbl">timer</span></div>
+      <div class="unit"><span class="val" data-unit="m">–</span><span class="lbl">min</span></div>
+      <div class="unit"><span class="val" data-unit="s">–</span><span class="lbl">sek</span></div>
+    </div>
+  </section>
+<% } else { %>
+  <section class="hero">
+    <h1>Ingen kommende deadline</h1>
+    <p class="hero-date">Sesongen er ferdig eller ikke i gang ennå.</p>
+  </section>
+<% } %>
+
+<div class="grid">
+  <section class="card">
+    <h2>Ukens flagg</h2>
+    <% if (flagged.length === 0) { %>
+      <p class="empty">Ingen spillere er flagget akkurat nå.</p>
+    <% } else { %>
+      <div class="table-scroll">
+        <table class="data">
+          <thead>
+            <tr><th>Spiller</th><th>Lag</th><th class="num">Eid</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <% for (const p of flagged) { %>
+              <tr>
+                <td>
+                  <strong><%= p.web_name %></strong>
+                  <% if (p.news) { %><span class="news"><%= p.news %></span><% } %>
+                </td>
+                <td><%= teamsById.get(p.team)?.short_name ?? '?' %></td>
+                <td class="num"><%= p.selected_by_percent %> %</td>
+                <td>
+                  <span class="status status-<%= p.status %>"><%= STATUS_LABELS[p.status] ?? p.status %></span>
+                  <% if (p.chance_of_playing_next_round != null && p.status !== 'a') { %>
+                    <span class="chance"><%= p.chance_of_playing_next_round %> %</span>
+                  <% } %>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </section>
+
+  <section class="card">
+    <h2>Toppform</h2>
+    <div class="table-scroll">
+      <table class="data">
+        <thead>
+          <tr><th>Spiller</th><th>Lag</th><th>Pos</th><th class="num">Form</th><th class="num">Poeng</th></tr>
+        </thead>
+        <tbody>
+          <% for (const p of inForm) { %>
+            <tr>
+              <td><strong><%= p.web_name %></strong></td>
+              <td><%= teamsById.get(p.team)?.short_name ?? '?' %></td>
+              <td><%= POSITIONS_SHORT[p.element_type] %></td>
+              <td class="num accent"><%= p.form %></td>
+              <td class="num"><%= p.total_points %></td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Mest kjøpt denne runden</h2>
+    <div class="table-scroll">
+      <table class="data">
+        <thead>
+          <tr><th>Spiller</th><th class="num">Pris</th><th class="num">Inn</th></tr>
+        </thead>
+        <tbody>
+          <% for (const p of boughtMost) { %>
+            <tr>
+              <td><strong><%= p.web_name %></strong> <span class="dim"><%= teamsById.get(p.team)?.short_name ?? '' %></span></td>
+              <td class="num"><%= formatPrice(p.now_cost) %></td>
+              <td class="num accent">+<%= formatNumber(p.transfers_in_event) %></td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Mest solgt denne runden</h2>
+    <div class="table-scroll">
+      <table class="data">
+        <thead>
+          <tr><th>Spiller</th><th class="num">Pris</th><th class="num">Ut</th></tr>
+        </thead>
+        <tbody>
+          <% for (const p of soldMost) { %>
+            <tr>
+              <td><strong><%= p.web_name %></strong> <span class="dim"><%= teamsById.get(p.team)?.short_name ?? '' %></span></td>
+              <td class="num"><%= formatPrice(p.now_cost) %></td>
+              <td class="num negative">−<%= formatNumber(p.transfers_out_event) %></td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<section class="card card-wide">
+  <h2>Fixture-vanskelighet — neste <%= matrix.gameweeks.length %> runder</h2>
+  <p class="legend">
+    <span class="fdr fdr-1">1 lett</span>
+    <span class="fdr fdr-2">2</span>
+    <span class="fdr fdr-3">3</span>
+    <span class="fdr fdr-4">4</span>
+    <span class="fdr fdr-5">5 vanskelig</span>
+  </p>
+  <div class="table-scroll">
+    <table class="data fdr-table">
+      <thead>
+        <tr>
+          <th>Lag</th>
+          <% for (const gw of matrix.gameweeks) { %><th class="num">GW<%= gw %></th><% } %>
+          <th class="num">Snitt</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (const row of matrix.rows) { %>
+          <tr>
+            <td><strong><%= row.team.short_name %></strong> <span class="dim"><%= row.team.name %></span></td>
+            <% for (const cell of row.cells) { %>
+              <td class="fdr-cell">
+                <% if (cell.length === 0) { %>
+                  <span class="fdr fdr-blank">–</span>
+                <% } else { %>
+                  <% for (const match of cell) { %>
+                    <span class="fdr fdr-<%= match.difficulty %>" title="<%= match.home ? 'Hjemme' : 'Borte' %> mot <%= match.opponent %>">
+                      <%= match.home ? match.opponent : match.opponent.toLowerCase() %>
+                    </span>
+                  <% } %>
+                <% } %>
+              </td>
+            <% } %>
+            <td class="num dim"><%= row.avgDifficulty == null ? '–' : row.avgDifficulty.toFixed(1) %></td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+  <p class="hint">STORE bokstaver = hjemmekamp, små = bortekamp.</p>
+</section>

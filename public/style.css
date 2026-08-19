@@ -1,0 +1,419 @@
+/* FPL-dashboard — mørkt kampkveld-tema.
+   Hele paletten ligger som variabler i :root. */
+
+:root {
+  /* Flater — dyp fiolett natt, ikke nøytral grå */
+  --bg: #110e19;
+  --surface: #1a1626;
+  --surface-2: #221d33;
+  --border: #2f2945;
+
+  /* Tekst */
+  --text: #ece9f6;
+  --text-dim: #9c94b8;
+
+  /* Aksenter — gressgrønn + FPL-magenta */
+  --accent: #00e58c;
+  --accent-soft: rgba(0, 229, 140, 0.12);
+  --accent-2: #ff3d81;
+  --negative: #ff6b8a;
+  --warn-bg: #3a2f14;
+  --warn-border: #8a6d1f;
+  --warn-text: #f5cf6b;
+
+  /* FDR-skala 1 (lett) → 5 (vanskelig), FPL-konvensjon */
+  --fdr-1: #0f7a45;
+  --fdr-2: #2ba05e;
+  --fdr-3: #474060;
+  --fdr-4: #c93e63;
+  --fdr-5: #8c1538;
+  --fdr-blank: #262038;
+
+  /* Typografi — systemfonter, mono til tall/scoreboard */
+  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Mono', Consolas, 'SF Mono', monospace;
+
+  --radius: 10px;
+  --pad: 1rem;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ---------- Toppmeny ---------- */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: 0.9rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.wordmark {
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.wordmark span {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.topbar nav {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.topbar nav a {
+  color: var(--text-dim);
+  padding: 0.35rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.topbar nav a:hover {
+  color: var(--text);
+  background: var(--surface-2);
+  text-decoration: none;
+}
+
+.topbar nav a[aria-current='page'] {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* ---------- Banner (503) ---------- */
+
+.banner {
+  background: var(--warn-bg);
+  border-bottom: 1px solid var(--warn-border);
+  color: var(--warn-text);
+  padding: 0.6rem 1.25rem;
+  font-size: 0.9rem;
+}
+
+/* ---------- Hovedinnhold ---------- */
+
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+}
+
+footer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 2rem;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+/* ---------- Hero: deadline-scoreboard (signaturelementet) ---------- */
+
+.hero {
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.75rem var(--pad) 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0 0 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.hero-date {
+  margin: 0.35rem 0 1.25rem;
+  color: var(--text-dim);
+}
+
+.countdown {
+  display: flex;
+  justify-content: center;
+  gap: clamp(0.75rem, 4vw, 2rem);
+}
+
+.countdown .unit {
+  display: flex;
+  flex-direction: column;
+  min-width: 3.2ch;
+}
+
+.countdown .val {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(2.2rem, 8vw, 3.6rem);
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.1;
+}
+
+.countdown .lbl {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+.deadline-passed {
+  font-size: 1.2rem;
+  color: var(--accent-2);
+  font-weight: 600;
+  margin: 0;
+}
+
+/* ---------- Kort og grid ---------- */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--pad);
+  min-width: 0;
+}
+
+.card-wide {
+  margin-bottom: 1rem;
+}
+
+.card h2 {
+  margin: 0 0 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+}
+
+.empty {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+
+/* ---------- Tabeller ---------- */
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+table.data {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+table.data th {
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  font-weight: 600;
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+
+table.data td {
+  padding: 0.45rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+table.data tbody tr:last-child td {
+  border-bottom: none;
+}
+
+table.data tbody tr:hover {
+  background: var(--surface-2);
+}
+
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.accent {
+  color: var(--accent);
+}
+
+.negative {
+  color: var(--negative);
+}
+
+.dim {
+  color: var(--text-dim);
+  font-size: 0.82rem;
+}
+
+.news {
+  display: block;
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  max-width: 34ch;
+  white-space: normal;
+}
+
+/* ---------- Status-merker ---------- */
+
+.status {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--surface-2);
+  color: var(--text-dim);
+}
+
+.status-i,
+.status-s,
+.status-u,
+.status-n {
+  background: rgba(255, 61, 129, 0.15);
+  color: var(--accent-2);
+}
+
+.status-d {
+  background: var(--warn-bg);
+  color: var(--warn-text);
+}
+
+.chance {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-left: 0.25rem;
+}
+
+/* ---------- FDR-matrise ---------- */
+
+.legend {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin: 0 0 0.75rem;
+}
+
+.fdr {
+  display: inline-block;
+  min-width: 2.6rem;
+  text-align: center;
+  padding: 0.15rem 0.4rem;
+  border-radius: 5px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: #fff;
+}
+
+.fdr-1 { background: var(--fdr-1); }
+.fdr-2 { background: var(--fdr-2); }
+.fdr-3 { background: var(--fdr-3); }
+.fdr-4 { background: var(--fdr-4); }
+.fdr-5 { background: var(--fdr-5); }
+
+.fdr-blank {
+  background: var(--fdr-blank);
+  color: var(--text-dim);
+}
+
+.fdr-cell {
+  text-align: center;
+}
+
+.fdr-cell .fdr + .fdr {
+  margin-left: 0.2rem;
+}
+
+.hint {
+  margin: 0.6rem 0 0;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+/* ---------- Tomtilstander / feilsider ---------- */
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 1rem;
+}
+
+.empty-code {
+  font-family: var(--font-mono);
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--accent-2);
+  margin: 0;
+  line-height: 1;
+}
+
+.empty-state h1 {
+  font-size: 1.3rem;
+  margin: 0.5rem 0;
+}
+
+.empty-state p {
+  color: var(--text-dim);
+}
+
+/* ---------- Bevegelse ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  .topbar nav a,
+  table.data tbody tr {
+    transition: background-color 120ms ease;
+  }
+}
