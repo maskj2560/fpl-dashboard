@@ -103,6 +103,23 @@
 - RSS: `fast-xml-parser` når v0.7.0 startes
 - Bruker stopper økter ved ~95 % usage → oppdater denne filen grundig før stopp
 
+## v1.1.0 er i prod (2026-08-19 22:23)
+
+Footeren viser `v1.1.0`, alle ti ruter svarer 200, `npm test` 71/71 grønne og
+`npm run lint` 0 feil. Milepæl 2 og hele Milepæl 3 (Task 3.1–3.11) er ferdige.
+
+**Det som gjenstår før planen er lukket:**
+1. **QA-rundene 1–5 hos brukeren** (Task 3.12 steg 1) — ikke gjennomført ennå.
+   Rapportformat `SIDE · ENHET · FUNN`. Funn blir fix-commits + v1.1.x.
+2. **Task 1.6** — den naturlige auto-briefen **torsdag 20. august ~19:30**.
+   Forventet: én melding i Discord, og ved senere deploy samme kveld
+   logglinja `Auto-brief hoppet over for Gameweek 1: send-tidspunktet er
+   passert` UTEN ny melding.
+3. **Task 1.7** — kostnadskontroll etter 2–3 dager (`AI-kall:`-linjer i
+   Coolify-loggen). Tiltak ved over ~$4/uke: `AI_MODEL=claude-haiku-4-5`.
+4. **Milepæl 4** — sesongstart-verifisering, kalenderstyrt 21.–24. august.
+5. **Milepæl 5** — skjermbilder til README (krever nettleser hos brukeren).
+
 ## Neste steg (i rekkefølge)
 
 Følg den aktive planen
@@ -197,22 +214,31 @@ task for task. Kort oversikt:
   ligger i samtaleloggen og kan regenereres i Discord.**
 - 2026-08-19 (økt 4): «Vis to-do listen» → svart: `ROADMAP.md` (milepæler) og
   plan-filen (steg), begge avhukes fortløpende; status-tabell gitt i chatten.
+- 2026-08-19 (økt 4): «Det kom en melding i discord chatten ja. Så den funker
+  helt fint» → Task 1.4 steg 4 bekreftet av bruker.
+- 2026-08-19 (økt 4): «Nå trykket jeg redeploy på environment variables» +
+  skjermbilder av Coolify → avdekket at bare `TZ` og `FPL_TEAM_ID` fantes.
+- 2026-08-19 (økt 4): «Nå har jeg lagt til api key og discord webhook. Og
+  trukket redeploy» → `/health` bekrefter `ai:true, discord:true, teamId:true`.
+  Task 1.5 ferdig.
 
-## ÅPEN SAK: AI og Discord er IKKE aktive i prod (2026-08-19 22:15)
+## LØST: AI og Discord er nå aktive i prod (2026-08-19 22:20)
 
-`GET https://fpl.marsk.no/health` svarer:
-`{"status":"ok","features":{"ai":false,"aiModel":null,"discord":false,"teamId":true,"leagues":0}}`
-mens samme kode lokalt gir `ai:true, discord:true, teamId:true`.
+Saken var at `ANTHROPIC_API_KEY` og `DISCORD_WEBHOOK_URL` aldri var lagt inn i
+Coolify — bare `TZ` og `FPL_TEAM_ID` sto i lista. Brukeren la dem til og
+redeployet. Fasit nå:
 
-- `FPL_TEAM_ID` nådde containeren; `ANTHROPIC_API_KEY` og `DISCORD_WEBHOOK_URL`
-  gjorde det ikke. Coolify-loggen manglet også `Auto-brief aktiv:`-linjen.
-- Brukeren er bedt om å sjekke Environment Variables i Coolify: riktige navn,
-  ingen anførselstegn, IKKE merket som «Build Variable», deretter Save +
-  Redeploy (ikke Restart).
-- **Må være på plass før torsdag 20. august ~19:00**, ellers sender ikke
-  auto-briefen naturlig kl. 19:30.
-- Diagnosen ble lagt til i `/health` nettopp for å kunne se dette utenfra;
-  endepunktet lekker ingen verdier, bare av/på.
+```
+GET https://fpl.marsk.no/health
+{"status":"ok","features":{"ai":true,"aiModel":"claude-sonnet-5","discord":true,"teamId":true,"leagues":0}}
+```
+
+Verifisert på ekte sider i prod: `/nyheter` har AI-oppsummering, `/brief` viser
+AI-briefen, dashboardet har AI-nyhetspanelet. Auto-briefen er dermed armert.
+
+**Diagnose-endepunktet beholdes:** `/health` rapporterer hvilke valgfrie
+funksjoner som er på (aldri verdiene). Bruk det først neste gang noe
+«virker lokalt, men ikke i prod».
 
 ## Pre-flight-resultat (Task 1.3, 2026-08-19, lokalt med ekte nøkkel)
 

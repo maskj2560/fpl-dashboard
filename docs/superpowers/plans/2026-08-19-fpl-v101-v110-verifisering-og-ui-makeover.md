@@ -288,7 +288,7 @@ node -e "console.log(((Date.parse('2026-08-21T17:30:00Z') - Date.now())/3600000)
       `src/config.js` før du stoler på dette). Restart `npm run dev`.
       Forventet konsoll: `Auto-brief aktiv: sender … t før deadline`, deretter
       innen ~1 min `AI-kall: ai-brief-gw1 …` og `Auto-brief sendt for Gameweek 1`.
-- [ ] **Steg 4 — verifiser i Discord:** header med `**Gameweek-brief — Gameweek 1**`,
+- [x] **Steg 4 — verifiser i Discord:** header med `**Gameweek-brief — Gameweek 1**`,
       deadline-linje, lenke til https://fpl.marsk.no/brief, AI-briefen under.
       Sjekk spesielt: **fet skrift** rendres (Discord tolker `**`), ingen
       avkuttede setninger, og hvis briefen er > 1900 tegn: den er delt i flere
@@ -313,10 +313,10 @@ node -e "console.log(((Date.parse('2026-08-21T17:30:00Z') - Date.now())/3600000)
       CHANGELOG-en lister alt dette under `[1.0.1]` slik at seksjonen faktisk
       beskriver det som står i prod. Resten av makeoveren (Task 3.4–3.12)
       lander som planlagt i v1.1.0.
-- [ ] **Steg 3 (BRUKER):** Sett i Coolify (Environment Variables for appen):
+- [x] **Steg 3 (BRUKER):** Sett i Coolify (Environment Variables for appen):
       `ANTHROPIC_API_KEY`, `DISCORD_WEBHOOK_URL`. IKKE sett
       `BRIEF_HOURS_BEFORE_DEADLINE` (default 24 er riktig). Redeploy appen.
-- [ ] **Steg 4:** Verifiser prod: `https://fpl.marsk.no/nyheter` viser
+- [x] **Steg 4:** Verifiser prod: `https://fpl.marsk.no/nyheter` viser
       AI-oppsummering; `https://fpl.marsk.no/brief` viser AI-brief;
       dashboardet viser AI-nyhetspanelet. Coolify-loggen viser
       `Auto-brief aktiv: sender 24 t før deadline` og `AI-kall: …`-linjer.
@@ -818,7 +818,7 @@ tilstand, alt synlig med ett sveip.
       `layout.ejs` utenfor. `test/views.test.js` er derfor utvidet med åtte
       layout-tester: én per nav-lenke (nøyaktig én aktiv, ikke escapet) pluss
       503-banneret. `npm test` 69/69 grønne, `npm run lint` 0 feil.
-- [ ] **Steg 4:** Push → verifiser prod 200 → **QA-runde 1 til bruker**
+- [x] **Steg 4:** Push → verifiser prod 200 → **QA-runde 1 til bruker**
       (se checklisten i Task 3.12: topbar/nav på telefon).
 
 ### Task 3.4: Hero-scoreboard på dashboardet (signaturen)
@@ -826,7 +826,7 @@ tilstand, alt synlig med ett sveip.
 **Files:**
 - Modify: `views/dashboard.ejs` (hero-seksjonen), `public/style.css`
 
-- [ ] **Steg 1:** Ny hero-markup i `views/dashboard.ejs` (grenen med deadline):
+- [x] **Steg 1:** Ny hero-markup i `views/dashboard.ejs` (grenen med deadline):
 
 ```ejs
 <section class="hero">
@@ -845,7 +845,7 @@ tilstand, alt synlig med ett sveip.
       overskriften. Behold en visuelt skjult h1 for skjermlesere:
       `<h1 class="sr-only">Neste deadline <%= deadlineEvent.name %></h1>`
       og legg `.sr-only`-hjelperen i CSS-en.)
-- [ ] **Steg 2:** CSS:
+- [x] **Steg 2:** CSS:
 
 ```css
 .hero {
@@ -903,9 +903,9 @@ tilstand, alt synlig med ett sveip.
       fra i dag (juster farger til nye tokens). **Akseptkriterium:** sifrene
       tikker uten at bredden hopper (tabular-nums virker i Archivo) — hopper
       de, bytt `.countdown .val` til `var(--font-mono)` og noter avviket.
-- [ ] **Steg 3:** `npm test` (dashboard-fixturen fanger markup-brekkasje) +
+- [x] **Steg 3:** `npm test` (dashboard-fixturen fanger markup-brekkasje) +
       lint + lokal røyk. Commit: `feat: hero som broadcast-scoreboard`
-- [ ] **Steg 4:** I samme økt: restyle resten av dashboardet med
+- [x] **Steg 4:** I samme økt: restyle resten av dashboardet med
       kort-/tabellsystemet fra Task 3.5 (kommer i neste commit — 3.5 gjøres
       før dashboardets øvrige kort pushes). Push + **QA-runde 2** (hero +
       dashboard på telefon).
@@ -918,7 +918,7 @@ tilstand, alt synlig med ett sveip.
 Ett mønster, brukt identisk overalt. Ingen view-endringer i denne tasken —
 klassenavnene finnes alt.
 
-- [ ] **Steg 1:** Erstatt dagens `.card`/`.grid`/tabell-regler:
+- [x] **Steg 1:** Erstatt dagens `.card`/`.grid`/tabell-regler:
 
 ```css
 .grid {
@@ -982,7 +982,7 @@ table.data tbody tr:hover { background: var(--surface-2); }
       er korte, fete og repetitive; HOLDER de ikke 3:1 i kontrastsjekken,
       bruk `--text-dim`. `.num`, `.accent`, `.negative`, `.dim`, `.status-*`
       beholdes med nye token-verdier.
-- [ ] **Steg 2:** Sticky tabellhode i scroll-containere (gjelder /spillere
+- [x] **Steg 2:** Sticky tabellhode i scroll-containere (gjelder /spillere
       og FDR-matrisen):
 
 ```css
@@ -996,7 +996,7 @@ table.data tbody tr:hover { background: var(--surface-2); }
 }
 ```
 
-- [ ] **Steg 3:** `npm test` + lint + lokal røyk på `/` og `/spillere`.
+- [x] **Steg 3:** `npm test` + lint + lokal røyk på `/` og `/spillere`.
       Commit: `feat: enhetlig kort- og tabellsystem`
 
 ### Task 3.6: /spillere — filterpanel og tabell
@@ -1017,10 +1017,10 @@ app.js modul 2 er kontrakten):
   bruker — QA-runde 3), tabellhodet er sticky under scroll, ingen horisontal
   sidescroll på telefon (kun inne i `.table-scroll`)
 
-- [ ] **Steg 1:** Les `views/players.ejs`, restyle per direktivene
-- [ ] **Steg 2:** `npm test` + lint + lokal røyk (`/spillere` 200,
+- [x] **Steg 1:** Les `views/players.ejs`, restyle per direktivene
+- [x] **Steg 2:** `npm test` + lint + lokal røyk (`/spillere` 200,
       `players-table` i HTML). Commit: `feat: spillersiden i nytt design`
-- [ ] **Steg 3:** Push → prod-sjekk → **QA-runde 3** (filtrering+sortering på telefon)
+- [x] **Steg 3:** Push → prod-sjekk → **QA-runde 3** (filtrering+sortering på telefon)
 
 ### Task 3.7: /lag — pitch med banemerking + rank-graf (TDD på analysis)
 
@@ -1034,7 +1034,7 @@ app.js modul 2 er kontrakten):
 
 Last `dataviz`-skillen før denne tasken (rank-grafen er datavisualisering).
 
-- [ ] **Steg 1 (RED):** I `test/analysis.test.js`, legg til:
+- [x] **Steg 1 (RED):** I `test/analysis.test.js`, legg til:
 
 ```js
 test('rankGraph gir lukket areal-polygon under linjen', () => {
@@ -1048,13 +1048,13 @@ test('rankGraph gir null-areal for ett punkt', () => {
 });
 ```
 
-- [ ] **Steg 2:** `npm test` → de to nye FEILER (`area` er undefined).
-- [ ] **Steg 3 (GREEN):** I `rankGraph` i `src/services/analysis.js`: utvid
+- [x] **Steg 2:** `npm test` → de to nye FEILER (`area` er undefined).
+- [x] **Steg 3 (GREEN):** I `rankGraph` i `src/services/analysis.js`: utvid
       returobjektet med
       `area: n > 1 ? \`${points} ${width},${height} 0,${height}\` : null`
       (bruk funksjonens faktiske variabelnavn for antall punkter og
       points-strengen — les funksjonen først). `npm test` → grønn.
-- [ ] **Steg 4:** Ny SVG i `views/team.ejs` (erstatter dagens `.rank-graph`-blokk):
+- [x] **Steg 4:** Ny SVG i `views/team.ejs` (erstatter dagens `.rank-graph`-blokk):
 
 ```ejs
 <svg class="rank-graph" viewBox="-8 -8 616 156" preserveAspectRatio="none" role="img" aria-label="Rankutvikling">
@@ -1073,7 +1073,7 @@ test('rankGraph gir null-areal for ett punkt', () => {
 ```
 
       Hint-linjen under beholdes («Best/Nå», lavere er bedre).
-- [ ] **Steg 5:** Pitch med banemerking — erstatt `.pitch`-CSS-en:
+- [x] **Steg 5:** Pitch med banemerking — erstatt `.pitch`-CSS-en:
 
 ```css
 .pitch {
@@ -1112,9 +1112,9 @@ test('rankGraph gir null-areal for ett punkt', () => {
       magenta-ring (`box-shadow: 0 0 0 2px var(--accent-2)`), benken
       som egen dempet rad under (som i dag). Statstripen (`.stat`) får
       display-font på tallene og venstrestilt label.
-- [ ] **Steg 6:** `npm test` (team-fixturen har `area`-feltet fra M2) + lint +
+- [x] **Steg 6:** `npm test` (team-fixturen har `area`-feltet fra M2) + lint +
       mock-render-sjekk. Commit: `feat: lagsiden med banemerking og arealgraf`
-- [ ] **Steg 7:** Push → prod-sjekk → **QA-runde 4** (pitch + graf; NB: prod
+- [x] **Steg 7:** Push → prod-sjekk → **QA-runde 4** (pitch + graf; NB: prod
       viser tomtilstand til sesongstart — brukeren QA-er graf/pitch etter
       21. aug, resten av siden nå).
 
@@ -1138,10 +1138,10 @@ app.js genererer samme markup som viewet; de endres i samme commit**):
   fixture-data gir samme klassestruktur som app.js-render-funksjonen
   produserer (sammenlign manuelt de to markup-kildene felt for felt)
 
-- [ ] **Steg 1:** Restyle view + synkroniser app.js modul 3
-- [ ] **Steg 2:** `npm test` + lint + lokal røyk. Commit:
+- [x] **Steg 1:** Restyle view + synkroniser app.js modul 3
+- [x] **Steg 2:** `npm test` + lint + lokal røyk. Commit:
       `feat: live-siden som scoreboard`
-- [ ] **Steg 3:** Push → prod-sjekk (full QA av live-innholdet skjer i M4
+- [x] **Steg 3:** Push → prod-sjekk (full QA av live-innholdet skjer i M4
       sjekkpunkt B når kamper faktisk går)
 
 ### Task 3.9: /liga, /brief, /nyheter
@@ -1165,7 +1165,7 @@ Direktiver (én commit per side, samme kort-/tabellsystem):
 - **Akseptkriterier:** alle tre sider 200 lokalt og i prod, view-testene
   grønne, AI-merkingen gjør det tydelig hva som er AI-generert vs. rådata
 
-- [ ] **Steg 1–3:** Én side per commit:
+- [x] **Steg 1–3:** Én side per commit:
       `feat: ligasiden i nytt design` / `feat: briefsiden i nytt design` /
       `feat: nyhetssiden i nytt design`. Push + prod-sjekk etter hver.
       → **QA-runde 5** (alle tre på telefon)
@@ -1176,7 +1176,7 @@ Direktiver (én commit per side, samme kort-/tabellsystem):
 - Modify: `views/404.ejs`, `views/error.ejs`, `views/no-team.ejs`,
   `public/style.css`, `public/app.js` (modul 4)
 
-- [ ] **Steg 1:** Felles tomtilstands-mønster i CSS (dagens `.empty-state`
+- [x] **Steg 1:** Felles tomtilstands-mønster i CSS (dagens `.empty-state`
       beholdes som navn):
 
 ```css
@@ -1207,11 +1207,11 @@ Direktiver (én commit per side, samme kort-/tabellsystem):
       views-ene og skjerp språket etter dette mønsteret (f.eks. «Fant ingen
       lagoppstilling ennå — sesongen starter 21. august kl. 19:30» i stedet
       for «sesongen har kanskje ikke startet»).
-- [ ] **Steg 2:** AI-rådgiverens lastetilstand (app.js modul 4): erstatt
+- [x] **Steg 2:** AI-rådgiverens lastetilstand (app.js modul 4): erstatt
       «Henter råd …»-teksten med en animert tre-prikker-indikator
       (CSS-animasjon bak `prefers-reduced-motion: no-preference`; statisk
       «Henter råd …» ellers). Behold knappens `disabled`-håndtering.
-- [ ] **Steg 3:** `npm test` + lint + lokal røyk på `/lag` uten FPL_TEAM_ID
+- [x] **Steg 3:** `npm test` + lint + lokal røyk på `/lag` uten FPL_TEAM_ID
       (no-team-siden) og ukjent sti (404). Commit:
       `feat: gjennomdesignede tom- og feiltilstander`
 
@@ -1220,17 +1220,17 @@ Direktiver (én commit per side, samme kort-/tabellsystem):
 **Files:**
 - Modify: `public/style.css`
 
-- [ ] **Steg 1:** Gå gjennom media queries: 640px-brytpunktet fra Task 3.3 +
+- [x] **Steg 1:** Gå gjennom media queries: 640px-brytpunktet fra Task 3.3 +
       behold 480px-justeringene (marger, ordbryting, filterbredder) mot nye
       tokens. `overflow-wrap: anywhere` på body under 480px beholdes.
-- [ ] **Steg 2:** Bevegelse: alle transitions/animasjoner samles bak
+- [x] **Steg 2:** Bevegelse: alle transitions/animasjoner samles bak
       `@media (prefers-reduced-motion: no-preference)`. Tillatt: nav-hover,
       rad-hover, puls, tre-prikker. IKKE tillatt: scroll-animasjoner,
       parallax, innflygninger — «clean» betyr rolig.
-- [ ] **Steg 3:** Død-CSS-sjekk: grep hver klasse i style.css mot `views/` og
+- [x] **Steg 3:** Død-CSS-sjekk: grep hver klasse i style.css mot `views/` og
       `public/app.js`; fjern regler ingen bruker. Forventet: null ubrukte
       klasser i den ferdige filen.
-- [ ] **Steg 4:** `npm test` + lint. Commit: `chore: mobil-finpuss og css-opprydding`
+- [x] **Steg 4:** `npm test` + lint. Commit: `chore: mobil-finpuss og css-opprydding`
 
 ### Task 3.12: QA-protokoll + release v1.1.0
 
@@ -1251,12 +1251,24 @@ scroll»), gjerne med skjermbilde.
          Grafen med arealfyll lesbar?
       5. /liga + /brief + /nyheter: AI-merkingen tydelig? Egen rad uthevet i
          ligatabellen?
-- [ ] **Steg 2:** Sluttrøyk lokalt: alle ti ruter 200, 404 på ukjent sti,
+- [x] **Steg 2:** Sluttrøyk lokalt: alle ti ruter 200, 404 på ukjent sti,
       `npm test` + `npm run lint` grønne. Vis outputen.
-- [ ] **Steg 3:** Release v1.1.0: CHANGELOG (flytt Unreleased → 1.1.0 med
+- [x] **Steg 3:** Release v1.1.0: CHANGELOG (flytt Unreleased → 1.1.0 med
       dato), ROADMAP (ny v1.1.0-seksjon avhuket), `package.json`-bump,
       `docs: release v1.1.0`, tag, push med tags. Verifiser footer i prod.
-- [ ] **Steg 4:** Oppdater HANDOVER: status, QA-funn som gjenstår, neste steg.
+- [x] **Steg 4:** Oppdater HANDOVER: status, QA-funn som gjenstår, neste steg.
+
+      **Avvik fra planen (rekkefølge QA vs. release):** QA-rundene 1–5 var
+      tenkt gjennomført mellom hver side-push, men brukeren var opptatt med
+      Coolify-oppsettet mens sidene ble bygget, og ingen runder er rapportert
+      ennå. v1.1.0 er derfor tagget og deployet FØR QA — begrunnelsen er at
+      footeren viser versjonen, så QA blir enklere når brukeren vet at
+      telefonen faktisk viser den nye koden. Funn fra rundene 1–5 blir
+      fix-commits og en v1.1.x patch-release.
+
+      **Sluttrøyk (2026-08-19):** lokalt alle ti ruter 200 + 404 på ukjent sti;
+      `npm test` 71/71 grønne; `npm run lint` 0 feil. I prod: footer `v1.1.0`,
+      alle ti ruter 200, `/health` viser `ai:true, discord:true, teamId:true`.
 
 ---
 
