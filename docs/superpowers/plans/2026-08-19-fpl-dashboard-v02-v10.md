@@ -1178,7 +1178,7 @@ export default router;
   `{generatedAt, gameweek: {id, name, deadline, deadlineFormatted}|null, injuries: [{name, team, ownership, news, status}], captains: [{name, team, form, ownership, avgFdr}], fixturesByDay: [{day, matches: [{home, away, kickoff}]}], mine: {captains, transfers}|null}`
 - `groupFixturesByDay(fixtures, teamsById) → [{day, matches: [{home, away, kickoff}]}]` (eksporteres for test)
 
-- [ ] **Steg 1 (RED):** Opprett `test/brief.test.js`:
+- [x] **Steg 1 (RED):** Opprett `test/brief.test.js`:
 ```js
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -1204,8 +1204,8 @@ test('groupFixturesByDay grupperer kamper per dag i norsk tid, sortert', () => {
 });
 ```
 (NB: 14:00Z = 16:00 norsk sommertid.)
-- [ ] **Steg 2:** `npm test` → FEILER.
-- [ ] **Steg 3 (GREEN):** Opprett `src/services/brief.js`:
+- [x] **Steg 2:** `npm test` → FEILER. (`ERR_MODULE_NOT_FOUND: … src/services/brief.js`.)
+- [x] **Steg 3 (GREEN):** Opprett `src/services/brief.js`:
 ```js
 // Bygger gameweek-briefen fra rene data (ingen LLM her).
 import config from '../config.js';
@@ -1321,7 +1321,7 @@ export function buildBrief({ bootstrap, fixtures, myTeam = null }) {
   };
 }
 ```
-- [ ] **Steg 4:** `npm test` grønn. Commit `feat: brief-service som bygger gameweek-brief fra data`
+- [x] **Steg 4:** `npm test` grønn (26/26). Commit `feat: brief-service som bygger gameweek-brief fra data`
 
 ### Task 5.2: /brief-rute, /api/brief.json og view
 
