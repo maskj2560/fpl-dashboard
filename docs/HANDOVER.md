@@ -75,6 +75,9 @@
 - 2026-08-19: «Oppdater ROADMAP, CHANGELOG, CLAUDE.md, HANDOVER kontinuerlig og ofte — alltid oppdatert» → fast rutine: alle fire sjekkes/oppdateres ved hver delfunksjon og hver commit, ikke bare ved milepæler
 - 2026-08-19: «Logget inn i gh. Repo skal være PRIVAT. Coolify på dash.marsk.no, hoster marsk.no + utevakt.marsk.no, denne appen skal på fpl.marsk.no» → privat repo opprettet og pushet
 - 2026-08-19: «Lag prompt til Claude in Chrome for Coolify-oppsettet + rapport-prompt tilbake» → prompt levert i chat; venter på rapport («RAPPORT TIL CLAUDE CODE — Coolify-deploy fpl-dashboard») før v0.2.0 fortsetter
+- 2026-08-19 (økt 2): «Hvor finner jeg to do listen?» → svart: `ROADMAP.md`
+  (milepæler) og `docs/superpowers/plans/2026-08-19-fpl-dashboard-v02-v10.md`
+  (steg per oppgave), begge i VS Code med Ctrl+Shift+V. Begge hukes av fortløpende.
 - 2026-08-19 (økt 2): «Les og følg `docs/superpowers/plans/2026-08-19-fpl-dashboard-v02-v10.md` — den inneholder ALT. Ikke avvik fra planen, ikke bruk subagenter til implementering (model: sonnet hvis unntaksvis nødvendig). Commit plan-filen først, fortell hvor todo-listen er, begynn på første uavkryssede oppgave.» → plan committet (`chore: legg til implementeringsplan v0.2.0-v1.0.0`), arbeid startet på Task 2.1
 
 ## Miljø
