@@ -6,6 +6,7 @@ import config from './config.js';
 import { isGameUpdating } from './services/fplClient.js';
 import indexRouter from './routes/index.js';
 import healthRouter from './routes/health.js';
+import playersRouter from './routes/players.js';
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const app = express();
@@ -35,6 +36,7 @@ app.use((req, res, next) => {
 
 app.use('/health', healthRouter);
 app.use('/', indexRouter);
+app.use('/spillere', playersRouter);
 
 app.use((req, res) => {
   res.status(404).renderPage('404', { title: 'Ikke funnet' });

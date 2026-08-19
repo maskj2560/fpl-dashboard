@@ -81,7 +81,7 @@
 
 **Files:** Modify: `src/server.js`, `views/layout.ejs`
 
-- [ ] **Steg 1:** I `src/server.js`: legg til import under de andre rute-importene:
+- [x] **Steg 1:** I `src/server.js`: legg til import under de andre rute-importene:
 ```js
 import playersRouter from './routes/players.js';
 ```
@@ -89,12 +89,12 @@ og monter etter `app.use('/', indexRouter);` (rekkefølgen ellers uendret, allti
 ```js
 app.use('/spillere', playersRouter);
 ```
-- [ ] **Steg 2:** I `views/layout.ejs`, i `<nav aria-label="Hovedmeny">`, rett etter Dashboard-lenken:
+- [x] **Steg 2:** I `views/layout.ejs`, i `<nav aria-label="Hovedmeny">`, rett etter Dashboard-lenken:
 ```ejs
       <a href="/spillere" <%= path.startsWith('/spillere') ? 'aria-current="page"' : '' %>>Spillere</a>
 ```
-- [ ] **Steg 3:** Røyk-test: `/spillere` skal gi 200 (kommando i faste regler). Sjekk også at HTML-en inneholder `players-table`.
-- [ ] **Steg 4:** Commit `feat: monter /spillere-rute og nav-lenke`
+- [x] **Steg 3:** Røyk-test: `/spillere` skal gi 200 (kommando i faste regler). Sjekk også at HTML-en inneholder `players-table`.
+- [x] **Steg 4:** Commit `feat: monter /spillere-rute og nav-lenke`
 
 ### Task 2.2: Sortering og filtrering i public/app.js
 

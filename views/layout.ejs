@@ -12,6 +12,7 @@
     <a class="wordmark" href="/">FPL<span>dashboard</span></a>
     <nav aria-label="Hovedmeny">
       <a href="/" <%= path === '/' ? 'aria-current="page"' : '' %>>Dashboard</a>
+      <a href="/spillere" <%= path.startsWith('/spillere') ? 'aria-current="page"' : '' %>>Spillere</a>
     </nav>
   </header>
 

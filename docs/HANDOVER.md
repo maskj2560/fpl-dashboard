@@ -24,11 +24,9 @@
   - `views/players.ejs` skrevet ✅ (full tabell + filter-form med id-er:
     filter-search/position/team/price/reset/count, tabell id=players-table,
     th har data-type="num|text" + aria-sort; rader har data-name/pos/team/price)
+  - Rute montert i `src/server.js` + nav-lenke i `views/layout.ejs` ✅
+    (røyk-testet: `/spillere` gir 200, HTML inneholder `players-table`)
   - GJENSTÅR for v0.2.0:
-    1. Montere ruten i `src/server.js`: `import playersRouter from './routes/players.js'`
-       + `app.use('/spillere', playersRouter)` (FØR 404-handleren)
-    2. Legge til `<a href="/spillere">Spillere</a>` i nav i `views/layout.ejs`
-       (med aria-current-mønsteret som Dashboard-lenken)
     3. `public/app.js`: modul for #players-table — kolonnesortering (klikk på th,
        toggle asc/desc, parseFloat for data-type=num, oppdater aria-sort) +
        filtrering (søk mot data-name, posisjon mot data-pos, lag mot data-team,
@@ -70,6 +68,7 @@
 - 2026-08-19: «Oppdater ROADMAP, CHANGELOG, CLAUDE.md, HANDOVER kontinuerlig og ofte — alltid oppdatert» → fast rutine: alle fire sjekkes/oppdateres ved hver delfunksjon og hver commit, ikke bare ved milepæler
 - 2026-08-19: «Logget inn i gh. Repo skal være PRIVAT. Coolify på dash.marsk.no, hoster marsk.no + utevakt.marsk.no, denne appen skal på fpl.marsk.no» → privat repo opprettet og pushet
 - 2026-08-19: «Lag prompt til Claude in Chrome for Coolify-oppsettet + rapport-prompt tilbake» → prompt levert i chat; venter på rapport («RAPPORT TIL CLAUDE CODE — Coolify-deploy fpl-dashboard») før v0.2.0 fortsetter
+- 2026-08-19 (økt 2): «Les og følg `docs/superpowers/plans/2026-08-19-fpl-dashboard-v02-v10.md` — den inneholder ALT. Ikke avvik fra planen, ikke bruk subagenter til implementering (model: sonnet hvis unntaksvis nødvendig). Commit plan-filen først, fortell hvor todo-listen er, begynn på første uavkryssede oppgave.» → plan committet (`chore: legg til implementeringsplan v0.2.0-v1.0.0`), arbeid startet på Task 2.1
 
 ## Miljø
 
