@@ -7,6 +7,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+- **Ord brekkes ikke lenger midt inne.** På skjermer under 480 px brøt
+  `overflow-wrap: anywhere` vanlige ord vilkårlig. Nå brekkes bare ord som ikke
+  får plass, med orddeling
+
 - **Skadetekstene på dashbordet er på norsk.** FPL leverer statusteksten på
   engelsk («Ankle injury - 75% chance of playing»). «Ukens flagg» viser den nå
   oversatt («Ankelskade – 75 % sjanse for spilletid»), inkludert overganger,
