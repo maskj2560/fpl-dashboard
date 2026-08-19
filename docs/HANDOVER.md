@@ -3,16 +3,33 @@
 > Levende overleveringsfil. Oppdateres ved hver milepæl og ved arbeidsstans.
 > Ny AI-økt: les denne + CLAUDE.md + ROADMAP.md, fortsett der «Neste steg» sier.
 
-**Sist oppdatert:** 2026-08-20 (økt 7, **v1.1.2 ER I PROD — deployet og verifisert ~01:30**)
+**Sist oppdatert:** 2026-08-20 ~01:45 (økt 8, **sesongstart-verifisering (M4) PÅGÅR — sjekkpunktstyrt**)
 
-## NESTE ØKT: sesongstart-verifisering (M4)
+## AKTIV ØKT (8): sesongstart-verifisering (M4) — sjekkpunkter
 
-Kjøreprompt: **`docs/neste-okt-prompt-sesongstart.md`** — sendes tidligst
-torsdag ~19:45 (etter auto-briefen), helst fredag etter 19:30 (etter
-GW1-deadline). Dekker: etterkontroll av auto-briefen, tomtilstand → ekte
-data på alle sider (P1-1-filtrene, P2-5/P2-6-gatene), live-polling,
-AI-restverifisering (maks ~3 kall, «Spør AI om råd» = ett klikk fra Marius),
-kostnadskontroll etter 2–3 dager, skjermbilder + mobiltest, v1.2.0-kandidater.
+Kjøreprompten (`docs/neste-okt-prompt-sesongstart.md`) ble sendt natt til
+torsdag 01:37. Plan godkjent i plan mode:
+`C:\Users\mariu\.claude\plans\oppdrag-verifiser-sesongstarten-wise-puffin.md`.
+**Kjøremodus (Marius' valg): Marius pinger økten ved hvert sjekkpunkt.**
+Dør økten: ny økt leser planfilen + denne seksjonen og fortsetter.
+
+| Sjekkpunkt | Når | Hva |
+| --- | --- | --- |
+| 0 (FERDIG) | torsdag natt | prep: Playwright-scripts i scratchpad, docs, denne tabellen |
+| A | torsdag ~19:45 | etterkontroll auto-brief: Marius limer inn Discord-melding + Coolify-logg; sammenlign mot `/api/brief.json` |
+| B | fredag ~20:30+ | tomtilstand → ekte data alle sider; **Marius klikker «Spør AI om råd» ÉN gang** (budsjettkall 1) |
+| C | lørdag under kampene | live-polling ≤1 kall/60 s, stopp ved `anyLive=false`, cache-bevis; re-sjekk kampavhengige B-punkter |
+| D | søndag/mandag | kostnadskontroll (Marius limer inn `AI-kall:`-linjer), skjermbilder, mobilsjekk, v1.2.0-kandidater, avslutning |
+
+**AI-kall-telleliste (budsjett ~3 utover automatiske sidebesøk):**
+
+- Budsjettkall brukt: **0 av ~3**
+- Automatiske (sidebesøk/auto-brief): auto-brief torsdag ~19:30 (forventet),
+  /brief- og /nyheter-genereringer ved sidebesøk (cachet 1 t / 30 min)
+
+Viktig nyanse for sjekkpunkt B: `transfers_*_event` kan legitimt være 0 hele
+GW1 — tomtilstand på «Mest kjøpt/solgt» er da KORREKT. Verifiser mot
+bootstrap-tall, ikke rapporter som feil. `topForm` krever spilte minutter.
 
 ## v1.1.2 ER I PROD (2026-08-20 ~01:30)
 
@@ -291,6 +308,13 @@ task for task. Kort oversikt:
 5. **M5:** skjermbilder til README + mobilbekreftelse (bruker).
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
+
+- 2026-08-20 (økt 8, 01:37): kjøreprompt for sesongstart-verifiseringen sendt
+  (`docs/neste-okt-prompt-sesongstart.md`-innholdet). Handling: plan skrevet
+  og godkjent, sjekkpunkt 0 (prep) utført.
+- 2026-08-20 (økt 8): valg av kjøremodus — «Du pinger meg»: Marius melder seg
+  i økten ved hvert sjekkpunkt (A i kveld ~19:45, B fredag ~20:30, C lørdag,
+  D søndag/mandag). Handling: sjekkpunktplan lagt inn øverst i denne filen.
 
 - 2026-08-19: «Ikke limit deg så mye — lag det så bra du kan med gode nok modeller»
 - 2026-08-19: «Men selve AI-en i fantasy må være relativt billig å bruke for én person»

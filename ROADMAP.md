@@ -121,6 +121,15 @@ committet (og pushet hvis remote finnes).
 
 ## Senere / idéer (ikke planlagt)
 
+### v1.2.0-kandidater (samles under sesongstart-verifiseringen, M4)
+
+_Ikke-kritiske funn fra verifiseringen 20.–24. august legges her. Ingen av
+dem fikses uten avtale._
+
+- (tom foreløpig)
+
+### Andre idéer
+
 - Historisk «hva hvis»-analyse av egne transfers
 - Prisendrings-varsler
 - E-postvarsling som alternativ til Discord
