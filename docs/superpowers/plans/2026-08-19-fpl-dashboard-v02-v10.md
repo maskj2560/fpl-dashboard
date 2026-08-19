@@ -2132,7 +2132,7 @@ og CSS-append:
 
 **Interfaces (produseres):** `buildBriefPrompt(brief) → string`, `buildAdvicePrompt({entryName, bank, squadLines, outs}) → string` — rene funksjoner.
 
-- [ ] **Steg 1 (RED):** Opprett `test/prompts.test.js`:
+- [x] **Steg 1 (RED):** Opprett `test/prompts.test.js`:
 ```js
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -2166,8 +2166,8 @@ test('buildAdvicePrompt tar med tropp, bank og salgskandidater', () => {
   assert.match(prompt, /Spiller X/);
 });
 ```
-- [ ] **Steg 2:** `npm test` → FEILER.
-- [ ] **Steg 3 (GREEN):** Opprett `src/services/prompts.js`:
+- [x] **Steg 2:** `npm test` → FEILER. (`ERR_MODULE_NOT_FOUND: … src/services/prompts.js`.)
+- [x] **Steg 3 (GREEN):** Opprett `src/services/prompts.js`:
 ```js
 // Rene promptbyggere for AI-funksjonene. Ingen nettverkskall her.
 import { formatPrice } from './analysis.js';
@@ -2213,7 +2213,7 @@ export function buildAdvicePrompt({ entryName, bank, squadLines, outs }) {
   ].join('\n');
 }
 ```
-- [ ] **Steg 4:** `npm test` grønn. Commit `feat: promptbyggere for AI-brief og raadgiver`
+- [x] **Steg 4:** `npm test` grønn (35/35). Commit `feat: promptbyggere for AI-brief og raadgiver`
 
 ### Task 8.2: AI-brief på /brief
 

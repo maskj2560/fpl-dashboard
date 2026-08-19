@@ -7,6 +7,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+
+- Promptbyggere (`prompts.js`) for AI-brief og transfer-rådgiver, med tester
+
 ## [0.7.0] - 2026-08-19
 
 ### Added
