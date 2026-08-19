@@ -100,7 +100,7 @@ app.use('/spillere', playersRouter);
 
 **Files:** Modify: `public/app.js` (ERSTATT hele filen med innholdet under — nedtellingen er beholdt uendret som modul 1)
 
-- [ ] **Steg 1:** Skriv hele `public/app.js`:
+- [x] **Steg 1:** Skriv hele `public/app.js`:
 ```js
 // Modul 1: Nedtelling til neste deadline. Leser ISO-tidspunkt fra data-deadline.
 (function () {
@@ -225,8 +225,8 @@ app.use('/spillere', playersRouter);
   applyFilters();
 })();
 ```
-- [ ] **Steg 2:** `npm run lint` → grønn (public/-filer lintes med browser-globals).
-- [ ] **Steg 3:** Commit `feat: sortering og filtrering av spillertabell uten sidelasting`
+- [x] **Steg 2:** `npm run lint` → grønn (public/-filer lintes med browser-globals).
+- [x] **Steg 3:** Commit `feat: sortering og filtrering av spillertabell uten sidelasting`
 
 ### Task 2.3: CSS for filtre og sorterbare kolonner
 
