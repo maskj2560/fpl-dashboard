@@ -500,6 +500,158 @@ table.sortable th[aria-sort='ascending']::after {
   color: var(--accent);
 }
 
+/* ---------- Mitt lag (/lag) ---------- */
+
+.stat-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.stat-val {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.stat-lbl {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--text-dim);
+}
+
+.pitch {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  background: linear-gradient(180deg, rgba(0, 229, 140, 0.06), rgba(0, 229, 140, 0.02));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 0.5rem;
+}
+
+.pitch-row {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.chip {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  min-width: 7.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.chip-captain {
+  border-color: var(--accent-2);
+}
+
+.chip-name {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.chip-meta {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+.cap {
+  display: inline-block;
+  background: var(--accent-2);
+  color: #fff;
+  border-radius: 50%;
+  width: 1.1rem;
+  height: 1.1rem;
+  line-height: 1.1rem;
+  font-size: 0.7rem;
+  text-align: center;
+}
+
+.cap.vice {
+  background: var(--surface);
+  color: var(--accent-2);
+  border: 1px solid var(--accent-2);
+}
+
+.bench {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+.bench-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.chip-bench {
+  opacity: 0.75;
+  min-width: 6.5rem;
+}
+
+.rank-graph {
+  width: 100%;
+  height: 160px;
+  display: block;
+}
+
+.rec-list {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.rec-list > li {
+  margin-bottom: 0.6rem;
+}
+
+.reasons {
+  margin: 0.2rem 0 0;
+  padding-left: 1.1rem;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+
+.transfer-block {
+  border-top: 1px solid var(--border);
+  padding-top: 0.6rem;
+  margin-top: 0.6rem;
+}
+
+.transfer-block:first-of-type {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.transfer-out {
+  margin: 0;
+}
+
 /* ---------- Bevegelse ---------- */
 
 @media (prefers-reduced-motion: no-preference) {

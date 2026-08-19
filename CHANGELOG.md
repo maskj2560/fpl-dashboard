@@ -12,6 +12,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Analysefunksjoner for kapteinsvalg, salgs- og kjøpskandidater og rank-graf
   (`averageFdr`, `playProbability`, `captainSuggestions`,
   `transferOutCandidates`, `transferInCandidates`, `rankGraph`) med tester
+- Lagside (`/lag`) med oppstilling per rekke, benk, kaptein- og visekapteinmerke,
+  GW-poeng, totalpoeng, overall rank, lagverdi og bank
+- Rank-graf per gameweek på lagsiden
+- Kapteinsanbefaling topp 3 med begrunnelse, og salgskandidater med
+  erstattere innenfor budsjett
+- Egen side når `FPL_TEAM_ID` mangler, med oppskrift på hvor ID-en finnes
 
 ## [0.2.0] - 2026-08-19
 

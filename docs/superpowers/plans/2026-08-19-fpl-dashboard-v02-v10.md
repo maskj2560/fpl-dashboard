@@ -685,7 +685,7 @@ export default router;
 
 **Files:** Create: `views/team.ejs`; Modify: `public/style.css` (append)
 
-- [ ] **Steg 1:** Opprett `views/team.ejs`:
+- [x] **Steg 1:** Opprett `views/team.ejs`:
 ```ejs
 <section class="page-head">
   <h1><%= entry.name %></h1>
@@ -776,7 +776,7 @@ export default router;
   </div>
 <% } %>
 ```
-- [ ] **Steg 2:** Append i `public/style.css` (før Bevegelse-blokken):
+- [x] **Steg 2:** Append i `public/style.css` (før Bevegelse-blokken):
 ```css
 /* ---------- Mitt lag (/lag) ---------- */
 
@@ -930,8 +930,14 @@ export default router;
   margin: 0;
 }
 ```
-- [ ] **Steg 3:** Røyk-test BEGGE tilstander: uten `.env` → `/lag` viser «Sett FPL_TEAM_ID» (200); med `.env` (FPL_TEAM_ID) → 200 med lagnavn i HTML.
-- [ ] **Steg 4:** `npm test` + `npm run lint` grønne. Commit `feat: /lag med oppstilling, rank-graf og anbefalinger`
+- [x] **Steg 3:** Røyk-test BEGGE tilstander: uten `.env` → `/lag` viser «Sett FPL_TEAM_ID» (200); med `.env` (FPL_TEAM_ID) → 200 med lagnavn i HTML.
+      Uten team-ID: 200 + «Sett FPL_TEAM_ID» ✅. Med team-ID: 200, men sesongen
+      2026/27 har ikke startet (neste GW = 1, deadline 2026-08-21T17:30Z), så
+      FPL har ingen picks/historikk ennå → tomtilstanden vises (som forventet).
+      Oppstilling/graf/anbefalinger er derfor verifisert ved å rendre
+      `views/team.ejs` med mockdata: alle grener (pitch, C/V-merker, benk,
+      lagverdi, bank, rank-graf, kapteinsliste, transferblokker) renderer uten feil.
+- [x] **Steg 4:** `npm test` + `npm run lint` grønne. Commit `feat: /lag med oppstilling, rank-graf og anbefalinger`
 
 ### Task 3.4: Release v0.3.0
 
