@@ -7,6 +7,17 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-08-19
+
 ### Added
 
-- (ingenting ennå — første oppføringer kommer med v0.1.0)
+- Dashboard (`/`) med deadline-nedtelling i norsk tid, ukens flagg
+  (skader/suspensjoner sortert på eierandel), topp 10 form, mest kjøpt/solgt
+  denne runden og FDR-matrise for neste 5 gameweeks (sortert på snitt-FDR,
+  håndterer blanke og doble runder)
+- `/health`-endepunkt for Coolify-helsesjekk
+- FPL-klient med nettleser-User-Agent, 10 s timeout, 2 retries med backoff
+  og 503-håndtering («game is being updated» → banner + sist kjente data)
+- TTL-cache med stale-while-revalidate og deduplisering av samtidige kall
+- Mørkt tema med CSS-variabler, responsivt, systemfonter, ingen CDN-er
+- Dockerfile (node:22-alpine, non-root, HEALTHCHECK) + Coolify-oppskrift i README

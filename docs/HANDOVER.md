@@ -3,14 +3,18 @@
 > Levende overleveringsfil. Oppdateres ved hver milepæl og ved arbeidsstans.
 > Ny AI-økt: les denne + CLAUDE.md + ROADMAP.md, fortsett der «Neste steg» sier.
 
-**Sist oppdatert:** 2026-08-19 (økt 1, Steg 0 pågår)
+**Sist oppdatert:** 2026-08-19 (økt 1, v0.1.0 ferdig)
 
 ## Status
 
 - Plan godkjent av bruker. Full plan: `C:\Users\mariu\.claude\plans\full-claude-code-prompt-ancient-crescent.md`
-  (kopi av essensen finnes i CLAUDE.md + ROADMAP.md — de er autoritative)
-- Steg 0 pågår: CLAUDE.md, CHANGELOG.md, ROADMAP.md opprettet. Git init + første commit gjenstår.
-- Ingen kode skrevet ennå. Ingen npm-pakker installert. Ingen git-remote.
+  (essensen ligger i CLAUDE.md + ROADMAP.md — de er autoritative)
+- **v0.1.0 FERDIG og tagget**: dashboard (/), /health, cache (SWR+dedup),
+  fplClient (retry/503), mørkt tema, Dockerfile. 18/18 tester grønne, lint grønn.
+  Røyk-testet lokalt (200 på / og /health, 404 OK) OG i Docker-container (health 200).
+- **Venter på bruker**: `gh auth login` — deretter opprette GitHub-repo, koble
+  remote, pushe main + tag v0.1.0. Så setter bruker opp Coolify (oppskrift i README).
+- Neste milepæl: v0.2.0 /spillere (se ROADMAP.md).
 
 ## Brukerens beslutninger (fra brainstorming, IKKE re-spør)
 

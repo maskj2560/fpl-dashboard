@@ -8,9 +8,9 @@ committet (og pushet hvis remote finnes).
 
 - [x] Prosjektoppsett: package.json, ESLint, mappestruktur fra CLAUDE.md
 - [x] `fplClient.js` med TTL-cache, stale-while-revalidate, dedup og 503-håndtering
-- [ ] Dashboard-side (/): deadline-nedtelling, flagg/skader, topp form, mest kjøpt/solgt, FDR-matrise
+- [x] Dashboard-side (/): deadline-nedtelling, flagg/skader, topp form, mest kjøpt/solgt, FDR-matrise
 - [x] `/health`-endepunkt
-- [ ] Dockerfile + .dockerignore + README med Coolify-oppskrift
+- [x] Dockerfile + .dockerignore + README med Coolify-oppskrift
 - [x] Tester for cache.js
 - [ ] **→ Deploy til Coolify med auto-deploy skjer her**
 
