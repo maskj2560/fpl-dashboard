@@ -7,6 +7,18 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+
+- `/health` viser nå hvilke valgfrie funksjoner som er aktive (AI, Discord,
+  team-ID, antall ligaer) — uten å røpe verdiene. Gjør det mulig å se utenfra
+  om miljøvariablene faktisk nådde containeren
+- Rank-grafen har fått et arealfyll under linjen (`rankGraph` returnerer
+  `area`)
+
+### Fixed
+
+- Nav-markeringen er riktig også på feilsiden
+
 ## [1.0.1] - 2026-08-19
 
 ### Added

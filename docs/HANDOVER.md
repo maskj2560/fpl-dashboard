@@ -198,6 +198,22 @@ task for task. Kort oversikt:
 - 2026-08-19 (økt 4): «Vis to-do listen» → svart: `ROADMAP.md` (milepæler) og
   plan-filen (steg), begge avhukes fortløpende; status-tabell gitt i chatten.
 
+## ÅPEN SAK: AI og Discord er IKKE aktive i prod (2026-08-19 22:15)
+
+`GET https://fpl.marsk.no/health` svarer:
+`{"status":"ok","features":{"ai":false,"aiModel":null,"discord":false,"teamId":true,"leagues":0}}`
+mens samme kode lokalt gir `ai:true, discord:true, teamId:true`.
+
+- `FPL_TEAM_ID` nådde containeren; `ANTHROPIC_API_KEY` og `DISCORD_WEBHOOK_URL`
+  gjorde det ikke. Coolify-loggen manglet også `Auto-brief aktiv:`-linjen.
+- Brukeren er bedt om å sjekke Environment Variables i Coolify: riktige navn,
+  ingen anførselstegn, IKKE merket som «Build Variable», deretter Save +
+  Redeploy (ikke Restart).
+- **Må være på plass før torsdag 20. august ~19:00**, ellers sender ikke
+  auto-briefen naturlig kl. 19:30.
+- Diagnosen ble lagt til i `/health` nettopp for å kunne se dette utenfra;
+  endepunktet lekker ingen verdier, bare av/på.
+
 ## Pre-flight-resultat (Task 1.3, 2026-08-19, lokalt med ekte nøkkel)
 
 - `/nyheter`: `AI-kall: news-summary modell=claude-sonnet-5 inn=1306 ut=824`.

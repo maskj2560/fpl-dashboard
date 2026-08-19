@@ -44,7 +44,17 @@
   <section class="card card-wide">
     <h2>Overall rank per gameweek</h2>
     <svg class="rank-graph" viewBox="-8 -8 616 156" preserveAspectRatio="none" role="img" aria-label="Rankutvikling">
-      <polyline points="<%= graph.points %>" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />
+      <defs>
+        <linearGradient id="rank-fill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="var(--accent)" stop-opacity="0.22" />
+          <stop offset="1" stop-color="var(--accent)" stop-opacity="0" />
+        </linearGradient>
+      </defs>
+      <% for (const y of [0, 70, 140]) { %>
+        <line x1="0" y1="<%= y %>" x2="600" y2="<%= y %>" stroke="var(--border)" stroke-width="1" vector-effect="non-scaling-stroke" />
+      <% } %>
+      <% if (graph.area) { %><polygon points="<%= graph.area %>" fill="url(#rank-fill)" /><% } %>
+      <polyline points="<%= graph.points %>" fill="none" stroke="var(--accent)" stroke-width="2.5" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round" />
     </svg>
     <p class="hint">Best: <%= formatNumber(graph.min) %> · Nå: <%= formatNumber(graph.last) %> (lavere er bedre — toppen av grafen er best)</p>
   </section>

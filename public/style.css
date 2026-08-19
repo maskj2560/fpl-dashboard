@@ -644,10 +644,10 @@ table.sortable th[aria-sort='ascending']::after {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 0.75rem;
+  padding: var(--space-3);
   display: flex;
   flex-direction: column;
-  text-align: center;
+  gap: var(--space-1);
 }
 
 .stat-val {
@@ -665,14 +665,37 @@ table.sortable th[aria-sort='ascending']::after {
   color: var(--text-dim);
 }
 
+/* Banen: klippestriper, midtsirkel-bue nederst og 16-meter øverst — diskret
+   nok til at spillerkortene fortsatt er det man leser først. */
 .pitch {
+  --pitch-line: rgba(240, 253, 248, 0.09);
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
-  background: linear-gradient(180deg, rgba(0, 229, 140, 0.06), rgba(0, 229, 140, 0.02));
+  gap: var(--space-4);
+  overflow: hidden;
+  background:
+    radial-gradient(circle 3.5rem at 50% 100%, transparent calc(3.5rem - 2px), var(--pitch-line) calc(3.5rem - 1px), transparent 3.5rem),
+    repeating-linear-gradient(180deg, rgba(0, 229, 140, 0.055) 0 3rem, rgba(0, 229, 140, 0.03) 3rem 6rem),
+    linear-gradient(180deg, rgba(0, 229, 140, 0.05), rgba(0, 229, 140, 0.015));
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 1.25rem 0.5rem;
+  padding: var(--space-5) var(--space-2) var(--space-6);
+}
+
+/* 16-meteren øverst (keeperens ende) */
+.pitch::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(60%, 22rem);
+  height: 3.2rem;
+  border: 1px solid var(--pitch-line);
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+  pointer-events: none;
 }
 
 .pitch-row {
@@ -683,9 +706,11 @@ table.sortable th[aria-sort='ascending']::after {
 }
 
 .chip {
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
   padding: 0.4rem 0.6rem;
   min-width: 7.5rem;
   text-align: center;
@@ -693,8 +718,10 @@ table.sortable th[aria-sort='ascending']::after {
   flex-direction: column;
 }
 
+/* Magenta er reservert kaptein, live og negative varsler. */
 .chip-captain {
-  border-color: var(--accent-2);
+  border-color: transparent;
+  box-shadow: 0 0 0 2px var(--accent-2), 0 2px 8px rgba(0, 0, 0, 0.35);
 }
 
 .chip-name {
