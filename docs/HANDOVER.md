@@ -14,7 +14,25 @@
   Røyk-testet lokalt (200 på / og /health, 404 OK) OG i Docker-container (health 200).
 - **Venter på bruker**: `gh auth login` — deretter opprette GitHub-repo, koble
   remote, pushe main + tag v0.1.0. Så setter bruker opp Coolify (oppskrift i README).
-- Neste milepæl: v0.2.0 /spillere (se ROADMAP.md).
+- **v0.2.0 PÅBEGYNT, avbrutt av bruker («Stopp»)**. Nøyaktig WIP-status:
+  - `src/routes/players.js` skrevet ✅ (rute ferdig, sortert på total_points)
+  - `views/players.ejs` skrevet ✅ (full tabell + filter-form med id-er:
+    filter-search/position/team/price/reset/count, tabell id=players-table,
+    th har data-type="num|text" + aria-sort; rader har data-name/pos/team/price)
+  - GJENSTÅR for v0.2.0:
+    1. Montere ruten i `src/server.js`: `import playersRouter from './routes/players.js'`
+       + `app.use('/spillere', playersRouter)` (FØR 404-handleren)
+    2. Legge til `<a href="/spillere">Spillere</a>` i nav i `views/layout.ejs`
+       (med aria-current-mønsteret som Dashboard-lenken)
+    3. `public/app.js`: modul for #players-table — kolonnesortering (klikk på th,
+       toggle asc/desc, parseFloat for data-type=num, oppdater aria-sort) +
+       filtrering (søk mot data-name, posisjon mot data-pos, lag mot data-team,
+       maks pris mot data-price, teller «Viser X av Y» i #filter-count, Nullstill)
+    4. `public/style.css`: stiler for .page-head, .filters (labels, inputs,
+       selects, button — mørkt tema-tokens finnes i :root) og th-sortering
+       (cursor pointer, pil-indikator på aria-sort)
+    5. Røyk-test /spillere, lint+test, CHANGELOG under [Unreleased] → [0.2.0],
+       huk av i ROADMAP, commit + tag v0.2.0 (+ bump package.json version)
 
 ## Brukerens beslutninger (fra brainstorming, IKKE re-spør)
 
@@ -42,6 +60,8 @@
 - 2026-08-19: «Si ifra hvis du trenger at jeg gjør noe»
 - 2026-08-19: «Ta notat av alt jeg sier» → denne loggen
 - 2026-08-19: «Kan jeg konstant se oppdatert todo-liste?» → ROADMAP.md hukes av fortløpende (ikke bare ved milepæl-slutt); bruker åpner den i VS Code markdown-preview
+- 2026-08-19: «Stopp» → v0.2.0-arbeid stoppet midt i (WIP-status over)
+- 2026-08-19: «Fiks deploy til Coolify og GitHub og auto-deploy først» → PRIORITET før v0.2.0 fortsetter: GitHub-repo + push + Coolify-oppsett. Blokkert på `gh auth login` fra bruker.
 
 ## Miljø
 

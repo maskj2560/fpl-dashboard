@@ -1,0 +1,79 @@
+<section class="page-head">
+  <h1>Spillere</h1>
+  <p class="dim">Klikk på en kolonne for å sortere. Filtrene virker uten sidelasting.</p>
+</section>
+
+<form class="filters" id="player-filters" onsubmit="return false">
+  <label>
+    Søk
+    <input type="search" id="filter-search" placeholder="Spillernavn …" autocomplete="off">
+  </label>
+  <label>
+    Posisjon
+    <select id="filter-position">
+      <option value="">Alle</option>
+      <% for (const [id, name] of Object.entries(POSITIONS)) { %>
+        <option value="<%= id %>"><%= name %></option>
+      <% } %>
+    </select>
+  </label>
+  <label>
+    Lag
+    <select id="filter-team">
+      <option value="">Alle</option>
+      <% for (const t of teams) { %>
+        <option value="<%= t.id %>"><%= t.name %></option>
+      <% } %>
+    </select>
+  </label>
+  <label>
+    Maks pris
+    <input type="number" id="filter-price" min="3.5" max="16" step="0.1" placeholder="f.eks. 8.0">
+  </label>
+  <button type="button" id="filter-reset">Nullstill</button>
+  <span class="dim" id="filter-count" role="status"></span>
+</form>
+
+<section class="card">
+  <div class="table-scroll">
+    <table class="data sortable" id="players-table">
+      <thead>
+        <tr>
+          <th data-type="text" aria-sort="none">Spiller</th>
+          <th data-type="text" aria-sort="none">Lag</th>
+          <th data-type="text" aria-sort="none">Pos</th>
+          <th data-type="num" class="num" aria-sort="none">Pris</th>
+          <th data-type="num" class="num" aria-sort="none">Form</th>
+          <th data-type="num" class="num" aria-sort="descending">Poeng</th>
+          <th data-type="num" class="num" aria-sort="none">PPG</th>
+          <th data-type="num" class="num" aria-sort="none">Eid&nbsp;%</th>
+          <th data-type="num" class="num" aria-sort="none">xG</th>
+          <th data-type="num" class="num" aria-sort="none">xA</th>
+          <th data-type="text" aria-sort="none">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (const p of players) { %>
+          <tr
+            data-name="<%= p.web_name.toLowerCase() %>"
+            data-pos="<%= p.element_type %>"
+            data-team="<%= p.team %>"
+            data-price="<%= p.now_cost / 10 %>"
+          >
+            <td><strong><%= p.web_name %></strong></td>
+            <td><%= teamsById.get(p.team)?.short_name ?? '?' %></td>
+            <td><%= POSITIONS_SHORT[p.element_type] %></td>
+            <td class="num"><%= formatPrice(p.now_cost) %></td>
+            <td class="num"><%= p.form %></td>
+            <td class="num"><strong><%= p.total_points %></strong></td>
+            <td class="num"><%= p.points_per_game %></td>
+            <td class="num"><%= p.selected_by_percent %></td>
+            <td class="num"><%= p.expected_goals %></td>
+            <td class="num"><%= p.expected_assists %></td>
+            <td><span class="status status-<%= p.status %>"><%= STATUS_LABELS[p.status] ?? p.status %></span></td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</section>
