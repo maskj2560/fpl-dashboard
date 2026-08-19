@@ -107,7 +107,7 @@ committet (og pushet hvis remote finnes).
       statstripe og kortlayout
 - [x] Verifisert lokalt: 111 tester, lint 0, alle ruter 200, kontrast 8/8 par
       over 4,5:1, Playwright 103 sjekker uten feil på fire viewports
-- [ ] Deployet og verifisert i prod (krever push + Cloudflare-purge)
+- [x] Deployet og verifisert i prod (push + Cloudflare-purge gjort 2026-08-20)
 
 ## Senere / idéer (ikke planlagt)
 

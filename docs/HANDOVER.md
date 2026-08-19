@@ -3,13 +3,32 @@
 > Levende overleveringsfil. Oppdateres ved hver milepæl og ved arbeidsstans.
 > Ny AI-økt: les denne + CLAUDE.md + ROADMAP.md, fortsett der «Neste steg» sier.
 
-**Sist oppdatert:** 2026-08-20 (økt 6, **QA-rettelsene v1.1.1 ferdige lokalt — venter på push-klarsignal**)
+**Sist oppdatert:** 2026-08-20 (økt 7, **v1.1.1 ER I PROD — deployet, purget og verifisert**)
 
-## v1.1.1 — QA-rettelsene er ferdige lokalt (2026-08-20)
+## v1.1.1 ER I PROD (2026-08-20 ~00:45)
 
-Branch `fix/qa-v1.1.1` (fra `main`), 18 commits (16 funn-commits, release og
-en etterfølgende retting av P1-4), lokal tag `v1.1.1` på siste commit. **Ikke pushet.** Push til `main` auto-deployer til prod, så det
-venter på klarsignal fra Marius.
+Branch `fix/qa-v1.1.1` merget til `main` med `--no-ff` og pushet 00:36.
+Coolify-deployen var ute 00:37 (forsiden viste `v1.1.1`). Marius kjørte
+Cloudflare «Purge Everything» på sonen `marsk.no` via Claude in Chrome og
+bekreftet kvitteringen + at Matchday-temaet vises. Tag `v1.1.1` er pushet.
+
+### Verifisert i prod (kommandoer kjørt 2026-08-20 ~00:45, output sett)
+
+- Alle ti ruter 200, ukjent sti 404
+- `/health`: `ai:true, aiModel:claude-sonnet-5, discord:true, teamId:true, leagues:1`
+- Footeren viser `v1.1.1` på alle sju HTML-sidene
+- `?v=d5196f5e` i prod-HTML matcher sha1 av servert style.css+app.js
+  (felles hash for begge filer — by design, `src/server.js`)
+- Versjonerte assets: `Cache-Control: public, max-age=31536000, immutable`,
+  `cf-cache-status: HIT`
+- Uversjonerte assets: `cf-cache-status: MISS` → `REVALIDATED` (aldri `HIT`)
+  — purgen tok, edge revaliderer mot origin hver gang
+- **Kjent avvik (ufarlig):** Cloudflare skriver om origins `no-cache` til
+  `Cache-Control: max-age=14400` på uversjonerte assets (trolig
+  «Browser Cache TTL»-innstillingen i Cloudflare, 4 timer). Ingen HTML
+  refererer de uversjonerte URL-ene lenger, og edge revaliderer alltid, så
+  effekten er ~null. Valgfritt: sett Browser Cache TTL til «Respect Existing
+  Headers» i Cloudflare. IKKE endret noe — venter på Marius.
 
 ### Hva som er gjort
 
@@ -43,28 +62,26 @@ emnelinjen. Se CHANGELOG `[1.1.1]` for brukersynlig liste. Kort:
   0 under menyen. /spillere: 11 kolonner × 2 retninger sorterer riktig,
   kombinerte filtre og nullstill virker.
 
-### IKKE verifisert (krever noe utenfor denne økten)
+### Fortsatt IKKE verifisert (neste steg)
 
-- **Cloudflare-oppførselen i prod** — krever deploy + purge
-- **«Spør AI om råd»-stien på /lag** — ikke rørt, rendres ikke før sesongstart
-- **Auto-brief til Discord** — koden er endret (`sanitizeBriefText`), men
-  ingen ny webhook-test er kjørt i denne økten
-- **sanitizeBriefText mot en fersk AI-brief** — den første versjonen fjernet to
-  korrekte setninger i en ekte kjøring (se loggen i økta). Retting og
-  regresjonstester er på plass, men kontrollen er ikke kjørt mot en ny ekte
-  generering, siden det ville kostet et tredje AI-kall
-
-### Neste steg (krever Marius)
-
-1. Klarsignal til `git push origin fix/qa-v1.1.1` + merge til `main`
-   (eller push av `main` direkte) — det utløser Coolify-deploy
-2. Etter deploy: **Cloudflare-purge én gang** (se `DEPLOY.md`) for å rydde
-   gamle uversjonerte `/style.css`- og `/app.js`-oppføringer
-3. Verifiser i prod med kommandoene i `DEPLOY.md`
-4. Push av tag `v1.1.1` når prod er bekreftet
-5. P2-7: ligaen heter «Var Har Skylda» fordi FPL-API-et leverer den slik
-   (verifisert mot `entry/5330646/`). Ingen kodefeil — endre navnet i
-   FPL-UI-et hvis det skal se annerledes ut
+- **«Spør AI om råd»-stien på /lag** — ikke rørt, rendres ikke før
+  sesongstart. Testes i en planlagt økt (koster penger per klikk).
+- **Auto-briefen til Discord i kveld** — postes ~19:30 torsdag 20. august
+  (24 t før GW1-deadline fredag 21. august 19:30). v1.1.1-koden med tidsfakta
+  og `sanitizeBriefText` er i prod i god tid. Marius sjekker Discord ~19:30.
+- **sanitizeBriefText mot en fersk AI-brief** — den første versjonen fjernet
+  to korrekte setninger i en ekte kjøring. Retting og regresjonstester er på
+  plass, men ikke kjørt mot en ny ekte generering. Kveldens auto-brief er
+  første ekte test.
+- **filterSummaryPoints mot ekte nyhetspunkter** — samme mønster: tester
+  grønne, ikke verifisert mot en fersk AI-generering i prod.
+- **Sesongstart-verifisering (M4)** — tomtilstander → ekte data etter
+  GW1-deadline fredag 21. august 19:30. Egen verifiseringsplan bestilles
+  fra Fable (prompt levert til Marius i økt 7).
+- **Mobilvisning på ekte telefon + skjermbilder til README (M5)**
+- P2-7 (til info): ligaen heter «Var Har Skylda» fordi FPL-API-et leverer
+  den slik (verifisert mot `entry/5330646/`). Ingen kodefeil — endres i
+  FPL-UI-et hvis ønskelig; Marius er admin for liga-id 1397750.
 
 ### Logg over beskjeder fra bruker
 
@@ -73,18 +90,25 @@ emnelinjen. Se CHANGELOG `[1.1.1]` for brukersynlig liste. Kort:
 - 2026-08-20: «fortsett der det kuttet» / «keep going where you left off»
   (to ganger under økten). Handling: arbeidet fortsatte uavbrutt fra
   P1-7-målingen; ingenting gikk tapt.
+- 2026-08-20 (økt 7): kjøreprompt for deploy av v1.1.1 gitt
+  (`docs/neste-okt-prompt-deploy-v111.md`). Handling: Fase 1–4 utført —
+  merge, test/lint grønt, push, deploy bekreftet, Cloudflare-prompt levert,
+  prod verifisert etter purge-bekreftelse, tag pushet, docs oppdatert.
+- 2026-08-20 (økt 7): «Jeg vet ikke hvilken prompt … kanskje samme prompt
+  idk» (fila `docs/neste-okt-prompt-deploy-v111.md` åpnet i IDE-en midt i
+  økten). Handling: bekreftet at det var samme prompt som økten allerede
+  kjørte — ingen handling nødvendig.
+- 2026-08-20 (økt 7): «Purgen er gjennomført … Purge request successfully
+  received» + bekreftet Matchday-tema (mørkt, grønn/magenta) på
+  fpl.marsk.no. Handling: Fase 3-verifiseringen kjørt, deretter Fase 4.
 
 ## Status
 
-- **NESTE ØKT GJØR DETTE:** utfør QA-retteplanen for v1.1.1. Kjøreprompt:
-  `docs/neste-okt-prompt-qa-v111.md`. Selve planen (fasit for løsningsdesign):
-  `C:\Users\mariu\.claude\plans\oppdrag-rett-opp-foamy-fog.md`. Bakgrunn: ekstern
-  QA av v1.1.0 fant 17 funn (P0-1…P2-8), viktigst at Cloudflare serverer utdatert
-  CSS/JS (P0-1) slik at v1.1.0-designet er usynlig i prod. Branch `fix/qa-v1.1.1`,
-  én commit per funn, **ingen push/deploy uten klarsignal fra Marius**.
-  Avklart i økt 5: P1-5 = strategi B (vis ingress), Playwright kun i scratchpad,
-  /health skal telle oppløste ligaer, P2-7 er FPL-API-ets egen normalisering
-  («Var Har Skylda» leveres slik fra API-et — ingen kodeendring).
+- **NESTE ØKT GJØR DETTE:** sesongstart-verifisering (M4). GW1-deadline er
+  fredag 21. august 19:30; etter den bytter sidene fra tomtilstand til ekte
+  data. Marius bestiller en detaljert verifiseringsplan fra Fable med
+  prompten levert i økt 7 (se chat-loggen). QA-retteplanen for v1.1.1 er
+  FERDIG og i prod (se toppen av denne filen).
 
 - **AKTIV implementeringsplan: `docs/superpowers/plans/2026-08-19-fpl-v101-v110-verifisering-og-ui-makeover.md`**
   — Del A (M1: AI + Discord i drift, v1.0.1), M2 (view-render-tester),
@@ -153,8 +177,10 @@ emnelinjen. Se CHANGELOG `[1.1.1]` for brukersynlig liste. Kort:
   (`/`, `/spillere`, `/lag`, `/liga`, `/brief`, `/live`, `/nyheter`, `/health`,
   `/api/brief.json`, `/api/live.json`).
 - **Åpne oppgaver som krever bruker (ikke feil i koden):**
-  1. `ANTHROPIC_API_KEY` i Coolify → slår på AI-nyheter, AI-brief og AI-rådgiver
-  2. `DISCORD_WEBHOOK_URL` i Coolify → slår på auto-brief før deadline
+  1. ~~`ANTHROPIC_API_KEY` i Coolify~~ — **GJORT** (2026-08-19, `/health`
+     viser `ai:true`)
+  2. ~~`DISCORD_WEBHOOK_URL` i Coolify~~ — **GJORT** (2026-08-19, `/health`
+     viser `discord:true`)
   3. Bekreft mobilvisningen på ekte telefon
   4. Skjermbilder til README (krever nettleser)
 - **AI-status:** all AI er av i prod fram til `ANTHROPIC_API_KEY` settes i
@@ -367,8 +393,8 @@ funksjoner som er på (aldri verdiene). Bruk det først neste gang noe
 
 ## Åpne beslutninger / kjente feil
 
-- 17 QA-funn fra ekstern kvalitetssikring av v1.1.0 (P0-1…P2-8) — rettes i neste
-  økt etter planen i `C:\Users\mariu\.claude\plans\oppdrag-rett-opp-foamy-fog.md`.
-  Viktigst: P0-1 (Cloudflare cacher utdatert CSS/JS — v1.1.0 usynlig i prod).
-- Cloudflare-purge etter deploy av v1.1.1 må gjøres manuelt av Marius
-  (beskrives i DEPLOY.md som neste økt lager).
+- ~~17 QA-funn (P0-1…P2-8)~~ — RETTET i v1.1.1, i prod 2026-08-20.
+- ~~Cloudflare-purge~~ — GJORT 2026-08-20 (Marius, via Claude in Chrome).
+- Cloudflare skriver om `no-cache` til `max-age=14400` på uversjonerte
+  assets (trolig Browser Cache TTL = 4 t). Ufarlig — se verifiserings-
+  seksjonen øverst. Valgfri opprydding i Cloudflare-innstillingene.
