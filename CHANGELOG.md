@@ -7,6 +7,11 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+- **Tabellhodet legger seg ikke lenger under toppmenyen.** Tabellene på
+  dashbordet, /liga og /live flyter nå med siden i stedet for å ha egen
+  vertikal scroll. Den lange spillertabellen beholder scrollboksen, men hele
+  boksen festes under menyen (`--topbar-h`) med plass til footeren
+
 ### Fixed
 
 - **Assets versjoneres med innholdshash** (`/style.css?v=<hash>`). Cloudflare

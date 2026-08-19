@@ -54,6 +54,9 @@
   --space-4: 1rem;
   --space-5: 1.5rem;
   --space-6: 2.5rem;
+  /* Høyden på den sticky topbaren. Alt annet som festes til toppen må ligge
+     under denne, ellers legger menyen seg over innholdet (QA-funn P0-2). */
+  --topbar-h: 57px;
   --radius: 12px;
   --radius-sm: 8px;
   --pad: 1rem;
@@ -161,6 +164,10 @@ a:hover {
 }
 
 @media (max-width: 640px) {
+  :root {
+    --topbar-h: 50px;
+  }
+
   .topbar {
     gap: var(--space-3);
     padding: 0.55rem 0.9rem;
@@ -371,13 +378,24 @@ footer {
 
 /* ---------- Tabeller ---------- */
 
+/* Standard: bare vannrett scroll. Uten indre vertikal scroll kan tabellhodet
+   aldri bli hengende under toppmenyen — siden scroller som vanlig. */
 .table-scroll {
-  overflow: auto;
-  max-height: 75vh;
+  overflow-x: auto;
 }
 
-/* Tabellhodet blir stående når innholdet scroller inne i kortet. */
-.table-scroll table.data thead th {
+/* Varianten for lange tabeller (/spillere, 500+ rader): hele scrollboksen
+   festes under toppmenyen, og tabellhodet festes til toppen av boksen.
+   Høyden må levne plass til footeren, ellers skyves boksen opp under menyen
+   når man scroller helt til bunns. */
+.table-scroll--pinned {
+  position: sticky;
+  top: var(--topbar-h);
+  overflow: auto;
+  max-height: min(75vh, calc(100dvh - var(--topbar-h) - 13rem));
+}
+
+.table-scroll--pinned table.data thead th {
   position: sticky;
   top: 0;
   background: var(--surface);
