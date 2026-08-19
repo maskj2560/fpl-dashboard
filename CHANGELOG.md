@@ -7,6 +7,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+- **FDR-4-ruten har lesbar tekst.** Fargen er mørknet fra `#d24069` til
+  `#bd3a5f`, som gir 4,6:1 mot den hvite teksten og fortsatt er tydelig skilt
+  fra FDR-5
+
 - **Tabelloverskriftene er lesbare.** De sto i `--text-faint` (3,8:1 mot
   kortbakgrunnen) og er flyttet til det nye tokenet `--dim-strong` (5,3:1).
   `--text-faint` hadde ingen andre brukere og er fjernet
