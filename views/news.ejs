@@ -38,6 +38,7 @@
     <% for (const i of items) { %>
       <li>
         <a href="<%= safeLink(i.link) %>" rel="noopener" target="_blank"><%= i.title %></a>
+        <% if (i.description) { %><p class="news-lead"><%= i.description %></p><% } %>
         <span class="dim"><%= i.source %><% if (i.published) { %> · <%= new Date(i.published).toLocaleString('nb-NO', { timeZone: 'Europe/Oslo' }) %><% } %></span>
       </li>
     <% } %>

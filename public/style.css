@@ -998,6 +998,15 @@ table.sortable th[aria-sort='ascending']::after {
   color: var(--accent);
 }
 
+/* Ingressen fra RSS-en. Den gjør AI-punktene over etterprøvbare mot det
+   leseren faktisk ser (QA-funn P1-5). */
+.news-list .news-lead {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
 .news-list li:last-child {
   border-bottom: none;
 }

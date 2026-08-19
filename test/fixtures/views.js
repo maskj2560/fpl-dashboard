@@ -189,7 +189,13 @@ export const news = {
   aiEnabled: true,
   generatedAt: Date.parse('2026-08-19T10:00:00Z'),
   points: ['**Salah** scoret to mot ARS'],
-  items: [{ title: 'Salah scoret to', link: 'https://example.com/sak', source: 'BBC Sport', published: '2026-08-19T09:00:00Z' }],
+  items: [{
+    title: 'Salah scoret to',
+    link: 'https://example.com/sak',
+    description: 'Liverpool vant 3–0 på Anfield.',
+    source: 'BBC Sport',
+    published: '2026-08-19T09:00:00Z',
+  }],
 };
 
 // Uten nøkkel og uten feed-svar: ingen AI-punkter, tom saksliste,

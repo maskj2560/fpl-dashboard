@@ -7,6 +7,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+- **AI-nyhetspunktene er etterprøvbare.** Sakene på /nyheter viser nå ingressen
+  fra RSS-en, prompten forbyr detaljer som ikke står i sakene, og punkter som
+  ikke deler et eneste egennavn med noen sak forkastes før de vises
+
 - **AI-briefen motsier ikke lenger kampdataene.** Modellen regnet selv ut hva
   som ble spilt før deadline og bommet. Briefen beregner nå fasiten
   (`beforeDeadline` per kamp), sender den til modellen som forhåndsberegnede

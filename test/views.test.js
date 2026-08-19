@@ -27,6 +27,7 @@ const cases = [
   ['live', fx.live, 'live-root'],
   ['live', fx.liveEmpty, 'Ingen aktiv gameweek'],
   ['news', fx.news, 'FPL-nyheter'],
+  ['news', fx.news, 'Liverpool vant 3–0 på Anfield.'],
   ['news', fx.newsEmpty, 'Fant ingen saker'],
   ['no-team', {}, 'FPL_TEAM_ID'],
   ['404', {}, '404'],
