@@ -201,21 +201,48 @@ footer {
 /* ---------- Hero: deadline-scoreboard (signaturelementet) ---------- */
 
 .hero {
-  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, var(--surface) 0%, var(--surface-2) 70%, #241a3d 100%);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 1.75rem var(--pad) 2rem;
-  margin-bottom: 1.5rem;
+  padding: var(--space-6) var(--pad);
+  margin-bottom: var(--space-5);
   text-align: center;
 }
 
+/* Hairline i bunnen: signaturen som gjør heroen til et scoreboard. */
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+}
+
 .eyebrow {
-  margin: 0 0 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-3);
   text-transform: uppercase;
   letter-spacing: 0.14em;
   font-size: 0.78rem;
   font-weight: 600;
   color: var(--accent);
+}
+
+.gw-badge {
+  display: inline-block;
+  background: var(--surface-3);
+  border: 1px solid var(--border-strong);
+  border-radius: 99px;
+  padding: 0.15rem 0.7rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text);
 }
 
 .hero h1 {
@@ -225,8 +252,17 @@ footer {
 }
 
 .hero-date {
-  margin: 0.35rem 0 1.25rem;
+  margin: 0 0 var(--space-5);
   color: var(--text-dim);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .countdown {
@@ -244,11 +280,11 @@ footer {
 .countdown .val {
   font-family: var(--font-display);
   font-variant-numeric: tabular-nums;
-  font-size: clamp(2.2rem, 8vw, 3.6rem);
+  font-size: clamp(2.6rem, 9vw, 4.2rem);
   font-weight: 800;
   letter-spacing: -0.03em;
   color: var(--text);
-  line-height: 1.1;
+  line-height: 1.05;
 }
 
 .countdown .lbl {
@@ -259,9 +295,10 @@ footer {
 }
 
 .deadline-passed {
-  font-size: 1.2rem;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
   color: var(--accent-2);
-  font-weight: 600;
+  font-weight: 700;
   margin: 0;
 }
 
@@ -269,9 +306,9 @@ footer {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
-  gap: 1rem;
-  margin-bottom: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
 }
 
 .card {
@@ -283,12 +320,19 @@ footer {
 }
 
 .card-wide {
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-4);
 }
 
+/* Ett korthode-mønster på alle sider: liten majuskel-etikett til venstre,
+   plass til et tall eller merke til høyre. */
 .card h2 {
-  margin: 0 0 0.75rem;
-  font-size: 0.82rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-display);
+  font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -303,29 +347,38 @@ footer {
 /* ---------- Tabeller ---------- */
 
 .table-scroll {
-  overflow-x: auto;
+  overflow: auto;
+  max-height: 75vh;
+}
+
+/* Tabellhodet blir stående når innholdet scroller inne i kortet. */
+.table-scroll table.data thead th {
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  z-index: 1;
 }
 
 table.data {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   white-space: nowrap;
 }
 
 table.data th {
   text-align: left;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--text-dim);
+  color: var(--text-faint);
   font-weight: 600;
-  padding: 0.4rem 0.6rem;
-  border-bottom: 1px solid var(--border);
+  padding: 0.35rem 0.6rem;
+  border-bottom: 1px solid var(--border-strong);
 }
 
 table.data td {
-  padding: 0.45rem 0.6rem;
+  padding: 0.5rem 0.6rem;
   border-bottom: 1px solid var(--border);
   vertical-align: top;
 }

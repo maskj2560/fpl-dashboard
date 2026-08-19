@@ -1,7 +1,7 @@
 <% if (deadlineEvent) { %>
   <section class="hero">
-    <p class="eyebrow"><%= deadlineEvent.name %></p>
-    <h1>Neste deadline</h1>
+    <h1 class="sr-only">Neste deadline — <%= deadlineEvent.name %></h1>
+    <p class="eyebrow"><span class="gw-badge"><%= deadlineEvent.name %></span> Neste deadline</p>
     <p class="hero-date"><%= formatDateTime(deadlineEvent.deadline_time) %></p>
     <div class="countdown" data-deadline="<%= deadlineEvent.deadline_time %>">
       <div class="unit"><span class="val" data-unit="d">–</span><span class="lbl">dager</span></div>
