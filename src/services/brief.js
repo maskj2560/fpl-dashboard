@@ -22,7 +22,13 @@ const timeFmt = new Intl.DateTimeFormat('nb-NO', {
   timeZone: config.tz,
 });
 
-export function groupFixturesByDay(fixtures, teamsById) {
+/**
+ * Grupperer kampene per dag. `deadline` (ISO) er valgfri: er den satt, får
+ * hver kamp `beforeDeadline`, slik at ingen — heller ikke språkmodellen —
+ * trenger å regne seg fram til hva som spilles før eller etter deadline.
+ */
+export function groupFixturesByDay(fixtures, teamsById, deadline = null) {
+  const deadlineMs = deadline ? new Date(deadline).getTime() : null;
   const sorted = [...fixtures]
     .filter((f) => f.kickoff_time)
     .sort((a, b) => new Date(a.kickoff_time) - new Date(b.kickoff_time));
@@ -39,6 +45,8 @@ export function groupFixturesByDay(fixtures, teamsById) {
       home: teamsById.get(f.team_h)?.name ?? '?',
       away: teamsById.get(f.team_a)?.name ?? '?',
       kickoff: timeFmt.format(date),
+      kickoffIso: f.kickoff_time,
+      beforeDeadline: deadlineMs === null ? null : date.getTime() < deadlineMs,
     });
   }
   return days;
@@ -95,6 +103,12 @@ export function buildBrief({ bootstrap, fixtures, myTeam = null }) {
     };
   }
 
+  const fixturesByDay = groupFixturesByDay(gwFixtures, teamsById, upcoming?.deadline_time ?? null);
+  const fixturesBeforeDeadline = fixturesByDay
+    .flatMap((d) => d.matches)
+    .filter((m) => m.beforeDeadline)
+    .map((m) => `${m.home}–${m.away} (${m.kickoff})`);
+
   return {
     generatedAt: new Date().toISOString(),
     gameweek: upcoming
@@ -107,7 +121,8 @@ export function buildBrief({ bootstrap, fixtures, myTeam = null }) {
       : null,
     injuries,
     captains,
-    fixturesByDay: groupFixturesByDay(gwFixtures, teamsById),
+    fixturesByDay,
+    fixturesBeforeDeadline,
     mine,
   };
 }

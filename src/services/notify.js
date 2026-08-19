@@ -5,7 +5,7 @@ import config from '../config.js';
 import { getBootstrap } from './fplClient.js';
 import { nextEvent } from './analysis.js';
 import { assembleBrief } from '../routes/brief.js';
-import { buildBriefPrompt } from './prompts.js';
+import { buildBriefPrompt, sanitizeBriefText } from './prompts.js';
 import * as ai from './ai.js';
 
 const CHECK_INTERVAL = 6 * 60 * 60_000;
@@ -69,7 +69,7 @@ async function send(event) {
         prompt: buildBriefPrompt(brief),
         maxTokens: 4000,
       });
-      text = aiBrief?.text ?? null;
+      text = aiBrief?.text ? sanitizeBriefText(aiBrief.text, brief) : null;
     }
     if (!text) text = dataBriefText(brief);
 

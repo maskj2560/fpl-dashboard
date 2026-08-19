@@ -37,11 +37,11 @@ export function getNewsItems() {
     'news-items',
     async () => {
       const results = await Promise.allSettled(feeds.map(fetchFeed));
-      return results
+      const sorted = results
         .filter((r) => r.status === 'fulfilled')
         .flatMap((r) => r.value)
-        .sort((a, b) => new Date(b.published ?? 0) - new Date(a.published ?? 0))
-        .slice(0, 25);
+        .sort((a, b) => new Date(b.published ?? 0) - new Date(a.published ?? 0));
+      return dedupeNewsItems(sorted).slice(0, 25);
     },
     { ttl: 15 * MIN },
   );
@@ -51,7 +51,7 @@ export function buildNewsPrompt(items) {
   const lines = items
     .slice(0, 15)
     .map((i) => `- ${i.title}${i.description ? ` — ${i.description}` : ''}`);
-  return `Her er dagens fotballnyheter fra britiske kilder:\n\n${lines.join('\n')}\n\nOppsummer det som er relevant for Fantasy Premier League på norsk, som maks 8 korte punkter. Start hvert punkt med «- ». Sett spillernavn i fet med **navn**. Fokuser på skader, form, overganger og startplass-nytt. Ingen innledning eller avslutning — kun punktene.`;
+  return `Her er dagens fotballnyheter fra britiske kilder:\n\n${lines.join('\n')}\n\nOppsummer det som er relevant for Fantasy Premier League på norsk, som maks 8 korte punkter. Start hvert punkt med «- ». Sett spillernavn i fet med **navn**. Fokuser på skader, form, overganger og startplass-nytt. Bruk kun personer, klubber og hendelser som står i sakene over — ingen overgangstype, beløp, kontraktslengde eller andre detaljer som ikke er nevnt der. Er du usikker på et navn, utelat punktet. Ingen innledning eller avslutning — kun punktene.`;
 }
 
 export async function getNews() {
@@ -66,7 +66,8 @@ export async function getNews() {
       maxTokens: 2000,
     });
   }
-  return { items, summary };
+  const points = filterSummaryPoints(summaryPoints(summary), items);
+  return { items, summary, points };
 }
 
 /** '- **Haaland** er tilbake' → [{html-sikre segmenter}] gjøres i view; her: del i punkter. */
@@ -76,4 +77,85 @@ export function summaryPoints(summary) {
     .split('\n')
     .map((l) => l.replace(/^[-•*]\s*/, '').trim())
     .filter(Boolean);
+}
+// --- P1-6: RSS-duplikater --------------------------------------------------
+// De samme sakene dukker opp flere ganger, dels fra to feeder, dels fra samme
+// feed med ulike sporingsparametre i lenken.
+
+const TRACKING = /^(utm_|at_|ns_|cmp$|CMP$)/;
+
+/** Lenke uten hash og sporingsparametre, uten skråstrek til slutt. */
+export function normalizeLink(link) {
+  if (!link) return '';
+  try {
+    const url = new URL(link);
+    url.hash = '';
+    for (const key of [...url.searchParams.keys()]) {
+      if (TRACKING.test(key)) url.searchParams.delete(key);
+    }
+    return url.toString().replace(/\/+$/, '').toLowerCase();
+  } catch {
+    return link.trim().replace(/\/+$/, '').toLowerCase();
+  }
+}
+
+const normalizeTitle = (title) => String(title ?? '').trim().toLowerCase().replace(/\s+/g, ' ');
+
+/** Fjerner gjentakelser av samme sak. Første forekomst (nyeste) beholdes. */
+export function dedupeNewsItems(items) {
+  const seen = new Set();
+  const out = [];
+  for (const item of items) {
+    const link = normalizeLink(item.link);
+    const title = normalizeTitle(item.title);
+    if ((link && seen.has(`l:${link}`)) || (title && seen.has(`t:${title}`))) continue;
+    if (link) seen.add(`l:${link}`);
+    if (title) seen.add(`t:${title}`);
+    out.push(item);
+  }
+  return out;
+}
+
+// --- P1-5: etterkontroll av AI-punktene ------------------------------------
+// Modellen la til detaljer som ikke sto i sakene (overgangstype, beløp,
+// kontraktslengde) og navn som ikke forekom noe sted. Et punkt beholdes bare
+// når det deler minst ett egennavn med en av sakene som faktisk vises.
+
+// Vanlige norske ord som også skrives med stor forbokstav i starten av en
+// setning — de sier ingenting om hvilken sak punktet bygger på.
+const NOT_A_NAME = new Set([
+  'Han', 'Hun', 'Hans', 'Hennes', 'De', 'Den', 'Det', 'Dette', 'Disse', 'Der',
+  'Etter', 'Før', 'Ingen', 'Flere', 'Ny', 'Nye', 'Mange', 'Ifølge', 'Ventes',
+  'Ute', 'Inne', 'Sjekk', 'Vurder', 'Merk', 'Bekreftet', 'Usikker', 'Skadet',
+  'Tilbake', 'Klar', 'Fortsatt', 'Ingenting', 'Både', 'Samtidig', 'Men', 'Og',
+]);
+
+/** Egennavnene i en tekst: **fet**-markerte navn og ord med stor forbokstav. */
+export function properNames(text) {
+  const bold = [...String(text).matchAll(/\*\*(.+?)\*\*/g)].flatMap((m) => m[1].split(/\s+/));
+  const capitalised = String(text).match(/\p{Lu}[\p{L}'’-]{2,}/gu) ?? [];
+  return [...new Set([...bold, ...capitalised])]
+    .map((w) => w.replace(/[^\p{L}'’-]/gu, ''))
+    .filter((w) => w.length > 2 && !NOT_A_NAME.has(w));
+}
+
+/**
+ * Beholder bare punkter som er etterprøvbare mot sakene på siden: minst ett
+ * egennavn i punktet må forekomme i en tittel eller ingress. Punkter uten
+ * egennavn er ikke etterprøvbare og forkastes også.
+ */
+export function filterSummaryPoints(points, items) {
+  if (!items?.length) return points;
+  const corpus = items.map((i) => `${i.title} ${i.description ?? ''}`).join(' ').toLowerCase();
+  const dropped = [];
+  const kept = points.filter((point) => {
+    const names = properNames(point);
+    if (names.some((n) => corpus.includes(n.toLowerCase()))) return true;
+    dropped.push(point);
+    return false;
+  });
+  if (dropped.length) {
+    console.warn('Nyhetsoppsummering: forkastet %d punkt uten kilde:', dropped.length, dropped);
+  }
+  return kept;
 }

@@ -10,9 +10,10 @@ import {
   fdrMatrix,
   formatPrice,
   POSITIONS_SHORT,
+  translateFplNews,
 } from '../services/analysis.js';
 import { formatDateTime, formatNumber } from '../services/format.js';
-import { getNews, summaryPoints } from '../services/news.js';
+import { getNews } from '../services/news.js';
 
 const router = Router();
 
@@ -47,13 +48,14 @@ router.get('/', async (req, res, next) => {
       boughtMost: mostTransferredIn(elements),
       soldMost: mostTransferredOut(elements),
       matrix: fdrMatrix(teams, fixtures, fromGw, 5),
-      newsPoints: summaryPoints(news?.summary).slice(0, 3),
+      newsPoints: (news?.points ?? []).slice(0, 3),
       teamsById,
       STATUS_LABELS,
       POSITIONS_SHORT,
       formatPrice,
       formatDateTime,
       formatNumber,
+      translateFplNews,
     });
   } catch (err) {
     next(err);

@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
+import fsp from 'node:fs/promises';
 import ejs from 'ejs';
 import * as fx from './fixtures/views.js';
 
@@ -11,18 +12,23 @@ function renderView(name, locals) {
 
 const cases = [
   ['dashboard', fx.dashboard, 'Neste deadline'],
+  ['dashboard', fx.dashboard, 'Kneskade – 25 % sjanse for spilletid'],
   ['dashboard', fx.dashboardEmpty, 'Ingen kommende deadline'],
+  ['dashboard', fx.dashboardEmpty, 'Formtallene nullstilles'],
+  ['dashboard', fx.dashboardEmpty, 'Ingen overganger er registrert'],
   ['team', fx.team, 'Marius XI'],
   ['team', fx.teamEmpty, 'Fant ingen lagoppstilling'],
   ['players', fx.players, 'players-table'],
   ['league', fx.league, 'Differensialer'],
   ['league', fx.leagueEmpty, 'Fant ingen private miniligaer'],
+  ['league', fx.leagueNoRows, 'Ligatabellen er tom fram til første runde'],
   ['league', fx.leagueEmptyDiff, 'Differensialer'],
   ['brief', fx.brief, 'Gameweek'],
   ['brief', fx.briefEmpty, 'Gameweek'],
   ['live', fx.live, 'live-root'],
   ['live', fx.liveEmpty, 'Ingen aktiv gameweek'],
   ['news', fx.news, 'FPL-nyheter'],
+  ['news', fx.news, 'Liverpool vant 3–0 på Anfield.'],
   ['news', fx.newsEmpty, 'Fant ingen saker'],
   ['no-team', {}, 'FPL_TEAM_ID'],
   ['404', {}, '404'],
@@ -42,7 +48,8 @@ for (const [name, locals, marker] of cases) {
 // ødelagt aria-current slapp gjennom. Den rendres derfor her også.
 const layoutLocals = (path) => ({
   body: '<p>innhold</p>', title: 'Test', path,
-  gameUpdating: false, version: '1.0.1', startedAt: '19.08.2026, 21:00',
+  gameUpdating: false, version: '1.0.1', assetVersion: 'a1b2c3d4',
+  startedAt: '19.08.2026, 21:00',
 });
 
 const NAV = [
@@ -69,6 +76,68 @@ test('layout.ejs viser 503-banneret bare når spillet oppdateres', async () => {
   const med = await renderView('layout', { ...layoutLocals('/'), gameUpdating: true });
   assert.ok(!uten.includes('FPL oppdaterer spillet'));
   assert.ok(med.includes('FPL oppdaterer spillet'));
+});
+
+// P0-1: uversjonerte asset-URL-er lot Cloudflare servere gammel CSS/JS etter
+// deploy. Layouten skal aldri referere /style.css eller /app.js uten ?v=.
+// P1-2: ingressen ber brukeren klikke på et lag — den skal ikke vises når
+// ingen liga har rader å klikke på.
+test('league.ejs skjuler klikk-ingressen når alle ligatabeller er tomme', async () => {
+  const tom = await renderView('league', fx.leagueNoRows);
+  const full = await renderView('league', fx.league);
+  assert.ok(!tom.includes('Klikk på et lag'), 'ingressen vises på tom ligatabell');
+  assert.ok(full.includes('Klikk på et lag'), 'ingressen mangler når tabellen har rader');
+});
+
+// P2-5 og P2-6: uten tropp finnes verken poengsum, rank eller gameweek —
+// statstripa viste likevel tall fra forrige sesong, og undertittelen «Gameweek –».
+test('team.ejs viser – i hele statstripa når troppen mangler', async () => {
+  const html = await renderView('team', fx.teamEmpty);
+  const stats = html
+    .split('<span class="stat-val">')
+    .slice(1)
+    .map((chunk) => chunk.split('<')[0].trim());
+
+  assert.equal(stats.length, 5);
+  assert.deepEqual(stats, ['–', '–', '–', '–', '–']);
+});
+
+test('team.ejs utelater gameweek-leddet i undertittelen når runden mangler', async () => {
+  const tom = await renderView('team', fx.teamEmpty);
+  const full = await renderView('team', fx.team);
+
+  assert.ok(!tom.includes('Gameweek'), 'gameweek-leddet vises uten runde');
+  assert.ok(full.includes('Gameweek'), 'gameweek-leddet mangler når runden finnes');
+});
+
+// P2-4: fullnavnet i FDR-matrisen skjules visuelt på mobil, men må bli stående
+// i markupen for skjermlesere.
+test('dashboard.ejs merker fullnavnet i FDR-matrisen', async () => {
+  const html = await renderView('dashboard', fx.dashboard);
+
+  assert.ok(html.includes('team-name-full'), 'fullnavnet mangler klassen');
+  assert.ok(html.includes('Arsenal'), 'fullnavnet er fjernet fra markupen');
+});
+
+test('layout.ejs versjonerer css og js med innholdshash', async () => {
+  const html = await renderView('layout', layoutLocals('/'));
+  assert.ok(html.includes('href="/style.css?v=a1b2c3d4"'), 'css mangler ?v=');
+  assert.ok(html.includes('src="/app.js?v=a1b2c3d4"'), 'js mangler ?v=');
+  assert.ok(!html.includes('"/style.css"'), 'uversjonert /style.css i layout');
+  assert.ok(!html.includes('"/app.js"'), 'uversjonert /app.js i layout');
+});
+
+test('layout.ejs preloader fonten med samme ?v som @font-face i style.css', async () => {
+  const html = await renderView('layout', layoutLocals('/'));
+  const css = await fsp.readFile(path.join('public', 'style.css'), 'utf8');
+  const pick = (text, start, end) => {
+    const i = text.indexOf(start);
+    return i === -1 ? null : text.slice(i + start.length, text.indexOf(end, i + start.length));
+  };
+  const preload = pick(html, 'rel="preload" href="', '"');
+  const face = pick(css, "src: url('", "'");
+  assert.equal(preload, face, 'preload og @font-face peker på ulike URL-er');
+  assert.ok(preload?.includes('?v='), 'fonten er ikke versjonert');
 });
 
 test('live.ejs escaper < i lagnavn inne i script-blokken', async () => {

@@ -4,7 +4,7 @@
 
 @font-face {
   font-family: 'Archivo';
-  src: url('/fonts/archivo-var.woff2') format('woff2-variations');
+  src: url('/fonts/archivo-var.woff2?v=1') format('woff2-variations');
   font-weight: 400 900;
   font-stretch: 100%;
   font-display: swap;
@@ -22,7 +22,7 @@
   /* Tekst */
   --text: #f0edfa;
   --text-dim: #a49bc4;
-  --text-faint: #746b96; /* KUN dekor/store tall — ikke løpende tekst */
+  --dim-strong: #8c83ad; /* dempet, men lesbar: 5,3:1 mot --surface */
 
   /* Aksenter — grønn = handling/positivt, magenta = kaptein/live/negativt varsel */
   --accent: #00e58c;
@@ -38,7 +38,7 @@
   --fdr-1: #0e8c4f;
   --fdr-2: #27a35f;
   --fdr-3: #4a4168;
-  --fdr-4: #d24069;
+  --fdr-4: #bd3a5f;
   --fdr-5: #97183f;
   --fdr-blank: #221b36;
 
@@ -54,6 +54,9 @@
   --space-4: 1rem;
   --space-5: 1.5rem;
   --space-6: 2.5rem;
+  /* Høyden på den sticky topbaren. Alt annet som festes til toppen må ligge
+     under denne, ellers legger menyen seg over innholdet (QA-funn P0-2). */
+  --topbar-h: 57px;
   --radius: 12px;
   --radius-sm: 8px;
   --pad: 1rem;
@@ -161,6 +164,10 @@ a:hover {
 }
 
 @media (max-width: 640px) {
+  :root {
+    --topbar-h: 50px;
+  }
+
   .topbar {
     gap: var(--space-3);
     padding: 0.55rem 0.9rem;
@@ -311,6 +318,14 @@ footer {
   margin-bottom: var(--space-4);
 }
 
+/* Dashbordets fire kort: auto-fit ga tre i bredden og ett alene på siste rad
+   ved 1440 px. Låst til 2 x 2 fra 900 px og opp. */
+@media (min-width: 900px) {
+  .grid-quad {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -354,6 +369,8 @@ footer {
 
 .ai-badge {
   display: inline-block;
+  white-space: nowrap;
+  flex-shrink: 0;
   background: var(--accent-2-soft);
   color: var(--accent-2);
   border-radius: var(--radius-sm);
@@ -371,13 +388,24 @@ footer {
 
 /* ---------- Tabeller ---------- */
 
+/* Standard: bare vannrett scroll. Uten indre vertikal scroll kan tabellhodet
+   aldri bli hengende under toppmenyen — siden scroller som vanlig. */
 .table-scroll {
-  overflow: auto;
-  max-height: 75vh;
+  overflow-x: auto;
 }
 
-/* Tabellhodet blir stående når innholdet scroller inne i kortet. */
-.table-scroll table.data thead th {
+/* Varianten for lange tabeller (/spillere, 500+ rader): hele scrollboksen
+   festes under toppmenyen, og tabellhodet festes til toppen av boksen.
+   Høyden må levne plass til footeren, ellers skyves boksen opp under menyen
+   når man scroller helt til bunns. */
+.table-scroll--pinned {
+  position: sticky;
+  top: var(--topbar-h);
+  overflow: auto;
+  max-height: min(75vh, calc(100dvh - var(--topbar-h) - 13rem));
+}
+
+.table-scroll--pinned table.data thead th {
   position: sticky;
   top: 0;
   background: var(--surface);
@@ -396,7 +424,7 @@ table.data th {
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--text-faint);
+  color: var(--dim-strong);
   font-weight: 600;
   padding: 0.35rem 0.6rem;
   border-bottom: 1px solid var(--border-strong);
@@ -978,6 +1006,15 @@ table.sortable th[aria-sort='ascending']::after {
   color: var(--accent);
 }
 
+/* Ingressen fra RSS-en. Den gjør AI-punktene over etterprøvbare mot det
+   leseren faktisk ser (QA-funn P1-5). */
+.news-list .news-lead {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
 .news-list li:last-child {
   border-bottom: none;
 }
@@ -1084,9 +1121,29 @@ footer .version {
     flex: 1 1 7.5rem;
   }
 
-  /* Lange ord (lagnavn, nyhetstitler) skal brekke i stedet for å skyve siden. */
+  /* FDR-matrisen: fullnavnet tar plassen fra GW-kolonnene på små skjermer.
+     Det skjules visuelt (men leses fortsatt av skjermlesere) og cellene
+     strammes inn, slik at flest mulig runder er synlige uten sidescroll. */
+  .fdr-table .team-name-full {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .fdr-table th,
+  .fdr-table td {
+    padding-left: var(--space-2);
+    padding-right: var(--space-2);
+  }
+
+  /* Lange ord (lagnavn, nyhetstitler) skal brekke i stedet for å skyve siden,
+     men bare når ordet ikke får plass — «anywhere» brøt midt i vanlige ord. */
   body {
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
+    hyphens: auto;
   }
 }
 

@@ -3,7 +3,76 @@
 > Levende overleveringsfil. Oppdateres ved hver milepæl og ved arbeidsstans.
 > Ny AI-økt: les denne + CLAUDE.md + ROADMAP.md, fortsett der «Neste steg» sier.
 
-**Sist oppdatert:** 2026-08-19 (økt 5, **QA-retteplan v1.1.1 klar — utførelse skjer i NY økt**)
+**Sist oppdatert:** 2026-08-20 (økt 6, **QA-rettelsene v1.1.1 ferdige lokalt — venter på push-klarsignal**)
+
+## v1.1.1 — QA-rettelsene er ferdige lokalt (2026-08-20)
+
+Branch `fix/qa-v1.1.1` (fra `main`), 18 commits (16 funn-commits, release og
+en etterfølgende retting av P1-4), lokal tag `v1.1.1` på siste commit. **Ikke pushet.** Push til `main` auto-deployer til prod, så det
+venter på klarsignal fra Marius.
+
+### Hva som er gjort
+
+Alle QA-funn utenom P2-7 er rettet, én commit per funn med funn-ID i
+emnelinjen. Se CHANGELOG `[1.1.1]` for brukersynlig liste. Kort:
+
+- **P0-1** asset-versjonering med innholdshash i `src/server.js`
+  (`?v=<sha1 8 hex>`), `immutable` for versjonerte URL-er og `no-cache` for
+  uversjonerte. Ny `DEPLOY.md` med flyten og Cloudflare-purge-steget.
+- **P0-2** `.table-scroll` har bare `overflow-x` nå; kun /spillere bruker
+  `.table-scroll--pinned` som festes under `--topbar-h` (50/57 px).
+- **P1-1…P1-7** tomtilstander på dashbord og /liga, `/health` teller oppløste
+  ligaer via nye `src/services/leagues.js`, AI-briefens tidsfakta +
+  `sanitizeBriefText`, nyhetspunkter filtreres mot egennavn i sakene,
+  RSS-dedup, `--dim-strong` for tabellhoder.
+- **P2-1…P2-6 + P2-8** FDR-4-farge, `translateFplNews`, ordbrudd, FDR på
+  mobil, statstripe og undertittel på /lag, 2 × 2-grid på dashbordet.
+
+### Verifisert lokalt (kommandoer kjørt, output sett)
+
+- `npm test` 113/113 grønne, `npm run lint` 0 feil
+- Lokal server: alle 10 ruter 200, 404 på ukjent sti, `/health`
+  `leagues: 1` (auto-oppdaget — `LEAGUE_IDS` er ikke satt)
+- Asset-headere: `?v=<hash>` → `public, max-age=31536000, immutable`,
+  uten `?v=` → `no-cache`
+- Kontrastskript: 8 av 8 fargepar over 4,5:1
+- Playwright (kun i scratchpad, aldri i repoet) på 390×844, 360×740,
+  844×390, 1440×900: 103 sjekker uten feil — ingen vannrett scroll, topbar
+  én linje, ai-badge 18,4 px på én linje, 4 av 5 GW-kolonner synlige på 390,
+  fokusring, null konsollfeil. Sticky: 264 festede tabellhoder observert,
+  0 under menyen. /spillere: 11 kolonner × 2 retninger sorterer riktig,
+  kombinerte filtre og nullstill virker.
+
+### IKKE verifisert (krever noe utenfor denne økten)
+
+- **Cloudflare-oppførselen i prod** — krever deploy + purge
+- **«Spør AI om råd»-stien på /lag** — ikke rørt, rendres ikke før sesongstart
+- **Auto-brief til Discord** — koden er endret (`sanitizeBriefText`), men
+  ingen ny webhook-test er kjørt i denne økten
+- **sanitizeBriefText mot en fersk AI-brief** — den første versjonen fjernet to
+  korrekte setninger i en ekte kjøring (se loggen i økta). Retting og
+  regresjonstester er på plass, men kontrollen er ikke kjørt mot en ny ekte
+  generering, siden det ville kostet et tredje AI-kall
+
+### Neste steg (krever Marius)
+
+1. Klarsignal til `git push origin fix/qa-v1.1.1` + merge til `main`
+   (eller push av `main` direkte) — det utløser Coolify-deploy
+2. Etter deploy: **Cloudflare-purge én gang** (se `DEPLOY.md`) for å rydde
+   gamle uversjonerte `/style.css`- og `/app.js`-oppføringer
+3. Verifiser i prod med kommandoene i `DEPLOY.md`
+4. Push av tag `v1.1.1` når prod er bekreftet
+5. P2-7: ligaen heter «Var Har Skylda» fordi FPL-API-et leverer den slik
+   (verifisert mot `entry/5330646/`). Ingen kodefeil — endre navnet i
+   FPL-UI-et hvis det skal se annerledes ut
+
+### Logg over beskjeder fra bruker
+
+- 2026-08-19: kjøreprompt for QA-retteøkten gitt (plan som fasit, branch
+  `fix/qa-v1.1.1`, ingen push/deploy). Handling: utført i denne økten.
+- 2026-08-20: «fortsett der det kuttet» / «keep going where you left off»
+  (to ganger under økten). Handling: arbeidet fortsatte uavbrutt fra
+  P1-7-målingen; ingenting gikk tapt.
 
 ## Status
 

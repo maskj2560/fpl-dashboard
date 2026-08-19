@@ -6,6 +6,7 @@ import {
   topForm,
   mostTransferredIn,
   mostTransferredOut,
+  translateFplNews,
   fdrMatrix,
   formatPrice,
   averageFdr,
@@ -97,6 +98,37 @@ test('mostTransferredIn/Out sorterer på transfers denne GW-en', () => {
 
   assert.deepEqual(mostTransferredIn(players, 2).map((p) => p.id), [2, 1]);
   assert.deepEqual(mostTransferredOut(players, 2).map((p) => p.id), [3, 2]);
+});
+
+// P1-1: før sesongstart er alle form-tall og overgangstall 0. En sortering på
+// bare nuller ga en vilkårlig topplista som så ut som ekte rangering.
+test('topForm gir tom liste når ingen har form over 0', () => {
+  const players = [
+    player({ id: 1, form: '0.0', minutes: 500 }),
+    player({ id: 2, form: '0.0', minutes: 900 }),
+  ];
+
+  assert.deepEqual(topForm(players, 10), []);
+});
+
+test('mostTransferredIn/Out gir tom liste når ingen overganger er gjort', () => {
+  const players = [
+    player({ id: 1, transfers_in_event: 0, transfers_out_event: 0 }),
+    player({ id: 2, transfers_in_event: 0, transfers_out_event: 0 }),
+  ];
+
+  assert.deepEqual(mostTransferredIn(players, 10), []);
+  assert.deepEqual(mostTransferredOut(players, 10), []);
+});
+
+test('mostTransferredIn/Out tar med bare spillere som faktisk er byttet', () => {
+  const players = [
+    player({ id: 1, transfers_in_event: 5, transfers_out_event: 0 }),
+    player({ id: 2, transfers_in_event: 0, transfers_out_event: 7 }),
+  ];
+
+  assert.deepEqual(mostTransferredIn(players, 10).map((x) => x.id), [1]);
+  assert.deepEqual(mostTransferredOut(players, 10).map((x) => x.id), [2]);
 });
 
 test('fdrMatrix bygger 5 GW-er per lag med riktig difficulty', () => {
@@ -313,4 +345,44 @@ test('estimateBonus: likhet paa andreplass gir 2+2, ingen enerpoeng', () => {
 test('estimateBonus taaler manglende stats', () => {
   assert.equal(estimateBonus({ stats: [] }).size, 0);
   assert.equal(estimateBonus({}).size, 0);
+});
+
+// ---- P2-2: FPL-ens engelske statustekster på norsk ------------------------
+
+test('translateFplNews oversetter skadetype med spillesjanse', () => {
+  assert.equal(
+    translateFplNews('Ankle injury - 75% chance of playing'),
+    'Ankelskade – 75 % sjanse for spilletid',
+  );
+});
+
+test('translateFplNews oversetter ukjent returdato', () => {
+  assert.equal(translateFplNews('Foot injury - Unknown return date'), 'Fotskade – uavklart');
+});
+
+test('translateFplNews oversetter forventet retur med måned', () => {
+  assert.equal(translateFplNews('Knock - Expected back 21 Aug'), 'Smell – ventes tilbake 21. aug.');
+});
+
+test('translateFplNews oversetter overganger og utlån', () => {
+  assert.equal(translateFplNews('Has joined Real Madrid permanently'), 'Overgang til Real Madrid (permanent)');
+  assert.equal(translateFplNews('Has joined Sunderland on loan'), 'Overgang til Sunderland (på lån)');
+  assert.equal(translateFplNews('Loaned to Ipswich'), 'Lånt ut til Ipswich');
+});
+
+test('translateFplNews oversetter utestengelse', () => {
+  assert.equal(translateFplNews('Suspended - Expected back 25 Aug'), 'Utestengt – ventes tilbake 25. aug.');
+});
+
+test('translateFplNews beholder ukjent skadetype, men oversetter suffikset', () => {
+  assert.equal(
+    translateFplNews('Personal reasons - 50% chance of playing'),
+    'Personal reasons – 50 % sjanse for spilletid',
+  );
+});
+
+test('translateFplNews lar ukjent mønster og tom tekst stå urørt', () => {
+  assert.equal(translateFplNews('Left the club by mutual consent'), 'Left the club by mutual consent');
+  assert.equal(translateFplNews(''), '');
+  assert.equal(translateFplNews(null), '');
 });

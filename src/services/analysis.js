@@ -44,21 +44,27 @@ export function flaggedPlayers(elements, limit = 10) {
 }
 
 /** Topp N på form. Spillere uten spilletid utelates (form-støy). */
+// De tre listene under returnerer tom liste når datagrunnlaget er null — før
+// sesongstart har alle spillere form 0 og 0 overganger, og en sortering på
+// bare nuller ga en vilkårlig «rangering» som så ut som ekte data (QA-funn P1-1).
+
 export function topForm(elements, limit = 10) {
-  return elements
-    .filter((p) => p.minutes > 0)
-    .sort((a, b) => parseFloat(b.form) - parseFloat(a.form))
-    .slice(0, limit);
+  const ranked = elements
+    .filter((p) => p.minutes > 0 && parseFloat(p.form) > 0)
+    .sort((a, b) => parseFloat(b.form) - parseFloat(a.form));
+  return ranked.slice(0, limit);
 }
 
 export function mostTransferredIn(elements, limit = 10) {
   return [...elements]
+    .filter((p) => p.transfers_in_event > 0)
     .sort((a, b) => b.transfers_in_event - a.transfers_in_event)
     .slice(0, limit);
 }
 
 export function mostTransferredOut(elements, limit = 10) {
   return [...elements]
+    .filter((p) => p.transfers_out_event > 0)
     .sort((a, b) => b.transfers_out_event - a.transfers_out_event)
     .slice(0, limit);
 }
@@ -258,4 +264,95 @@ export function differentials(myIds, rivalIds, elements) {
     theirs: elements.filter((p) => rivalIds.has(p.id) && !myIds.has(p.id)).sort(byOwnership),
     mine: elements.filter((p) => myIds.has(p.id) && !rivalIds.has(p.id)).sort(byOwnership),
   };
+}
+
+// --- P2-2: FPL-ens engelske statustekster på norsk -------------------------
+// `news`-feltet fra FPL er alltid engelsk. Resten av grensesnittet er norsk,
+// så tekstene oversettes ved visning. Ukjente mønstre vises som de er.
+
+const INJURY_TYPES = {
+  achilles: 'Akillesskade',
+  ankle: 'Ankelskade',
+  back: 'Ryggskade',
+  calf: 'Leggskade',
+  concussion: 'Hjernerystelse',
+  elbow: 'Albueskade',
+  finger: 'Fingerskade',
+  foot: 'Fotskade',
+  groin: 'Lyskeskade',
+  hamstring: 'Hamstringskade',
+  head: 'Hodeskade',
+  heel: 'Hælskade',
+  hip: 'Hofteskade',
+  illness: 'Sykdom',
+  knee: 'Kneskade',
+  knock: 'Smell',
+  leg: 'Beinskade',
+  muscle: 'Muskelskade',
+  neck: 'Nakkeskade',
+  rib: 'Ribbeinsskade',
+  shin: 'Skinnebensskade',
+  shoulder: 'Skulderskade',
+  suspended: 'Utestengt',
+  thigh: 'Lårskade',
+  toe: 'Tåskade',
+  virus: 'Virussykdom',
+  wrist: 'Håndleddsskade',
+};
+
+const MONTHS = {
+  jan: 'jan.', feb: 'feb.', mar: 'mars', apr: 'april', may: 'mai', jun: 'juni',
+  jul: 'juli', aug: 'aug.', sep: 'sep.', oct: 'okt.', nov: 'nov.', dec: 'des.',
+};
+
+/** «Ankle injury» → «Ankelskade». Ukjent type beholdes uendret. */
+function translateType(type) {
+  const key = type.toLowerCase().replace(/\s+injury$/, '').trim();
+  return INJURY_TYPES[key] ?? type.trim();
+}
+
+/** «Expected back 21 Aug» → «ventes tilbake 21. aug.» */
+function translateDetail(detail) {
+  const d = detail.trim();
+  const chance = d.match(/^(\d+)%\s*chance of playing/i);
+  if (chance) return `${chance[1]} % sjanse for spilletid`;
+  if (/^unknown/i.test(d)) return 'uavklart';
+  const back = d.match(/^expected back\s+(.*)$/i);
+  if (back) {
+    const norsk = back[1].replace(
+      /(\d+)\s+([A-Za-z]{3})[a-z]*/,
+      (_m, day, mon) => `${day}. ${MONTHS[mon.toLowerCase()] ?? mon}`,
+    );
+    return `ventes tilbake ${norsk}`;
+  }
+  return d;
+}
+
+/**
+ * Oversetter FPL-ens `news`-tekst til norsk.
+ * Kjente mønstre: «<type> - <n>% chance of playing», «<type> - Unknown …»,
+ * «<type> - Expected back <dato>», «Has joined <klubb> permanently/on loan»,
+ * «Loaned to <klubb>», «Suspended …». Alt annet returneres uendret.
+ */
+export function translateFplNews(news) {
+  const text = String(news ?? '').trim();
+  if (!text) return '';
+
+  const joined = text.match(/^Has joined (.+?)(?:\s+(permanently|on loan))?\.?$/i);
+  if (joined) {
+    const how = joined[2]?.toLowerCase() === 'on loan' ? 'på lån' : 'permanent';
+    return `Overgang til ${joined[1]} (${how})`;
+  }
+
+  const loaned = text.match(/^Loaned (?:out )?to (.+?)\.?$/i);
+  if (loaned) return `Lånt ut til ${loaned[1]}`;
+
+  const parts = text.split(' - ');
+  if (parts.length >= 2) {
+    const type = translateType(parts[0]);
+    const detail = translateDetail(parts.slice(1).join(' - '));
+    return detail ? `${type} – ${detail}` : type;
+  }
+
+  return translateType(text);
 }
