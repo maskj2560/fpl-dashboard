@@ -21,7 +21,7 @@
   <section class="card card-wide card-ai">
     <h2>
       <span class="h2-title"><span class="ai-badge">AI</span> Oppsummering</span>
-      <% if (generatedAt) { %><span class="dim">generert <%= new Date(generatedAt).toLocaleTimeString('nb-NO') %></span><% } %>
+      <% if (generatedAt) { %><span class="dim">generert <%= new Date(generatedAt).toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit' }) %></span><% } %>
     </h2>
     <ul class="rec-list">
       <% for (const p of points) { %><li><%- bold(p) %></li><% } %>

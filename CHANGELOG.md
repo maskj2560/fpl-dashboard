@@ -7,6 +7,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+- **AI-merket brekker ikke lenger.** «AI»-merket i overskriftene på /brief og
+  /nyheter kunne deles over to linjer på smale skjermer. Klokkeslettet ved siden
+  av vises nå uten sekunder («generert 21:04»)
+
 - **/liga forklarer tomme ligatabeller.** En liga uten rader viste et tomt
   tabellhode og ingressen «Klikk på et lag …» selv om det ikke fantes noe å
   klikke på. Nå vises en tomtilstand med lenke til dashbordet, og ingressen

@@ -361,6 +361,8 @@ footer {
 
 .ai-badge {
   display: inline-block;
+  white-space: nowrap;
+  flex-shrink: 0;
   background: var(--accent-2-soft);
   color: var(--accent-2);
   border-radius: var(--radius-sm);
