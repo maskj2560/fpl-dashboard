@@ -62,6 +62,7 @@
 - 2026-08-19: «Kan jeg konstant se oppdatert todo-liste?» → ROADMAP.md hukes av fortløpende (ikke bare ved milepæl-slutt); bruker åpner den i VS Code markdown-preview
 - 2026-08-19: «Stopp» → v0.2.0-arbeid stoppet midt i (WIP-status over)
 - 2026-08-19: «Fiks deploy til Coolify og GitHub og auto-deploy først» → PRIORITET før v0.2.0 fortsetter: GitHub-repo + push + Coolify-oppsett. Blokkert på `gh auth login` fra bruker.
+- 2026-08-19: «Oppdater ROADMAP, CHANGELOG, CLAUDE.md, HANDOVER kontinuerlig og ofte — alltid oppdatert» → fast rutine: alle fire sjekkes/oppdateres ved hver delfunksjon og hver commit, ikke bare ved milepæler
 
 ## Miljø
 
