@@ -68,16 +68,23 @@ export function sanitizeBriefText(text, brief) {
   }
   const anyBefore = before.size > 0;
   const names = (sentence, set) => [...set].some((name) => sentence.includes(name));
+  // Negerte utsagn («ingen kamper starter før deadline») er ikke påstander om
+  // at en bestemt kamp ligger før deadline, og skal ikke kontrolleres her.
+  const NEGATION = /\b(ingen|ikke|verken|aldri)\b/i;
+  // Kontrollen gjelder bare utsagn om når kampene spilles — ikke råd som
+  // «sjekk laget rett før deadline», der «før deadline» er et tidspunkt.
+  const OM_KAMPER = /\b(kamp|kamper|kampene|oppgjør|oppgjøret|runden spilles|spilles|starter|avspark|sparkes i gang)\b/i;
 
   const keep = (sentence) => {
     const claimsBefore = /før\s+deadline/i.test(sentence);
     const claimsAfter = /etter\s+deadline/i.test(sentence);
     if (!claimsBefore && !claimsAfter) return true;
+    if (NEGATION.test(sentence)) return true;
     // Nevner setningen bare lag som spiller på «feil» side av deadline, er den gal.
     if (claimsBefore && names(sentence, after) && !names(sentence, before)) return false;
     if (claimsAfter && names(sentence, before) && !names(sentence, after)) return false;
-    // Uten lagnavn holder det å sjekke om påstanden i det hele tatt kan stemme.
-    if (claimsBefore && !anyBefore) return false;
+    // Uten lagnavn: bare utsagn om selve kampene kan motbevises av dataene.
+    if (claimsBefore && !anyBefore && OM_KAMPER.test(sentence)) return false;
     return true;
   };
 

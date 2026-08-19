@@ -92,12 +92,10 @@ test('sanitizeBriefText beholder korrekt påstand om kamp etter deadline', () =>
 test('sanitizeBriefText fjerner «før deadline» når ingen kamper er før deadline', () => {
   const utenTidlige = {
     ...briefMedTidsfakta,
-    fixturesByDay: [
-      {
-        day: 'fredag 21. august',
-        matches: [{ home: 'Liverpool', away: 'Bournemouth', kickoff: '21:00', beforeDeadline: false }],
-      },
-    ],
+    fixturesByDay: [{
+      day: 'fredag 21. august',
+      matches: [{ home: 'Liverpool', away: 'Bournemouth', kickoff: '21:00', beforeDeadline: false }],
+    }],
     fixturesBeforeDeadline: [],
   };
   const text = 'Flere kamper starter før deadline denne runden.';
@@ -116,4 +114,27 @@ test('sanitizeBriefText er en no-op når kampdataene mangler beforeDeadline', ()
   const text = 'Alle kamper spilles før deadline.';
 
   assert.equal(sanitizeBriefText(text, gammel), text);
+});
+
+// Regresjon: begge disse sto i en ekte AI-brief og var korrekte, men ble
+// fjernet av den første versjonen av kontrollen. Den første er en negasjon,
+// den andre bruker «før deadline» som tidspunkt, ikke som påstand om en kamp.
+test('sanitizeBriefText beholder negerte utsagn om deadline', () => {
+  const utenTidlige = {
+    ...briefMedTidsfakta,
+    fixturesByDay: [{
+      day: 'fredag 21. august',
+      matches: [{ home: 'Liverpool', away: 'Bournemouth', kickoff: '21:00', beforeDeadline: false }],
+    }],
+    fixturesBeforeDeadline: [],
+  };
+  const text = 'Ingen kamper starter før deadline — samtlige oppgjør spilles etter at fristen har passert.';
+
+  assert.equal(sanitizeBriefText(text, utenTidlige), text);
+});
+
+test('sanitizeBriefText beholder råd der «før deadline» er et tidspunkt', () => {
+  const text = 'Sjekk pressemeldinger og lagoppstillinger rett før deadline.';
+
+  assert.equal(sanitizeBriefText(text, briefMedTidsfakta), text);
 });
