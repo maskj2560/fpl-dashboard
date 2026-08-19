@@ -9,6 +9,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Fixed
 
+- **Skadestatus fra FPL oversettes helt, ikke halvveis.** «Unspecified
+  injury», «Arm/Muscular injury», «Lack of match fitness», «Suspended until
+  <dato>», «has returned to <klubb>» og lånevarianter («on loan for the rest
+  of the season» → «på lån ut sesongen», «on loan until <dato>») dekkes nå —
+  verifisert mot alle 72 unike `news`-strenger i bootstrap-static. Nye
+  engelske fraser gir `console.warn` i dev (QA v1.1.1, P3)
 - **Engelsk UI-tekst er oversatt.** «Dashboard» → «Dashbord» (meny + tittel),
   «Overall rank» → «Totalrangering», «Gameweek» → «Runde»/«Rundebrief» overalt
   (også i Discord-headeren og AI-prompten), «PPG» → «P/K» med forklarende
