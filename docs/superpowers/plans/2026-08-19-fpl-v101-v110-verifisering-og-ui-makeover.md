@@ -214,33 +214,55 @@ vellykket AI-kall.
 
 Alle fire AI-funksjonene kjøres mot ekte API lokalt FØR noe settes i prod.
 
-- [ ] **Steg 1 (BRUKER):** Legg `ANTHROPIC_API_KEY=sk-ant-…` i `.env` i
+- [x] **Steg 1 (BRUKER):** Legg `ANTHROPIC_API_KEY=sk-ant-…` i `.env` i
       prosjektroten (filen er gitignored; opprett fra `.env.example` om den
       mangler, og sett også `FPL_TEAM_ID` hvis kjent — anbefalingsgrenene
       trenger den ikke før sesongstart).
-- [ ] **Steg 2:** Start `npm run dev`. Forventet i konsollen: ingen feil,
+- [x] **Steg 2:** Start `npm run dev`. Forventet i konsollen: ingen feil,
       `Auto-brief aktiv…` vises IKKE (webhook ikke satt lokalt).
-- [ ] **Steg 3 — AI-nyheter:** Åpne/curl `http://localhost:3000/nyheter`.
+- [x] **Steg 3 — AI-nyheter:** Åpne/curl `http://localhost:3000/nyheter`.
       Forventet: seksjonen med AI-oppsummering rendres med 5–8 norske punkter,
       og konsollen viser `AI-kall: news-summary modell=claude-sonnet-5 inn=… ut=…`.
       Punktene skal referere faktiske saker fra feed-listen under. Curl-sjekk:
       `(Invoke-WebRequest http://localhost:3000/nyheter -UseBasicParsing).Content -match 'AI'`.
-- [ ] **Steg 4 — AI-brief:** Åpne `http://localhost:3000/brief`. Forventet:
+- [x] **Steg 4 — AI-brief:** Åpne `http://localhost:3000/brief`. Forventet:
       AI-brief-seksjon øverst på norsk (deadline, kapteinsvalg, skadenytt),
       data-briefen under. Konsoll: `AI-kall: ai-brief-gw1 …`. Last siden på
       nytt → INGEN ny `AI-kall`-linje (cache, maks 1/time).
-- [ ] **Steg 5 — AI-rådgiver:**
+- [x] **Steg 5 — AI-rådgiver:**
       `Invoke-WebRequest http://localhost:3000/api/ai-rad -Method POST -UseBasicParsing`.
       Før sesongstart finnes ingen picks — forventet da et kontrollert
       feilsvar (4xx/5xx med norsk feilmelding i JSON), IKKE et krasj.
       Full verifisering av rådgiveren skjer i M4 sjekkpunkt A.
-- [ ] **Steg 6 — kvalitetsvurdering:** Les AI-tekstene fra steg 3–4 sammen med
+- [x] **Steg 6 — kvalitetsvurdering:** Les AI-tekstene fra steg 3–4 sammen med
       brukeren. Godkjenningskriterier: norsk bokmål, ingen hallusinerte
       spillere/kamper (kryssjekk mot rådataene på siden), handlingsorientert.
       Er svarene dårlige → juster promptbyggerne i `src/services/prompts.js`
       (testene i `test/prompts.test.js` låser strukturen) og gjenta. Er de
       dyre (se usage-loggen; forventning: nyheter ~2–3K inn / ~400 ut) →
       vurder `AI_MODEL=claude-haiku-4-5` (ca. 3× billigere).
+
+      **Resultat av pre-flight (2026-08-19, ekte nøkkel, lokalt):**
+      - `/nyheter` 200. Logg: `AI-kall: news-summary modell=claude-sonnet-5
+        inn=1306 ut=824 tokens`. Sju norske punkter, alle sporet tilbake til
+        faktiske overskrifter i feed-listen (Reijnders→Al-Qadsiah, Jones→Inter,
+        Baleba/United, Konsa→Arsenal, Musiala). Ingen hallusinerte spillere.
+      - `/brief` 200. Logg: `AI-kall: ai-brief-gw1 … inn=552 ut=796 tokens`.
+        Andre sidelasting ga INGEN ny logglinje → timescachen virker.
+        Innholdet stemmer mot rådataene på siden (Doku-skaden, kapteinstrioen
+        Raya/Gabriel/Calafiori) og er handlingsorientert på norsk bokmål.
+      - `POST /api/ai-rad` uten `FPL_TEAM_ID`: HTTP 400 med
+        `{"error":"FPL_TEAM_ID er ikke satt."}` — kontrollert feil, ikke krasj.
+      - Kvaliteten er god nok til å beholde `claude-sonnet-5`; ingen
+        promptjustering nødvendig. Faktisk forbruk ligger under estimatet
+        (~1,3K inn på nyheter mot antatt 2–3K).
+
+      **Avvik fra planen (ukedager, ikke datoer):** FPL-dataen sier deadline
+      **fredag 21. august kl. 19:30** (17:30Z), ikke torsdag. Verifisert:
+      19. august 2026 = onsdag, 20. = torsdag, 21. = fredag. Datoene i planen
+      er riktige, ukedagsnavnene er forskjøvet én dag. Konsekvens: den
+      naturlige auto-briefen sender **torsdag 20. august ~19:30**, og
+      Milepæl 1 må derfor være i prod før **torsdag 20. august ~19:00**.
 
 ### Task 1.4: Tvungen lokal test av auto-briefen mot ekte Discord (krever bruker)
 

@@ -174,11 +174,34 @@ task for task. Kort oversikt:
   rekkefølge, task for task, uten å hoppe over verifiseringssteg. Ikke
   re-planlegg, ikke bruk subagenter til implementering.» → executing-plans
   startet. Utgangspunkt verifisert grønt: `npm test` 35/35, `npm run lint` 0 feil.
-- 2026-08-19 (økt 4): «Jeg ønsker at du skal begynne å kalle meg Jens, hver gang
-  vi kommuniserer skal du alltid si "Hei Jens!" først. Lag et permanent minne på
-  det.» → permanent minne opprettet
-  (`C:\Users\mariu\.claude\projects\c--Users-mariu-Documents-Claude-Code-FPL\memory\tiltale-jens.md`,
-  indeksert i `MEMORY.md`). Alle svar starter nå med «Hei Jens!».
+- 2026-08-19 (økt 4): «Jeg ønsker at du skal begynne å kalle meg Jens … alltid si
+  "Hei Jens!" først. Lag et permanent minne på det.» → deretter «Hvorfor tror du
+  jeg heter jens?» og valget **«Bytt til Marius»**. Resultat: minnet heter nå
+  `memory/tiltale-marius.md` (indeksert i `MEMORY.md`, `tiltale-jens.md`
+  slettet). **Alle svar starter med «Hei Marius!».**
+- 2026-08-19 (økt 4): «Da har jeg laget en .env fil som har antrhopic api koden
+  min» → Task 1.3 pre-flight kjørt mot ekte API, alt grønt (se under).
+- 2026-08-19 (økt 4): «Jeg vet ikke hvordan jeg finner fpl lag iden» → svart med
+  to metoder: `/entry/<id>/event/1` i URL-en på Points-fanen, eller
+  `https://fantasy.premierleague.com/api/me/` innlogget (`"entry": <id>`).
+- 2026-08-19 (økt 4): «Der fant jeg fpl team iden og la det inn i .env filen»
+  → `FPL_TEAM_ID=5330646` (lagnavn «Marius Super Team»). Alle ti ruter svarer
+  200 lokalt med ekte ID; `/lag` og `/liga` viser tomtilstander som forventet
+  før sesongstart. **Husk: samme ID må inn i Coolify sammen med nøklene.**
+
+## Pre-flight-resultat (Task 1.3, 2026-08-19, lokalt med ekte nøkkel)
+
+- `/nyheter`: `AI-kall: news-summary modell=claude-sonnet-5 inn=1306 ut=824`.
+  Sju norske punkter, alle sporet til faktiske overskrifter i feed-listen.
+- `/brief`: `AI-kall: ai-brief-gw1 … inn=552 ut=796`. Andre sidelasting ga
+  ingen ny logglinje → timescachen virker. Innholdet stemmer mot rådataene.
+- `POST /api/ai-rad`: kontrollert 400 (`Ingen aktiv gameweek.`) før sesongstart
+  — ikke krasj. Full verifisering skjer i M4 sjekkpunkt A.
+- Konklusjon: `claude-sonnet-5` beholdes, ingen promptjustering nødvendig.
+- **Deadline er fredag 21. august kl. 19:30**, ikke torsdag (planens
+  ukedagsnavn er forskjøvet én dag; datoene stemmer). Den naturlige
+  auto-briefen sender derfor **torsdag 20. august ~19:30** — Milepæl 1 må være
+  i prod før **torsdag 20. august ~19:00**.
 
 ## Miljø
 
