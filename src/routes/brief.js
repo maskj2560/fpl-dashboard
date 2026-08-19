@@ -3,7 +3,7 @@ import config from '../config.js';
 import { getBootstrap, getFixtures, getPicks, FplError } from '../services/fplClient.js';
 import { buildBrief } from '../services/brief.js';
 import { currentEvent, nextEvent } from '../services/analysis.js';
-import { buildBriefPrompt } from '../services/prompts.js';
+import { buildBriefPrompt, sanitizeBriefText } from '../services/prompts.js';
 import * as ai from '../services/ai.js';
 
 const router = Router();
@@ -44,6 +44,9 @@ router.get('/', async (req, res, next) => {
         prompt: buildBriefPrompt(brief),
         maxTokens: 4000,
       });
+      // Etterkontroll: modellen har påstått ting om deadline som ikke stemmer
+      // med kampdataene. Uriktige setninger fjernes før briefen vises.
+      if (aiBrief?.text) aiBrief = { ...aiBrief, text: sanitizeBriefText(aiBrief.text, brief) };
     }
     res.renderPage('brief', { title: 'Gameweek-brief', brief, aiBrief });
   } catch (err) {

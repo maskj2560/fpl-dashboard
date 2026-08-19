@@ -7,6 +7,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+- **AI-briefen motsier ikke lenger kampdataene.** Modellen regnet selv ut hva
+  som ble spilt før deadline og bommet. Briefen beregner nå fasiten
+  (`beforeDeadline` per kamp), sender den til modellen som forhåndsberegnede
+  tidsfakta, og fjerner setninger som påstår noe annet — både på /brief og i
+  auto-briefen til Discord
+
 - **AI-merket brekker ikke lenger.** «AI»-merket i overskriftene på /brief og
   /nyheter kunne deles over to linjer på smale skjermer. Klokkeslettet ved siden
   av vises nå uten sekunder («generert 21:04»)

@@ -14,6 +14,13 @@ export function buildBriefPrompt(brief) {
     '',
     'Kamper:',
     ...brief.fixturesByDay.map((d) => `${d.day}: ${d.matches.map((m) => `${m.home}–${m.away} ${m.kickoff}`).join(', ')}`),
+    '',
+    // Modellen regnet tidligere selv ut hva som lå før deadline, og bommet.
+    // Fasiten er beregnet her; modellen skal bare gjengi den.
+    'Forhåndsberegnede tidsfakta (fasit — ikke regn ut noe selv):',
+    brief.fixturesBeforeDeadline?.length
+      ? `Disse kampene starter FØR deadline: ${brief.fixturesBeforeDeadline.join(', ')}. Alle andre kamper i runden starter etter deadline.`
+      : 'Ingen kamper starter før deadline — samtlige kamper i runden spilles etter at deadline har passert.',
   ];
   if (brief.mine) {
     parts.push('', 'Mine kapteinskandidater:', ...brief.mine.captains.map((c) => `- ${c.player.web_name}: ${c.reasons.join('; ')}`));
@@ -23,7 +30,8 @@ export function buildBriefPrompt(brief) {
     '',
     'Skriv briefen med disse seksjonene i markdown: «Deadline», «Skadenytt», «Kapteinsvalg», «Kamper å følge med på»' +
       (brief.mine ? ', «Mine grep»' : '') +
-      '. Vær konkret og kortfattet, sett spillernavn i **fet**. Maks ~350 ord. Ingen innledning utover seksjonene.',
+      '. Vær konkret og kortfattet, sett spillernavn i **fet**. Maks ~350 ord. Ingen innledning utover seksjonene.' +
+      ' Utled aldri tidsforhold selv: skal du si noe om hva som skjer før eller etter deadline, bruk kun de forhåndsberegnede tidsfaktaene over.',
   );
   return parts.join('\n');
 }
@@ -40,4 +48,56 @@ export function buildAdvicePrompt({ entryName, bank, squadLines, outs }) {
     '',
     'Gi på norsk: 1) beste kaptein denne runden med begrunnelse, 2) anbefalt bytte (ut/inn) hvis noe gir mening — ellers si at man bør spare bytte, 3) én ting å følge med på før deadline. Sett spillernavn i **fet**. Maks ~250 ord.',
   ].join('\n');
+}
+
+/**
+ * Etterkontroll av AI-briefen: fjerner setninger som påstår noe om «før» eller
+ * «etter deadline» som ikke stemmer med de forhåndsberegnede kampdataene.
+ * Ren funksjon, ingen regenerering — svaret er uansett cachet en time, så det
+ * robuste valget er å utelate setningen framfor å be modellen prøve igjen.
+ */
+export function sanitizeBriefText(text, brief) {
+  const matches = (brief?.fixturesByDay ?? []).flatMap((d) => d.matches);
+  if (!text || matches.length === 0 || matches.every((m) => m.beforeDeadline == null)) return text;
+
+  const before = new Set();
+  const after = new Set();
+  for (const m of matches) {
+    (m.beforeDeadline ? before : after).add(m.home);
+    (m.beforeDeadline ? before : after).add(m.away);
+  }
+  const anyBefore = before.size > 0;
+  const names = (sentence, set) => [...set].some((name) => sentence.includes(name));
+
+  const keep = (sentence) => {
+    const claimsBefore = /før\s+deadline/i.test(sentence);
+    const claimsAfter = /etter\s+deadline/i.test(sentence);
+    if (!claimsBefore && !claimsAfter) return true;
+    // Nevner setningen bare lag som spiller på «feil» side av deadline, er den gal.
+    if (claimsBefore && names(sentence, after) && !names(sentence, before)) return false;
+    if (claimsAfter && names(sentence, before) && !names(sentence, after)) return false;
+    // Uten lagnavn holder det å sjekke om påstanden i det hele tatt kan stemme.
+    if (claimsBefore && !anyBefore) return false;
+    return true;
+  };
+
+  const dropped = [];
+  const lines = text.split('\n').map((line) => {
+    if (!/deadline/i.test(line)) return line;
+    const sentences = line.match(/[^.!?]+[.!?]*/g) ?? [line];
+    const kept = sentences.filter((s) => {
+      if (keep(s)) return true;
+      dropped.push(s.trim());
+      return false;
+    });
+    if (kept.length === sentences.length) return line;
+    const rest = kept.join('').trim();
+    // Er det bare et punktmerke eller en overskriftsmarkør igjen, ryddes linjen bort.
+    return /^([-*]|#{1,3})?\s*$/.test(rest) ? null : rest;
+  });
+
+  if (dropped.length) {
+    console.warn('AI-brief: fjernet %d uriktig(e) deadline-påstand(er):', dropped.length, dropped);
+  }
+  return lines.filter((line) => line !== null).join('\n');
 }
