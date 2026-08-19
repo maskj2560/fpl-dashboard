@@ -692,6 +692,25 @@ table.sortable th[aria-sort='ascending']::after {
   }
 }
 
+/* ---------- Nyheter ---------- */
+
+.news-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.news-list li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+}
+
+.news-list li:last-child {
+  border-bottom: none;
+}
+
 /* ---------- Bevegelse ---------- */
 
 @media (prefers-reduced-motion: no-preference) {

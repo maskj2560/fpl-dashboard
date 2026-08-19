@@ -9,12 +9,14 @@ Express 5 + EJS, ingen database, ingen byggesteg. All data hentes fra det
 | Side | Innhold | Status |
 |---|---|---|
 | `/` | Deadline-nedtelling, ukens flagg, toppform, mest kjøpt/solgt, FDR-matrise | ✅ |
-| `/spillere` | Full spillertabell med sortering, filtrering og søk | planlagt |
-| `/lag` | Mitt lag, kaptein- og transferanbefalinger | planlagt |
-| `/liga` | Miniliga-tabeller og differensial-analyse | planlagt |
-| `/live` | Live-poeng under pågående gameweek | planlagt |
-| `/brief` | Gameweek-brief (data + valgfri AI) | planlagt |
-| `/nyheter` | FPL-nyheter fra RSS + valgfri AI-oppsummering | planlagt |
+| `/spillere` | Full spillertabell med sortering, filtrering og søk | ✅ |
+| `/lag` | Mitt lag, kaptein- og transferanbefalinger | ✅ |
+| `/liga` | Miniliga-tabeller og differensial-analyse | ✅ |
+| `/live` | Live-poeng under pågående gameweek | ✅ |
+| `/brief` | Gameweek-brief (data + valgfri AI) | ✅ data, AI planlagt |
+| `/nyheter` | FPL-nyheter fra RSS + valgfri AI-oppsummering | ✅ |
+| `/api/brief.json` | Briefen som JSON | ✅ |
+| `/api/live.json` | Live-data som JSON (pollens kun under kamper) | ✅ |
 | `/health` | `{"status":"ok"}` for helsesjekk | ✅ |
 
 Se `ROADMAP.md` for full plan og fremdrift.

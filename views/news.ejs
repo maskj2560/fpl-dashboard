@@ -1,0 +1,42 @@
+<%
+  // AI-tekst og feed-innhold er utrygt: escape ALT først, og gjør deretter
+  // **fet**-markeringen om til <strong> på den allerede escapede strengen.
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function bold(text) {
+    return esc(text).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  }
+  // Lenker kommer fra tredjeparts feeder — slipp bare gjennom http(s).
+  function safeLink(url) {
+    return /^https?:\/\//i.test(url) ? url : '#';
+  }
+%>
+<section class="page-head">
+  <h1>FPL-nyheter</h1>
+  <p class="dim"><%= aiEnabled ? 'AI-oppsummert med jevne mellomrom fra britiske kilder.' : 'Rå feed-liste. Sett ANTHROPIC_API_KEY for norsk AI-oppsummering.' %></p>
+</section>
+
+<% if (points.length > 0) { %>
+  <section class="card card-wide">
+    <h2>AI-oppsummering<% if (generatedAt) { %> <span class="dim">(generert <%= new Date(generatedAt).toLocaleTimeString('nb-NO') %>)</span><% } %></h2>
+    <ul class="rec-list">
+      <% for (const p of points) { %><li><%- bold(p) %></li><% } %>
+    </ul>
+  </section>
+<% } %>
+
+<section class="card card-wide">
+  <h2>Siste saker</h2>
+  <% if (items.length === 0) { %>
+    <p class="empty">Fant ingen saker akkurat nå. Sjekk NEWS_FEEDS eller prøv igjen senere.</p>
+  <% } %>
+  <ul class="news-list">
+    <% for (const i of items) { %>
+      <li>
+        <a href="<%= safeLink(i.link) %>" rel="noopener" target="_blank"><%= i.title %></a>
+        <span class="dim"><%= i.source %><% if (i.published) { %> · <%= new Date(i.published).toLocaleString('nb-NO', { timeZone: 'Europe/Oslo' }) %><% } %></span>
+      </li>
+    <% } %>
+  </ul>
+</section>

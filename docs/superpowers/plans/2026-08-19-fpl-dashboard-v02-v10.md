@@ -1901,7 +1901,7 @@ export async function generate({ cacheKey, minIntervalMs, system, prompt, maxTok
 
 **Files:** Create: `src/services/news.js`, `src/routes/news.js`, `views/news.ejs`; Modify: `src/server.js` (`/nyheter`), `views/layout.ejs` (nav `Nyheter`), `src/routes/index.js` + `views/dashboard.ejs` (panel), `README.md` (status-tabellen)
 
-- [ ] **Steg 1:** Opprett `src/services/news.js`:
+- [x] **Steg 1:** Opprett `src/services/news.js`:
 ```js
 // RSS-nyheter (gratis) + valgfri AI-oppsummering via ai.js.
 import { XMLParser } from 'fast-xml-parser';
@@ -1983,7 +1983,10 @@ export function summaryPoints(summary) {
     .filter(Boolean);
 }
 ```
-- [ ] **Steg 2 (TDD for ren logikk):** Opprett `test/news.test.js`:
+- [x] **Steg 2 (TDD for ren logikk):** Opprett `test/news.test.js`:
+      Servicen ble skrevet først, så bevisst brekkasje ble kjørt som verifisering:
+      «maks 8» → «maks 9» ga `AssertionError: … did not match /maks 8/` (32 pass,
+      1 fail), og etter tilbakestilling 33/33 grønne.
 ```js
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -2017,7 +2020,7 @@ test('summaryPoints deler opp og renser punkter', () => {
 });
 ```
 Kjør `npm test` FØR news.js er ferdig skrevet hvis mulig (RED) — hvis du skrev service først: verifiser i det minste at testene består og at en bevisst brekkasje (endre «maks 8» til «maks 9» midlertidig) får testen til å feile, så gjenopprett. Testene skal IKKE kalle nettverket — kun de rene funksjonene.
-- [ ] **Steg 3:** Opprett `src/routes/news.js`:
+- [x] **Steg 3:** Opprett `src/routes/news.js`:
 ```js
 import { Router } from 'express';
 import { getNews, summaryPoints } from '../services/news.js';
@@ -2042,7 +2045,14 @@ router.get('/', async (req, res, next) => {
 
 export default router;
 ```
-- [ ] **Steg 4:** Opprett `views/news.ejs`. VIKTIG XSS-regel: AI-tekst er utrygg — escape alt med `<%= %>`, og gjør SÅ fet-markering trygt i en hjelpefunksjon i viewet:
+- [x] **Steg 4:** Opprett `views/news.ejs`.
+      **Avvik fra planen:** escapingen er skrevet som to navngitte hjelpere
+      (`esc()` + `bold()`) i stedet for planens inline-IIFE — samme oppførsel,
+      lesbar. I tillegg slipper `safeLink()` bare `http(s)`-lenker gjennom, siden
+      RSS-lenker er tredjepartsinnhold (`javascript:`-lenker blir `#`).
+      Verifisert med mock-rendring: `<script>` i AI-teksten escapes, `&` escapes,
+      `**navn**` blir `<strong>`, `javascript:`-lenke blokkeres.
+      Planens opprinnelige XSS-regel: AI-tekst er utrygg — escape alt med `<%= %>`, og gjør SÅ fet-markering trygt i en hjelpefunksjon i viewet:
 ```ejs
 <% function bold(escaped) { return escaped.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>'); } %>
 <section class="page-head">
@@ -2092,7 +2102,7 @@ og CSS-append:
   border-bottom: none;
 }
 ```
-- [ ] **Steg 5:** Dashboardpanel: i `src/routes/index.js` — importer `getNews, summaryPoints` fra news.js og `isEnabled` fra ai.js; hent nyheter parallelt i `Promise.all`; send `newsPoints: summaryPoints(news.summary).slice(0, 3)` til viewet (tåler feil: wrap news-kallet i try/catch → tomt panel). I `views/dashboard.ejs` legg til nederst:
+- [x] **Steg 5:** Dashboardpanel: i `src/routes/index.js` — importer `getNews, summaryPoints` fra news.js og `isEnabled` fra ai.js; hent nyheter parallelt i `Promise.all`; send `newsPoints: summaryPoints(news.summary).slice(0, 3)` til viewet (tåler feil: wrap news-kallet i try/catch → tomt panel). I `views/dashboard.ejs` legg til nederst:
 ```ejs
 <% if (newsPoints && newsPoints.length > 0) { %>
   <section class="card card-wide">
@@ -2102,8 +2112,12 @@ og CSS-append:
   </section>
 <% } %>
 ```
-- [ ] **Steg 6:** Monter `/nyheter` + nav. Røyk-test `/nyheter` uten nøkkel (rå liste, 200). Har du ANTHROPIC_API_KEY i lokal `.env`: test med (AI-seksjon vises). Test + lint grønne.
-- [ ] **Steg 7:** Commit `feat: /nyheter med RSS og valgfri AI-oppsummering` + oppdater README side-tabell. **Si fra til bruker:** legg `ANTHROPIC_API_KEY` (og ev. `AI_MODEL`) inn i Coolify for AI i prod.
+- [x] **Steg 6:** Monter `/nyheter` + nav. Røyk-test `/nyheter` uten nøkkel (rå liste, 200). Har du ANTHROPIC_API_KEY i lokal `.env`: test med (AI-seksjon vises). Test + lint grønne.
+      `/nyheter` 200 med 25 ekte RSS-saker og «Rå feed-liste»-teksten (ingen
+      nøkkel lokalt). Dashboardet 200 uten nyhetspanel, som forventet uten AI.
+      33/33 tester, lint 0. AI-seksjonen er verifisert med mock-rendring.
+- [x] **Steg 7:** Commit `feat: /nyheter med RSS og valgfri AI-oppsummering` + oppdater README side-tabell. **Si fra til bruker:** legg `ANTHROPIC_API_KEY` (og ev. `AI_MODEL`) inn i Coolify for AI i prod.
+      → Sagt fra til bruker i svaret; `ANTHROPIC_API_KEY` mangler fortsatt i Coolify.
 
 ### Task 7.3: Release v0.7.0
 - [ ] Som Task 2.4: CHANGELOG `[0.7.0]`, ROADMAP (alle fem punkter), version, HANDOVER, `docs: release v0.7.0`, tag, push, verifiser prod /nyheter

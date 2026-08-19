@@ -157,3 +157,11 @@
   </div>
   <p class="hint">STORE bokstaver = hjemmekamp, små = bortekamp.</p>
 </section>
+
+<% if (newsPoints && newsPoints.length > 0) { %>
+  <section class="card card-wide">
+    <h2>Siste FPL-nytt (AI)</h2>
+    <ul class="rec-list"><% for (const p of newsPoints) { %><li><%= p.replace(/\*\*/g, '') %></li><% } %></ul>
+    <p class="hint"><a href="/nyheter">Alle nyheter →</a></p>
+  </section>
+<% } %>

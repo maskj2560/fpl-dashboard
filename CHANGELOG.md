@@ -12,6 +12,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Felles AI-service (`ai.js`) mot Claude API med lazy init, modell fra
   `AI_MODEL` og hard cache med minimumsintervall per funksjon. Uten
   `ANTHROPIC_API_KEY` er alle AI-funksjoner av, og appen viser rå data
+- Nyhetsside (`/nyheter`) med RSS-saker fra britiske kilder (BBC og Sky som
+  standard, overstyres med `NEWS_FEEDS`), cachet i 15 minutter
+- Valgfri AI-oppsummering av nyhetene på norsk, maks én generering per 30 min
+- Nyhetspanel på dashboardet med de tre øverste AI-punktene
 
 ## [0.6.0] - 2026-08-19
 

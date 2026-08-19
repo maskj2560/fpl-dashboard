@@ -12,6 +12,7 @@ import {
   POSITIONS_SHORT,
 } from '../services/analysis.js';
 import { formatDateTime, formatNumber } from '../services/format.js';
+import { getNews, summaryPoints } from '../services/news.js';
 
 const router = Router();
 
@@ -26,7 +27,12 @@ const STATUS_LABELS = {
 
 router.get('/', async (req, res, next) => {
   try {
-    const [bootstrap, fixtures] = await Promise.all([getBootstrap(), getFixtures()]);
+    // Nyheter er et tillegg: feil eller manglende feed skal aldri velte dashboardet.
+    const [bootstrap, fixtures, news] = await Promise.all([
+      getBootstrap(),
+      getFixtures(),
+      getNews().catch(() => null),
+    ]);
     const { events, teams, elements } = bootstrap;
 
     const deadlineEvent = nextEvent(events);
@@ -41,6 +47,7 @@ router.get('/', async (req, res, next) => {
       boughtMost: mostTransferredIn(elements),
       soldMost: mostTransferredOut(elements),
       matrix: fdrMatrix(teams, fixtures, fromGw, 5),
+      newsPoints: summaryPoints(news?.summary).slice(0, 3),
       teamsById,
       STATUS_LABELS,
       POSITIONS_SHORT,
