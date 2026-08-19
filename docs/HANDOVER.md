@@ -7,8 +7,8 @@
 
 ## v1.1.1 — QA-rettelsene er ferdige lokalt (2026-08-20)
 
-Branch `fix/qa-v1.1.1` (fra `main`), 16 commits + release-commit, lokal tag
-`v1.1.1`. **Ikke pushet.** Push til `main` auto-deployer til prod, så det
+Branch `fix/qa-v1.1.1` (fra `main`), 18 commits (16 funn-commits, release og
+en etterfølgende retting av P1-4), lokal tag `v1.1.1` på siste commit. **Ikke pushet.** Push til `main` auto-deployer til prod, så det
 venter på klarsignal fra Marius.
 
 ### Hva som er gjort
@@ -30,7 +30,7 @@ emnelinjen. Se CHANGELOG `[1.1.1]` for brukersynlig liste. Kort:
 
 ### Verifisert lokalt (kommandoer kjørt, output sett)
 
-- `npm test` 111/111 grønne, `npm run lint` 0 feil
+- `npm test` 113/113 grønne, `npm run lint` 0 feil
 - Lokal server: alle 10 ruter 200, 404 på ukjent sti, `/health`
   `leagues: 1` (auto-oppdaget — `LEAGUE_IDS` er ikke satt)
 - Asset-headere: `?v=<hash>` → `public, max-age=31536000, immutable`,
@@ -49,6 +49,10 @@ emnelinjen. Se CHANGELOG `[1.1.1]` for brukersynlig liste. Kort:
 - **«Spør AI om råd»-stien på /lag** — ikke rørt, rendres ikke før sesongstart
 - **Auto-brief til Discord** — koden er endret (`sanitizeBriefText`), men
   ingen ny webhook-test er kjørt i denne økten
+- **sanitizeBriefText mot en fersk AI-brief** — den første versjonen fjernet to
+  korrekte setninger i en ekte kjøring (se loggen i økta). Retting og
+  regresjonstester er på plass, men kontrollen er ikke kjørt mot en ny ekte
+  generering, siden det ville kostet et tredje AI-kall
 
 ### Neste steg (krever Marius)
 
