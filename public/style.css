@@ -711,6 +711,31 @@ table.sortable th[aria-sort='ascending']::after {
   border-bottom: none;
 }
 
+/* ---------- AI-rådgiver ---------- */
+
+.btn-accent {
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-accent:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.ai-result {
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--border);
+  padding-top: 0.75rem;
+  font-size: 0.92rem;
+}
+
 /* ---------- Bevegelse ---------- */
 
 @media (prefers-reduced-motion: no-preference) {

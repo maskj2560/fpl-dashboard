@@ -2257,7 +2257,9 @@ res.renderPage('brief', { title: 'Gameweek-brief', brief, aiBrief });
 
 **Files:** Modify: `src/routes/api.js` (POST /api/ai-rad), `src/server.js` (`app.use(express.json());` — legg rett etter `app.use(compression());`), `views/team.ejs` (knapp + resultatboks), `public/app.js` (modul 4)
 
-- [ ] **Steg 1:** I `src/routes/api.js`:
+- [x] **Steg 1:** I `src/routes/api.js`: (importene er slått sammen med de
+      eksisterende `analysis.js`-importene i stedet for alias-import; `maxTokens`
+      4000, se avviket i Task 7.1 Steg 2)
 ```js
 import * as ai from '../services/ai.js';
 import { buildAdvicePrompt } from '../services/prompts.js';
@@ -2301,7 +2303,7 @@ router.post('/ai-rad', async (req, res, next) => {
   }
 });
 ```
-- [ ] **Steg 2:** I `views/team.ejs`, nederst (kun når `recommendations` finnes):
+- [x] **Steg 2:** I `views/team.ejs`, nederst (kun når `recommendations` finnes):
 ```ejs
 <section class="card card-wide" id="ai-advice-box">
   <h2>AI-rådgiver</h2>
@@ -2310,7 +2312,7 @@ router.post('/ai-rad', async (req, res, next) => {
   <div id="ai-advice-result" class="ai-result" hidden></div>
 </section>
 ```
-- [ ] **Steg 3:** Append modul 4 i `public/app.js`:
+- [x] **Steg 3:** Append modul 4 i `public/app.js`:
 ```js
 // Modul 4: AI-rådgiver på /lag.
 (function () {
@@ -2377,7 +2379,12 @@ og CSS-append:
   font-size: 0.92rem;
 }
 ```
-- [ ] **Steg 4:** Røyk-test: uten nøkkel → knappen gir feilmelding pent; med nøkkel → tekst kommer. Test + lint. Commit `feat: AI transfer-raadgiver paa /lag`
+- [x] **Steg 4:** Røyk-test: uten nøkkel → knappen gir feilmelding pent; med nøkkel → tekst kommer. Test + lint. Commit `feat: AI transfer-raadgiver paa /lag`
+      `POST /api/ai-rad` uten nøkkel gir 400 med
+      `{"error":"AI er ikke aktivert (mangler ANTHROPIC_API_KEY)."}` — frontend
+      viser den teksten i resultatboksen. Knappen rendres kun når anbefalinger
+      finnes (verifisert begge veier). Med nøkkel kan ikke testes uten nøkkel.
+      35/35 tester, lint 0.
 
 ### Task 8.4: Release v0.8.0
 - [ ] Som Task 2.4 (CHANGELOG `[0.8.0]`, ROADMAP v0.8.0-punktene, version, HANDOVER, tag, push, verifiser prod)

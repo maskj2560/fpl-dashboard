@@ -200,3 +200,41 @@
   let timer = null;
   if (anyLive) timer = setInterval(poll, 60000);
 })();
+
+// Modul 4: AI-rådgiver på /lag.
+(function () {
+  'use strict';
+
+  const btn = document.getElementById('ai-advice-btn');
+  const out = document.getElementById('ai-advice-result');
+  if (!btn || !out) return;
+
+  function escapeHtml(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  btn.addEventListener('click', async () => {
+    btn.disabled = true;
+    btn.textContent = 'Tenker …';
+    out.hidden = false;
+    out.textContent = 'Henter råd …';
+    try {
+      const res = await fetch('/api/ai-rad', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) {
+        out.textContent = data.error || 'Noe gikk galt.';
+      } else {
+        out.innerHTML = data.text
+          .split('\n')
+          .filter((l) => l.trim())
+          .map((l) => '<p>' + escapeHtml(l).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>') + '</p>')
+          .join('');
+      }
+    } catch {
+      out.textContent = 'Nettverksfeil — prøv igjen.';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Spør AI om råd';
+    }
+  });
+})();

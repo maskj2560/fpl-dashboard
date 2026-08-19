@@ -21,6 +21,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(rootDir, 'views'));
 
 app.use(compression());
+app.use(express.json());
 app.use(express.static(path.join(rootDir, 'public'), { maxAge: '1d' }));
 
 // res.renderPage(view, data): rendrer viewet og legger resultatet inn i

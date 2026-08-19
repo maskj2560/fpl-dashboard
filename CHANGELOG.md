@@ -12,6 +12,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Promptbyggere (`prompts.js`) for AI-brief og transfer-rådgiver, med tester
 - AI-skrevet gameweek-brief øverst på `/brief` når `ANTHROPIC_API_KEY` er satt,
   maks én generering per time. Data-briefen vises alltid under som fallback
+- «Spør AI om råd»-knapp på `/lag` som sender troppen til `POST /api/ai-rad`
+  og viser begrunnede råd, cachet i én time per lag og gameweek
 
 ## [0.7.0] - 2026-08-19
 
