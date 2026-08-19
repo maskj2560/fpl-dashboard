@@ -7,6 +7,11 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+- **Dashbordet presenterer ikke lenger tomme datasett som rangeringer.**
+  «Toppform», «Mest kjøpt» og «Mest solgt» viste en vilkårlig sortering av
+  spillere med form 0 og 0 overganger før sesongstart. Listene er nå tomme når
+  datagrunnlaget er null, og kortene forklarer hvorfor
+
 - **Tabellhodet legger seg ikke lenger under toppmenyen.** Tabellene på
   dashbordet, /liga og /live flyter nå med siden i stedet for å ha egen
   vertikal scroll. Den lange spillertabellen beholder scrollboksen, men hele

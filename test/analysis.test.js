@@ -99,6 +99,37 @@ test('mostTransferredIn/Out sorterer på transfers denne GW-en', () => {
   assert.deepEqual(mostTransferredOut(players, 2).map((p) => p.id), [3, 2]);
 });
 
+// P1-1: før sesongstart er alle form-tall og overgangstall 0. En sortering på
+// bare nuller ga en vilkårlig topplista som så ut som ekte rangering.
+test('topForm gir tom liste når ingen har form over 0', () => {
+  const players = [
+    player({ id: 1, form: '0.0', minutes: 500 }),
+    player({ id: 2, form: '0.0', minutes: 900 }),
+  ];
+
+  assert.deepEqual(topForm(players, 10), []);
+});
+
+test('mostTransferredIn/Out gir tom liste når ingen overganger er gjort', () => {
+  const players = [
+    player({ id: 1, transfers_in_event: 0, transfers_out_event: 0 }),
+    player({ id: 2, transfers_in_event: 0, transfers_out_event: 0 }),
+  ];
+
+  assert.deepEqual(mostTransferredIn(players, 10), []);
+  assert.deepEqual(mostTransferredOut(players, 10), []);
+});
+
+test('mostTransferredIn/Out tar med bare spillere som faktisk er byttet', () => {
+  const players = [
+    player({ id: 1, transfers_in_event: 5, transfers_out_event: 0 }),
+    player({ id: 2, transfers_in_event: 0, transfers_out_event: 7 }),
+  ];
+
+  assert.deepEqual(mostTransferredIn(players, 10).map((x) => x.id), [1]);
+  assert.deepEqual(mostTransferredOut(players, 10).map((x) => x.id), [2]);
+});
+
 test('fdrMatrix bygger 5 GW-er per lag med riktig difficulty', () => {
   const teams = [
     { id: 1, name: 'Arsenal', short_name: 'ARS' },

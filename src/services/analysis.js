@@ -44,21 +44,27 @@ export function flaggedPlayers(elements, limit = 10) {
 }
 
 /** Topp N på form. Spillere uten spilletid utelates (form-støy). */
+// De tre listene under returnerer tom liste når datagrunnlaget er null — før
+// sesongstart har alle spillere form 0 og 0 overganger, og en sortering på
+// bare nuller ga en vilkårlig «rangering» som så ut som ekte data (QA-funn P1-1).
+
 export function topForm(elements, limit = 10) {
-  return elements
-    .filter((p) => p.minutes > 0)
-    .sort((a, b) => parseFloat(b.form) - parseFloat(a.form))
-    .slice(0, limit);
+  const ranked = elements
+    .filter((p) => p.minutes > 0 && parseFloat(p.form) > 0)
+    .sort((a, b) => parseFloat(b.form) - parseFloat(a.form));
+  return ranked.slice(0, limit);
 }
 
 export function mostTransferredIn(elements, limit = 10) {
   return [...elements]
+    .filter((p) => p.transfers_in_event > 0)
     .sort((a, b) => b.transfers_in_event - a.transfers_in_event)
     .slice(0, limit);
 }
 
 export function mostTransferredOut(elements, limit = 10) {
   return [...elements]
+    .filter((p) => p.transfers_out_event > 0)
     .sort((a, b) => b.transfers_out_event - a.transfers_out_event)
     .slice(0, limit);
 }

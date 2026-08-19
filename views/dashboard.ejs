@@ -53,64 +53,76 @@
 
   <section class="card">
     <h2>Toppform</h2>
-    <div class="table-scroll">
-      <table class="data">
-        <thead>
-          <tr><th>Spiller</th><th>Lag</th><th>Pos</th><th class="num">Form</th><th class="num">Poeng</th></tr>
-        </thead>
-        <tbody>
-          <% for (const p of inForm) { %>
-            <tr>
-              <td><strong><%= p.web_name %></strong></td>
-              <td><%= teamsById.get(p.team)?.short_name ?? '?' %></td>
-              <td><%= POSITIONS_SHORT[p.element_type] %></td>
-              <td class="num accent"><%= p.form %></td>
-              <td class="num"><%= p.total_points %></td>
-            </tr>
-          <% } %>
-        </tbody>
-      </table>
-    </div>
+    <% if (inForm.length === 0) { %>
+      <p class="empty">Formtallene nullstilles mellom sesongene. Toppformlisten fylles så snart den første runden er spilt.</p>
+    <% } else { %>
+      <div class="table-scroll">
+        <table class="data">
+          <thead>
+            <tr><th>Spiller</th><th>Lag</th><th>Pos</th><th class="num">Form</th><th class="num">Poeng</th></tr>
+          </thead>
+          <tbody>
+            <% for (const p of inForm) { %>
+              <tr>
+                <td><strong><%= p.web_name %></strong></td>
+                <td><%= teamsById.get(p.team)?.short_name ?? '?' %></td>
+                <td><%= POSITIONS_SHORT[p.element_type] %></td>
+                <td class="num accent"><%= p.form %></td>
+                <td class="num"><%= p.total_points %></td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
   </section>
 
   <section class="card">
     <h2>Mest kjøpt denne runden</h2>
-    <div class="table-scroll">
-      <table class="data">
-        <thead>
-          <tr><th>Spiller</th><th class="num">Pris</th><th class="num">Inn</th></tr>
-        </thead>
-        <tbody>
-          <% for (const p of boughtMost) { %>
-            <tr>
-              <td><strong><%= p.web_name %></strong> <span class="dim"><%= teamsById.get(p.team)?.short_name ?? '' %></span></td>
-              <td class="num"><%= formatPrice(p.now_cost) %></td>
-              <td class="num accent">+<%= formatNumber(p.transfers_in_event) %></td>
-            </tr>
-          <% } %>
-        </tbody>
-      </table>
-    </div>
+    <% if (boughtMost.length === 0) { %>
+      <p class="empty">Ingen overganger er registrert i denne runden ennå. Listen fylles etter hvert som managerne begynner å bytte.</p>
+    <% } else { %>
+      <div class="table-scroll">
+        <table class="data">
+          <thead>
+            <tr><th>Spiller</th><th class="num">Pris</th><th class="num">Inn</th></tr>
+          </thead>
+          <tbody>
+            <% for (const p of boughtMost) { %>
+              <tr>
+                <td><strong><%= p.web_name %></strong> <span class="dim"><%= teamsById.get(p.team)?.short_name ?? '' %></span></td>
+                <td class="num"><%= formatPrice(p.now_cost) %></td>
+                <td class="num accent">+<%= formatNumber(p.transfers_in_event) %></td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
   </section>
 
   <section class="card">
     <h2>Mest solgt denne runden</h2>
-    <div class="table-scroll">
-      <table class="data">
-        <thead>
-          <tr><th>Spiller</th><th class="num">Pris</th><th class="num">Ut</th></tr>
-        </thead>
-        <tbody>
-          <% for (const p of soldMost) { %>
-            <tr>
-              <td><strong><%= p.web_name %></strong> <span class="dim"><%= teamsById.get(p.team)?.short_name ?? '' %></span></td>
-              <td class="num"><%= formatPrice(p.now_cost) %></td>
-              <td class="num negative">−<%= formatNumber(p.transfers_out_event) %></td>
-            </tr>
-          <% } %>
-        </tbody>
-      </table>
-    </div>
+    <% if (soldMost.length === 0) { %>
+      <p class="empty">Ingen overganger er registrert i denne runden ennå. Listen fylles etter hvert som managerne begynner å bytte.</p>
+    <% } else { %>
+      <div class="table-scroll">
+        <table class="data">
+          <thead>
+            <tr><th>Spiller</th><th class="num">Pris</th><th class="num">Ut</th></tr>
+          </thead>
+          <tbody>
+            <% for (const p of soldMost) { %>
+              <tr>
+                <td><strong><%= p.web_name %></strong> <span class="dim"><%= teamsById.get(p.team)?.short_name ?? '' %></span></td>
+                <td class="num"><%= formatPrice(p.now_cost) %></td>
+                <td class="num negative">−<%= formatNumber(p.transfers_out_event) %></td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
   </section>
 </div>
 

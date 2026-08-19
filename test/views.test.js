@@ -13,6 +13,8 @@ function renderView(name, locals) {
 const cases = [
   ['dashboard', fx.dashboard, 'Neste deadline'],
   ['dashboard', fx.dashboardEmpty, 'Ingen kommende deadline'],
+  ['dashboard', fx.dashboardEmpty, 'Formtallene nullstilles'],
+  ['dashboard', fx.dashboardEmpty, 'Ingen overganger er registrert'],
   ['team', fx.team, 'Marius XI'],
   ['team', fx.teamEmpty, 'Fant ingen lagoppstilling'],
   ['players', fx.players, 'players-table'],
