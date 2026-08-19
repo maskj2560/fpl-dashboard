@@ -9,6 +9,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Fixed
 
+- **Mobilmenyen viser at den kan dras sidelengs.** Halve navigasjonen lå
+  utenfor skjermen på 390 px uten noe hint. Kantfaden vises nå kun på siden
+  med mer innhold, lenkene snapper på plass (`scroll-snap`), og den aktive
+  lenken scrolles fortsatt inn i syne ved sidelast (QA v1.1.1, P1-2)
 - **Mørk scrollbar i tabellbokser.** Chrome tegnet lys standard-scrollbar
   inne i de mørke `.table-scroll`-boksene (godt synlig på /spillere).
   Scrollbaren matcher nå temaet i både Firefox og WebKit (QA v1.1.1, P1-1)
