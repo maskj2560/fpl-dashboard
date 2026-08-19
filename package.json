@@ -1,0 +1,26 @@
+{
+  "name": "fpl-dashboard",
+  "version": "0.1.0",
+  "description": "Selvhostet Fantasy Premier League-dashboard — Express 5 + EJS, server-rendret, norsk UI",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "test": "node --test",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "compression": "^1.8.0",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.30.0",
+    "eslint": "^9.30.0",
+    "globals": "^16.0.0"
+  }
+}
