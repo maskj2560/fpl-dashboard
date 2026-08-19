@@ -817,12 +817,19 @@ table.sortable th[aria-sort='ascending']::after {
   background: var(--accent-soft);
 }
 
+/* Kantstripe gjør egen rad synlig også når man scroller vannrett. */
+.row-me td:first-child {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
 .sub-head {
-  font-size: 0.82rem;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   color: var(--text-dim);
-  margin: 0 0 0.5rem;
+  margin: 0 0 var(--space-2);
 }
 
 /* ---------- Live: kampstillinger som scoreboard ---------- */
