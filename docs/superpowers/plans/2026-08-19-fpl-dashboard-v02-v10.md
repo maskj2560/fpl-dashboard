@@ -1827,8 +1827,17 @@ router.get('/live.json', async (req, res, next) => {
 
 **Files:** Create: `src/services/ai.js`; Modify: `package.json` (via npm)
 
-- [ ] **Steg 1:** `npm install fast-xml-parser @anthropic-ai/sdk`
-- [ ] **Steg 2:** Opprett `src/services/ai.js`:
+- [x] **Steg 1:** `npm install fast-xml-parser @anthropic-ai/sdk`
+      (`@anthropic-ai/sdk@^0.119.0`, `fast-xml-parser@^5.11.0`, 0 sårbarheter.)
+- [x] **Steg 2:** Opprett `src/services/ai.js`:
+      **Avvik fra planen (to små):** 1) `maxTokens`-default hevet fra 600 til
+      2000, og kallene bruker høyere tak (se Task 7.2/8.2) — på `claude-sonnet-5`
+      er adaptiv tenkning på som standard og tenketokens trekkes fra `max_tokens`,
+      så et tak på 600 kan gi avkortet eller tomt svar. Ubrukte tokens koster
+      ingenting; lengden styres av prompten. 2) Tomt svar behandles som feil og
+      beholder forrige cachede oppsummering. Kallet holdes bevisst minimalt
+      (ingen `thinking`/`output_config.effort`) fordi `effort` gir feil på
+      `claude-haiku-4-5`, som er det billige alternativet i `AI_MODEL`.
 ```js
 // Felles Claude API-service. Brukes av nyheter, AI-brief og transfer-rådgiver.
 // Kostnadsdisiplin: hard cache med minimumsintervall per nøkkel + in-flight dedup.
@@ -1886,7 +1895,7 @@ export async function generate({ cacheKey, minIntervalMs, system, prompt, maxTok
   return p;
 }
 ```
-- [ ] **Steg 3:** `npm run lint` grønn. Commit `feat: felles AI-service med kostnadscache`
+- [x] **Steg 3:** `npm run lint` grønn. Commit `feat: felles AI-service med kostnadscache`
 
 ### Task 7.2: news.js + /nyheter + dashboardpanel
 

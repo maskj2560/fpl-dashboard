@@ -7,6 +7,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+
+- Felles AI-service (`ai.js`) mot Claude API med lazy init, modell fra
+  `AI_MODEL` og hard cache med minimumsintervall per funksjon. Uten
+  `ANTHROPIC_API_KEY` er alle AI-funksjoner av, og appen viser rå data
+
 ## [0.6.0] - 2026-08-19
 
 ### Added

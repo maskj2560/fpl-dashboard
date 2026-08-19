@@ -14,9 +14,11 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.119.0",
     "compression": "^1.8.0",
     "ejs": "^3.1.10",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "fast-xml-parser": "^5.11.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.0",
