@@ -825,6 +825,68 @@ table.sortable th[aria-sort='ascending']::after {
   margin: 0 0 0.5rem;
 }
 
+/* ---------- Live: kampstillinger som scoreboard ---------- */
+
+.scoreboard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.match {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+}
+
+.match-team {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+}
+
+.match-team:last-of-type {
+  text-align: right;
+}
+
+.match-score {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+  padding: 0 var(--space-2);
+}
+
+.match-status {
+  grid-column: 1 / -1;
+  justify-self: center;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+}
+
+/* Magenta markerer at kampen faktisk ruller nå. */
+.match-live {
+  border-color: var(--accent-2);
+}
+
+.match-live .match-status {
+  color: var(--accent-2);
+  font-weight: 700;
+}
+
+.row-bench td {
+  opacity: 0.55;
+}
+
 /* ---------- Live-puls ---------- */
 
 .pulse {
@@ -837,7 +899,8 @@ table.sortable th[aria-sort='ascending']::after {
 }
 
 .pulse-on {
-  background: var(--accent);
+  background: var(--accent-2);
+  box-shadow: 0 0 0 3px var(--accent-2-soft);
 }
 
 @media (prefers-reduced-motion: no-preference) {

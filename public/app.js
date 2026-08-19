@@ -138,7 +138,7 @@
   if (!root || !dataEl) return;
 
   const playersBody = document.querySelector('#live-players tbody');
-  const matchesBody = document.querySelector('#live-matches tbody');
+  const matchesRoot = document.getElementById('live-matches');
   const leaguesRoot = document.getElementById('live-leagues');
   const totalEl = document.getElementById('live-total');
   const statusEl = document.getElementById('live-status');
@@ -156,20 +156,27 @@
     playersBody.innerHTML = live.myPlayers
       .map(function (p) {
         return (
-          '<tr' + (p.onBench ? ' style="opacity:.55"' : '') + '><td><strong>' + esc(p.name) + '</strong>' +
+          '<tr' + (p.onBench ? ' class="row-bench"' : '') + '><td><strong>' + esc(p.name) + '</strong>' +
           (p.isCaptain ? ' <b class="cap">C</b>' : '') + ' <span class="dim">' + esc(p.team) + '</span></td>' +
           '<td class="num">' + p.minutes + "'</td>" +
           '<td class="num">' + p.points + '</td>' +
-          '<td class="num">' + (p.bonusEst > 0 ? '+' + p.bonusEst : '–') + '</td>' +
+          '<td class="num' + (p.bonusEst > 0 ? ' accent' : '') + '">' + (p.bonusEst > 0 ? '+' + p.bonusEst : '–') + '</td>' +
           '<td class="num"><strong>' + p.effective + '</strong></td></tr>'
         );
       })
       .join('');
-    matchesBody.innerHTML = live.matches
+    matchesRoot.innerHTML = live.matches
       .map(function (m) {
         const status = m.finished ? 'Slutt' : m.started ? m.minutes + "'" : 'Ikke startet';
-        const score = m.homeScore == null ? '–' : m.homeScore + ' – ' + m.awayScore;
-        return '<tr><td>' + esc(m.home) + ' – ' + esc(m.away) + '</td><td class="num">' + score + '</td><td>' + status + '</td></tr>';
+        const live1 = m.started && !m.finished;
+        return (
+          '<div class="match' + (live1 ? ' match-live' : '') + '">' +
+          '<span class="match-team">' + esc(m.home) + '</span>' +
+          '<span class="match-score">' + (m.homeScore == null ? '–' : m.homeScore + '–' + m.awayScore) + '</span>' +
+          '<span class="match-team">' + esc(m.away) + '</span>' +
+          '<span class="match-status">' + status + '</span>' +
+          '</div>'
+        );
       })
       .join('');
     leaguesRoot.innerHTML = live.leagues
