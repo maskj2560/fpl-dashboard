@@ -2397,7 +2397,7 @@ og CSS-append:
 
 **Files:** Create: `src/services/notify.js`; Modify: `src/server.js` (start scheduler etter `app.listen`)
 
-- [ ] **Steg 1:** Opprett `src/services/notify.js`:
+- [x] **Steg 1:** Opprett `src/services/notify.js`: (`maxTokens` 4000, se Task 7.1 Steg 2)
 ```js
 // Sender gameweek-briefen til Discord-webhook X timer før deadline.
 // Enkel deadline-scheduler uten cron-avhengighet: sjekker hver 6. time og
@@ -2494,9 +2494,15 @@ async function postToDiscord(text) {
   }
 }
 ```
-- [ ] **Steg 2:** I `src/server.js`: `import { startScheduler } from './services/notify.js';` og kall `startScheduler();` rett etter `app.listen(...)`-blokken.
-- [ ] **Steg 3:** Test uten webhook-URL (scheduler inaktiv, server starter normalt — røyk-test /health). Lint + test grønne.
-- [ ] **Steg 4:** Commit `feat: auto-brief til Discord foer deadline`. **Si fra til bruker:** lag Discord-webhook (Discord-kanal → Innstillinger → Integrasjoner → Webhooks) og sett `DISCORD_WEBHOOK_URL` (+ ev. `BRIEF_HOURS_BEFORE_DEADLINE`) i Coolify.
+- [x] **Steg 2:** I `src/server.js`: `import { startScheduler } from './services/notify.js';` og kall `startScheduler();` rett etter `app.listen(...)`-blokken.
+- [x] **Steg 3:** Test uten webhook-URL (scheduler inaktiv, server starter normalt — røyk-test /health). Lint + test grønne.
+      Uten URL: server starter, `/health` 200 `{"status":"ok"}`, ingen sending.
+      **I tillegg testet med URL:** kjørte serveren mot en lokal mock-webhook med
+      `BRIEF_HOURS_BEFORE_DEADLINE=100` (så sendetidspunktet lå i fortiden).
+      Resultat: én POST med `application/json`, 297 tegn (under 2000-grensen),
+      riktig header med gameweek-navn, deadline og lenke, og data-briefen som
+      innhold siden AI er av. 35/35 tester, lint 0.
+- [x] **Steg 4:** Commit `feat: auto-brief til Discord foer deadline`. **Si fra til bruker:** lag Discord-webhook (Discord-kanal → Innstillinger → Integrasjoner → Webhooks) og sett `DISCORD_WEBHOOK_URL` (+ ev. `BRIEF_HOURS_BEFORE_DEADLINE`) i Coolify.
 
 ### Task 9.2: Release v0.9.0
 - [ ] Som Task 2.4 (CHANGELOG `[0.9.0]`, ROADMAP, version, HANDOVER, tag, push)

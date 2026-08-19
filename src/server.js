@@ -13,6 +13,7 @@ import briefRouter from './routes/brief.js';
 import apiRouter from './routes/api.js';
 import liveRouter from './routes/live.js';
 import newsRouter from './routes/news.js';
+import { startScheduler } from './services/notify.js';
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const app = express();
@@ -76,5 +77,8 @@ app.use((err, req, res, next) => {
 app.listen(config.port, () => {
   console.log(`FPL-dashboard lytter på http://localhost:${config.port}`);
 });
+
+// Inaktiv uten DISCORD_WEBHOOK_URL.
+startScheduler();
 
 export default app;

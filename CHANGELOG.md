@@ -7,6 +7,13 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+
+- Auto-brief til Discord (`notify.js`): briefen postes til
+  `DISCORD_WEBHOOK_URL` et valgt antall timer før deadline
+  (`BRIEF_HOURS_BEFORE_DEADLINE`, standard 24). AI-briefen brukes når nøkkel
+  finnes, ellers data-briefen. Uten webhook-URL er funksjonen inaktiv
+
 ## [0.8.0] - 2026-08-19
 
 ### Added
