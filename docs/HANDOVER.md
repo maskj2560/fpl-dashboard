@@ -124,6 +124,15 @@ arbeid er ikke planlagt ennå. Naturlige neste skritt:
 - 2026-08-19: «Oppdater ROADMAP, CHANGELOG, CLAUDE.md, HANDOVER kontinuerlig og ofte — alltid oppdatert» → fast rutine: alle fire sjekkes/oppdateres ved hver delfunksjon og hver commit, ikke bare ved milepæler
 - 2026-08-19: «Logget inn i gh. Repo skal være PRIVAT. Coolify på dash.marsk.no, hoster marsk.no + utevakt.marsk.no, denne appen skal på fpl.marsk.no» → privat repo opprettet og pushet
 - 2026-08-19: «Lag prompt til Claude in Chrome for Coolify-oppsettet + rapport-prompt tilbake» → prompt levert i chat; venter på rapport («RAPPORT TIL CLAUDE CODE — Coolify-deploy fpl-dashboard») før v0.2.0 fortsetter
+- 2026-08-19 (økt 2): «Lag en prompt jeg kan gi til fable for å planlegge. Han
+  skal fullføre alt som er påbegynt og hjelpe meg. La han planlegge lenge» +
+  «Husk å legg til alt av relevant informasjon» + «Så han finner kontekst og
+  planer og sånt» + «Han skal også gjøre en full UI makeover slik at alt ser
+  ekstremt bra ut» + «Det skal se clean ut» + «Og alle funksjoner skal være
+  kodet ferdig» → skrevet `docs/neste-okt-prompt.md`: full kontekst
+  (dokumentkart, arkitektur, alle sider, design-tokens, FPL-API, miljøfeller),
+  del A = fullføre og verifisere alt påbegynt, del B = full UI-makeover med
+  «clean» som uttalt mål. Prompten ber om planlegging først, ikke koding.
 - 2026-08-19 (økt 2): «Neste gang du pusher kan du legge til versjon og siste
   update nederst på siden + oppdatere den hver gang det pushes» → footeren viser
   nå `v<versjon> · sist oppdatert <tidspunkt>`. Versjonen leses fra
