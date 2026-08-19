@@ -1,7 +1,29 @@
+<%
+  // AI-tekst er utrygt innhold: escape først, gjør **fet** om til <strong> etterpå.
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function bold(text) {
+    return esc(text).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  }
+%>
 <section class="page-head">
   <h1>Gameweek-brief<% if (brief.gameweek) { %> — <%= brief.gameweek.name %><% } %></h1>
   <% if (brief.gameweek) { %><p class="dim">Deadline: <strong><%= brief.gameweek.deadlineFormatted %></strong></p><% } %>
 </section>
+
+<% if (typeof aiBrief !== 'undefined' && aiBrief?.text) { %>
+  <section class="card card-wide">
+    <h2>AI-brief <span class="dim">(generert <%= new Date(aiBrief.generatedAt).toLocaleTimeString('nb-NO') %> — datagrunnlaget vises under)</span></h2>
+    <% for (const line of aiBrief.text.split('\n')) { %>
+      <% if (/^#{1,3}\s/.test(line)) { %>
+        <h3 class="sub-head"><%- bold(line.replace(/^#{1,3}\s*/, '')) %></h3>
+      <% } else if (line.trim()) { %>
+        <p><%- bold(line.replace(/^[-*]\s*/, '• ')) %></p>
+      <% } %>
+    <% } %>
+  </section>
+<% } %>
 
 <div class="grid">
   <section class="card">

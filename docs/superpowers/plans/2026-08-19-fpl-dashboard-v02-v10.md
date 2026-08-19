@@ -2219,7 +2219,8 @@ export function buildAdvicePrompt({ entryName, bank, squadLines, outs }) {
 
 **Files:** Modify: `src/routes/brief.js`, `views/brief.ejs`
 
-- [ ] **Steg 1:** I `src/routes/brief.js`: importer `* as ai` og `buildBriefPrompt`. I GET-handleren, etter `assembleBrief()`:
+- [x] **Steg 1:** I `src/routes/brief.js`: importer `* as ai` og `buildBriefPrompt`.
+      (`maxTokens` satt til 4000 i stedet for 1500 — se avviket i Task 7.1 Steg 2.) I GET-handleren, etter `assembleBrief()`:
 ```js
 let aiBrief = null;
 if (ai.isEnabled()) {
@@ -2233,7 +2234,8 @@ if (ai.isEnabled()) {
 }
 res.renderPage('brief', { title: 'Gameweek-brief', brief, aiBrief });
 ```
-- [ ] **Steg 2:** I `views/brief.ejs`, øverst etter page-head: AI-seksjon (samme escape-så-fet-mønster som news.ejs; splitt på linjer, `##`-linjer → `<h3 class="sub-head">`):
+- [x] **Steg 2:** I `views/brief.ejs`, øverst etter page-head: AI-seksjon
+      (skrevet med samme `esc()`/`bold()`-hjelpere som news.ejs; punktlinjer får «• ») (samme escape-så-fet-mønster som news.ejs; splitt på linjer, `##`-linjer → `<h3 class="sub-head">`):
 ```ejs
 <% if (typeof aiBrief !== 'undefined' && aiBrief?.text) { %>
   <section class="card card-wide">
@@ -2245,7 +2247,11 @@ res.renderPage('brief', { title: 'Gameweek-brief', brief, aiBrief });
   </section>
 <% } %>
 ```
-- [ ] **Steg 3:** Røyk-test /brief med og uten nøkkel. Test + lint. Commit `feat: AI-skrevet gameweek-brief med datafallback`
+- [x] **Steg 3:** Røyk-test /brief med og uten nøkkel. Test + lint. Commit `feat: AI-skrevet gameweek-brief med datafallback`
+      Uten nøkkel: 200, ingen AI-seksjon, data-briefen vises ✅. Med nøkkel kan
+      ikke testes her (ingen nøkkel lokalt eller i Coolify ennå) — AI-grenen er
+      mock-rendret: `##`-linjer blir `<h3>`, `**navn**` blir `<strong>`,
+      `<script>` og `&` escapes, og data-briefen står fortsatt under.
 
 ### Task 8.3: Transfer-rådgiver på /lag
 

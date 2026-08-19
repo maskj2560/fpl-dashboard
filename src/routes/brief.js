@@ -3,6 +3,8 @@ import config from '../config.js';
 import { getBootstrap, getFixtures, getPicks, FplError } from '../services/fplClient.js';
 import { buildBrief } from '../services/brief.js';
 import { currentEvent, nextEvent } from '../services/analysis.js';
+import { buildBriefPrompt } from '../services/prompts.js';
+import * as ai from '../services/ai.js';
 
 const router = Router();
 
@@ -32,7 +34,18 @@ export async function assembleBrief() {
 
 router.get('/', async (req, res, next) => {
   try {
-    res.renderPage('brief', { title: 'Gameweek-brief', brief: await assembleBrief() });
+    const brief = await assembleBrief();
+    let aiBrief = null;
+    if (ai.isEnabled()) {
+      aiBrief = await ai.generate({
+        cacheKey: `ai-brief-gw${brief.gameweek?.id ?? 0}`,
+        minIntervalMs: 60 * 60_000,
+        system: 'Du er en norsk Fantasy Premier League-ekspert. Skriv presist og handlingsorientert.',
+        prompt: buildBriefPrompt(brief),
+        maxTokens: 4000,
+      });
+    }
+    res.renderPage('brief', { title: 'Gameweek-brief', brief, aiBrief });
   } catch (err) {
     next(err);
   }
