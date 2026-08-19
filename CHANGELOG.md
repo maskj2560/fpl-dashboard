@@ -7,6 +7,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Fixed
+
+- **Mørk scrollbar i tabellbokser.** Chrome tegnet lys standard-scrollbar
+  inne i de mørke `.table-scroll`-boksene (godt synlig på /spillere).
+  Scrollbaren matcher nå temaet i både Firefox og WebKit (QA v1.1.1, P1-1)
+
 ## [1.1.1] - 2026-08-20
 
 Rettelser etter ekstern QA av v1.1.0. Viktigst: assets versjoneres, slik at
