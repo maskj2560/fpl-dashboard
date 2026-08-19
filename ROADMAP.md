@@ -75,6 +75,27 @@ committet (og pushet hvis remote finnes).
 - [x] Gjennomgang av cache-TTL-er mot faktisk bruk
 - [x] README komplett (skjermbilder gjenstår — krever nettleser hos bruker)
 
+## v1.0.1 — AI og Discord i drift (Milepæl 1)
+
+- [x] Anti-spam-guard i `notify.js`: ingen re-sending av auto-briefen ved
+      deploy/restart i sendevinduet (`sendDecision`, TDD)
+- [ ] Usage-logging per AI-kall (modell + inn/ut-tokens) for kostnadskontroll
+- [ ] Lokal pre-flight av alle fire AI-funksjonene mot ekte API
+- [ ] Auto-briefen verifisert mot ekte Discord-webhook
+- [ ] `ANTHROPIC_API_KEY` + `DISCORD_WEBHOOK_URL` + `FPL_TEAM_ID` i Coolify
+- [ ] Naturlig auto-brief onsdag 20. aug ~19:30 verifisert
+- [ ] Kostnadskontroll etter 2–3 dager i drift
+
+## v1.1.0 — UI-makeover «Matchday» (Milepæl 2 + 3)
+
+- [ ] View-render-tester for alle 11 views med mockdata (sikkerhetsnett)
+- [ ] Lokal Archivo-font + kontrastverifisert tokenpalett
+- [ ] Én-linjes scrollbar navigasjon, hero som broadcast-scoreboard
+- [ ] Enhetlig kort- og tabellsystem på alle sider
+- [ ] /spillere, /lag (pitch + arealgraf), /live, /liga, /brief, /nyheter
+- [ ] Gjennomdesignede tom- og feiltilstander, mobil-finpuss
+- [ ] QA-runder 1–5 hos bruker
+
 ## Senere / idéer (ikke planlagt)
 
 - Historisk «hva hvis»-analyse av egne transfers

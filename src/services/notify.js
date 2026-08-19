@@ -9,8 +9,18 @@ import { buildBriefPrompt } from './prompts.js';
 import * as ai from './ai.js';
 
 const CHECK_INTERVAL = 6 * 60 * 60_000;
+const MAX_LATE_MS = 60 * 60_000; // sender ikke mer enn 1 t etter planlagt tid
 let timer = null;
 let lastSentEvent = null;
+
+/** Ren beslutning om auto-brief: vent, planlegg timer, eller hopp over. */
+export function sendDecision({ deadlineTime, hoursBefore, nowMs, checkIntervalMs }) {
+  const sendAt = new Date(deadlineTime).getTime() - hoursBefore * 60 * 60_000;
+  const delayMs = sendAt - nowMs;
+  if (delayMs > checkIntervalMs) return { action: 'wait', delayMs };
+  if (delayMs < -MAX_LATE_MS) return { action: 'skip', delayMs };
+  return { action: 'schedule', delayMs: Math.max(delayMs, 0) };
+}
 
 export function startScheduler() {
   if (!config.discordWebhookUrl) return;
@@ -24,11 +34,22 @@ async function check() {
     const { events } = await getBootstrap();
     const upcoming = nextEvent(events);
     if (!upcoming || upcoming.id === lastSentEvent) return;
-    const sendAt = new Date(upcoming.deadline_time).getTime() - config.briefHoursBeforeDeadline * 60 * 60_000;
-    const delay = sendAt - Date.now();
-    if (delay > CHECK_INTERVAL) return; // neste sjekk tar den
+    const d = sendDecision({
+      deadlineTime: upcoming.deadline_time,
+      hoursBefore: config.briefHoursBeforeDeadline,
+      nowMs: Date.now(),
+      checkIntervalMs: CHECK_INTERVAL,
+    });
+    if (d.action === 'wait') return; // neste sjekk tar den
+    if (d.action === 'skip') {
+      // Typisk en deploy/restart i sendevinduet — briefen er alt sendt (eller
+      // toget har gått). Marker som håndtert så vi ikke spammer kanalen.
+      lastSentEvent = upcoming.id;
+      console.log(`Auto-brief hoppet over for ${upcoming.name}: send-tidspunktet er passert`);
+      return;
+    }
     clearTimeout(timer);
-    timer = setTimeout(() => send(upcoming), Math.max(delay, 0));
+    timer = setTimeout(() => send(upcoming), d.delayMs);
     timer.unref?.();
   } catch (err) {
     console.error('Auto-brief-sjekk feilet:', err.message);

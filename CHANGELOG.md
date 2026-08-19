@@ -7,6 +7,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Fixed
+
+- Auto-briefen sendes ikke på nytt når appen deployes eller restartes i
+  sendevinduet før deadline. Er det planlagte send-tidspunktet passert med
+  mer enn én time, markeres runden som håndtert og hoppes over
+
 ## [1.0.0] - 2026-08-19
 
 ### Added

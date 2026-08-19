@@ -104,7 +104,7 @@ logg.
   → `{ action: 'wait' | 'schedule' | 'skip', delayMs }` — ren funksjon,
   eksportert fra `notify.js`, brukt av `check()`
 
-- [ ] **Steg 1 (RED):** Opprett `test/notify.test.js`:
+- [x] **Steg 1 (RED):** Opprett `test/notify.test.js`:
 
 ```js
 import test from 'node:test';
@@ -140,9 +140,9 @@ test('mer enn 1 t etter planlagt tid: hopp over (anti-spam ved deploy)', () => {
 });
 ```
 
-- [ ] **Steg 2:** `npm test` → de fire nye testene FEILER med
+- [x] **Steg 2:** `npm test` → de fire nye testene FEILER med
       `does not provide an export named 'sendDecision'`. Se feilen selv.
-- [ ] **Steg 3 (GREEN):** I `src/services/notify.js`, legg til eksportert ren
+- [x] **Steg 3 (GREEN):** I `src/services/notify.js`, legg til eksportert ren
       funksjon og bruk den i `check()`:
 
 ```js
@@ -181,8 +181,8 @@ export function sendDecision({ deadlineTime, hoursBefore, nowMs, checkIntervalMs
     timer.unref?.();
 ```
 
-- [ ] **Steg 4:** `npm test` → 39/39 grønne (35 + 4 nye). `npm run lint` → 0 feil.
-- [ ] **Steg 5:** Commit:
+- [x] **Steg 4:** `npm test` → 39/39 grønne (35 + 4 nye). `npm run lint` → 0 feil.
+- [x] **Steg 5:** Commit:
 
 ```
 fix: auto-brief sendes ikke pa nytt ved deploy i sendevinduet
