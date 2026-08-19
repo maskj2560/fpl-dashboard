@@ -1455,7 +1455,7 @@ export default router;
 - [x] **Steg 5:** Commit `feat: gameweek-brief som side og JSON-API`
 
 ### Task 5.3: Release v0.5.0
-- [ ] Som Task 2.4: CHANGELOG `[0.5.0]`, ROADMAP, version, HANDOVER, `docs: release v0.5.0`, tag, push, verifiser prod /brief og /api/brief.json
+- [x] Som Task 2.4: CHANGELOG `[0.5.0]`, ROADMAP, version, HANDOVER, `docs: release v0.5.0`, tag, push, verifiser prod /brief og /api/brief.json
 
 ---
 

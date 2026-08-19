@@ -33,8 +33,8 @@ committet (og pushet hvis remote finnes).
 
 ## v0.5.0 — Gameweek-brief
 
-- [ ] /brief-siden + `GET /api/brief.json`
-- [ ] Skadenytt, kapteinsvalg, fixtures per dag, mine anbefalinger i kortform
+- [x] /brief-siden + `GET /api/brief.json`
+- [x] Skadenytt, kapteinsvalg, fixtures per dag, mine anbefalinger i kortform
 
 ## v0.6.0 — Live-visning
 

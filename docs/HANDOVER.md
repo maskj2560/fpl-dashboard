@@ -3,7 +3,7 @@
 > Levende overleveringsfil. Oppdateres ved hver milepæl og ved arbeidsstans.
 > Ny AI-økt: les denne + CLAUDE.md + ROADMAP.md, fortsett der «Neste steg» sier.
 
-**Sist oppdatert:** 2026-08-19 (økt 2, v0.4.0 ferdig)
+**Sist oppdatert:** 2026-08-19 (økt 2, v0.5.0 ferdig)
 
 ## Status
 
@@ -35,6 +35,10 @@
 - **v0.4.0 FERDIG og tagget**: `/liga` med tabell per privat miniliga (rank-endring
   med pil, egen rad uthevet, lenke til hver rival) og differensialer mot leder
   eller `?rival=<entryId>`. `differentials()` i analysis.js med test — 25/25 grønne.
+- **v0.5.0 FERDIG og tagget**: `/brief` og `GET /api/brief.json` bygget på
+  `src/services/brief.js` (ren data, ingen LLM). Verifisert mot ekte FPL-data:
+  GW1, deadline «fredag 21. august kl. 19:30», skadeliste, tre kapteinsforslag
+  og kampprogram gruppert per dag. 26/26 tester grønne.
 - **VIKTIG om sesongen:** 2026/27 har ikke startet. FPL melder neste GW = 1 med
   deadline 2026-08-21T17:30Z. Før den er passert har FPL ingen picks, ingen
   historikk og ingen ligatabeller: `/lag` viser tomtilstanden «Fant ingen
@@ -55,10 +59,10 @@
 
 ## Neste steg (i rekkefølge)
 
-1. **Milepæl v0.5.0 — Gameweek-brief (data, uten LLM).** Følg plan-filen fra
-   «Task 5.1»: `src/services/brief.js` + `test/brief.test.js` (TDD) →
-   `/brief`-side og `GET /api/brief.json` → release v0.5.0.
-2. Deretter v0.6.0 (/live) og videre i plan-filens rekkefølge.
+1. **Milepæl v0.6.0 — /live.** Følg plan-filen fra «Task 6.1»: `estimateBonus()`
+   i `analysis.js` (TDD) → `/live`-side + `GET /api/live.json` + betinget
+   polling i `public/app.js` → release v0.6.0.
+2. Deretter v0.7.0 (nyheter + `ai.js`) og videre i plan-filens rekkefølge.
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 
@@ -75,6 +79,12 @@
 - 2026-08-19: «Oppdater ROADMAP, CHANGELOG, CLAUDE.md, HANDOVER kontinuerlig og ofte — alltid oppdatert» → fast rutine: alle fire sjekkes/oppdateres ved hver delfunksjon og hver commit, ikke bare ved milepæler
 - 2026-08-19: «Logget inn i gh. Repo skal være PRIVAT. Coolify på dash.marsk.no, hoster marsk.no + utevakt.marsk.no, denne appen skal på fpl.marsk.no» → privat repo opprettet og pushet
 - 2026-08-19: «Lag prompt til Claude in Chrome for Coolify-oppsettet + rapport-prompt tilbake» → prompt levert i chat; venter på rapport («RAPPORT TIL CLAUDE CODE — Coolify-deploy fpl-dashboard») før v0.2.0 fortsetter
+- 2026-08-19 (økt 2): «Hvordan planlegger du å bruke AI og sånt på brief? Blir
+  det via API? Si ifra hvis du trenger noe» → svart: Anthropic API via
+  `@anthropic-ai/sdk`, først i v0.8.0. v0.5.0-briefen er ren data uten LLM og
+  er alltid fallback. Trenger fra bruker: `ANTHROPIC_API_KEY` i Coolify (før
+  v0.7.0/v0.8.0 gir effekt) og evt. `DISCORD_WEBHOOK_URL` (v0.9.0).
+- 2026-08-19 (økt 2): «Okay. forsett videre» → kjørte videre på v0.5.0 uten stopp.
 - 2026-08-19 (økt 2): «Hvor finner jeg to do listen?» → svart: `ROADMAP.md`
   (milepæler) og `docs/superpowers/plans/2026-08-19-fpl-dashboard-v02-v10.md`
   (steg per oppgave), begge i VS Code med Ctrl+Shift+V. Begge hukes av fortløpende.
