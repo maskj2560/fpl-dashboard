@@ -120,3 +120,83 @@
 
   applyFilters();
 })();
+
+// Modul 3: Live-oppdatering (/live). Poller kun mens kamper pågår.
+(function () {
+  'use strict';
+
+  const root = document.getElementById('live-root');
+  const dataEl = document.getElementById('live-data');
+  if (!root || !dataEl) return;
+
+  const playersBody = document.querySelector('#live-players tbody');
+  const matchesBody = document.querySelector('#live-matches tbody');
+  const leaguesRoot = document.getElementById('live-leagues');
+  const totalEl = document.getElementById('live-total');
+  const statusEl = document.getElementById('live-status');
+  const updatedEl = document.getElementById('live-updated');
+  const pulseEl = document.getElementById('live-pulse');
+
+  function esc(s) {
+    const d = document.createElement('span');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  function render(live) {
+    if (totalEl) totalEl.textContent = live.totalLive == null ? '–' : live.totalLive;
+    playersBody.innerHTML = live.myPlayers
+      .map(function (p) {
+        return (
+          '<tr' + (p.onBench ? ' style="opacity:.55"' : '') + '><td><strong>' + esc(p.name) + '</strong>' +
+          (p.isCaptain ? ' <b class="cap">C</b>' : '') + ' <span class="dim">' + esc(p.team) + '</span></td>' +
+          '<td class="num">' + p.minutes + "'</td>" +
+          '<td class="num">' + p.points + '</td>' +
+          '<td class="num">' + (p.bonusEst > 0 ? '+' + p.bonusEst : '–') + '</td>' +
+          '<td class="num"><strong>' + p.effective + '</strong></td></tr>'
+        );
+      })
+      .join('');
+    matchesBody.innerHTML = live.matches
+      .map(function (m) {
+        const status = m.finished ? 'Slutt' : m.started ? m.minutes + "'" : 'Ikke startet';
+        const score = m.homeScore == null ? '–' : m.homeScore + ' – ' + m.awayScore;
+        return '<tr><td>' + esc(m.home) + ' – ' + esc(m.away) + '</td><td class="num">' + score + '</td><td>' + status + '</td></tr>';
+      })
+      .join('');
+    leaguesRoot.innerHTML = live.leagues
+      .map(function (l) {
+        return (
+          '<section class="card"><h2>' + esc(l.name) + '</h2><div class="table-scroll"><table class="data"><thead><tr><th class="num">#</th><th>Lag</th><th class="num">GW</th><th class="num">Totalt</th></tr></thead><tbody>' +
+          l.top
+            .map(function (r) {
+              return '<tr' + (r.me ? ' class="row-me"' : '') + '><td class="num">' + r.rank + '</td><td>' + esc(r.name) + '</td><td class="num">' + r.gw + '</td><td class="num">' + r.total + '</td></tr>';
+            })
+            .join('') +
+          '</tbody></table></div></section>'
+        );
+      })
+      .join('');
+    statusEl.textContent = live.anyLive ? 'Kamper pågår' : 'Ingen kamper pågår akkurat nå';
+    updatedEl.textContent = 'Sist oppdatert ' + new Date().toLocaleTimeString('nb-NO');
+    pulseEl.classList.toggle('pulse-on', live.anyLive);
+    return live.anyLive;
+  }
+
+  let anyLive = render(JSON.parse(dataEl.textContent));
+
+  async function poll() {
+    try {
+      const res = await fetch('/api/live.json');
+      if (!res.ok) return;
+      anyLive = render(await res.json());
+      if (!anyLive) clearInterval(timer);
+    } catch {
+      // Nettverksglipp — prøver igjen neste tick.
+    }
+  }
+
+  // Poll KUN mens kamper pågår — aldri utenfor kampvinduer.
+  let timer = null;
+  if (anyLive) timer = setInterval(poll, 60000);
+})();

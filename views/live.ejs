@@ -1,0 +1,37 @@
+<section class="page-head">
+  <h1>Live<% if (gw) { %> — Gameweek <%= gw %><% } %></h1>
+  <p class="dim">
+    <span id="live-status"><%= live && live.anyLive ? 'Kamper pågår' : 'Ingen kamper pågår akkurat nå' %></span>
+    <span class="pulse<%= live && live.anyLive ? ' pulse-on' : '' %>" id="live-pulse" aria-hidden="true"></span>
+    · <span id="live-updated">Sist oppdatert <%= new Date().toLocaleTimeString('nb-NO') %></span>
+  </p>
+</section>
+
+<div id="live-root" data-live="<%= live && live.anyLive ? '1' : '0' %>">
+  <% if (!live || !live.gameweek) { %>
+    <section class="card"><p class="empty">Ingen aktiv gameweek — live-visningen våkner når runden starter.</p></section>
+  <% } else { %>
+    <div class="stat-strip">
+      <div class="stat"><span class="stat-val" id="live-total"><%= live.totalLive ?? '–' %></span><span class="stat-lbl">Mine live-poeng</span></div>
+    </div>
+    <div class="grid">
+      <section class="card">
+        <h2>Mine spillere</h2>
+        <div class="table-scroll"><table class="data" id="live-players">
+          <thead><tr><th>Spiller</th><th class="num">Min</th><th class="num">Poeng</th><th class="num">Bonus-est.</th><th class="num">Effektivt</th></tr></thead>
+          <tbody></tbody>
+        </table></div>
+      </section>
+      <section class="card">
+        <h2>Kamper</h2>
+        <div class="table-scroll"><table class="data" id="live-matches">
+          <thead><tr><th>Kamp</th><th class="num">Stilling</th><th>Status</th></tr></thead>
+          <tbody></tbody>
+        </table></div>
+      </section>
+    </div>
+    <div class="grid" id="live-leagues"></div>
+    <%# Lagnavn kommer fra andre FPL-brukere: escape < så et navn med </script> ikke bryter ut av taggen. %>
+    <script id="live-data" type="application/json"><%- JSON.stringify(live).replace(/</g, '\\u003c') %></script>
+  <% } %>
+</div>

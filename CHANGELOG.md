@@ -11,6 +11,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 - Bonusestimat (`estimateBonus`) som leser BPS fra pågående kamper og
   fordeler 3/2/1 etter FPL-reglene, inkludert delte plasser
+- Live-side (`/live`) med egne spilleres live-poeng, bonusestimat, effektive
+  poeng med kaptein- og benkvekting, kampstillinger og miniliga-topp
+- `GET /api/live.json` og polling hvert 60. sekund kun mens kamper pågår
+- «Sist oppdatert»-indikator med puls som viser om kamper er i gang
 
 ## [0.5.0] - 2026-08-19
 

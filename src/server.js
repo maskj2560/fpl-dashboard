@@ -11,6 +11,7 @@ import teamRouter from './routes/team.js';
 import leagueRouter from './routes/league.js';
 import briefRouter from './routes/brief.js';
 import apiRouter from './routes/api.js';
+import liveRouter from './routes/live.js';
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const app = express();
@@ -45,6 +46,7 @@ app.use('/lag', teamRouter);
 app.use('/liga', leagueRouter);
 app.use('/brief', briefRouter);
 app.use('/api', apiRouter);
+app.use('/live', liveRouter);
 
 app.use((req, res) => {
   res.status(404).renderPage('404', { title: 'Ikke funnet' });

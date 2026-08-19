@@ -666,6 +666,32 @@ table.sortable th[aria-sort='ascending']::after {
   margin: 0 0 0.5rem;
 }
 
+/* ---------- Live-puls ---------- */
+
+.pulse {
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--border);
+  margin-left: 0.35rem;
+}
+
+.pulse-on {
+  background: var(--accent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pulse-on {
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+}
+
 /* ---------- Bevegelse ---------- */
 
 @media (prefers-reduced-motion: no-preference) {

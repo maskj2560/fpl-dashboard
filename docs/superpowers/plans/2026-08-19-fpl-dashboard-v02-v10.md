@@ -1540,7 +1540,7 @@ export function estimateBonus(fixture) {
 
 **Files:** Create: `src/routes/live.js`, `views/live.ejs`; Modify: `src/routes/api.js` (live.json), `src/server.js` (`app.use('/live', liveRouter);`), `views/layout.ejs` (nav `Live`), `public/app.js` (modul 3), `public/style.css` (puls)
 
-- [ ] **Steg 1:** Opprett `src/routes/live.js`:
+- [x] **Steg 1:** Opprett `src/routes/live.js`:
 ```js
 import { Router } from 'express';
 import config from '../config.js';
@@ -1564,7 +1564,7 @@ router.get('/', async (req, res, next) => {
 
 export default router;
 ```
-- [ ] **Steg 2:** I `src/routes/api.js` — legg til (og eksporter `assembleLive`):
+- [x] **Steg 2:** I `src/routes/api.js` — legg til (og eksporter `assembleLive`):
 ```js
 import config from '../config.js';
 import { getBootstrap, getFixtures, getLive, getPicks, getLeagueStandings, getEntry, FplError } from '../services/fplClient.js';
@@ -1655,7 +1655,13 @@ router.get('/live.json', async (req, res, next) => {
   }
 });
 ```
-- [ ] **Steg 3:** Opprett `views/live.ejs`:
+- [x] **Steg 3:** Opprett `views/live.ejs`:
+      **Avvik fra planen (sikkerhet):** `<%- JSON.stringify(live) %>` skriver
+      lagnavn fra andre FPL-brukere rått inn i `<script>`-elementet. Et lagnavn
+      som inneholder `</script>` bryter da ut av taggen. Implementert som
+      `JSON.stringify(live).replace(/</g, '\\u003c')`; verifisert at et navn med
+      `</script><img src=x onerror=…>` ikke bryter ut og at JSON-en fortsatt
+      parses tilbake til original streng.
 ```ejs
 <section class="page-head">
   <h1>Live<% if (gw) { %> — Gameweek <%= gw %><% } %></h1>
@@ -1694,7 +1700,7 @@ router.get('/live.json', async (req, res, next) => {
   <% } %>
 </div>
 ```
-- [ ] **Steg 4:** Append modul 3 i `public/app.js`:
+- [x] **Steg 4:** Append modul 3 i `public/app.js`:
 ```js
 // Modul 3: Live-oppdatering (/live). Poller kun mens kamper pågår.
 (function () {
@@ -1776,7 +1782,7 @@ router.get('/live.json', async (req, res, next) => {
   if (anyLive) timer = setInterval(poll, 60000);
 })();
 ```
-- [ ] **Steg 5:** Append i `public/style.css`:
+- [x] **Steg 5:** Append i `public/style.css`:
 ```css
 /* ---------- Live-puls ---------- */
 
@@ -1804,8 +1810,11 @@ router.get('/live.json', async (req, res, next) => {
   }
 }
 ```
-- [ ] **Steg 6:** Monter `/live` + nav. Røyk-test `/live` og `/api/live.json` (200; utenfor kampvindu skal `anyLive:false` og siden vise «Ingen kamper pågår»). Test + lint grønne.
-- [ ] **Steg 7:** Commit `feat: /live med bonusestimat og betinget polling`
+- [x] **Steg 6:** Monter `/live` + nav. Røyk-test `/live` og `/api/live.json` (200; utenfor kampvindu skal `anyLive:false` og siden vise «Ingen kamper pågår»). Test + lint grønne.
+      `/live` 200 med «Ingen aktiv gameweek», `/api/live.json` 200 med
+      `anyLive:false` og ingen polling. Live-grenen mock-rendret: overskrift,
+      puls, statstripe, tabeller, ligarot og innebygd JSON verifisert.
+- [x] **Steg 7:** Commit `feat: /live med bonusestimat og betinget polling`
 
 ### Task 6.3: Release v0.6.0
 - [ ] Som Task 2.4: CHANGELOG `[0.6.0]`, ROADMAP, version, HANDOVER, `docs: release v0.6.0`, tag, push, verifiser prod /live
