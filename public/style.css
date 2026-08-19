@@ -421,10 +421,11 @@ table.data tbody tr:hover {
 
 .status {
   display: inline-block;
-  padding: 0.1rem 0.45rem;
+  padding: 0.1rem 0.5rem;
   border-radius: 99px;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 600;
+  letter-spacing: 0.01em;
   background: var(--surface-2);
   color: var(--text-dim);
 }
@@ -433,7 +434,7 @@ table.data tbody tr:hover {
 .status-s,
 .status-u,
 .status-n {
-  background: rgba(255, 61, 129, 0.15);
+  background: var(--accent-2-soft);
   color: var(--accent-2);
 }
 
@@ -528,48 +529,52 @@ table.data tbody tr:hover {
 /* ---------- Sidehode og filtre (/spillere) ---------- */
 
 .page-head {
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-4);
 }
 
 .page-head h1 {
   margin: 0;
-  font-size: 1.4rem;
+  font-size: clamp(1.5rem, 4vw, 1.9rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
 }
 
 .page-head p {
   margin: 0.25rem 0 0;
 }
 
+/* Filterpanelet er et kort med samme rytme som de øvrige. */
 .filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: var(--space-3);
   align-items: end;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 0.75rem var(--pad);
-  margin-bottom: 1rem;
+  padding: var(--space-3) var(--pad);
+  margin-bottom: var(--space-4);
 }
 
 .filters label {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  font-size: 0.72rem;
+  gap: var(--space-1);
+  font-family: var(--font-display);
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   color: var(--text-dim);
   font-weight: 600;
 }
 
 .filters input,
 .filters select {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 6px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
   color: var(--text);
-  padding: 0.4rem 0.6rem;
+  padding: 0.45rem 0.65rem;
   font: inherit;
   font-size: 0.9rem;
   min-width: 9rem;
@@ -583,8 +588,8 @@ table.data tbody tr:hover {
 
 .filters button {
   background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 6px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
   color: var(--text);
   padding: 0.45rem 0.9rem;
   font: inherit;
@@ -597,6 +602,13 @@ table.data tbody tr:hover {
   color: var(--accent);
 }
 
+/* «Viser X av Y» skyves ut til høyre kant av panelet. */
+#filter-count {
+  margin-left: auto;
+  align-self: center;
+  font-variant-numeric: tabular-nums;
+}
+
 table.sortable th {
   cursor: pointer;
   user-select: none;
@@ -606,14 +618,17 @@ table.sortable th:hover {
   color: var(--text);
 }
 
+table.sortable th[aria-sort='descending'],
+table.sortable th[aria-sort='ascending'] {
+  color: var(--accent);
+}
+
 table.sortable th[aria-sort='descending']::after {
   content: ' ↓';
-  color: var(--accent);
 }
 
 table.sortable th[aria-sort='ascending']::after {
   content: ' ↑';
-  color: var(--accent);
 }
 
 /* ---------- Mitt lag (/lag) ---------- */
