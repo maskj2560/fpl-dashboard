@@ -12,8 +12,13 @@
 - **v0.1.0 FERDIG og tagget**: dashboard (/), /health, cache (SWR+dedup),
   fplClient (retry/503), mørkt tema, Dockerfile. 18/18 tester grønne, lint grønn.
   Røyk-testet lokalt (200 på / og /health, 404 OK) OG i Docker-container (health 200).
-- **Venter på bruker**: `gh auth login` — deretter opprette GitHub-repo, koble
-  remote, pushe main + tag v0.1.0. Så setter bruker opp Coolify (oppskrift i README).
+- **GitHub FERDIG**: privat repo `https://github.com/maskj2560/fpl-dashboard`,
+  main + tag v0.1.0 pushet, remote `origin` koblet. Bruker: maskj2560.
+- **Coolify GJENSTÅR**: instans på `dash.marsk.no` (hoster marsk.no og
+  utevakt.marsk.no). Appen skal på `fpl.marsk.no`. Venter på brukerens valg:
+  UI-oppsett selv (oppskrift i README) eller automatisering via Coolify-API
+  (trenger API-token i fil + eksisterende GitHub App-source i Coolify).
+  DNS: A-post for fpl.marsk.no må pekes mot serveren (hvis ikke wildcard finnes).
 - **v0.2.0 PÅBEGYNT, avbrutt av bruker («Stopp»)**. Nøyaktig WIP-status:
   - `src/routes/players.js` skrevet ✅ (rute ferdig, sortert på total_points)
   - `views/players.ejs` skrevet ✅ (full tabell + filter-form med id-er:
@@ -63,6 +68,7 @@
 - 2026-08-19: «Stopp» → v0.2.0-arbeid stoppet midt i (WIP-status over)
 - 2026-08-19: «Fiks deploy til Coolify og GitHub og auto-deploy først» → PRIORITET før v0.2.0 fortsetter: GitHub-repo + push + Coolify-oppsett. Blokkert på `gh auth login` fra bruker.
 - 2026-08-19: «Oppdater ROADMAP, CHANGELOG, CLAUDE.md, HANDOVER kontinuerlig og ofte — alltid oppdatert» → fast rutine: alle fire sjekkes/oppdateres ved hver delfunksjon og hver commit, ikke bare ved milepæler
+- 2026-08-19: «Logget inn i gh. Repo skal være PRIVAT. Coolify på dash.marsk.no, hoster marsk.no + utevakt.marsk.no, denne appen skal på fpl.marsk.no» → privat repo opprettet og pushet
 
 ## Miljø
 
