@@ -2505,7 +2505,7 @@ async function postToDiscord(text) {
 - [x] **Steg 4:** Commit `feat: auto-brief til Discord foer deadline`. **Si fra til bruker:** lag Discord-webhook (Discord-kanal → Innstillinger → Integrasjoner → Webhooks) og sett `DISCORD_WEBHOOK_URL` (+ ev. `BRIEF_HOURS_BEFORE_DEADLINE`) i Coolify.
 
 ### Task 9.2: Release v0.9.0
-- [ ] Som Task 2.4 (CHANGELOG `[0.9.0]`, ROADMAP, version, HANDOVER, tag, push)
+- [x] Som Task 2.4 (CHANGELOG `[0.9.0]`, ROADMAP, version, HANDOVER, tag, push)
 
 ---
 

@@ -3,7 +3,7 @@
 > Levende overleveringsfil. Oppdateres ved hver milepæl og ved arbeidsstans.
 > Ny AI-økt: les denne + CLAUDE.md + ROADMAP.md, fortsett der «Neste steg» sier.
 
-**Sist oppdatert:** 2026-08-19 (økt 2, v0.8.0 ferdig)
+**Sist oppdatert:** 2026-08-19 (økt 2, v0.9.0 ferdig)
 
 ## Status
 
@@ -54,6 +54,10 @@
   «Spør AI om råd»-knapp på `/lag` mot `POST /api/ai-rad` (cachet én time per
   lag og gameweek). Promptbyggere i `prompts.js` med tester — 35/35 grønne.
   All AI-tekst escapes før `**fet**` blir `<strong>`.
+- **v0.9.0 FERDIG og tagget**: `notify.js` poster briefen til Discord X timer
+  før deadline (`BRIEF_HOURS_BEFORE_DEADLINE`, default 24), med AI-briefen når
+  nøkkel finnes og data-briefen ellers. Verifisert mot lokal mock-webhook.
+  Uten `DISCORD_WEBHOOK_URL` er scheduleren inaktiv og serveren upåvirket.
 - **AI-status:** all AI er av i prod fram til `ANTHROPIC_API_KEY` settes i
   Coolify. Uten nøkkel viser `/nyheter` rå feed-liste, og dashboardpanelet
   er skjult — det er tilsiktet, ikke en feil. `AI_MODEL` er `claude-sonnet-5`
@@ -81,13 +85,12 @@
 
 ## Neste steg (i rekkefølge)
 
-1. **Milepæl v0.9.0 — Auto-brief til Discord.** Følg plan-filen fra «Task 9.1»:
-   `src/services/notify.js` med deadline-scheduler → `startScheduler()` etter
-   `app.listen` → release v0.9.0. **Krever fra bruker:** `DISCORD_WEBHOOK_URL`
-   i Coolify (Discord-kanal → Innstillinger → Integrasjoner → Webhooks).
-   Uten URL er scheduleren inaktiv.
-2. Deretter v1.0.0-polish (Task 10.1): mobilgjennomgang, tomtilstander,
-   feiltilstander, TTL-gjennomgang, README med skjermbilder.
+1. **Milepæl v1.0.0 — polish (Task 10.1).** Mobilgjennomgang på 375 px,
+   tomtilstander, feiltilstander uten nett og uten `.env`, TTL-gjennomgang mot
+   CLAUDE.md, README med alle sider ✅ + skjermbilder, full verifisering
+   (`npm test`, `npm run lint`, alle ruter, `docker build`).
+2. **Venter på bruker:** `ANTHROPIC_API_KEY` og `DISCORD_WEBHOOK_URL` i Coolify.
+   Begge funksjonene er ferdig kodet og inaktive til variablene finnes.
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 

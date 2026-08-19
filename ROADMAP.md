@@ -62,10 +62,10 @@ committet (og pushet hvis remote finnes).
 
 ## v0.9.0 — Auto-brief før deadline
 
-- [ ] `notify.js`: deadline-scheduler uten cron-avhengighet (timer mot neste
+- [x] `notify.js`: deadline-scheduler uten cron-avhengighet (timer mot neste
       `deadline_time` − `BRIEF_HOURS_BEFORE_DEADLINE`, re-sjekk daglig)
-- [ ] Poster AI-briefen (eller data-brief uten nøkkel) til `DISCORD_WEBHOOK_URL`
-- [ ] Uten webhook-URL: funksjonen er inaktiv
+- [x] Poster AI-briefen (eller data-brief uten nøkkel) til `DISCORD_WEBHOOK_URL`
+- [x] Uten webhook-URL: funksjonen er inaktiv
 
 ## v1.0.0 — Polish
 
