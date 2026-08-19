@@ -12,6 +12,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Logglinje per vellykket AI-kall med modell og tokenbruk inn/ut, slik at
   kostnaden kan leses direkte i serverloggen
 
+### Changed
+
+- Ny visuell retning «Matchday»: selvhostet Archivo (variabel, OFL, 34 kB) som
+  display-snitt for titler og tall, og en fornyet fiolett kampkveld-palett der
+  alle tekst- og merkefarger er kontrastverifisert mot WCAG
+
 ### Fixed
 
 - Auto-briefen sendes ikke på nytt når appen deployes eller restartes i

@@ -277,7 +277,7 @@ node -e "console.log(((Date.parse('2026-08-21T17:30:00Z') - Date.now())/3600000)
 
 ### Task 1.5: Slå på i prod (krever bruker) + release v1.0.1
 
-- [ ] **Steg 1:** Push Task 1.1+1.2 (grønn test/lint først). Verifiser prod:
+- [x] **Steg 1:** Push Task 1.1+1.2 (grønn test/lint først). Verifiser prod:
       alle ti ruter svarer 200, footer viser fortsatt v1.0.0.
 - [ ] **Steg 2:** Release v1.0.1: flytt `[Unreleased]` til `[1.0.1]` med dato i
       CHANGELOG, bump `version` i `package.json`, commit `docs: release v1.0.1`,
@@ -524,7 +524,7 @@ brukeren på telefon før neste side startes (se Task 3.12).
 - Create: `public/fonts/archivo-var.woff2`, `public/fonts/OFL.txt`
 - Modify: `views/layout.ejs` (preload-lenke)
 
-- [ ] **Steg 1:** Hent Google Fonts-CSS-en med nettleser-UA og finn
+- [x] **Steg 1:** Hent Google Fonts-CSS-en med nettleser-UA og finn
       latin-subsettets woff2-URL:
 
 ```powershell
@@ -532,17 +532,17 @@ brukeren på telefon før neste side startes (se Task 3.12).
 ```
 
       I svaret: finn `/* latin */`-blokken og kopier `src: url(…woff2)`.
-- [ ] **Steg 2:** Last ned til `public/fonts/archivo-var.woff2` og sjekk
+- [x] **Steg 2:** Last ned til `public/fonts/archivo-var.woff2` og sjekk
       størrelsen: `(Get-Item public/fonts/archivo-var.woff2).Length / 1KB`.
       **Budsjett: ≤ 100 KB.** Over budsjett → snevre inn til
       `wght@500..800` i steg 1-URL-en og gjenta.
-- [ ] **Steg 3:** Hent lisensen til `public/fonts/OFL.txt`:
+- [x] **Steg 3:** Hent lisensen til `public/fonts/OFL.txt`:
 
 ```powershell
 Invoke-WebRequest "https://raw.githubusercontent.com/google/fonts/main/ofl/archivo/OFL.txt" -OutFile public/fonts/OFL.txt -UseBasicParsing
 ```
 
-- [ ] **Steg 4:** Øverst i ny `public/style.css` (Task 3.2):
+- [x] **Steg 4:** Øverst i ny `public/style.css` (Task 3.2):
 
 ```css
 @font-face {
@@ -559,8 +559,16 @@ Invoke-WebRequest "https://raw.githubusercontent.com/google/fonts/main/ofl/archi
   <link rel="preload" href="/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin>
 ```
 
-- [ ] **Steg 5:** Commit: `feat: lokal Archivo-font for display og tall (OFL)`
+- [x] **Steg 5:** Commit: `feat: lokal Archivo-font for display og tall (OFL)`
       (kan committes sammen med Task 3.2 hvis CSS-en skrives i samme sleng).
+
+      **Avvik fra planen (to små):** 1) `@font-face` fikk også
+      `font-stretch: 100%`, slik Google Fonts selv deklarerer Archivo — fonten
+      har en wdth-akse, og uten deklarasjonen kan nettleseren velge en annen
+      bredde-instans enn den vi har kontrastvurdert. 2) Latin-subsettet
+      (`U+0000–00FF`) dekker æøå, så `wght@400..900` kunne beholdes:
+      **34,1 KB**, godt under budsjettet på 100 KB — ingen innsnevring nødvendig.
+      Committet sammen med Task 3.2.
 
 ### Task 3.2: Token-fornyelse + base
 
@@ -568,7 +576,7 @@ Invoke-WebRequest "https://raw.githubusercontent.com/google/fonts/main/ofl/archi
 - Modify: `public/style.css` (`:root` + base-reglene; resten av filen
   skrives om side-for-side i 3.3–3.10)
 
-- [ ] **Steg 1:** Erstatt `:root` med (dette er fasiten — nye farger som
+- [x] **Steg 1:** Erstatt `:root` med (dette er fasiten — nye farger som
       trengs senere legges til HER som tokens, aldri hardkodet):
 
 ```css
@@ -623,7 +631,7 @@ Invoke-WebRequest "https://raw.githubusercontent.com/google/fonts/main/ofl/archi
 }
 ```
 
-- [ ] **Steg 2:** Kjør kontrastsjekken. Opprett midlertidig
+- [x] **Steg 2:** Kjør kontrastsjekken. Opprett midlertidig
       `kontrast.mjs` i scratchpad-mappen (IKKE i repoet):
 
 ```js
@@ -660,14 +668,14 @@ for (const [navn, fg, bg, krav] of pairs) {
       juster tokenet (mørkere flate / lysere tekst) til det passerer, og
       oppdater `:root`. FDR-merkene og magenta-status er små+fete → 3.0-kravet
       gjelder dem som grafiske objekter; løpende tekst krever 4.5.
-- [ ] **Steg 3:** Oppdater base-reglene: `body` får `font-family: var(--font-body)`,
+- [x] **Steg 3:** Oppdater base-reglene: `body` får `font-family: var(--font-body)`,
       `h1`–`h2` og `.stat-val`/`.countdown .val` får `font-family: var(--font-display)`
       med `font-variant-numeric: tabular-nums` på tall-elementene. `main` og
       `footer` bruker `max-width: var(--maxw)`. FDR-regelen oppdateres:
       `.fdr-1, .fdr-2 { color: var(--bg); }` (mørk tekst på lys grønn).
-- [ ] **Steg 4:** `npm test` (view-testene fra M2 er sikkerhetsnettet) +
+- [x] **Steg 4:** `npm test` (view-testene fra M2 er sikkerhetsnettet) +
       `npm run lint` → grønne. Lokal røyk: `npm run dev`, curl `/` → 200.
-- [ ] **Steg 5:** Commit: `feat: nye designtokens, kontrastverifisert palett og typografi`
+- [x] **Steg 5:** Commit: `feat: nye designtokens, kontrastverifisert palett og typografi`
 
 ### Task 3.3: Topbar og navigasjon
 
@@ -680,7 +688,7 @@ edge-fade, og aktiv lenke scrolles inn ved lasting. Sticky gjeninnføres på
 mobil (den er nå bare ~48 px høy). Ingen hamburger/JS-meny — null ekstra
 tilstand, alt synlig med ett sveip.
 
-- [ ] **Steg 1:** CSS (erstatter dagens `.topbar`-blokk og mobil-unntaket):
+- [x] **Steg 1:** CSS (erstatter dagens `.topbar`-blokk og mobil-unntaket):
 
 ```css
 .topbar {

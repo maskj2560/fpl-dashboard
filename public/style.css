@@ -1,40 +1,63 @@
-/* FPL-dashboard — mørkt kampkveld-tema.
-   Hele paletten ligger som variabler i :root. */
+/* FPL-dashboard — «Matchday»: mørkt kampkveld-tema.
+   Hele paletten ligger som variabler i :root. Kontrastparene er verifisert
+   mot WCAG (≥ 4.5:1 løpende tekst, ≥ 3:1 grafiske merker) — se plan-filen. */
+
+@font-face {
+  font-family: 'Archivo';
+  src: url('/fonts/archivo-var.woff2') format('woff2-variations');
+  font-weight: 400 900;
+  font-stretch: 100%;
+  font-display: swap;
+}
 
 :root {
-  /* Flater — dyp fiolett natt, ikke nøytral grå */
-  --bg: #110e19;
-  --surface: #1a1626;
-  --surface-2: #221d33;
-  --border: #2f2945;
+  /* Flater — dyp fiolett kampkveld, tre nivåer + hairline-kanter */
+  --bg: #0d0a15;
+  --surface: #151021;
+  --surface-2: #1d172e;
+  --surface-3: #262039;
+  --border: rgba(160, 145, 220, 0.14);
+  --border-strong: rgba(160, 145, 220, 0.3);
 
   /* Tekst */
-  --text: #ece9f6;
-  --text-dim: #9c94b8;
+  --text: #f0edfa;
+  --text-dim: #a49bc4;
+  --text-faint: #746b96; /* KUN dekor/store tall — ikke løpende tekst */
 
-  /* Aksenter — gressgrønn + FPL-magenta */
+  /* Aksenter — grønn = handling/positivt, magenta = kaptein/live/negativt varsel */
   --accent: #00e58c;
   --accent-soft: rgba(0, 229, 140, 0.12);
   --accent-2: #ff3d81;
+  --accent-2-soft: rgba(255, 61, 129, 0.12);
   --negative: #ff6b8a;
-  --warn-bg: #3a2f14;
+  --warn-bg: #352b12;
   --warn-border: #8a6d1f;
   --warn-text: #f5cf6b;
 
-  /* FDR-skala 1 (lett) → 5 (vanskelig), FPL-konvensjon */
-  --fdr-1: #0f7a45;
-  --fdr-2: #2ba05e;
-  --fdr-3: #474060;
-  --fdr-4: #c93e63;
-  --fdr-5: #8c1538;
-  --fdr-blank: #262038;
+  /* FDR — FPL-konvensjon 1 lett → 5 vanskelig. 1–2 får mørk tekst, 4–5 hvit */
+  --fdr-1: #0e8c4f;
+  --fdr-2: #27a35f;
+  --fdr-3: #4a4168;
+  --fdr-4: #d24069;
+  --fdr-5: #97183f;
+  --fdr-blank: #221b36;
 
-  /* Typografi — systemfonter, mono til tall/scoreboard */
+  /* Typografi */
+  --font-display: 'Archivo', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-mono: ui-monospace, 'Cascadia Mono', Consolas, 'SF Mono', monospace;
 
-  --radius: 10px;
+  /* Rytme */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2.5rem;
+  --radius: 12px;
+  --radius-sm: 8px;
   --pad: 1rem;
+  --maxw: 1160px;
 }
 
 * {
@@ -48,6 +71,13 @@ body {
   font-family: var(--font-body);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
 }
 
 a {
@@ -129,15 +159,15 @@ a:hover {
 /* ---------- Hovedinnhold ---------- */
 
 main {
-  max-width: 1200px;
+  max-width: var(--maxw);
   margin: 0 auto;
-  padding: 1.5rem 1.25rem 3rem;
+  padding: var(--space-5) 1.25rem var(--space-6);
 }
 
 footer {
-  max-width: 1200px;
+  max-width: var(--maxw);
   margin: 0 auto;
-  padding: 1rem 1.25rem 2rem;
+  padding: var(--space-4) 1.25rem var(--space-6);
   color: var(--text-dim);
   font-size: 0.85rem;
 }
@@ -186,10 +216,11 @@ footer {
 }
 
 .countdown .val {
-  font-family: var(--font-mono);
+  font-family: var(--font-display);
   font-variant-numeric: tabular-nums;
   font-size: clamp(2.2rem, 8vw, 3.6rem);
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: -0.03em;
   color: var(--text);
   line-height: 1.1;
 }
@@ -359,6 +390,12 @@ table.data tbody tr:hover {
   color: #fff;
 }
 
+/* 1–2 er lys grønn: mørk tekst holder kontrastkravet, hvit gjør det ikke. */
+.fdr-1,
+.fdr-2 {
+  color: var(--bg);
+}
+
 .fdr-1 { background: var(--fdr-1); }
 .fdr-2 { background: var(--fdr-2); }
 .fdr-3 { background: var(--fdr-3); }
@@ -520,10 +557,11 @@ table.sortable th[aria-sort='ascending']::after {
 }
 
 .stat-val {
-  font-family: var(--font-mono);
+  font-family: var(--font-display);
   font-variant-numeric: tabular-nums;
-  font-size: 1.35rem;
-  font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
 .stat-lbl {

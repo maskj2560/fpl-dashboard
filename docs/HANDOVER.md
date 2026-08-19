@@ -174,6 +174,11 @@ task for task. Kort oversikt:
   rekkefølge, task for task, uten å hoppe over verifiseringssteg. Ikke
   re-planlegg, ikke bruk subagenter til implementering.» → executing-plans
   startet. Utgangspunkt verifisert grønt: `npm test` 35/35, `npm run lint` 0 feil.
+- 2026-08-19 (økt 4): «Jeg ønsker at du skal begynne å kalle meg Jens, hver gang
+  vi kommuniserer skal du alltid si "Hei Jens!" først. Lag et permanent minne på
+  det.» → permanent minne opprettet
+  (`C:\Users\mariu\.claude\projects\c--Users-mariu-Documents-Claude-Code-FPL\memory\tiltale-jens.md`,
+  indeksert i `MEMORY.md`). Alle svar starter nå med «Hei Jens!».
 
 ## Miljø
 
