@@ -8,13 +8,18 @@
   }
 %>
 <section class="page-head">
-  <h1>Gameweek-brief<% if (brief.gameweek) { %> — <%= brief.gameweek.name %><% } %></h1>
-  <% if (brief.gameweek) { %><p class="dim">Deadline: <strong><%= brief.gameweek.deadlineFormatted %></strong></p><% } %>
+  <h1>Gameweek-brief</h1>
+  <% if (brief.gameweek) { %>
+    <p class="dim"><span class="gw-badge"><%= brief.gameweek.name %></span> Deadline <strong><%= brief.gameweek.deadlineFormatted %></strong></p>
+  <% } %>
 </section>
 
 <% if (typeof aiBrief !== 'undefined' && aiBrief?.text) { %>
-  <section class="card card-wide">
-    <h2>AI-brief <span class="dim">(generert <%= new Date(aiBrief.generatedAt).toLocaleTimeString('nb-NO') %> — datagrunnlaget vises under)</span></h2>
+  <section class="card card-wide card-ai">
+    <h2>
+      <span class="h2-title"><span class="ai-badge">AI</span> Gameweek-brief</span>
+      <span class="dim">generert <%= new Date(aiBrief.generatedAt).toLocaleTimeString('nb-NO') %></span>
+    </h2>
     <% for (const line of aiBrief.text.split('\n')) { %>
       <% if (/^#{1,3}\s/.test(line)) { %>
         <h3 class="sub-head"><%- bold(line.replace(/^#{1,3}\s*/, '')) %></h3>

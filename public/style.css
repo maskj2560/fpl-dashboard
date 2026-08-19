@@ -339,6 +339,31 @@ footer {
   color: var(--text-dim);
 }
 
+.h2-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+/* AI-merket kort: magenta hairline på venstre kant gjør det tydelig hva som
+   er generert tekst og hva som er rådata. */
+.card-ai {
+  border-left: 3px solid var(--accent-2);
+}
+
+.ai-badge {
+  display: inline-block;
+  background: var(--accent-2-soft);
+  color: var(--accent-2);
+  border-radius: var(--radius-sm);
+  padding: 0.05rem 0.4rem;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
 .empty {
   color: var(--text-dim);
   font-size: 0.9rem;
