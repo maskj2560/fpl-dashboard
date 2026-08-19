@@ -79,7 +79,7 @@ committet (og pushet hvis remote finnes).
 
 - [x] Anti-spam-guard i `notify.js`: ingen re-sending av auto-briefen ved
       deploy/restart i sendevinduet (`sendDecision`, TDD)
-- [ ] Usage-logging per AI-kall (modell + inn/ut-tokens) for kostnadskontroll
+- [x] Usage-logging per AI-kall (modell + inn/ut-tokens) for kostnadskontroll
 - [ ] Lokal pre-flight av alle fire AI-funksjonene mot ekte API
 - [ ] Auto-briefen verifisert mot ekte Discord-webhook
 - [ ] `ANTHROPIC_API_KEY` + `DISCORD_WEBHOOK_URL` + `FPL_TEAM_ID` i Coolify

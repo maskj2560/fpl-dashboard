@@ -7,6 +7,11 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+
+- Logglinje per vellykket AI-kall med modell og tokenbruk inn/ut, slik at
+  kostnaden kan leses direkte i serverloggen
+
 ### Fixed
 
 - Auto-briefen sendes ikke på nytt når appen deployes eller restartes i

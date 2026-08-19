@@ -46,6 +46,9 @@ export async function generate({ cacheKey, minIntervalMs, system, prompt, maxTok
         .map((b) => b.text)
         .join('\n')
         .trim();
+      console.log(
+        `AI-kall: ${cacheKey} modell=${res.model} inn=${res.usage?.input_tokens ?? '?'} ut=${res.usage?.output_tokens ?? '?'} tokens`
+      );
       if (!text) return cached ?? null; // tomt svar (f.eks. avkortet) — behold forrige
       const entry = { text, generatedAt: Date.now() };
       store.set(cacheKey, entry);

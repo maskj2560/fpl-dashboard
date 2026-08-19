@@ -198,7 +198,7 @@ vellykket AI-kall.
 **Files:**
 - Modify: `src/services/ai.js`
 
-- [ ] **Steg 1:** I `generate()` i `src/services/ai.js`, rett etter at `text`
+- [x] **Steg 1:** I `generate()` i `src/services/ai.js`, rett etter at `text`
       er bygget og før tom-svar-sjekken (etter linje 48), legg til:
 
 ```js
@@ -207,8 +207,8 @@ vellykket AI-kall.
       );
 ```
 
-- [ ] **Steg 2:** `npm test` + `npm run lint` → grønne (ingen tester rører ai.js-nettverk).
-- [ ] **Steg 3:** Commit: `feat: logg tokenbruk per AI-kall`
+- [x] **Steg 2:** `npm test` + `npm run lint` → grønne (ingen tester rører ai.js-nettverk).
+- [x] **Steg 3:** Commit: `feat: logg tokenbruk per AI-kall`
 
 ### Task 1.3: Lokal pre-flight med ekte nøkkel (krever bruker)
 
