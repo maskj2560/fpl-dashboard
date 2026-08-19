@@ -3,13 +3,19 @@
 > Levende overleveringsfil. Oppdateres ved hver milepæl og ved arbeidsstans.
 > Ny AI-økt: les denne + CLAUDE.md + ROADMAP.md, fortsett der «Neste steg» sier.
 
-**Sist oppdatert:** 2026-08-19 (økt 2, **v1.0.0 ferdig — hele planen gjennomført**)
+**Sist oppdatert:** 2026-08-19 (økt 4, **plan v1.0.1–v1.1.0 foreligger — utførelse startet**)
 
 ## Status
 
-- **Aktiv implementeringsplan: `docs/superpowers/plans/2026-08-19-fpl-dashboard-v02-v10.md`**
-  — den inneholder ferdigspesifiserte oppgaver med komplett kode for v0.2.0 → v1.0.0.
-  Avkryssing skjer i plan-filen (per steg) og i ROADMAP.md (per milepæl).
+- **AKTIV implementeringsplan: `docs/superpowers/plans/2026-08-19-fpl-v101-v110-verifisering-og-ui-makeover.md`**
+  — Del A (M1: AI + Discord i drift, v1.0.1), M2 (view-render-tester),
+  Del B (M3: UI-makeover «Matchday», v1.1.0), M4 (sesongstart-verifisering
+  21.–24. aug), M5 (skjermbilder/avslutning). Kjøreprompt for utførelsesøkten:
+  `docs/neste-okt-prompt-utforelse.md`. Utførelse startet 2026-08-19 (økt 4,
+  Opus 5 / effort xhigh). Avkryssing i planfilen (per steg) + ROADMAP (per milepæl).
+- **Fullført implementeringsplan: `docs/superpowers/plans/2026-08-19-fpl-dashboard-v02-v10.md`**
+  — ferdigspesifiserte oppgaver med komplett kode for v0.2.0 → v1.0.0, alt avhuket.
+  Inneholder avviksnotater som fortsatt gjelder (grep «Avvik»).
 - Full opprinnelig plan: `C:\Users\mariu\.claude\plans\full-claude-code-prompt-ancient-crescent.md`
   (essensen ligger i CLAUDE.md + ROADMAP.md — de er autoritative)
 - **v0.1.0 FERDIG og tagget**: dashboard (/), /health, cache (SWR+dedup),
@@ -99,15 +105,20 @@
 
 ## Neste steg (i rekkefølge)
 
-Implementeringsplanen er gjennomført i sin helhet (v0.2.0 → v1.0.0). Videre
-arbeid er ikke planlagt ennå. Naturlige neste skritt:
+Følg den aktive planen
+`docs/superpowers/plans/2026-08-19-fpl-v101-v110-verifisering-og-ui-makeover.md`
+task for task. Kort oversikt:
 
-1. **Sett miljøvariablene i Coolify** (`ANTHROPIC_API_KEY`, `DISCORD_WEBHOOK_URL`)
-   og verifiser AI-seksjonene og auto-briefen i prod.
-2. **Første ekte gameweek 21. august:** sjekk `/lag`, `/live` og `/liga` når
-   sesongen faktisk har startet — flere grener har til nå bare vært verifisert
-   med mockdata fordi FPL ikke har picks eller tabeller før første deadline.
-3. Idéer som ikke er planlagt ligger under «Senere / idéer» i `ROADMAP.md`.
+1. **M1 (v1.0.1) — tidskritisk, må i prod før onsdag 20. aug ~19:00:**
+   anti-spam-guard i `notify.js` (Task 1.1, TDD), usage-logging i `ai.js`
+   (1.2), lokal pre-flight med ekte nøkkel (1.3), tvungen Discord-test (1.4),
+   env-variabler i Coolify + release v1.0.1 (1.5), naturlig auto-brief
+   onsdag ~19:30 (1.6), kostnadskontroll (1.7).
+2. **M2:** view-render-tester for alle 11 views (`test/views.test.js`).
+3. **M3 (v1.1.0):** UI-makeover «Matchday» — én side per commit med QA-runde
+   hos bruker mellom hver.
+4. **M4:** sesongstart-verifisering, kalenderstyrt 21.–24. aug.
+5. **M5:** skjermbilder til README + mobilbekreftelse (bruker).
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 
@@ -150,6 +161,19 @@ arbeid er ikke planlagt ennå. Naturlige neste skritt:
   (milepæler) og `docs/superpowers/plans/2026-08-19-fpl-dashboard-v02-v10.md`
   (steg per oppgave), begge i VS Code med Ctrl+Shift+V. Begge hukes av fortløpende.
 - 2026-08-19 (økt 2): «Les og følg `docs/superpowers/plans/2026-08-19-fpl-dashboard-v02-v10.md` — den inneholder ALT. Ikke avvik fra planen, ikke bruk subagenter til implementering (model: sonnet hvis unntaksvis nødvendig). Commit plan-filen først, fortell hvor todo-listen er, begynn på første uavkryssede oppgave.» → plan committet (`chore: legg til implementeringsplan v0.2.0-v1.0.0`), arbeid startet på Task 2.1
+- 2026-08-19 (økt 3, planlegging): avklaringer gitt til planleggingsøkten —
+  **Anthropic API-nøkkel er klar nå** · **Discord-server/kanal er klar**
+  (webhook lages når planen sier fra) · **én lokal fontfil er OK**
+  (selvhostet, ingen CDN) · **rekkefølge: AI/Discord først**, deretter UI,
+  deretter sesongverifisering · **planen skal kjøres i Opus 5 med effort xhigh**.
+  → Alt er tatt inn i «Kontekst»-seksjonen i planfilen
+  `docs/superpowers/plans/2026-08-19-fpl-v101-v110-verifisering-og-ui-makeover.md`.
+  Planleggingsøkten ble stoppet før commit; utførelsesøkten committet planfilen
+  og kjørepromptet (`chore: implementeringsplan og kjoreprompt v1.0.1-v1.1.0`).
+- 2026-08-19 (økt 4, utførelse): «Utfør HELE implementeringsplanen — i
+  rekkefølge, task for task, uten å hoppe over verifiseringssteg. Ikke
+  re-planlegg, ikke bruk subagenter til implementering.» → executing-plans
+  startet. Utgangspunkt verifisert grønt: `npm test` 35/35, `npm run lint` 0 feil.
 
 ## Miljø
 
