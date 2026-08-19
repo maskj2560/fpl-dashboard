@@ -955,10 +955,20 @@ table.sortable th[aria-sort='ascending']::after {
 }
 
 .news-list li {
-  padding: 0.5rem 0;
+  padding: var(--space-3) 0;
   border-bottom: 1px solid var(--border);
   display: flex;
   flex-direction: column;
+  gap: 0.15rem;
+}
+
+.news-list a {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.news-list a:hover {
+  color: var(--accent);
 }
 
 .news-list li:last-child {
