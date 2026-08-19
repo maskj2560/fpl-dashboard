@@ -567,7 +567,7 @@ export function rankGraph(historyCurrent, width = 600, height = 140) {
 
 **Files:** Create: `src/routes/team.js`; Modify: `src/server.js` (import + `app.use('/lag', teamRouter);`), `views/layout.ejs` (nav-lenke `Lag` → `/lag`, samme mønster som Task 2.1)
 
-- [ ] **Steg 1:** Opprett `src/routes/team.js`:
+- [x] **Steg 1:** Opprett `src/routes/team.js`:
 ```js
 import { Router } from 'express';
 import config from '../config.js';
@@ -663,7 +663,7 @@ router.get('/', async (req, res, next) => {
 
 export default router;
 ```
-- [ ] **Steg 2:** Opprett `views/no-team.ejs`:
+- [x] **Steg 2:** Opprett `views/no-team.ejs`:
 ```ejs
 <section class="empty-state">
   <h1>Sett FPL_TEAM_ID for å se laget ditt</h1>
@@ -675,8 +675,11 @@ export default router;
   <p>Lokalt: legg <code>FPL_TEAM_ID=dinId</code> i <code>.env</code>. I produksjon: sett variabelen i Coolify og redeploy.</p>
 </section>
 ```
-- [ ] **Steg 3:** Monter rute + nav (som Task 2.1: import `teamRouter`, `app.use('/lag', teamRouter);`, nav-lenke `Lag`).
-- [ ] **Steg 4:** Commit `feat: /lag-rute med picks, historikk og anbefalingsdata`
+- [x] **Steg 3:** Monter rute + nav (som Task 2.1: import `teamRouter`, `app.use('/lag', teamRouter);`, nav-lenke `Lag`).
+- [x] **Steg 4:** Commit `feat: /lag-rute med picks, historikk og anbefalingsdata`
+      (Røyk-testet uten `.env`: `/lag` → 200 med «Sett FPL_TEAM_ID»-tilstanden.
+      Lokal `.env` finnes ikke og FPL_TEAM_ID er ukjent for meg — tilstanden med
+      lag verifiseres mot prod, der variabelen er satt i Coolify.)
 
 ### Task 3.3: /lag-view med oppstilling, graf og anbefalinger
 
