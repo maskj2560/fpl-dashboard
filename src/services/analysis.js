@@ -117,3 +117,107 @@ function addFixture(perTeam, teamId, gw, entry) {
   if (!byGw.has(gw)) byGw.set(gw, []);
   byGw.get(gw).push(entry);
 }
+
+/** Snitt-FDR for et lags kamper i [fromGw, fromGw+count). null hvis ingen kamper. */
+export function averageFdr(fixtures, teamId, fromGw, count = 3) {
+  const diffs = [];
+  for (const f of fixtures) {
+    if (f.event == null || f.event < fromGw || f.event >= fromGw + count) continue;
+    if (f.team_h === teamId) diffs.push(f.team_h_difficulty);
+    else if (f.team_a === teamId) diffs.push(f.team_a_difficulty);
+  }
+  if (diffs.length === 0) return null;
+  return diffs.reduce((s, d) => s + d, 0) / diffs.length;
+}
+
+/** Sannsynlighet (0–1) for at spilleren får spilletid neste runde. */
+export function playProbability(p) {
+  if (p.chance_of_playing_next_round != null) return p.chance_of_playing_next_round / 100;
+  return p.status === 'a' || p.status === 'd' ? 1 : 0;
+}
+
+/**
+ * Kapteinsforslag: score = form × fixture-lettehet (6 − snitt-FDR) × spilletidssannsynlighet.
+ * Keepere utelates. Returnerer topp `limit` med begrunnelser.
+ */
+export function captainSuggestions(squad, fixtures, fromGw, limit = 3) {
+  return squad
+    .filter((p) => p.element_type !== 1)
+    .map((p) => {
+      const avgFdr = averageFdr(fixtures, p.team, fromGw, 1);
+      const ease = 6 - (avgFdr ?? 3.5);
+      const probability = playProbability(p);
+      const score = (parseFloat(p.form) || 0) * ease * probability;
+      const reasons = [
+        `Form ${p.form}`,
+        avgFdr == null ? 'Ingen kamp funnet' : `FDR ${avgFdr.toFixed(1)} neste kamp`,
+        probability < 1 ? `Spilletid ${(probability * 100).toFixed(0)} %` : 'Full spilletid ventet',
+      ];
+      return { player: p, score, avgFdr, probability, reasons };
+    })
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit);
+}
+
+/** Spillere i troppen som bør vurderes solgt, med begrunnelser. */
+export function transferOutCandidates(squad, fixtures, fromGw) {
+  return squad
+    .map((p) => {
+      const reasons = [];
+      const probability = playProbability(p);
+      if (p.status !== 'a' || probability < 0.75) {
+        reasons.push(p.news?.trim() ? `Skadet/usikker: ${p.news}` : 'Skadet/usikker eller lav spilletidssjanse');
+      }
+      const form = parseFloat(p.form) || 0;
+      if (form < 2.5 && p.minutes > 0) reasons.push(`Lav form (${p.form})`);
+      const avgFdr = averageFdr(fixtures, p.team, fromGw, 3);
+      if (avgFdr != null && avgFdr >= 4) reasons.push(`Tøff fixture-run (snitt-FDR ${avgFdr.toFixed(1)} neste 3)`);
+      return { player: p, reasons };
+    })
+    .filter((c) => c.reasons.length > 0);
+}
+
+/**
+ * Beste erstattere: samme posisjon, ikke i troppen, pris ≤ utgående + bank,
+ * ventet spilletid, har spilt. Score = form × fixture-lettehet + poeng per pris.
+ */
+export function transferInCandidates(outPlayer, elements, squadIds, bankTenths, fixtures, fromGw, limit = 3) {
+  const budget = outPlayer.now_cost + bankTenths;
+  return elements
+    .filter(
+      (p) =>
+        p.element_type === outPlayer.element_type &&
+        !squadIds.has(p.id) &&
+        p.now_cost <= budget &&
+        p.minutes > 0 &&
+        playProbability(p) >= 0.75,
+    )
+    .map((p) => {
+      const avgFdr = averageFdr(fixtures, p.team, fromGw, 3);
+      const ease = 6 - (avgFdr ?? 3.5);
+      const score = (parseFloat(p.form) || 0) * ease + (p.total_points / p.now_cost) * 2;
+      return { player: p, score };
+    })
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit);
+}
+
+/** SVG-polyline for overall rank per GW. Lavere rank = bedre = høyere i grafen. */
+export function rankGraph(historyCurrent, width = 600, height = 140) {
+  const ranks = historyCurrent.filter((h) => h.overall_rank != null);
+  if (ranks.length === 0) return null;
+  const values = ranks.map((h) => h.overall_rank);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const span = max - min;
+  const stepX = ranks.length > 1 ? width / (ranks.length - 1) : 0;
+  const points = ranks
+    .map((h, i) => {
+      const x = Math.round(i * stepX);
+      // Uten spredning (én GW, eller lik rank hele veien) tegnes linjen midt i feltet.
+      const y = span === 0 ? Math.round(height / 2) : Math.round(((h.overall_rank - min) / span) * height);
+      return `${x},${y}`;
+    })
+    .join(' ');
+  return { points, min, max, first: values[0], last: values[values.length - 1] };
+}

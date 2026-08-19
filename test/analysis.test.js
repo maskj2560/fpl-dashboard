@@ -8,6 +8,12 @@ import {
   mostTransferredOut,
   fdrMatrix,
   formatPrice,
+  averageFdr,
+  playProbability,
+  captainSuggestions,
+  transferOutCandidates,
+  transferInCandidates,
+  rankGraph,
 } from '../src/services/analysis.js';
 
 function player(overrides = {}) {
@@ -154,4 +160,97 @@ test('formatPrice viser tideler som £-millioner', () => {
   assert.equal(formatPrice(55), '5.5');
   assert.equal(formatPrice(128), '12.8');
   assert.equal(formatPrice(40), '4.0');
+});
+
+test('averageFdr regner snitt for lagets kamper i vinduet', () => {
+  const fixtures = [
+    { event: 3, team_h: 1, team_a: 2, team_h_difficulty: 2, team_a_difficulty: 4 },
+    { event: 4, team_h: 2, team_a: 1, team_h_difficulty: 5, team_a_difficulty: 4 },
+    { event: 9, team_h: 1, team_a: 2, team_h_difficulty: 5, team_a_difficulty: 5 },
+  ];
+  assert.equal(averageFdr(fixtures, 1, 3, 3), 3); // (2+4)/2
+  assert.equal(averageFdr(fixtures, 1, 9, 1), 5);
+  assert.equal(averageFdr([], 1, 3, 3), null);
+});
+
+test('playProbability bruker chance og status', () => {
+  assert.equal(playProbability(player({ status: 'a', chance_of_playing_next_round: null })), 1);
+  assert.equal(playProbability(player({ status: 'd', chance_of_playing_next_round: 75 })), 0.75);
+  assert.equal(playProbability(player({ status: 'i', chance_of_playing_next_round: null })), 0);
+  assert.equal(playProbability(player({ status: 's', chance_of_playing_next_round: 0 })), 0);
+});
+
+test('captainSuggestions rangerer på form x fixture-lettehet x spilletid', () => {
+  const fixtures = [
+    { event: 3, team_h: 1, team_a: 2, team_h_difficulty: 2, team_a_difficulty: 5 },
+  ];
+  const squad = [
+    player({ id: 1, web_name: 'LettKamp', team: 1, form: '5.0', minutes: 900 }),
+    player({ id: 2, web_name: 'ToffKamp', team: 2, form: '5.0', minutes: 900 }),
+    player({ id: 3, web_name: 'Skadet', team: 1, form: '9.0', minutes: 900, status: 'i', chance_of_playing_next_round: 0 }),
+    player({ id: 4, web_name: 'Keeper', team: 1, element_type: 1, form: '9.9', minutes: 900 }),
+  ];
+  const top = captainSuggestions(squad, fixtures, 3, 3);
+  assert.equal(top[0].player.id, 1, 'lett kamp vinner ved lik form');
+  assert.equal(top[1].player.id, 2);
+  assert.equal(top.length, 3);
+  assert.equal(top[2].score, 0, 'skadet spiller får score 0');
+  assert.ok(top.every((t) => t.player.element_type !== 1), 'keeper foreslas ikke');
+  assert.ok(top[0].reasons.length >= 2, 'begrunnelse folger med');
+});
+
+test('transferOutCandidates flagger skade, lav form og toff fixture-run', () => {
+  const fixtures = [
+    { event: 3, team_h: 1, team_a: 2, team_h_difficulty: 5, team_a_difficulty: 2 },
+    { event: 4, team_h: 1, team_a: 2, team_h_difficulty: 5, team_a_difficulty: 2 },
+  ];
+  const squad = [
+    player({ id: 1, team: 2, form: '6.0', minutes: 900 }), // frisk, god form, lette kamper
+    player({ id: 2, team: 2, status: 'i', chance_of_playing_next_round: 25, minutes: 900 }),
+    player({ id: 3, team: 2, form: '1.2', minutes: 900 }),
+    player({ id: 4, team: 1, form: '6.0', minutes: 900 }), // FDR-snitt 5
+  ];
+  const out = transferOutCandidates(squad, fixtures, 3);
+  const ids = out.map((o) => o.player.id);
+  assert.ok(!ids.includes(1));
+  assert.ok(ids.includes(2) && ids.includes(3) && ids.includes(4));
+  assert.ok(out.find((o) => o.player.id === 2).reasons[0].length > 3);
+});
+
+test('transferInCandidates: samme posisjon, innenfor budsjett, ikke i troppen', () => {
+  const fixtures = [];
+  const out = player({ id: 1, element_type: 3, now_cost: 80 });
+  const elements = [
+    out,
+    player({ id: 2, element_type: 3, now_cost: 85, form: '7.0', total_points: 60, minutes: 900 }),
+    player({ id: 3, element_type: 3, now_cost: 95, form: '9.0', total_points: 90, minutes: 900 }), // for dyr (budsjett 90)
+    player({ id: 4, element_type: 2, now_cost: 50, form: '8.0', total_points: 70, minutes: 900 }), // feil posisjon
+    player({ id: 5, element_type: 3, now_cost: 60, form: '2.0', total_points: 30, minutes: 900 }),
+    player({ id: 6, element_type: 3, now_cost: 70, form: '6.0', total_points: 55, minutes: 900 }), // i troppen
+    player({ id: 7, element_type: 3, now_cost: 75, form: '6.5', total_points: 50, minutes: 0 }),   // aldri spilt
+  ];
+  const inn = transferInCandidates(out, elements, new Set([1, 6]), 10, fixtures, 3, 3);
+  const ids = inn.map((c) => c.player.id);
+  assert.ok(ids.includes(2) && ids.includes(5));
+  assert.ok(!ids.includes(3) && !ids.includes(4) && !ids.includes(6) && !ids.includes(7) && !ids.includes(1));
+  assert.equal(ids[0], 2, 'hoyest form/verdi forst');
+});
+
+test('rankGraph lager polyline-punkter, lav rank overst', () => {
+  const history = [
+    { event: 1, overall_rank: 1000000 },
+    { event: 2, overall_rank: 500000 },
+    { event: 3, overall_rank: 750000 },
+  ];
+  const g = rankGraph(history, 600, 140);
+  assert.equal(g.min, 500000);
+  assert.equal(g.max, 1000000);
+  assert.equal(g.last, 750000);
+  const pts = g.points.split(' ').map((p) => p.split(',').map(Number));
+  assert.equal(pts.length, 3);
+  assert.equal(pts[0][0], 0);
+  assert.equal(pts[2][0], 600);
+  assert.ok(pts[1][1] < pts[0][1], 'bedre rank tegnes hoyere (lavere y)');
+  assert.equal(rankGraph([], 600, 140), null);
+  assert.equal(rankGraph([{ event: 1, overall_rank: 5 }], 600, 140).points, '0,70');
 });

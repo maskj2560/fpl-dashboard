@@ -7,6 +7,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+
+- Analysefunksjoner for kapteinsvalg, salgs- og kjøpskandidater og rank-graf
+  (`averageFdr`, `playProbability`, `captainSuggestions`,
+  `transferOutCandidates`, `transferInCandidates`, `rankGraph`) med tester
+
 ## [0.2.0] - 2026-08-19
 
 ### Added

@@ -354,7 +354,7 @@ table.sortable th[aria-sort='ascending']::after {
 - `transferInCandidates(outPlayer, elements, squadIds:Set, bankTenths, fixtures, fromGw, limit=3) → [{player, score}]`
 - `rankGraph(historyCurrent, width=600, height=140) → {points: 'x,y x,y …', min, max, first, last}|null`
 
-- [ ] **Steg 1 (RED):** Append i `test/analysis.test.js` (gjenbruk eksisterende `player()`-hjelper i filen; utvid import-listen øverst med de nye funksjonene):
+- [x] **Steg 1 (RED):** Append i `test/analysis.test.js` (gjenbruk eksisterende `player()`-hjelper i filen; utvid import-listen øverst med de nye funksjonene):
 ```js
 test('averageFdr regner snitt for lagets kamper i vinduet', () => {
   const fixtures = [
@@ -449,8 +449,12 @@ test('rankGraph lager polyline-punkter, lav rank overst', () => {
   assert.equal(rankGraph([{ event: 1, overall_rank: 5 }], 600, 140).points, '0,70');
 });
 ```
-- [ ] **Steg 2:** `npm test` → de nye testene FEILER med «is not a function»/import-feil. Ikke gå videre før du har sett feilene.
-- [ ] **Steg 3 (GREEN):** Append i `src/services/analysis.js`:
+- [x] **Steg 2:** `npm test` → de nye testene FEILER med «is not a function»/import-feil. Ikke gå videre før du har sett feilene.
+      (Sett: `SyntaxError: … does not provide an export named 'averageFdr'`.)
+- [x] **Steg 3 (GREEN):** Append i `src/services/analysis.js`:
+      **Avvik fra planen:** planens `rankGraph` (`span = max - min || 1`) gir `'0,0'` for ett
+      datapunkt, mens planens egen test krever `'0,70'`. Implementert med `span === 0` →
+      `y = height / 2`, som er det testen (og en flat graf) faktisk ber om.
 ```js
 /** Snitt-FDR for et lags kamper i [fromGw, fromGw+count). null hvis ingen kamper. */
 export function averageFdr(fixtures, teamId, fromGw, count = 3) {
@@ -555,8 +559,8 @@ export function rankGraph(historyCurrent, width = 600, height = 140) {
   return { points, min, max, first: values[0], last: values[values.length - 1] };
 }
 ```
-- [ ] **Steg 4:** `npm test` → ALT grønt (18 gamle + 7 nye). `npm run lint` → grønn.
-- [ ] **Steg 5:** Commit `feat: analyse for kaptein, transfers og rank-graf`
+- [x] **Steg 4:** `npm test` → ALT grønt (18 gamle + 6 nye = 24). `npm run lint` → grønn.
+- [x] **Steg 5:** Commit `feat: analyse for kaptein, transfers og rank-graf`
 
 ### Task 3.2: /lag-rute
 
