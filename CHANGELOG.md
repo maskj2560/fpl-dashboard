@@ -7,72 +7,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
-- **Dashbordets fire kort ligger 2 × 2 på brede skjermer** i stedet for tre på
-  første rad og ett alene på den andre
+## [1.1.1] - 2026-08-20
 
-- **Undertittelen på /lag skriver ikke «Gameweek –».** Gameweek-leddet utelates
-  helt når det ikke finnes en runde å vise
-
-- **Statstripa på /lag lyver ikke om tall som mangler.** «Totalt» og «Overall
-  rank» viste tall fra forrige sesong før troppen finnes — nå står det `–` i
-  hele stripa, som for de tre andre feltene
-
-- **FDR-matrisen viser flere runder på mobil.** Lagets fullnavn skjules visuelt
-  (skjermlesere får det fortsatt) og cellene er strammere under 480 px
-
-- **Ord brekkes ikke lenger midt inne.** På skjermer under 480 px brøt
-  `overflow-wrap: anywhere` vanlige ord vilkårlig. Nå brekkes bare ord som ikke
-  får plass, med orddeling
-
-- **Skadetekstene på dashbordet er på norsk.** FPL leverer statusteksten på
-  engelsk («Ankle injury - 75% chance of playing»). «Ukens flagg» viser den nå
-  oversatt («Ankelskade – 75 % sjanse for spilletid»), inkludert overganger,
-  utlån, utestengelser og forventet retur. Ukjente mønstre vises uendret
-
-- **FDR-4-ruten har lesbar tekst.** Fargen er mørknet fra `#d24069` til
-  `#bd3a5f`, som gir 4,6:1 mot den hvite teksten og fortsatt er tydelig skilt
-  fra FDR-5
-
-- **Tabelloverskriftene er lesbare.** De sto i `--text-faint` (3,8:1 mot
-  kortbakgrunnen) og er flyttet til det nye tokenet `--dim-strong` (5,3:1).
-  `--text-faint` hadde ingen andre brukere og er fjernet
-
-- **Samme nyhetssak vises ikke lenger flere ganger.** Saker dedupliseres på
-  normalisert lenke (uten sporingsparametre) og normalisert tittel, slik at
-  duplikater fra to feeder eller samme feed forsvinner
-
-- **AI-nyhetspunktene er etterprøvbare.** Sakene på /nyheter viser nå ingressen
-  fra RSS-en, prompten forbyr detaljer som ikke står i sakene, og punkter som
-  ikke deler et eneste egennavn med noen sak forkastes før de vises
-
-- **AI-briefen motsier ikke lenger kampdataene.** Modellen regnet selv ut hva
-  som ble spilt før deadline og bommet. Briefen beregner nå fasiten
-  (`beforeDeadline` per kamp), sender den til modellen som forhåndsberegnede
-  tidsfakta, og fjerner setninger som påstår noe annet — både på /brief og i
-  auto-briefen til Discord
-
-- **AI-merket brekker ikke lenger.** «AI»-merket i overskriftene på /brief og
-  /nyheter kunne deles over to linjer på smale skjermer. Klokkeslettet ved siden
-  av vises nå uten sekunder («generert 21:04»)
-
-- **/liga forklarer tomme ligatabeller.** En liga uten rader viste et tomt
-  tabellhode og ingressen «Klikk på et lag …» selv om det ikke fantes noe å
-  klikke på. Nå vises en tomtilstand med lenke til dashbordet, og ingressen
-  bare når minst én liga har rader
-- **/health teller ligaene brukeren faktisk får se.** Feltet `leagues` telte
-  bare `LEAGUE_IDS`, mens /liga auto-oppdager ligaene fra laget. Begge bruker
-  nå `resolveLeagueIds()` i den nye `src/services/leagues.js`, med fallback til
-  config-antallet hvis FPL er nede
-
-- **Dashbordet presenterer ikke lenger tomme datasett som rangeringer.**
-  «Toppform», «Mest kjøpt» og «Mest solgt» viste en vilkårlig sortering av
-  spillere med form 0 og 0 overganger før sesongstart. Listene er nå tomme når
-  datagrunnlaget er null, og kortene forklarer hvorfor
-
-- **Tabellhodet legger seg ikke lenger under toppmenyen.** Tabellene på
-  dashbordet, /liga og /live flyter nå med siden i stedet for å ha egen
-  vertikal scroll. Den lange spillertabellen beholder scrollboksen, men hele
-  boksen festes under menyen (`--topbar-h`) med plass til footeren
+Rettelser etter ekstern QA av v1.1.0. Viktigst: assets versjoneres, slik at
+v1.1.0-designet faktisk blir synlig i prod.
 
 ### Fixed
 
@@ -80,12 +18,62 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   serverte utdatert CSS og JS etter deploy, slik at hele v1.1.0-designet var
   usynlig i prod. Versjonerte URL-er caches for alltid (`immutable`),
   uversjonerte får `no-cache`. Fonten versjoneres manuelt (`?v=1`) i både
-  preload-lenken og `@font-face`
+  preload-lenken og `@font-face` (P0-1)
+- **Tabellhodet legger seg ikke lenger under toppmenyen.** Tabellene på
+  dashbordet, /liga, /live og /brief flyter nå med siden i stedet for å ha egen
+  vertikal scroll. Den lange spillertabellen beholder scrollboksen, men hele
+  boksen festes under menyen (`--topbar-h`) med plass til footeren (P0-2)
+- **Dashbordet presenterer ikke tomme datasett som rangeringer.** «Toppform»,
+  «Mest kjøpt» og «Mest solgt» viste en vilkårlig sortering av spillere med
+  form 0 og 0 overganger. Listene er nå tomme når datagrunnlaget er null, og
+  kortene forklarer hvorfor (P1-1)
+- **/liga forklarer tomme ligatabeller,** og ingressen «Klikk på et lag …»
+  vises bare når minst én liga har rader å klikke på (P1-2)
+- **/health teller ligaene brukeren faktisk får se.** Feltet `leagues` telte
+  bare `LEAGUE_IDS`, mens /liga auto-oppdager ligaene fra laget. Begge bruker
+  nå `resolveLeagueIds()`, med fallback til config-antallet hvis FPL er nede
+  (P1-2)
+- **AI-merket brekker ikke over to linjer,** og klokkeslettet ved siden av
+  vises uten sekunder («generert 21:04») (P1-3)
+- **AI-briefen motsier ikke lenger kampdataene.** Modellen regnet selv ut hva
+  som ble spilt før deadline og bommet. Briefen beregner nå fasiten
+  (`beforeDeadline` per kamp), sender den til modellen som forhåndsberegnede
+  tidsfakta, og fjerner setninger som påstår noe annet — både på /brief og i
+  auto-briefen til Discord (P1-4)
+- **AI-nyhetspunktene er etterprøvbare.** Sakene på /nyheter viser nå ingressen
+  fra RSS-en, prompten forbyr detaljer som ikke står i sakene, og punkter som
+  ikke deler et eneste egennavn med noen sak forkastes før de vises (P1-5)
+- **Samme nyhetssak vises ikke flere ganger.** Saker dedupliseres på
+  normalisert lenke (uten sporingsparametre) og normalisert tittel (P1-6)
+- **Tabelloverskriftene er lesbare.** De sto i `--text-faint` (3,8:1 mot
+  kortbakgrunnen) og bruker nå det nye tokenet `--dim-strong` (5,3:1) (P1-7)
+- **FDR-4-ruten har lesbar tekst.** Fargen er mørknet fra `#d24069` til
+  `#bd3a5f` (4,6:1 mot hvit tekst), fortsatt tydelig skilt fra FDR-5 (P2-1)
+- **Skadetekstene på dashbordet er på norsk.** «Ukens flagg» oversetter FPL-ens
+  engelske statustekst («Ankle injury - 75% chance of playing» →
+  «Ankelskade – 75 % sjanse for spilletid»), inkludert overganger, utlån,
+  utestengelser og forventet retur. Ukjente mønstre vises uendret (P2-2)
+- **Ord brekkes ikke midt inne** på skjermer under 480 px — bare ord som ikke
+  får plass brekkes, med orddeling (P2-3)
+- **FDR-matrisen viser flere runder på mobil.** Lagets fullnavn skjules visuelt
+  (skjermlesere får det fortsatt) og cellene er strammere under 480 px (P2-4)
+- **Statstripa på /lag lyver ikke om tall som mangler.** «Totalt» og «Overall
+  rank» viste tall fra forrige sesong før troppen finnes — nå står det `–` i
+  hele stripa (P2-5)
+- **Undertittelen på /lag skriver ikke «Gameweek –»** — leddet utelates helt
+  når det ikke finnes en runde å vise (P2-6)
+- **Dashbordets fire kort ligger 2 × 2 på brede skjermer** i stedet for tre på
+  første rad og ett alene på den andre (P2-8)
 
 ### Added
 
 - `DEPLOY.md`: deploy-flyt, asset-cache-reglene og engangssteget for
   Cloudflare-purge
+
+### Removed
+
+- `--text-faint` — tabellhodene var eneste bruker, og de er flyttet til
+  `--dim-strong`
 
 ## [1.1.0] - 2026-08-19
 

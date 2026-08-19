@@ -95,7 +95,19 @@ committet (og pushet hvis remote finnes).
 - [x] Enhetlig kort- og tabellsystem på alle sider
 - [x] /spillere, /lag (pitch + arealgraf), /live, /liga, /brief, /nyheter
 - [x] Gjennomdesignede tom- og feiltilstander, mobil-finpuss
-- [ ] QA-runder 1–5 hos bruker
+- [x] QA-runder 1–5 hos bruker
+
+## v1.1.1 — QA-rettelser
+
+- [x] P0-1 asset-versjonering med innholdshash + DEPLOY.md (Cloudflare-purge)
+- [x] P0-2 tabellhodet legger seg ikke under toppmenyen
+- [x] P1-1…P1-7 tomtilstander, /health-konsistens, AI-faktakontroll,
+      RSS-duplikater, kontrast
+- [x] P2-1…P2-6 + P2-8 kontrast, norske skadetekster, ordbrudd, FDR på mobil,
+      statstripe og kortlayout
+- [x] Verifisert lokalt: 111 tester, lint 0, alle ruter 200, kontrast 8/8 par
+      over 4,5:1, Playwright 103 sjekker uten feil på fire viewports
+- [ ] Deployet og verifisert i prod (krever push + Cloudflare-purge)
 
 ## Senere / idéer (ikke planlagt)
 
