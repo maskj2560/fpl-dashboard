@@ -7,6 +7,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Changed
+
+- **AI-briefen bes eksplisitt om norske fotballuttrykk** («holdt nullen»
+  i stedet for «clean sheet», «runde» i stedet for «gameweek»). Kun
+  promptjustering — genereringslogikken er uendret (QA v1.1.1, P4)
+
 ### Fixed
 
 - **Skadestatus fra FPL oversettes helt, ikke halvveis.** «Unspecified

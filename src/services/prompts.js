@@ -3,7 +3,7 @@ import { formatPrice } from './analysis.js';
 
 export function buildBriefPrompt(brief) {
   const parts = [
-    `Skriv en kort gameweek-brief på norsk for Fantasy Premier League, ${brief.gameweek?.name ?? 'kommende runde'}.`,
+    `Skriv en kort rundebrief på norsk for Fantasy Premier League, ${brief.gameweek?.name ?? 'kommende runde'}.`,
     `Deadline: ${brief.gameweek?.deadlineFormatted ?? 'ukjent'}.`,
     '',
     'Skadenytt (høyt eide spillere):',
@@ -31,7 +31,8 @@ export function buildBriefPrompt(brief) {
     'Skriv briefen med disse seksjonene i markdown: «Deadline», «Skadenytt», «Kapteinsvalg», «Kamper å følge med på»' +
       (brief.mine ? ', «Mine grep»' : '') +
       '. Vær konkret og kortfattet, sett spillernavn i **fet**. Maks ~350 ord. Ingen innledning utover seksjonene.' +
-      ' Utled aldri tidsforhold selv: skal du si noe om hva som skjer før eller etter deadline, bruk kun de forhåndsberegnede tidsfaktaene over.',
+      ' Utled aldri tidsforhold selv: skal du si noe om hva som skjer før eller etter deadline, bruk kun de forhåndsberegnede tidsfaktaene over.' +
+      ' Bruk norske fotballuttrykk: skriv «holdt nullen», aldri «clean sheet»; «runde», aldri «gameweek». Ordet «deadline» brukes som det er.',
   );
   return parts.join('\n');
 }

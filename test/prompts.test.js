@@ -15,6 +15,9 @@ test('buildBriefPrompt tar med deadline, skader og kapteiner', () => {
   assert.match(prompt, /Haaland/);
   assert.match(prompt, /Salah/);
   assert.match(prompt, /norsk/i);
+  // P4 (QA v1.1.1): prompten skal kreve norske fotballuttrykk.
+  assert.match(prompt, /holdt nullen/);
+  assert.match(prompt, /aldri «gameweek»/);
 });
 
 test('buildAdvicePrompt tar med tropp, bank og salgskandidater', () => {
