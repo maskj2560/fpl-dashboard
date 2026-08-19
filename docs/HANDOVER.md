@@ -3,14 +3,30 @@
 > Levende overleveringsfil. Oppdateres ved hver milepæl og ved arbeidsstans.
 > Ny AI-økt: les denne + CLAUDE.md + ROADMAP.md, fortsett der «Neste steg» sier.
 
-**Sist oppdatert:** 2026-08-20 (økt 7, **v1.1.2 klar lokalt på `fix/qa-v1.1.2` — venter på push-klarsignal**)
+**Sist oppdatert:** 2026-08-20 (økt 7, **v1.1.2 ER I PROD — deployet og verifisert ~01:30**)
 
-## v1.1.2 — visuelle QA-rettelser, klare lokalt (2026-08-20 ~01:30)
+## NESTE ØKT: sesongstart-verifisering (M4)
+
+Kjøreprompt: **`docs/neste-okt-prompt-sesongstart.md`** — sendes tidligst
+torsdag ~19:45 (etter auto-briefen), helst fredag etter 19:30 (etter
+GW1-deadline). Dekker: etterkontroll av auto-briefen, tomtilstand → ekte
+data på alle sider (P1-1-filtrene, P2-5/P2-6-gatene), live-polling,
+AI-restverifisering (maks ~3 kall, «Spør AI om råd» = ett klikk fra Marius),
+kostnadskontroll etter 2–3 dager, skjermbilder + mobiltest, v1.2.0-kandidater.
+
+## v1.1.2 ER I PROD (2026-08-20 ~01:30)
 
 Marius kjørte visuell QA av v1.1.1 i prod (1440/390 px) og ga en retteordre.
-Branch `fix/qa-v1.1.2` (fra `main`), 6 commits, lokal tag `v1.1.2`.
-**Ikke pushet — venter på klarsignal.** Bør i prod før kveldens auto-brief
-~19:30 (P4-promptfiksen gjelder briefen).
+Branch `fix/qa-v1.1.2` (7 commits) merget til `main` med `--no-ff`, pushet
+01:27, deployen ute 01:28. Tag `v1.1.2` pushet etter prod-verifisering.
+
+Verifisert i prod (kommandoer kjørt ~01:30, output sett): alle ti ruter 200,
+404 OK, footer `v1.1.2` på alle sju sider, ny asset-hash `ead67020` matcher
+servert innhold, `immutable`-header OK, `/health` `ai:true, discord:true,
+teamId:true, leagues:1`, og oversettelsene er synlige i prod-HTML
+(«Dashbord», «Runde 1», «Uspesifisert skade», «på lån ut sesongen»,
+480 × «Klar», «P/K», «Rundebrief»). Cloudflare-purge trengtes ikke
+(assets får ny URL automatisk).
 
 - **P1-1** mørk scrollbar i `.table-scroll` (Firefox + WebKit, CSS-variabler)
 - **P1-2** mobilmenyens kantfade vises nå kun på siden med uscrollet innhold
@@ -101,8 +117,8 @@ emnelinjen. Se CHANGELOG `[1.1.1]` for brukersynlig liste. Kort:
 - **filterSummaryPoints mot ekte nyhetspunkter** — samme mønster: tester
   grønne, ikke verifisert mot en fersk AI-generering i prod.
 - **Sesongstart-verifisering (M4)** — tomtilstander → ekte data etter
-  GW1-deadline fredag 21. august 19:30. Egen verifiseringsplan bestilles
-  fra Fable (prompt levert til Marius i økt 7).
+  GW1-deadline fredag 21. august 19:30. Kjøreprompt:
+  `docs/neste-okt-prompt-sesongstart.md`.
 - **Mobilvisning på ekte telefon + skjermbilder til README (M5)**
 - P2-7 (til info): ligaen heter «Var Har Skylda» fordi FPL-API-et leverer
   den slik (verifisert mot `entry/5330646/`). Ingen kodefeil — endres i
@@ -128,8 +144,11 @@ emnelinjen. Se CHANGELOG `[1.1.1]` for brukersynlig liste. Kort:
   fpl.marsk.no. Handling: Fase 3-verifiseringen kjørt, deretter Fase 4.
 - 2026-08-20 (økt 7): retteordre fra visuell QA av v1.1.1 limt inn
   («QA-fiks for fpl.marsk.no (v1.1.1)», P1-1…P4) + «Hva gjør jeg nå?».
-  Handling: alle funn rettet på `fix/qa-v1.1.2`, verifisert lokalt,
-  venter på push-klarsignal.
+  Handling: alle funn rettet på `fix/qa-v1.1.2`, verifisert lokalt.
+- 2026-08-20 (økt 7): «push. Deretter lag en veldig god handover med prompt
+  til en ny sesjon om hva som skal bli gjort». Handling: merge + push +
+  prod-verifisering + tag `v1.1.2` pushet; denne handoveren oppdatert og
+  `docs/neste-okt-prompt-sesongstart.md` skrevet.
 
 ## Status
 

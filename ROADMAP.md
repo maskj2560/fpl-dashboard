@@ -109,6 +109,16 @@ committet (og pushet hvis remote finnes).
       over 4,5:1, Playwright 103 sjekker uten feil på fire viewports
 - [x] Deployet og verifisert i prod (push + Cloudflare-purge gjort 2026-08-20)
 
+## v1.1.2 — visuelle QA-rettelser
+
+- [x] P1-1 mørk scrollbar i tabellbokser (Firefox + WebKit)
+- [x] P1-2 mobilmenyen viser sidescroll-hint (dynamisk kantfade + scroll-snap)
+- [x] P2 engelsk UI-tekst oversatt (Dashbord, Runde, Totalrangering, P/K, Klar)
+- [x] P3 skadestatus-oversettelsen dekker alle 72 `news`-mønstre fra FPL
+- [x] P4 brief-prompten krever norske fotballuttrykk
+- [x] Verifisert lokalt (118 tester, lint 0, Playwright 38/38 på 390 + 1440 px)
+      og i prod (alle ruter 200, ny asset-hash, oversettelser synlige)
+
 ## Senere / idéer (ikke planlagt)
 
 - Historisk «hva hvis»-analyse av egne transfers
