@@ -81,7 +81,7 @@ committet (og pushet hvis remote finnes).
       deploy/restart i sendevinduet (`sendDecision`, TDD)
 - [x] Usage-logging per AI-kall (modell + inn/ut-tokens) for kostnadskontroll
 - [x] Lokal pre-flight av alle fire AI-funksjonene mot ekte API
-- [ ] Auto-briefen verifisert mot ekte Discord-webhook
+- [x] Auto-briefen verifisert mot ekte Discord-webhook (inkl. anti-spam-guard)
 - [ ] `ANTHROPIC_API_KEY` + `DISCORD_WEBHOOK_URL` + `FPL_TEAM_ID` i Coolify
 - [ ] Naturlig auto-brief onsdag 20. aug ~19:30 verifisert
 - [ ] Kostnadskontroll etter 2–3 dager i drift

@@ -266,16 +266,16 @@ Alle fire AI-funksjonene kjøres mot ekte API lokalt FØR noe settes i prod.
 
 ### Task 1.4: Tvungen lokal test av auto-briefen mot ekte Discord (krever bruker)
 
-- [ ] **Steg 1 (BRUKER):** Lag webhook i Discord: kanalinnstillinger →
+- [x] **Steg 1 (BRUKER):** Lag webhook i Discord: kanalinnstillinger →
       Integrasjoner → Webhooks → Ny webhook → kopier URL.
-- [ ] **Steg 2 — rå webhook-røyk-test** (utenfor appen, beviser URL-en):
+- [x] **Steg 2 — rå webhook-røyk-test** (utenfor appen, beviser URL-en):
 
 ```powershell
 Invoke-WebRequest -Uri "<WEBHOOK_URL>" -Method POST -ContentType "application/json" -Body '{"content":"Roik-test fra FPL-dashboard"}' -UseBasicParsing
 ```
 
       Forventet: HTTP 204 og meldingen synlig i kanalen.
-- [ ] **Steg 3 — tvungen app-sending:** Beregn timer til deadline og sett
+- [x] **Steg 3 — tvungen app-sending:** Beregn timer til deadline og sett
       varselet slik at send-tidspunktet er nå (innenfor 1-times-guarden):
 
 ```powershell
@@ -293,7 +293,7 @@ node -e "console.log(((Date.parse('2026-08-21T17:30:00Z') - Date.now())/3600000)
       Sjekk spesielt: **fet skrift** rendres (Discord tolker `**`), ingen
       avkuttede setninger, og hvis briefen er > 1900 tegn: den er delt i flere
       meldinger med hele avsnitt (oppdelingen i `postToDiscord` deler på linjeskift).
-- [ ] **Steg 5:** Fjern `BRIEF_HOURS_BEFORE_DEADLINE` fra `.env` (tilbake til
+- [x] **Steg 5:** Fjern `BRIEF_HOURS_BEFORE_DEADLINE` fra `.env` (tilbake til
       default 24) og noter i HANDOVER at lokal auto-brief er verifisert mot
       ekte Discord med dato og resultat.
 
@@ -301,10 +301,18 @@ node -e "console.log(((Date.parse('2026-08-21T17:30:00Z') - Date.now())/3600000)
 
 - [x] **Steg 1:** Push Task 1.1+1.2 (grønn test/lint først). Verifiser prod:
       alle ti ruter svarer 200, footer viser fortsatt v1.0.0.
-- [ ] **Steg 2:** Release v1.0.1: flytt `[Unreleased]` til `[1.0.1]` med dato i
+- [x] **Steg 2:** Release v1.0.1: flytt `[Unreleased]` til `[1.0.1]` med dato i
       CHANGELOG, bump `version` i `package.json`, commit `docs: release v1.0.1`,
       `git tag v1.0.1`, `git push origin main --tags`. Verifiser at footeren i
       prod viser v1.0.1 etter deploy.
+
+      **Avvik fra planen (innholdet i v1.0.1):** Task 1.3/1.4 var blokkert på
+      brukeren, så Milepæl 2 og de tre første UI-oppgavene ble kjørt i
+      ventetiden. v1.0.1-taggen inneholder derfor også Archivo-fonten, den nye
+      tokenpaletten, den én-linjes navigasjonen og `aria-current`-fiksen —
+      CHANGELOG-en lister alt dette under `[1.0.1]` slik at seksjonen faktisk
+      beskriver det som står i prod. Resten av makeoveren (Task 3.4–3.12)
+      lander som planlagt i v1.1.0.
 - [ ] **Steg 3 (BRUKER):** Sett i Coolify (Environment Variables for appen):
       `ANTHROPIC_API_KEY`, `DISCORD_WEBHOOK_URL`. IKKE sett
       `BRIEF_HOURS_BEFORE_DEADLINE` (default 24 er riktig). Redeploy appen.
@@ -312,7 +320,7 @@ node -e "console.log(((Date.parse('2026-08-21T17:30:00Z') - Date.now())/3600000)
       AI-oppsummering; `https://fpl.marsk.no/brief` viser AI-brief;
       dashboardet viser AI-nyhetspanelet. Coolify-loggen viser
       `Auto-brief aktiv: sender 24 t før deadline` og `AI-kall: …`-linjer.
-- [ ] **Steg 5:** Oppdater ROADMAP (ny seksjon v1.0.1, avhuket), HANDOVER
+- [x] **Steg 5:** Oppdater ROADMAP (ny seksjon v1.0.1, avhuket), HANDOVER
       (status + brukerbeskjed-logg), commit `docs: …`.
 
 ### Task 1.6: Naturlig auto-brief onsdag 20. aug ~19:30 (kalenderstyrt)

@@ -189,6 +189,15 @@ task for task. Kort oversikt:
   200 lokalt med ekte ID; `/lag` og `/liga` viser tomtilstander som forventet
   før sesongstart. **Husk: samme ID må inn i Coolify sammen med nøklene.**
 
+- 2026-08-19 (økt 4): «Vent, gå tilbake til Jens...» og deretter «Nei kall meg
+  Marius please. Ikke endre igjen» → **endelig: Marius**. Minnet ligger i
+  `memory/tiltale-marius.md`; ikke endre tiltalenavnet igjen uten ny instruks.
+- 2026-08-19 (økt 4): webhook-URL oppgitt i klartekst i chatten → brukt til
+  Task 1.4, lagt i `.env` (gitignored). **Brukeren er varslet om at URL-en nå
+  ligger i samtaleloggen og kan regenereres i Discord.**
+- 2026-08-19 (økt 4): «Vis to-do listen» → svart: `ROADMAP.md` (milepæler) og
+  plan-filen (steg), begge avhukes fortløpende; status-tabell gitt i chatten.
+
 ## Pre-flight-resultat (Task 1.3, 2026-08-19, lokalt med ekte nøkkel)
 
 - `/nyheter`: `AI-kall: news-summary modell=claude-sonnet-5 inn=1306 ut=824`.
@@ -198,6 +207,19 @@ task for task. Kort oversikt:
 - `POST /api/ai-rad`: kontrollert 400 (`Ingen aktiv gameweek.`) før sesongstart
   — ikke krasj. Full verifisering skjer i M4 sjekkpunkt A.
 - Konklusjon: `claude-sonnet-5` beholdes, ingen promptjustering nødvendig.
+## Discord-verifisering (Task 1.4, 2026-08-19, lokalt)
+
+- Rå webhook-røyk-test: `HTTP 204`.
+- Tvungen sending med `BRIEF_HOURS_BEFORE_DEADLINE=45.5`: konsollen viste
+  `Auto-brief aktiv: sender 45.5 t før deadline`, `AI-kall: ai-brief-gw1 …
+  inn=519 ut=859` og `Auto-brief sendt for Gameweek 1`.
+- **Anti-spam-guarden verifisert ende-til-ende:** ny start med
+  `BRIEF_HOURS_BEFORE_DEADLINE=47` (send-tidspunkt 1,5 t passert) ga
+  `Auto-brief hoppet over for Gameweek 1: send-tidspunktet er passert` og
+  INGEN ny Discord-melding.
+- `BRIEF_HOURS_BEFORE_DEADLINE` er fjernet fra `.env` igjen (default 24).
+- Gjenstår: brukeren bekrefter visuelt at meldingen i kanalen ser hel ut.
+
 - **Deadline er fredag 21. august kl. 19:30**, ikke torsdag (planens
   ukedagsnavn er forskjøvet én dag; datoene stemmer). Den naturlige
   auto-briefen sender derfor **torsdag 20. august ~19:30** — Milepæl 1 må være
