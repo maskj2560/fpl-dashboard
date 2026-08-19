@@ -386,3 +386,52 @@ test('translateFplNews lar ukjent mønster og tom tekst stå urørt', () => {
   assert.equal(translateFplNews(''), '');
   assert.equal(translateFplNews(null), '');
 });
+
+// ---- QA v1.1.1 P3: fraser fra ekte bootstrap-static som slapp gjennom rått --
+
+test('translateFplNews dekker skadetypene fra ekte FPL-data', () => {
+  assert.equal(
+    translateFplNews('Unspecified injury - 75% chance of playing'),
+    'Uspesifisert skade – 75 % sjanse for spilletid',
+  );
+  assert.equal(
+    translateFplNews('Unspecified injury - Unknown return date'),
+    'Uspesifisert skade – uavklart',
+  );
+  assert.equal(translateFplNews('Arm injury - Unknown return date'), 'Armskade – uavklart');
+  assert.equal(
+    translateFplNews('Muscular injury - Unknown return date'),
+    'Muskelskade – uavklart',
+  );
+  assert.equal(
+    translateFplNews('Lack of match fitness - 75% chance of playing'),
+    'Mangler kamptrening – 75 % sjanse for spilletid',
+  );
+});
+
+test('translateFplNews oversetter lånevarianter i overganger', () => {
+  assert.equal(
+    translateFplNews('Has joined Juventus on loan for the rest of the season'),
+    'Overgang til Juventus (på lån ut sesongen)',
+  );
+  assert.equal(
+    translateFplNews('Has joined Wrexham on loan until 1 Jan'),
+    'Overgang til Wrexham (på lån til 1. jan.)',
+  );
+});
+
+test('translateFplNews oversetter utestengelse med dato og retur til klubb', () => {
+  assert.equal(translateFplNews('Suspended until 29 Aug'), 'Utestengt til 29. aug.');
+  assert.equal(translateFplNews('has returned to Getafe CF'), 'Tilbake hos Getafe CF');
+});
+
+test('translateFplNews varsler i dev når et mønster ikke matcher', (t) => {
+  const warn = t.mock.method(console, 'warn', () => {});
+  translateFplNews('Some brand new phrase FPL invented');
+  assert.equal(warn.mock.callCount(), 1);
+  assert.match(String(warn.mock.calls[0].arguments[0]), /uten oversettelsesmønster/);
+
+  warn.mock.resetCalls();
+  translateFplNews('Ankle injury - 75% chance of playing');
+  assert.equal(warn.mock.callCount(), 0, 'kjent mønster skal ikke varsle');
+});

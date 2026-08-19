@@ -48,7 +48,7 @@ router.get('/', async (req, res, next) => {
       // med kampdataene. Uriktige setninger fjernes før briefen vises.
       if (aiBrief?.text) aiBrief = { ...aiBrief, text: sanitizeBriefText(aiBrief.text, brief) };
     }
-    res.renderPage('brief', { title: 'Gameweek-brief', brief, aiBrief });
+    res.renderPage('brief', { title: 'Rundebrief', brief, aiBrief });
   } catch (err) {
     next(err);
   }

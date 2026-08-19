@@ -273,6 +273,7 @@ export function differentials(myIds, rivalIds, elements) {
 const INJURY_TYPES = {
   achilles: 'Akillesskade',
   ankle: 'Ankelskade',
+  arm: 'Armskade',
   back: 'Ryggskade',
   calf: 'Leggskade',
   concussion: 'Hjernerystelse',
@@ -287,8 +288,10 @@ const INJURY_TYPES = {
   illness: 'Sykdom',
   knee: 'Kneskade',
   knock: 'Smell',
+  'lack of match fitness': 'Mangler kamptrening',
   leg: 'Beinskade',
   muscle: 'Muskelskade',
+  muscular: 'Muskelskade',
   neck: 'Nakkeskade',
   rib: 'Ribbeinsskade',
   shin: 'Skinnebensskade',
@@ -296,6 +299,7 @@ const INJURY_TYPES = {
   suspended: 'Utestengt',
   thigh: 'Lårskade',
   toe: 'Tåskade',
+  unspecified: 'Uspesifisert skade',
   virus: 'Virussykdom',
   wrist: 'Håndleddsskade',
 };
@@ -305,54 +309,86 @@ const MONTHS = {
   jul: 'juli', aug: 'aug.', sep: 'sep.', oct: 'okt.', nov: 'nov.', dec: 'des.',
 };
 
-/** «Ankle injury» → «Ankelskade». Ukjent type beholdes uendret. */
+/** «Ankle injury» → «Ankelskade». Ukjent type gir null. */
 function translateType(type) {
   const key = type.toLowerCase().replace(/\s+injury$/, '').trim();
-  return INJURY_TYPES[key] ?? type.trim();
+  return INJURY_TYPES[key] ?? null;
 }
 
-/** «Expected back 21 Aug» → «ventes tilbake 21. aug.» */
+/** «21 Aug» → «21. aug.» — engelsk kortdato til norsk. */
+function translateDate(s) {
+  return s.replace(
+    /(\d+)\s+([A-Za-z]{3})[a-z]*/,
+    (_m, day, mon) => `${day}. ${MONTHS[mon.toLowerCase()] ?? mon}`,
+  );
+}
+
+/** «Expected back 21 Aug» → «ventes tilbake 21. aug.». Ukjent detalj gir null. */
 function translateDetail(detail) {
   const d = detail.trim();
   const chance = d.match(/^(\d+)%\s*chance of playing/i);
   if (chance) return `${chance[1]} % sjanse for spilletid`;
   if (/^unknown/i.test(d)) return 'uavklart';
   const back = d.match(/^expected back\s+(.*)$/i);
-  if (back) {
-    const norsk = back[1].replace(
-      /(\d+)\s+([A-Za-z]{3})[a-z]*/,
-      (_m, day, mon) => `${day}. ${MONTHS[mon.toLowerCase()] ?? mon}`,
-    );
-    return `ventes tilbake ${norsk}`;
+  if (back) return `ventes tilbake ${translateDate(back[1])}`;
+  return null;
+}
+
+/** Nye engelske fraser skal oppdages i dev, ikke først i UI-et i prod. */
+function warnUnmatched(text) {
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn(`FPL-news uten oversettelsesmønster: «${text}»`);
   }
-  return d;
 }
 
 /**
- * Oversetter FPL-ens `news`-tekst til norsk.
- * Kjente mønstre: «<type> - <n>% chance of playing», «<type> - Unknown …»,
- * «<type> - Expected back <dato>», «Has joined <klubb> permanently/on loan»,
- * «Loaned to <klubb>», «Suspended …». Alt annet returneres uendret.
+ * Oversetter FPL-ens `news`-tekst til norsk. Mønstrene dekker alle unike
+ * `news`-verdier i bootstrap-static per 2026-08-20:
+ * «<type> - <n>% chance of playing», «<type> - Unknown return date»,
+ * «<type> - Expected back <dato>», «Has joined <klubb> permanently»,
+ * «Has joined <klubb> on loan [until <dato> | for the rest of the season]»,
+ * «Loaned to <klubb>», «Suspended until <dato>», «has returned to <klubb>».
+ * Ukjente mønstre vises uendret, med console.warn i dev.
  */
 export function translateFplNews(news) {
   const text = String(news ?? '').trim();
   if (!text) return '';
 
-  const joined = text.match(/^Has joined (.+?)(?:\s+(permanently|on loan))?\.?$/i);
+  const joined = text.match(
+    /^Has joined (.+?)(?:\s+(permanently|on loan(?:\s+(?:until\s+.+|for the rest of the season))?))?\.?$/i,
+  );
   if (joined) {
-    const how = joined[2]?.toLowerCase() === 'on loan' ? 'på lån' : 'permanent';
+    const raw = (joined[2] ?? '').toLowerCase();
+    let how = 'permanent';
+    if (raw.startsWith('on loan')) {
+      const until = raw.match(/until\s+(.+)$/);
+      if (until) how = `på lån til ${translateDate(until[1])}`;
+      else if (raw.includes('for the rest of the season')) how = 'på lån ut sesongen';
+      else how = 'på lån';
+    }
     return `Overgang til ${joined[1]} (${how})`;
   }
 
   const loaned = text.match(/^Loaned (?:out )?to (.+?)\.?$/i);
   if (loaned) return `Lånt ut til ${loaned[1]}`;
 
+  const returned = text.match(/^has returned to (.+?)\.?$/i);
+  if (returned) return `Tilbake hos ${returned[1]}`;
+
+  const suspendedUntil = text.match(/^Suspended until\s+(.+?)\.?$/i);
+  if (suspendedUntil) return `Utestengt til ${translateDate(suspendedUntil[1])}`;
+
   const parts = text.split(' - ');
   if (parts.length >= 2) {
     const type = translateType(parts[0]);
     const detail = translateDetail(parts.slice(1).join(' - '));
-    return detail ? `${type} – ${detail}` : type;
+    if (type == null || detail == null) warnUnmatched(text);
+    const typeText = type ?? parts[0].trim();
+    const detailText = detail ?? parts.slice(1).join(' - ').trim();
+    return detailText ? `${typeText} – ${detailText}` : typeText;
   }
 
-  return translateType(text);
+  const single = translateType(text);
+  if (single == null) warnUnmatched(text);
+  return single ?? text;
 }

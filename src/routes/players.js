@@ -5,7 +5,7 @@ import { formatPrice, POSITIONS, POSITIONS_SHORT } from '../services/analysis.js
 const router = Router();
 
 const STATUS_LABELS = {
-  a: 'OK',
+  a: 'Klar',
   d: 'Usikker',
   i: 'Skadet',
   s: 'Suspendert',

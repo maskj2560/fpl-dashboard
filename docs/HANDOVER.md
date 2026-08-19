@@ -3,7 +3,32 @@
 > Levende overleveringsfil. Oppdateres ved hver milepæl og ved arbeidsstans.
 > Ny AI-økt: les denne + CLAUDE.md + ROADMAP.md, fortsett der «Neste steg» sier.
 
-**Sist oppdatert:** 2026-08-20 (økt 7, **v1.1.1 ER I PROD — deployet, purget og verifisert**)
+**Sist oppdatert:** 2026-08-20 (økt 7, **v1.1.2 klar lokalt på `fix/qa-v1.1.2` — venter på push-klarsignal**)
+
+## v1.1.2 — visuelle QA-rettelser, klare lokalt (2026-08-20 ~01:30)
+
+Marius kjørte visuell QA av v1.1.1 i prod (1440/390 px) og ga en retteordre.
+Branch `fix/qa-v1.1.2` (fra `main`), 6 commits, lokal tag `v1.1.2`.
+**Ikke pushet — venter på klarsignal.** Bør i prod før kveldens auto-brief
+~19:30 (P4-promptfiksen gjelder briefen).
+
+- **P1-1** mørk scrollbar i `.table-scroll` (Firefox + WebKit, CSS-variabler)
+- **P1-2** mobilmenyens kantfade vises nå kun på siden med uscrollet innhold
+  (app.js togglar klasser), scroll-snap på lenkene, aktiv lenke scrolles inn
+- **P2** engelsk UI-tekst oversatt: Dashbord, Totalrangering, Runde/Rundebrief
+  (ny `formatEventName` i format.js), P/K med tooltip, «Klar», «dashbordet».
+  **Avvik fra retteordren: DEADLINE beholdt** (ikke FRIST) — konsekvent
+  overalt; Marius bruker ordet selv, og `sanitizeBriefText` matcher på det.
+  Merkenavnet «FPL-dashboard» (wordmark + tittel-suffiks) er også beholdt.
+- **P3** oversettelsen dekker alle 72 unike `news`-strenger i bootstrap-static
+  (verifisert mot ekte data); `console.warn` i dev ved nye mønstre
+- **P4** brief-prompten krever norske fotballuttrykk («holdt nullen», «runde»)
+
+Verifisert lokalt: `npm test` 118/118, lint 0, Playwright (scratchpad) 38/38
+grønne på 390 + 1440 px — ingen vannrett scroll på noen side, sticky
+tabellhode 80/50 og 86/57 px (matcher QA-målene), fade-logikken og footer
+v1.1.2 bekreftet. AI/Discord var slått AV under lokal verifisering (tomme
+env-nøkler) — ingen AI-kall, ingen webhook-post.
 
 ## v1.1.1 ER I PROD (2026-08-20 ~00:45)
 
@@ -101,6 +126,10 @@ emnelinjen. Se CHANGELOG `[1.1.1]` for brukersynlig liste. Kort:
 - 2026-08-20 (økt 7): «Purgen er gjennomført … Purge request successfully
   received» + bekreftet Matchday-tema (mørkt, grønn/magenta) på
   fpl.marsk.no. Handling: Fase 3-verifiseringen kjørt, deretter Fase 4.
+- 2026-08-20 (økt 7): retteordre fra visuell QA av v1.1.1 limt inn
+  («QA-fiks for fpl.marsk.no (v1.1.1)», P1-1…P4) + «Hva gjør jeg nå?».
+  Handling: alle funn rettet på `fix/qa-v1.1.2`, verifisert lokalt,
+  venter på push-klarsignal.
 
 ## Status
 

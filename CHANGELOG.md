@@ -7,6 +7,38 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-08-20
+
+Rettelser etter visuell QA av v1.1.1 i prod (1440 px og 390 px).
+
+### Changed
+
+- **AI-briefen bes eksplisitt om norske fotballuttrykk** («holdt nullen»
+  i stedet for «clean sheet», «runde» i stedet for «gameweek»). Kun
+  promptjustering — genereringslogikken er uendret (QA v1.1.1, P4)
+
+### Fixed
+
+- **Skadestatus fra FPL oversettes helt, ikke halvveis.** «Unspecified
+  injury», «Arm/Muscular injury», «Lack of match fitness», «Suspended until
+  <dato>», «has returned to <klubb>» og lånevarianter («on loan for the rest
+  of the season» → «på lån ut sesongen», «on loan until <dato>») dekkes nå —
+  verifisert mot alle 72 unike `news`-strenger i bootstrap-static. Nye
+  engelske fraser gir `console.warn` i dev (QA v1.1.1, P3)
+- **Engelsk UI-tekst er oversatt.** «Dashboard» → «Dashbord» (meny + tittel),
+  «Overall rank» → «Totalrangering», «Gameweek» → «Runde»/«Rundebrief» overalt
+  (også i Discord-headeren og AI-prompten), «PPG» → «P/K» med forklarende
+  tooltip, statusmerket «OK» → «Klar», «dashboardet» → «dashbordet».
+  Ordet «deadline» beholdes bevisst og konsekvent — det brukes i dagligtale,
+  og `sanitizeBriefText` kontrollerer AI-tekst mot nettopp det ordet
+  (QA v1.1.1, P2) Halve navigasjonen lå
+  utenfor skjermen på 390 px uten noe hint. Kantfaden vises nå kun på siden
+  med mer innhold, lenkene snapper på plass (`scroll-snap`), og den aktive
+  lenken scrolles fortsatt inn i syne ved sidelast (QA v1.1.1, P1-2)
+- **Mørk scrollbar i tabellbokser.** Chrome tegnet lys standard-scrollbar
+  inne i de mørke `.table-scroll`-boksene (godt synlig på /spillere).
+  Scrollbaren matcher nå temaet i både Firefox og WebKit (QA v1.1.1, P1-1)
+
 ## [1.1.1] - 2026-08-20
 
 Rettelser etter ekstern QA av v1.1.0. Viktigst: assets versjoneres, slik at

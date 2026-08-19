@@ -1,9 +1,23 @@
-// Modul 0: Scroll aktiv nav-lenke inn i syne på smale skjermer.
+// Modul 0: Mobilmenyen. Scroller aktiv lenke inn i syne, og togglar
+// kantfade-klassene som viser at menyen har mer innhold sidelengs.
 (function () {
   'use strict';
 
-  const active = document.querySelector('.topbar nav a[aria-current="page"]');
+  const nav = document.querySelector('.topbar nav');
+  if (!nav) return;
+
+  const active = nav.querySelector('a[aria-current="page"]');
   if (active) active.scrollIntoView({ inline: 'center', block: 'nearest' });
+
+  function updateFades() {
+    const maxScroll = nav.scrollWidth - nav.clientWidth;
+    nav.classList.toggle('nav-overflow-left', nav.scrollLeft > 4);
+    nav.classList.toggle('nav-overflow-right', maxScroll - nav.scrollLeft > 4);
+  }
+
+  updateFades();
+  nav.addEventListener('scroll', updateFades, { passive: true });
+  window.addEventListener('resize', updateFades);
 })();
 
 // Modul 1: Nedtelling til neste deadline. Leser ISO-tidspunkt fra data-deadline.

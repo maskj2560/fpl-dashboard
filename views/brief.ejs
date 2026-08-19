@@ -8,16 +8,16 @@
   }
 %>
 <section class="page-head">
-  <h1>Gameweek-brief</h1>
+  <h1>Rundebrief</h1>
   <% if (brief.gameweek) { %>
-    <p class="dim"><span class="gw-badge"><%= brief.gameweek.name %></span> Deadline <strong><%= brief.gameweek.deadlineFormatted %></strong></p>
+    <p class="dim"><span class="gw-badge"><%= brief.gameweek.name %></span> · Deadline <strong><%= brief.gameweek.deadlineFormatted %></strong></p>
   <% } %>
 </section>
 
 <% if (typeof aiBrief !== 'undefined' && aiBrief?.text) { %>
   <section class="card card-wide card-ai">
     <h2>
-      <span class="h2-title"><span class="ai-badge">AI</span> Gameweek-brief</span>
+      <span class="h2-title"><span class="ai-badge">AI</span> Rundebrief</span>
       <span class="dim">generert <%= new Date(aiBrief.generatedAt).toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit' }) %></span>
     </h2>
     <% for (const line of aiBrief.text.split('\n')) { %>
