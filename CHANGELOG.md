@@ -7,6 +7,15 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+- **/liga forklarer tomme ligatabeller.** En liga uten rader viste et tomt
+  tabellhode og ingressen «Klikk på et lag …» selv om det ikke fantes noe å
+  klikke på. Nå vises en tomtilstand med lenke til dashbordet, og ingressen
+  bare når minst én liga har rader
+- **/health teller ligaene brukeren faktisk får se.** Feltet `leagues` telte
+  bare `LEAGUE_IDS`, mens /liga auto-oppdager ligaene fra laget. Begge bruker
+  nå `resolveLeagueIds()` i den nye `src/services/leagues.js`, med fallback til
+  config-antallet hvis FPL er nede
+
 - **Dashbordet presenterer ikke lenger tomme datasett som rangeringer.**
   «Toppform», «Mest kjøpt» og «Mest solgt» viste en vilkårlig sortering av
   spillere med form 0 og 0 overganger før sesongstart. Listene er nå tomme når

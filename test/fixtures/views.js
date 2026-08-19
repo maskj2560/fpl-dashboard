@@ -128,6 +128,15 @@ export const leagueEmpty = {
   diff: null,
 };
 
+// P1-2: ligaen finnes, men tabellen er tom fram til første runde er spilt.
+export const leagueNoRows = {
+  formatNumber,
+  myEntry: 123,
+  firstLeague: null,
+  leagues: [{ league: { id: 1, name: 'Var Har Skylda' }, standings: { results: [] } }],
+  diff: null,
+};
+
 export const leagueEmptyDiff = {
   ...league,
   diff: { rivalName: 'Rival FC', rivalEntry: 456, theirs: [], mine: [] },

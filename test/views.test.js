@@ -20,6 +20,7 @@ const cases = [
   ['players', fx.players, 'players-table'],
   ['league', fx.league, 'Differensialer'],
   ['league', fx.leagueEmpty, 'Fant ingen private miniligaer'],
+  ['league', fx.leagueNoRows, 'Ligatabellen er tom fram til første runde'],
   ['league', fx.leagueEmptyDiff, 'Differensialer'],
   ['brief', fx.brief, 'Gameweek'],
   ['brief', fx.briefEmpty, 'Gameweek'],
@@ -77,6 +78,15 @@ test('layout.ejs viser 503-banneret bare når spillet oppdateres', async () => {
 
 // P0-1: uversjonerte asset-URL-er lot Cloudflare servere gammel CSS/JS etter
 // deploy. Layouten skal aldri referere /style.css eller /app.js uten ?v=.
+// P1-2: ingressen ber brukeren klikke på et lag — den skal ikke vises når
+// ingen liga har rader å klikke på.
+test('league.ejs skjuler klikk-ingressen når alle ligatabeller er tomme', async () => {
+  const tom = await renderView('league', fx.leagueNoRows);
+  const full = await renderView('league', fx.league);
+  assert.ok(!tom.includes('Klikk på et lag'), 'ingressen vises på tom ligatabell');
+  assert.ok(full.includes('Klikk på et lag'), 'ingressen mangler når tabellen har rader');
+});
+
 test('layout.ejs versjonerer css og js med innholdshash', async () => {
   const html = await renderView('layout', layoutLocals('/'));
   assert.ok(html.includes('href="/style.css?v=a1b2c3d4"'), 'css mangler ?v=');

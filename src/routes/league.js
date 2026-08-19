@@ -1,17 +1,11 @@
 import { Router } from 'express';
 import config from '../config.js';
-import { getBootstrap, getEntry, getLeagueStandings, getPicks, FplError } from '../services/fplClient.js';
+import { getBootstrap, getLeagueStandings, getPicks, FplError } from '../services/fplClient.js';
 import { currentEvent, nextEvent, differentials } from '../services/analysis.js';
 import { formatNumber } from '../services/format.js';
+import { resolveLeagueIds } from '../services/leagues.js';
 
 const router = Router();
-
-async function resolveLeagueIds() {
-  if (config.leagueIds.length > 0) return config.leagueIds;
-  const entry = await getEntry(config.fplTeamId);
-  // 'x' = privat klassisk liga; 's' = globale gigaligaer (filtreres bort)
-  return entry.leagues.classic.filter((l) => l.league_type === 'x').map((l) => l.id);
-}
 
 async function picksIdSet(entryId, gw) {
   try {
