@@ -28,8 +28,8 @@ committet (og pushet hvis remote finnes).
 
 ## v0.4.0 — Miniliga
 
-- [ ] /liga: tabeller for alle ligaene mine
-- [ ] Differensial-analyse mot leder/rival
+- [x] /liga: tabeller for alle ligaene mine
+- [x] Differensial-analyse mot leder/rival
 
 ## v0.5.0 — Gameweek-brief
 

@@ -3,7 +3,7 @@
 > Levende overleveringsfil. Oppdateres ved hver milepæl og ved arbeidsstans.
 > Ny AI-økt: les denne + CLAUDE.md + ROADMAP.md, fortsett der «Neste steg» sier.
 
-**Sist oppdatert:** 2026-08-19 (økt 2, v0.3.0 ferdig)
+**Sist oppdatert:** 2026-08-19 (økt 2, v0.4.0 ferdig)
 
 ## Status
 
@@ -32,6 +32,9 @@
   innenfor budsjett. Ny analyselogikk (`averageFdr`, `playProbability`,
   `captainSuggestions`, `transferOutCandidates`, `transferInCandidates`,
   `rankGraph`) med TDD — 24/24 tester grønne, lint grønn.
+- **v0.4.0 FERDIG og tagget**: `/liga` med tabell per privat miniliga (rank-endring
+  med pil, egen rad uthevet, lenke til hver rival) og differensialer mot leder
+  eller `?rival=<entryId>`. `differentials()` i analysis.js med test — 25/25 grønne.
 - **VIKTIG om sesongen:** 2026/27 har ikke startet. FPL melder neste GW = 1 med
   deadline 2026-08-21T17:30Z. Før den er passert har FPL ingen picks, ingen
   historikk og ingen ligatabeller: `/lag` viser tomtilstanden «Fant ingen
@@ -52,10 +55,10 @@
 
 ## Neste steg (i rekkefølge)
 
-1. **Milepæl v0.4.0 — /liga med differensial-analyse.** Følg plan-filen fra
-   «Task 4.1»: `differentials()` i `analysis.js` (TDD) → `src/routes/league.js`
-   + `views/league.ejs` → release v0.4.0.
-2. Deretter v0.5.0 (/brief) og videre i plan-filens rekkefølge.
+1. **Milepæl v0.5.0 — Gameweek-brief (data, uten LLM).** Følg plan-filen fra
+   «Task 5.1»: `src/services/brief.js` + `test/brief.test.js` (TDD) →
+   `/brief`-side og `GET /api/brief.json` → release v0.5.0.
+2. Deretter v0.6.0 (/live) og videre i plan-filens rekkefølge.
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 

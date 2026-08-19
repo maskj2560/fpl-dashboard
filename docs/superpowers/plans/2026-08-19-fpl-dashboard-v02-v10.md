@@ -941,7 +941,7 @@ export default router;
 
 ### Task 3.4: Release v0.3.0
 
-- [ ] Samme prosedyre som Task 2.4: CHANGELOG `[0.3.0]` (lag-side med oppstilling/benk/kaptein/lagverdi/rank-graf; kapteinsanbefaling topp 3 med begrunnelse; transfers ut/inn innenfor budsjett; tester), ROADMAP-avkryssing, version 0.3.0, HANDOVER, commit `docs: release v0.3.0`, tag, push, verifiser https://fpl.marsk.no/lag (viser no-team-melding til FPL_TEAM_ID er satt i Coolify — den ER satt der, så forvent lagsiden)
+- [x] Samme prosedyre som Task 2.4: CHANGELOG `[0.3.0]` (lag-side med oppstilling/benk/kaptein/lagverdi/rank-graf; kapteinsanbefaling topp 3 med begrunnelse; transfers ut/inn innenfor budsjett; tester), ROADMAP-avkryssing, version 0.3.0, HANDOVER, commit `docs: release v0.3.0`, tag, push, verifiser https://fpl.marsk.no/lag (viser no-team-melding til FPL_TEAM_ID er satt i Coolify — den ER satt der, så forvent lagsiden)
 
 ---
 
@@ -1163,7 +1163,7 @@ export default router;
 - [x] **Steg 5:** Commit `feat: /liga med tabeller og differensial-analyse`
 
 ### Task 4.3: Release v0.4.0
-- [ ] Som Task 2.4: CHANGELOG `[0.4.0]` (miniliga-tabeller med rank-endring; differensial-analyse mot leder/valgt rival), ROADMAP, version, HANDOVER, `docs: release v0.4.0`, tag, push, verifiser prod /liga
+- [x] Som Task 2.4: CHANGELOG `[0.4.0]` (miniliga-tabeller med rank-endring; differensial-analyse mot leder/valgt rival), ROADMAP, version, HANDOVER, `docs: release v0.4.0`, tag, push, verifiser prod /liga
 
 ---
 

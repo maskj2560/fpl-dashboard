@@ -7,6 +7,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-08-19
+
 ### Added
 
 - Differensial-analyse (`differentials`) som finner spillere rivalen har og du
