@@ -89,6 +89,36 @@ test('league.ejs skjuler klikk-ingressen når alle ligatabeller er tomme', async
   assert.ok(full.includes('Klikk på et lag'), 'ingressen mangler når tabellen har rader');
 });
 
+// P2-5 og P2-6: uten tropp finnes verken poengsum, rank eller gameweek —
+// statstripa viste likevel tall fra forrige sesong, og undertittelen «Gameweek –».
+test('team.ejs viser – i hele statstripa når troppen mangler', async () => {
+  const html = await renderView('team', fx.teamEmpty);
+  const stats = html
+    .split('<span class="stat-val">')
+    .slice(1)
+    .map((chunk) => chunk.split('<')[0].trim());
+
+  assert.equal(stats.length, 5);
+  assert.deepEqual(stats, ['–', '–', '–', '–', '–']);
+});
+
+test('team.ejs utelater gameweek-leddet i undertittelen når runden mangler', async () => {
+  const tom = await renderView('team', fx.teamEmpty);
+  const full = await renderView('team', fx.team);
+
+  assert.ok(!tom.includes('Gameweek'), 'gameweek-leddet vises uten runde');
+  assert.ok(full.includes('Gameweek'), 'gameweek-leddet mangler når runden finnes');
+});
+
+// P2-4: fullnavnet i FDR-matrisen skjules visuelt på mobil, men må bli stående
+// i markupen for skjermlesere.
+test('dashboard.ejs merker fullnavnet i FDR-matrisen', async () => {
+  const html = await renderView('dashboard', fx.dashboard);
+
+  assert.ok(html.includes('team-name-full'), 'fullnavnet mangler klassen');
+  assert.ok(html.includes('Arsenal'), 'fullnavnet er fjernet fra markupen');
+});
+
 test('layout.ejs versjonerer css og js med innholdshash', async () => {
   const html = await renderView('layout', layoutLocals('/'));
   assert.ok(html.includes('href="/style.css?v=a1b2c3d4"'), 'css mangler ?v=');

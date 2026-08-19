@@ -7,6 +7,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+- **Dashbordets fire kort ligger 2 × 2 på brede skjermer** i stedet for tre på
+  første rad og ett alene på den andre
+
 - **Undertittelen på /lag skriver ikke «Gameweek –».** Gameweek-leddet utelates
   helt når det ikke finnes en runde å vise
 
