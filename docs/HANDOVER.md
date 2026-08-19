@@ -15,7 +15,7 @@ Dør økten: ny økt leser planfilen + denne seksjonen og fortsetter.
 
 | Sjekkpunkt | Når | Hva |
 | --- | --- | --- |
-| 0 (FERDIG) | torsdag natt | prep: Playwright-scripts i scratchpad, docs, denne tabellen |
+| 0 (FERDIG) | torsdag natt | prep: Playwright-scripts i scratchpad, docs, denne tabellen. Nullpunkt-snapshot (01:55, desktop+390 px): /spillere /lag /liga /live alle 200, null konsollfeil, null vannrett scroll, tomtilstander bekreftet på /lag+/liga. Data-brief-fasit hentet (scratchpad `brief-foer-deadline.json`): `gameweek.name="Runde 1"`, deadline «fredag 21. august kl. 19:30», `fixturesBeforeDeadline=[]`, `injuries=[]`, kapteiner Raya/Gabriel/Calafiori (ARS), første kamp Arsenal–Coventry fre 21:00 |
 | A | torsdag ~19:45 | etterkontroll auto-brief: Marius limer inn Discord-melding + Coolify-logg; sammenlign mot `/api/brief.json` |
 | B | fredag ~20:30+ | tomtilstand → ekte data alle sider; **Marius klikker «Spør AI om råd» ÉN gang** (budsjettkall 1) |
 | C | lørdag under kampene | live-polling ≤1 kall/60 s, stopp ved `anyLive=false`, cache-bevis; re-sjekk kampavhengige B-punkter |
@@ -315,6 +315,15 @@ task for task. Kort oversikt:
 - 2026-08-20 (økt 8): valg av kjøremodus — «Du pinger meg»: Marius melder seg
   i økten ved hvert sjekkpunkt (A i kveld ~19:45, B fredag ~20:30, C lørdag,
   D søndag/mandag). Handling: sjekkpunktplan lagt inn øverst i denne filen.
+- 2026-08-20 (økt 8, ~01:45): skjermbilde av Discord-melding «sendt rundt
+  kl 22» + spørsmål om hva han ser etter i loggene. Handling: avklart at
+  meldingen var onsdagens tvungne røyk-test (Task 1.4, 45,5 t før deadline =
+  onsdag 22:00, gammel ordbruk fra før v1.1.2 — forventet). Ekte auto-brief
+  kommer torsdag ~19:30. Logglinje-fasit gitt.
+- 2026-08-20 (økt 8, ~01:50): skjermbilde av Coolify-loggen: `Auto-brief
+  aktiv: sender 24 t før deadline` + `FPL-dashboard lytter på
+  http://localhost:3000`. Handling: bekreftet korrekt tilstand — scheduler
+  armert, venter på ~19:30.
 
 - 2026-08-19: «Ikke limit deg så mye — lag det så bra du kan med gode nok modeller»
 - 2026-08-19: «Men selve AI-en i fantasy må være relativt billig å bruke for én person»
