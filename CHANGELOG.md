@@ -9,7 +9,13 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Fixed
 
-- **Mobilmenyen viser at den kan dras sidelengs.** Halve navigasjonen lå
+- **Engelsk UI-tekst er oversatt.** «Dashboard» → «Dashbord» (meny + tittel),
+  «Overall rank» → «Totalrangering», «Gameweek» → «Runde»/«Rundebrief» overalt
+  (også i Discord-headeren og AI-prompten), «PPG» → «P/K» med forklarende
+  tooltip, statusmerket «OK» → «Klar», «dashboardet» → «dashbordet».
+  Ordet «deadline» beholdes bevisst og konsekvent — det brukes i dagligtale,
+  og `sanitizeBriefText` kontrollerer AI-tekst mot nettopp det ordet
+  (QA v1.1.1, P2) Halve navigasjonen lå
   utenfor skjermen på 390 px uten noe hint. Kantfaden vises nå kun på siden
   med mer innhold, lenkene snapper på plass (`scroll-snap`), og den aktive
   lenken scrolles fortsatt inn i syne ved sidelast (QA v1.1.1, P1-2)

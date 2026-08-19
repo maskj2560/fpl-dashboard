@@ -115,7 +115,7 @@ router.post('/ai-rad', async (req, res, next) => {
 
     const bootstrap = await getBootstrap();
     const gw = currentEvent(bootstrap.events)?.id;
-    if (!gw) return res.status(400).json({ error: 'Ingen aktiv gameweek.' });
+    if (!gw) return res.status(400).json({ error: 'Ingen aktiv runde.' });
 
     const [entry, picks, fixtures] = await Promise.all([
       getEntry(config.fplTeamId),

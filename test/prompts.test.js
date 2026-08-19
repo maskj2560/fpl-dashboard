@@ -4,13 +4,13 @@ import { buildBriefPrompt, buildAdvicePrompt, sanitizeBriefText } from '../src/s
 
 test('buildBriefPrompt tar med deadline, skader og kapteiner', () => {
   const prompt = buildBriefPrompt({
-    gameweek: { id: 2, name: 'Gameweek 2', deadlineFormatted: 'fredag 21. august kl. 19:30' },
+    gameweek: { id: 2, name: 'Runde 2', deadlineFormatted: 'fredag 21. august kl. 19:30' },
     injuries: [{ name: 'Haaland', team: 'MCI', ownership: '55.1', news: 'Kne — 75 %', status: 'd' }],
     captains: [{ name: 'Salah', team: 'LIV', form: '8.5', ownership: '45.0', avgFdr: 2 }],
     fixturesByDay: [{ day: 'fredag 21. august', matches: [{ home: 'Liverpool', away: 'Bournemouth', kickoff: '21:00' }] }],
     mine: null,
   });
-  assert.match(prompt, /Gameweek 2/);
+  assert.match(prompt, /Runde 2/);
   assert.match(prompt, /fredag 21\. august kl\. 19:30/);
   assert.match(prompt, /Haaland/);
   assert.match(prompt, /Salah/);
@@ -36,7 +36,7 @@ test('buildAdvicePrompt tar med tropp, bank og salgskandidater', () => {
 // motsier den fjernes fra teksten før den vises.
 
 const briefMedTidsfakta = {
-  gameweek: { id: 1, name: 'Gameweek 1', deadlineFormatted: 'fredag 21. august kl. 19:30' },
+  gameweek: { id: 1, name: 'Runde 1', deadlineFormatted: 'fredag 21. august kl. 19:30' },
   injuries: [],
   captains: [],
   fixturesByDay: [

@@ -19,3 +19,8 @@ export function formatDateTime(iso) {
 export function formatNumber(n) {
   return number.format(n);
 }
+
+/** FPL-ens eventnavn på norsk: «Gameweek 1» → «Runde 1». Annet uendret. */
+export function formatEventName(name) {
+  return String(name ?? '').replace(/^Gameweek\s+/i, 'Runde ');
+}

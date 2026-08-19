@@ -73,7 +73,7 @@ async function send(event) {
     }
     if (!text) text = dataBriefText(brief);
 
-    const header = `**Gameweek-brief — ${brief.gameweek?.name ?? ''}**\nDeadline: ${brief.gameweek?.deadlineFormatted ?? 'ukjent'}\nhttps://fpl.marsk.no/brief\n\n`;
+    const header = `**Rundebrief — ${brief.gameweek?.name ?? ''}**\nDeadline: ${brief.gameweek?.deadlineFormatted ?? 'ukjent'}\nhttps://fpl.marsk.no/brief\n\n`;
     await postToDiscord(header + text);
     lastSentEvent = event.id;
     console.log(`Auto-brief sendt for ${event.name}`);

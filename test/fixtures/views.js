@@ -30,7 +30,7 @@ const shared = {
 
 export const dashboard = {
   ...shared,
-  deadlineEvent: { name: 'Gameweek 1', deadline_time: '2026-08-21T17:30:00Z' },
+  deadlineEvent: { name: 'Runde 1', deadline_time: '2026-08-21T17:30:00Z' },
   flagged: [player(1, 'Saka', { status: 'i', news: 'Knee injury - 25% chance of playing', chance_of_playing_next_round: 25 })],
   inForm: [player(2, 'Salah', { team: 2 })],
   boughtMost: [player(3, 'Haaland')],
@@ -146,7 +146,7 @@ export const leagueEmptyDiff = {
 };
 
 const briefData = {
-  gameweek: { id: 1, name: 'Gameweek 1', deadlineFormatted: 'fredag 21. august kl. 19:30' },
+  gameweek: { id: 1, name: 'Runde 1', deadlineFormatted: 'fredag 21. august kl. 19:30' },
   injuries: [{ name: 'Saka', team: 'ARS', ownership: '25.0', news: 'Kneskade — tvilsom' }],
   captains: [{ name: 'Salah', team: 'LIV', form: '7.2', ownership: '48.1', avgFdr: 2.3 }],
   fixturesByDay: [{ day: 'lørdag 22. august', matches: [{ kickoff: '13:30', home: 'Arsenal', away: 'Liverpool' }] }],

@@ -8,7 +8,7 @@ import {
   transferInCandidates,
   averageFdr,
 } from './analysis.js';
-import { formatDateTime } from './format.js';
+import { formatDateTime, formatEventName } from './format.js';
 
 const dayFmt = new Intl.DateTimeFormat('nb-NO', {
   weekday: 'long',
@@ -114,7 +114,7 @@ export function buildBrief({ bootstrap, fixtures, myTeam = null }) {
     gameweek: upcoming
       ? {
           id: upcoming.id,
-          name: upcoming.name,
+          name: formatEventName(upcoming.name),
           deadline: upcoming.deadline_time,
           deadlineFormatted: formatDateTime(upcoming.deadline_time),
         }

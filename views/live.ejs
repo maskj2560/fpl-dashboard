@@ -1,5 +1,5 @@
 <section class="page-head">
-  <h1>Live<% if (gw) { %> — Gameweek <%= gw %><% } %></h1>
+  <h1>Live<% if (gw) { %> — Runde <%= gw %><% } %></h1>
   <p class="dim">
     <span id="live-status"><%= live && live.anyLive ? 'Kamper pågår' : 'Ingen kamper pågår akkurat nå' %></span>
     <span class="pulse<%= live && live.anyLive ? ' pulse-on' : '' %>" id="live-pulse" aria-hidden="true"></span>
@@ -9,7 +9,7 @@
 
 <div id="live-root" data-live="<%= live && live.anyLive ? '1' : '0' %>">
   <% if (!live || !live.gameweek) { %>
-    <section class="card"><p class="empty">Ingen aktiv gameweek. Live-visningen våkner av seg selv når første kamp i runden sparkes i gang.</p></section>
+    <section class="card"><p class="empty">Ingen aktiv runde. Live-visningen våkner av seg selv når første kamp i runden sparkes i gang.</p></section>
   <% } else { %>
     <div class="stat-strip">
       <div class="stat"><span class="stat-val" id="live-total"><%= live.totalLive ?? '–' %></span><span class="stat-lbl">Mine live-poeng</span></div>

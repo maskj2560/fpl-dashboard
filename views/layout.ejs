@@ -17,7 +17,7 @@
          &#34;, og da matcher attributtet hverken CSS-en eller skjermlesere.
          Verdiene er faste strenger, ikke brukerinnhold. -->
     <nav aria-label="Hovedmeny">
-      <a href="/" <%- path === '/' ? 'aria-current="page"' : '' %>>Dashboard</a>
+      <a href="/" <%- path === '/' ? 'aria-current="page"' : '' %>>Dashbord</a>
       <a href="/spillere" <%- path.startsWith('/spillere') ? 'aria-current="page"' : '' %>>Spillere</a>
       <a href="/lag" <%- path === '/lag' || path.startsWith('/lag/') ? 'aria-current="page"' : '' %>>Lag</a>
       <a href="/liga" <%- path.startsWith('/liga') ? 'aria-current="page"' : '' %>>Liga</a>

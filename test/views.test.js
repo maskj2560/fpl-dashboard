@@ -23,10 +23,10 @@ const cases = [
   ['league', fx.leagueEmpty, 'Fant ingen private miniligaer'],
   ['league', fx.leagueNoRows, 'Ligatabellen er tom fram til første runde'],
   ['league', fx.leagueEmptyDiff, 'Differensialer'],
-  ['brief', fx.brief, 'Gameweek'],
-  ['brief', fx.briefEmpty, 'Gameweek'],
+  ['brief', fx.brief, 'Rundebrief'],
+  ['brief', fx.briefEmpty, 'Rundebrief'],
   ['live', fx.live, 'live-root'],
-  ['live', fx.liveEmpty, 'Ingen aktiv gameweek'],
+  ['live', fx.liveEmpty, 'Ingen aktiv runde'],
   ['news', fx.news, 'FPL-nyheter'],
   ['news', fx.news, 'Liverpool vant 3–0 på Anfield.'],
   ['news', fx.newsEmpty, 'Fant ingen saker'],
@@ -53,7 +53,7 @@ const layoutLocals = (path) => ({
 });
 
 const NAV = [
-  ['/', 'Dashboard'],
+  ['/', 'Dashbord'],
   ['/spillere', 'Spillere'],
   ['/lag', 'Lag'],
   ['/liga', 'Liga'],
@@ -102,12 +102,12 @@ test('team.ejs viser – i hele statstripa når troppen mangler', async () => {
   assert.deepEqual(stats, ['–', '–', '–', '–', '–']);
 });
 
-test('team.ejs utelater gameweek-leddet i undertittelen når runden mangler', async () => {
+test('team.ejs utelater runde-leddet i undertittelen når runden mangler', async () => {
   const tom = await renderView('team', fx.teamEmpty);
   const full = await renderView('team', fx.team);
 
-  assert.ok(!tom.includes('Gameweek'), 'gameweek-leddet vises uten runde');
-  assert.ok(full.includes('Gameweek'), 'gameweek-leddet mangler når runden finnes');
+  assert.ok(!tom.includes('· Runde'), 'runde-leddet vises uten runde');
+  assert.ok(full.includes('· Runde'), 'runde-leddet mangler når runden finnes');
 });
 
 // P2-4: fullnavnet i FDR-matrisen skjules visuelt på mobil, men må bli stående
