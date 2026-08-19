@@ -221,3 +221,13 @@ export function rankGraph(historyCurrent, width = 600, height = 140) {
     .join(' ');
   return { points, min, max, first: values[0], last: values[values.length - 1] };
 }
+
+/** Differensialer: spillere rivalen har som jeg mangler («theirs») og omvendt («mine»). */
+export function differentials(myIds, rivalIds, elements) {
+  const byOwnership = (a, b) =>
+    (parseFloat(b.selected_by_percent) || 0) - (parseFloat(a.selected_by_percent) || 0);
+  return {
+    theirs: elements.filter((p) => rivalIds.has(p.id) && !myIds.has(p.id)).sort(byOwnership),
+    mine: elements.filter((p) => myIds.has(p.id) && !rivalIds.has(p.id)).sort(byOwnership),
+  };
+}

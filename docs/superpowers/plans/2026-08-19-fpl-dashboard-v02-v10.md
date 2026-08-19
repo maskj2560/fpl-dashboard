@@ -953,7 +953,7 @@ export default router;
 
 **Interfaces (produseres):** `differentials(myIds:Set, rivalIds:Set, elements) → {theirs: [element…], mine: [element…]}` — begge sortert på eierandel synkende.
 
-- [ ] **Steg 1 (RED):** Append test:
+- [x] **Steg 1 (RED):** Append test:
 ```js
 test('differentials finner spillere kun den ene har, sortert paa eierandel', () => {
   const elements = [
@@ -967,8 +967,8 @@ test('differentials finner spillere kun den ene har, sortert paa eierandel', () 
   assert.deepEqual(d.mine.map((p) => p.id), [2], 'jeg har, de mangler');
 });
 ```
-- [ ] **Steg 2:** `npm test` → FEILER (ikke definert).
-- [ ] **Steg 3 (GREEN):** Append i analysis.js:
+- [x] **Steg 2:** `npm test` → FEILER (ikke definert).
+- [x] **Steg 3 (GREEN):** Append i analysis.js:
 ```js
 /** Differensialer: spillere rivalen har som jeg mangler («theirs») og omvendt («mine»). */
 export function differentials(myIds, rivalIds, elements) {
@@ -980,7 +980,7 @@ export function differentials(myIds, rivalIds, elements) {
   };
 }
 ```
-- [ ] **Steg 4:** `npm test` grønn. Commit `feat: differensial-analyse i analysis`
+- [x] **Steg 4:** `npm test` grønn (25/25). Commit `feat: differensial-analyse i analysis`
 
 ### Task 4.2: /liga-rute og view
 

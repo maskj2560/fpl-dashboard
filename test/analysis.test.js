@@ -14,6 +14,7 @@ import {
   transferOutCandidates,
   transferInCandidates,
   rankGraph,
+  differentials,
 } from '../src/services/analysis.js';
 
 function player(overrides = {}) {
@@ -253,4 +254,16 @@ test('rankGraph lager polyline-punkter, lav rank overst', () => {
   assert.ok(pts[1][1] < pts[0][1], 'bedre rank tegnes hoyere (lavere y)');
   assert.equal(rankGraph([], 600, 140), null);
   assert.equal(rankGraph([{ event: 1, overall_rank: 5 }], 600, 140).points, '0,70');
+});
+
+test('differentials finner spillere kun den ene har, sortert paa eierandel', () => {
+  const elements = [
+    player({ id: 1, selected_by_percent: '50.0' }),
+    player({ id: 2, selected_by_percent: '10.0' }),
+    player({ id: 3, selected_by_percent: '30.0' }),
+    player({ id: 4, selected_by_percent: '5.0' }),
+  ];
+  const d = differentials(new Set([1, 2]), new Set([1, 3, 4]), elements);
+  assert.deepEqual(d.theirs.map((p) => p.id), [3, 4], 'de har, jeg mangler');
+  assert.deepEqual(d.mine.map((p) => p.id), [2], 'jeg har, de mangler');
 });
