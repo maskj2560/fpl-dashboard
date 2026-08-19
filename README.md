@@ -13,10 +13,11 @@ Express 5 + EJS, ingen database, ingen byggesteg. All data hentes fra det
 | `/lag` | Mitt lag, kaptein- og transferanbefalinger | ✅ |
 | `/liga` | Miniliga-tabeller og differensial-analyse | ✅ |
 | `/live` | Live-poeng under pågående gameweek | ✅ |
-| `/brief` | Gameweek-brief (data + valgfri AI) | ✅ data, AI planlagt |
+| `/brief` | Gameweek-brief (data + valgfri AI) | ✅ |
 | `/nyheter` | FPL-nyheter fra RSS + valgfri AI-oppsummering | ✅ |
 | `/api/brief.json` | Briefen som JSON | ✅ |
-| `/api/live.json` | Live-data som JSON (pollens kun under kamper) | ✅ |
+| `/api/live.json` | Live-data som JSON (polles kun under kamper) | ✅ |
+| `POST /api/ai-rad` | AI-råd for laget ditt (krever `ANTHROPIC_API_KEY`) | ✅ |
 | `/health` | `{"status":"ok"}` for helsesjekk | ✅ |
 
 Se `ROADMAP.md` for full plan og fremdrift.

@@ -7,6 +7,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+
+- Mobiltilpasning for skjermer under 480 px: topbaren er ikke lenger sticky,
+  strammere marger, smalere filterfelt og ordbryting av lange navn
+- Tomtilstand på nyhetssiden når ingen feed svarer
+
 ## [0.9.0] - 2026-08-19
 
 ### Added

@@ -2513,13 +2513,44 @@ async function postToDiscord(text) {
 
 ### Task 10.1: Gjennomgang og herding
 
-- [ ] **Mobil:** gå gjennom hver side i nettleser på 375 px bredde (DevTools). Krav: ingen horisontal scroll på `body` (tabeller scroller i `.table-scroll`), nav bryter pent, hero-nedtelling skalerer. Fiks det som ryker med media queries i style.css.
-- [ ] **Tomtilstander:** verifiser tekstene som allerede finnes (ingen flagg, tom liga, ingen kamper, ingen picks). Mangler noen side en tom-tilstand → legg til `.empty`-avsnitt.
-- [ ] **Feiltilstand:** stopp nettet (slå av wifi eller blokkér fantasy.premierleague.com i hosts midlertidig) → alle sider skal gi den norske 500-siden, ikke krasj. Start serveren uten `.env` → `/`, `/spillere`, `/brief`, `/nyheter` fungerer; `/lag`, `/liga`, `/live` viser no-team.
-- [ ] **TTL-gjennomgang:** les gjennom TTL-ene i fplClient.js mot CLAUDE.md-tabellen (bootstrap/fixtures 15 min, element-summary 30 min, entry/picks/league 5 min, live 1 min) — de skal stemme allerede; rett avvik.
-- [ ] **README:** oppdater side-tabellen (alle ✅), legg inn skjermbilder hvis mulig (ellers: be bruker ta dem og noter det i HANDOVER som åpen oppgave).
-- [ ] **Full verifisering:** `npm test` + `npm run lint` + røyk-test alle 8 ruter lokalt + `docker build -t fpl-test .` OK.
-- [ ] Commit `chore: polish og mobilgjennomgang for v1.0.0`
+- [x] **Mobil:** gjennomgått som CSS-revisjon, ikke i nettleser (ingen nettleser
+      tilgjengelig i denne økten — bruker bør se over på ekte mobil).
+      Funn: layouten var allerede trygg (`.grid` bruker
+      `minmax(min(100%, 320px), 1fr)`, `.card` har `min-width: 0`, tabeller
+      ligger i `.table-scroll`, nedtellingen bruker `clamp()` med vw).
+      Lagt til én `@media (max-width: 480px)`-blokk: topbaren er ikke lenger
+      sticky (sju nav-lenker ble to–tre linjer og stjal skjermhøyde), strammere
+      padding i topbar/main/hero, smalere filterfelt og `overflow-wrap: anywhere`
+      så lange lagnavn brekker i stedet for å skyve siden.
+      **Åpen oppgave for bruker:** bekreft på faktisk mobil.
+      Original oppgavetekst: gå gjennom hver side i nettleser på 375 px bredde (DevTools). Krav: ingen horisontal scroll på `body` (tabeller scroller i `.table-scroll`), nav bryter pent, hero-nedtelling skalerer. Fiks det som ryker med media queries i style.css.
+- [x] **Tomtilstander:** verifisert. `/lag` «Fant ingen lagoppstilling ennå»,
+      `/liga` «Fant ingen private miniligaer», `/live` «Ingen aktiv gameweek»,
+      `/brief` «Ingen kamper funnet» + «Sett FPL_TEAM_ID …», `/nyheter`
+      «Fant ingen saker akkurat nå» (lagt til i denne runden), og
+      no-team-siden for alle tre lagsidene uten `FPL_TEAM_ID`.
+      Original: verifiser tekstene som allerede finnes (ingen flagg, tom liga, ingen kamper, ingen picks). Mangler noen side en tom-tilstand → legg til `.empty`-avsnitt.
+- [x] **Feiltilstand:** simulert med en preload som lot `fetch` mot
+      `fantasy.premierleague.com` feile (uten å endre prod-kode).
+      Uten `FPL_TEAM_ID`: `/`, `/spillere`, `/brief` → 500 med den norske
+      feilsiden («Noe gikk galt»), `/nyheter` og `/health` → 200 (de trenger
+      ikke FPL), `/lag`, `/liga`, `/live` → 200 med no-team-siden.
+      Med `FPL_TEAM_ID`: `/lag`, `/liga`, `/live`, `/api/live.json`,
+      `/api/brief.json` → 500 med feilsiden. Serveren krasjet ikke i noen av
+      tilfellene. Original: stopp nettet (slå av wifi eller blokkér fantasy.premierleague.com i hosts midlertidig) → alle sider skal gi den norske 500-siden, ikke krasj. Start serveren uten `.env` → `/`, `/spillere`, `/brief`, `/nyheter` fungerer; `/lag`, `/liga`, `/live` viser no-team.
+- [x] **TTL-gjennomgang:** stemmer med CLAUDE.md — bootstrap og fixtures 15 min,
+      element-summary 30 min, entry/history/picks/league 5 min, live 1 min.
+      Ingen avvik å rette. Original: les gjennom TTL-ene i fplClient.js mot CLAUDE.md-tabellen (bootstrap/fixtures 15 min, element-summary 30 min, entry/picks/league 5 min, live 1 min) — de skal stemme allerede; rett avvik.
+- [x] **README:** side-tabellen er oppdatert (alle sider ✅, pluss de tre
+      API-endepunktene). Skjermbilder er IKKE lagt inn — jeg har ingen nettleser
+      her. Notert som åpen oppgave for bruker i `docs/HANDOVER.md`.
+      Original: oppdater side-tabellen (alle ✅), legg inn skjermbilder hvis mulig (ellers: be bruker ta dem og noter det i HANDOVER som åpen oppgave).
+- [x] **Full verifisering:** `npm test` 35/35, `npm run lint` exit 0, alle ruter
+      lokalt 200 (`/`, `/spillere`, `/lag`, `/liga`, `/brief`, `/live`,
+      `/nyheter`, `/health`, `/api/brief.json`, `/api/live.json`) og 404 på
+      ukjent sti. `docker build -t fpl-test .` OK, og containeren svarte 200 på
+      `/health` og `/spillere`.
+- [x] Commit `chore: polish og mobilgjennomgang for v1.0.0`
 
 ### Task 10.2: Release v1.0.0
 - [ ] CHANGELOG `[1.0.0]`, ROADMAP alle punkter, version 1.0.0, HANDOVER («prosjekt levert, vedlikeholdsmodus»), commit `docs: release v1.0.0`, tag `v1.0.0`, push med tags, verifiser https://fpl.marsk.no

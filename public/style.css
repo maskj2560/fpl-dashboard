@@ -736,6 +736,45 @@ table.sortable th[aria-sort='ascending']::after {
   font-size: 0.92rem;
 }
 
+/* ---------- Mobil (≤ 480 px) ---------- */
+
+@media (max-width: 480px) {
+  /* Sju nav-lenker blir to–tre linjer på mobil: da stjeler en sticky topbar
+     for mye av skjermen, og den slippes fri. */
+  .topbar {
+    position: static;
+    gap: 0.5rem 0.75rem;
+    padding: 0.6rem 0.9rem;
+  }
+
+  .topbar nav a {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  main {
+    padding: 1rem 0.9rem 2rem;
+  }
+
+  .hero {
+    padding: 1.25rem 0.75rem 1.5rem;
+  }
+
+  .filters input,
+  .filters select {
+    min-width: 7.5rem;
+  }
+
+  .filters label {
+    flex: 1 1 7.5rem;
+  }
+
+  /* Lange ord (lagnavn, nyhetstitler) skal brekke i stedet for å skyve siden. */
+  body {
+    overflow-wrap: anywhere;
+  }
+}
+
 /* ---------- Bevegelse ---------- */
 
 @media (prefers-reduced-motion: no-preference) {

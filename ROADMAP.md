@@ -69,10 +69,11 @@ committet (og pushet hvis remote finnes).
 
 ## v1.0.0 — Polish
 
-- [ ] Mobilgjennomgang av alle sider
-- [ ] Feilsider, tomtilstander og lastetilstander
-- [ ] Gjennomgang av cache-TTL-er mot faktisk bruk
-- [ ] README komplett med skjermbilder
+- [x] Mobilgjennomgang av alle sider (CSS-revisjon + media query under 480 px —
+      bekreftelse på ekte mobil gjenstår hos bruker)
+- [x] Feilsider, tomtilstander og lastetilstander
+- [x] Gjennomgang av cache-TTL-er mot faktisk bruk
+- [x] README komplett (skjermbilder gjenstår — krever nettleser hos bruker)
 
 ## Senere / idéer (ikke planlagt)
 
