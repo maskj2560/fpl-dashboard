@@ -7,6 +7,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+- **FDR-matrisen viser flere runder på mobil.** Lagets fullnavn skjules visuelt
+  (skjermlesere får det fortsatt) og cellene er strammere under 480 px
+
 - **Ord brekkes ikke lenger midt inne.** På skjermer under 480 px brøt
   `overflow-wrap: anywhere` vanlige ord vilkårlig. Nå brekkes bare ord som ikke
   får plass, med orddeling

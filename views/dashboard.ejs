@@ -147,7 +147,7 @@
       <tbody>
         <% for (const row of matrix.rows) { %>
           <tr>
-            <td><strong><%= row.team.short_name %></strong> <span class="dim"><%= row.team.name %></span></td>
+            <td><strong><%= row.team.short_name %></strong> <span class="dim team-name-full"><%= row.team.name %></span></td>
             <% for (const cell of row.cells) { %>
               <td class="fdr-cell">
                 <% if (cell.length === 0) { %>

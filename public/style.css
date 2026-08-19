@@ -1113,6 +1113,24 @@ footer .version {
     flex: 1 1 7.5rem;
   }
 
+  /* FDR-matrisen: fullnavnet tar plassen fra GW-kolonnene på små skjermer.
+     Det skjules visuelt (men leses fortsatt av skjermlesere) og cellene
+     strammes inn, slik at flest mulig runder er synlige uten sidescroll. */
+  .fdr-table .team-name-full {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .fdr-table th,
+  .fdr-table td {
+    padding-left: var(--space-2);
+    padding-right: var(--space-2);
+  }
+
   /* Lange ord (lagnavn, nyhetstitler) skal brekke i stedet for å skyve siden,
      men bare når ordet ikke får plass — «anywhere» brøt midt i vanlige ord. */
   body {
