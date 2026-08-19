@@ -7,6 +7,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-08-19
+
 ### Added
 
 - Felles AI-service (`ai.js`) mot Claude API med lazy init, modell fra

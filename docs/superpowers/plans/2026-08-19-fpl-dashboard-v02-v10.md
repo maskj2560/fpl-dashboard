@@ -2120,7 +2120,7 @@ og CSS-append:
       → Sagt fra til bruker i svaret; `ANTHROPIC_API_KEY` mangler fortsatt i Coolify.
 
 ### Task 7.3: Release v0.7.0
-- [ ] Som Task 2.4: CHANGELOG `[0.7.0]`, ROADMAP (alle fem punkter), version, HANDOVER, `docs: release v0.7.0`, tag, push, verifiser prod /nyheter
+- [x] Som Task 2.4: CHANGELOG `[0.7.0]`, ROADMAP (alle fem punkter), version, HANDOVER, `docs: release v0.7.0`, tag, push, verifiser prod /nyheter
 
 ---
 

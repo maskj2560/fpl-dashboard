@@ -3,7 +3,7 @@
 > Levende overleveringsfil. Oppdateres ved hver milepæl og ved arbeidsstans.
 > Ny AI-økt: les denne + CLAUDE.md + ROADMAP.md, fortsett der «Neste steg» sier.
 
-**Sist oppdatert:** 2026-08-19 (økt 2, v0.6.0 ferdig)
+**Sist oppdatert:** 2026-08-19 (økt 2, v0.7.0 ferdig)
 
 ## Status
 
@@ -45,6 +45,17 @@
   stopper når runden er ferdig. 30/30 tester grønne.
   Merk: JSON-en som legges inn i `views/live.ejs` escaper `<` fordi lagnavn
   kommer fra andre FPL-brukere — ikke fjern den escapingen.
+- **v0.7.0 FERDIG og tagget**: `/nyheter` med RSS (BBC + Sky som default,
+  `NEWS_FEEDS` overstyrer, cachet 15 min) og valgfri AI-oppsummering via ny
+  `ai.js`. Nyhetspanel på dashboardet. Nye avhengigheter: `@anthropic-ai/sdk`
+  og `fast-xml-parser` — de to eneste planen tillater. 33/33 tester grønne.
+- **AI-status:** all AI er av i prod fram til `ANTHROPIC_API_KEY` settes i
+  Coolify. Uten nøkkel viser `/nyheter` rå feed-liste, og dashboardpanelet
+  er skjult — det er tilsiktet, ikke en feil. `AI_MODEL` er `claude-sonnet-5`
+  som standard (`claude-haiku-4-5` er billig-alternativet).
+  Merk: `ai.js` sender bevisst ikke `thinking`/`output_config.effort`, fordi
+  `effort` gir feil på Haiku 4.5. `max_tokens` er satt romslig fordi adaptiv
+  tenkning på Sonnet 5 trekker fra samme budsjett.
 - **VIKTIG om sesongen:** 2026/27 har ikke startet. FPL melder neste GW = 1 med
   deadline 2026-08-21T17:30Z. Før den er passert har FPL ingen picks, ingen
   historikk og ingen ligatabeller: `/lag` viser tomtilstanden «Fant ingen
@@ -65,13 +76,12 @@
 
 ## Neste steg (i rekkefølge)
 
-1. **Milepæl v0.7.0 — /nyheter med AI-oppsummering.** Følg plan-filen fra
-   «Task 7.1»: `npm install fast-xml-parser @anthropic-ai/sdk` → `ai.js` →
-   `news.js` → `/nyheter`-side + panel på dashboardet → release v0.7.0.
-   **Krever fra bruker:** `ANTHROPIC_API_KEY` i Coolify for at AI-delen skal
-   gjøre noe. Uten nøkkel viser appen rå nyhetsliste — det er by design.
-2. Deretter v0.8.0 (AI-brief + rådgiver) og v0.9.0 (Discord-auto-brief, krever
-   `DISCORD_WEBHOOK_URL`), så v1.0.0-polish.
+1. **Milepæl v0.8.0 — AI-brief og transfer-rådgiver.** Følg plan-filen fra
+   «Task 8.1»: `prompts.js` med `buildBriefPrompt`/`buildAdvicePrompt` (TDD) →
+   AI-versjon av `/brief` → «Spør AI om råd»-knapp på `/lag` med
+   `POST /api/ai-rad` → release v0.8.0.
+2. Deretter v0.9.0 (Discord-auto-brief, krever `DISCORD_WEBHOOK_URL`) og
+   v1.0.0-polish.
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 

@@ -44,13 +44,13 @@ committet (og pushet hvis remote finnes).
 
 ## v0.7.0 — Nyheter med AI-oppsummering
 
-- [ ] `news.js`-service: henter FPL-relevante RSS-feeder (gratis)
-- [ ] `ai.js` felles-service: lazy init, modell fra `AI_MODEL`
+- [x] `news.js`-service: henter FPL-relevante RSS-feeder (gratis)
+- [x] `ai.js` felles-service: lazy init, modell fra `AI_MODEL`
       (default `claude-sonnet-5`, `claude-haiku-4-5` som billig-alternativ)
-- [ ] Valgfri AI-oppsummering når `ANTHROPIC_API_KEY` er satt — cachet,
+- [x] Valgfri AI-oppsummering når `ANTHROPIC_API_KEY` er satt — cachet,
       regenereres maks hver 30. min
-- [ ] Uten nøkkel: vis rå nyhetsliste fra feedene (appen krever aldri nøkkelen)
-- [ ] Nyhetspanel på dashboardet + egen /nyheter-side
+- [x] Uten nøkkel: vis rå nyhetsliste fra feedene (appen krever aldri nøkkelen)
+- [x] Nyhetspanel på dashboardet + egen /nyheter-side
 
 ## v0.8.0 — AI-brief og transfer-rådgiver
 
