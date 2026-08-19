@@ -1,0 +1,72 @@
+<section class="page-head">
+  <h1>Miniligaer</h1>
+  <p class="dim">Klikk på et lag i tabellen for å sammenligne tropper (differensialer).</p>
+</section>
+
+<% if (leagues.length === 0) { %>
+  <section class="card"><p class="empty">Fant ingen private miniligaer. Sett LEAGUE_IDS i miljøvariablene hvis ligaene dine ikke dukker opp.</p></section>
+<% } %>
+
+<div class="grid">
+  <% for (const l of leagues) { %>
+    <section class="card">
+      <h2><%= l.league.name %></h2>
+      <div class="table-scroll">
+        <table class="data">
+          <thead><tr><th class="num">#</th><th>Lag</th><th class="num">GW</th><th class="num">Totalt</th></tr></thead>
+          <tbody>
+            <% for (const r of l.standings.results) { %>
+              <tr class="<%= r.entry === myEntry ? 'row-me' : '' %>">
+                <td class="num">
+                  <%= r.rank %>
+                  <% if (r.last_rank && r.last_rank !== r.rank) { %>
+                    <span class="<%= r.rank < r.last_rank ? 'accent' : 'negative' %>"><%= r.rank < r.last_rank ? '▲' : '▼' %></span>
+                  <% } %>
+                </td>
+                <td>
+                  <% if (r.entry === myEntry) { %>
+                    <strong><%= r.entry_name %></strong> <span class="dim">(meg)</span>
+                  <% } else { %>
+                    <a href="/liga?rival=<%= r.entry %>"><%= r.entry_name %></a> <span class="dim"><%= r.player_name %></span>
+                  <% } %>
+                </td>
+                <td class="num"><%= r.event_total %></td>
+                <td class="num"><strong><%= formatNumber(r.total) %></strong></td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  <% } %>
+</div>
+
+<% if (diff) { %>
+  <section class="card card-wide">
+    <h2>Differensialer mot <%= diff.rivalName %></h2>
+    <div class="grid">
+      <div>
+        <h3 class="sub-head">De har — jeg mangler</h3>
+        <% if (diff.theirs.length === 0) { %><p class="empty">Ingen.</p><% } else { %>
+        <div class="table-scroll"><table class="data">
+          <thead><tr><th>Spiller</th><th class="num">Eid</th><th class="num">Form</th></tr></thead>
+          <tbody><% for (const p of diff.theirs) { %>
+            <tr><td><strong><%= p.web_name %></strong></td><td class="num"><%= p.selected_by_percent %> %</td><td class="num"><%= p.form %></td></tr>
+          <% } %></tbody>
+        </table></div>
+        <% } %>
+      </div>
+      <div>
+        <h3 class="sub-head">Jeg har — de mangler</h3>
+        <% if (diff.mine.length === 0) { %><p class="empty">Ingen.</p><% } else { %>
+        <div class="table-scroll"><table class="data">
+          <thead><tr><th>Spiller</th><th class="num">Eid</th><th class="num">Form</th></tr></thead>
+          <tbody><% for (const p of diff.mine) { %>
+            <tr><td><strong><%= p.web_name %></strong></td><td class="num"><%= p.selected_by_percent %> %</td><td class="num"><%= p.form %></td></tr>
+          <% } %></tbody>
+        </table></div>
+        <% } %>
+      </div>
+    </div>
+  </section>
+<% } %>

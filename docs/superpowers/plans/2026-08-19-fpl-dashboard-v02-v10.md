@@ -986,7 +986,7 @@ export function differentials(myIds, rivalIds, elements) {
 
 **Files:** Create: `src/routes/league.js`, `views/league.ejs`; Modify: `src/server.js` (`app.use('/liga', leagueRouter);`), `views/layout.ejs` (nav `Liga`), `public/style.css` (kun hvis nødvendig — gjenbruk eksisterende klasser)
 
-- [ ] **Steg 1:** Opprett `src/routes/league.js`:
+- [x] **Steg 1:** Opprett `src/routes/league.js`:
 ```js
 import { Router } from 'express';
 import config from '../config.js';
@@ -1061,7 +1061,7 @@ router.get('/', async (req, res, next) => {
 
 export default router;
 ```
-- [ ] **Steg 2:** Opprett `views/league.ejs`:
+- [x] **Steg 2:** Opprett `views/league.ejs`:
 ```ejs
 <section class="page-head">
   <h1>Miniligaer</h1>
@@ -1136,7 +1136,7 @@ export default router;
   </section>
 <% } %>
 ```
-- [ ] **Steg 3:** Append i `public/style.css`:
+- [x] **Steg 3:** Append i `public/style.css`:
 ```css
 /* ---------- Miniliga (/liga) ---------- */
 
@@ -1152,8 +1152,15 @@ export default router;
   margin: 0 0 0.5rem;
 }
 ```
-- [ ] **Steg 4:** Monter rute + nav-lenke `Liga`. Røyk-test `/liga` (med `.env`: 200 og liganavn i HTML; uten: no-team). `npm test` + lint grønne.
-- [ ] **Steg 5:** Commit `feat: /liga med tabeller og differensial-analyse`
+- [x] **Steg 4:** Monter rute + nav-lenke `Liga`. Røyk-test `/liga` (med `.env`: 200 og liganavn i HTML; uten: no-team). `npm test` + lint grønne.
+      Uten team-ID: 200 + no-team ✅. Med team-ID: 200 og ligatabell ✅ (25/25 tester, lint 0).
+      Differensial-grenen kan ikke treffes før sesongstart (picks gir 404), så
+      `views/league.ejs` er mock-rendret: liganavn, «(meg)»-markering, rival-lenke,
+      opp/ned-piler, differensialtabeller og tomtilstand renderer uten feil.
+      **Rettet underveis:** nav-lenken for `/lag` brukte `path.startsWith('/lag')`,
+      som også traff `/liga` og markerte to lenker som aktive. Nå `path === '/lag' ||
+      path.startsWith('/lag/')`.
+- [x] **Steg 5:** Commit `feat: /liga med tabeller og differensial-analyse`
 
 ### Task 4.3: Release v0.4.0
 - [ ] Som Task 2.4: CHANGELOG `[0.4.0]` (miniliga-tabeller med rank-endring; differensial-analyse mot leder/valgt rival), ROADMAP, version, HANDOVER, `docs: release v0.4.0`, tag, push, verifiser prod /liga

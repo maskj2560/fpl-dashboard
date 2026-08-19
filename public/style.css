@@ -652,6 +652,20 @@ table.sortable th[aria-sort='ascending']::after {
   margin: 0;
 }
 
+/* ---------- Miniliga (/liga) ---------- */
+
+.row-me td {
+  background: var(--accent-soft);
+}
+
+.sub-head {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  margin: 0 0 0.5rem;
+}
+
 /* ---------- Bevegelse ---------- */
 
 @media (prefers-reduced-motion: no-preference) {

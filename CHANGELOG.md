@@ -11,6 +11,13 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 - Differensial-analyse (`differentials`) som finner spillere rivalen har og du
   mangler, og omvendt — sortert på eierandel
+- Ligaside (`/liga`) med tabell for hver private miniliga, rank-endring med
+  pil, egen rad uthevet og lenke til hver rival
+- Differensialer mot ligalederen, eller mot valgt rival via `?rival=<id>`
+
+### Fixed
+
+- Nav-lenken «Lag» ble markert som aktiv også på `/liga`
 
 ## [0.3.0] - 2026-08-19
 
