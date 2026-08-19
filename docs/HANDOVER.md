@@ -3,9 +3,19 @@
 > Levende overleveringsfil. Oppdateres ved hver milepæl og ved arbeidsstans.
 > Ny AI-økt: les denne + CLAUDE.md + ROADMAP.md, fortsett der «Neste steg» sier.
 
-**Sist oppdatert:** 2026-08-19 (økt 4, **plan v1.0.1–v1.1.0 foreligger — utførelse startet**)
+**Sist oppdatert:** 2026-08-19 (økt 5, **QA-retteplan v1.1.1 klar — utførelse skjer i NY økt**)
 
 ## Status
+
+- **NESTE ØKT GJØR DETTE:** utfør QA-retteplanen for v1.1.1. Kjøreprompt:
+  `docs/neste-okt-prompt-qa-v111.md`. Selve planen (fasit for løsningsdesign):
+  `C:\Users\mariu\.claude\plans\oppdrag-rett-opp-foamy-fog.md`. Bakgrunn: ekstern
+  QA av v1.1.0 fant 17 funn (P0-1…P2-8), viktigst at Cloudflare serverer utdatert
+  CSS/JS (P0-1) slik at v1.1.0-designet er usynlig i prod. Branch `fix/qa-v1.1.1`,
+  én commit per funn, **ingen push/deploy uten klarsignal fra Marius**.
+  Avklart i økt 5: P1-5 = strategi B (vis ingress), Playwright kun i scratchpad,
+  /health skal telle oppløste ligaer, P2-7 er FPL-API-ets egen normalisering
+  («Var Har Skylda» leveres slik fra API-et — ingen kodeendring).
 
 - **AKTIV implementeringsplan: `docs/superpowers/plans/2026-08-19-fpl-v101-v110-verifisering-og-ui-makeover.md`**
   — Del A (M1: AI + Discord i drift, v1.0.1), M2 (view-render-tester),
@@ -222,6 +232,19 @@ task for task. Kort oversikt:
   trukket redeploy» → `/health` bekrefter `ai:true, discord:true, teamId:true`.
   Task 1.5 ferdig.
 
+- 2026-08-19 (økt 5, planlegging): full ekstern QA-rapport for v1.1.0 gitt som
+  oppdrag («rett opp QA-funn og få v1.1.0 faktisk live») → kodebase kartlagt,
+  plan skrevet og godkjent i plan mode.
+- 2026-08-19 (økt 5): «Husk å presenter planen som en prompt jeg kan gi til en ny
+  kodeagent» + «En hel prompt med referanser til planen i filsystemet» →
+  `docs/neste-okt-prompt-qa-v111.md` opprettet.
+- 2026-08-19 (økt 5): avklaringer — **P1-5: strategi B** (vis RSS-ingress i
+  saklista + strammere prompt + egennavn-etterkontroll) og **Playwright OK i
+  scratchpad** (aldri i repoet) for nettleser-verifisering.
+- 2026-08-19 (økt 5): «Okay da kan du stoppe her» + «Så sender jeg prompten til
+  en ny agent» + «gjør det du må gjøre før jeg sender prompten videre» →
+  HANDOVER oppdatert og promptfilen committet lokalt (ingen push).
+
 ## LØST: AI og Discord er nå aktive i prod (2026-08-19 22:20)
 
 Saken var at `ANTHROPIC_API_KEY` og `DISCORD_WEBHOOK_URL` aldri var lagt inn i
@@ -275,4 +298,8 @@ funksjoner som er på (aldri verdiene). Bruk det først neste gang noe
 
 ## Åpne beslutninger / kjente feil
 
-- Ingen ennå.
+- 17 QA-funn fra ekstern kvalitetssikring av v1.1.0 (P0-1…P2-8) — rettes i neste
+  økt etter planen i `C:\Users\mariu\.claude\plans\oppdrag-rett-opp-foamy-fog.md`.
+  Viktigst: P0-1 (Cloudflare cacher utdatert CSS/JS — v1.1.0 usynlig i prod).
+- Cloudflare-purge etter deploy av v1.1.1 må gjøres manuelt av Marius
+  (beskrives i DEPLOY.md som neste økt lager).
