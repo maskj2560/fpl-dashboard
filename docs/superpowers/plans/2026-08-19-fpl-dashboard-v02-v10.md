@@ -1817,7 +1817,7 @@ router.get('/live.json', async (req, res, next) => {
 - [x] **Steg 7:** Commit `feat: /live med bonusestimat og betinget polling`
 
 ### Task 6.3: Release v0.6.0
-- [ ] Som Task 2.4: CHANGELOG `[0.6.0]`, ROADMAP, version, HANDOVER, `docs: release v0.6.0`, tag, push, verifiser prod /live
+- [x] Som Task 2.4: CHANGELOG `[0.6.0]`, ROADMAP, version, HANDOVER, `docs: release v0.6.0`, tag, push, verifiser prod /live
 
 ---
 

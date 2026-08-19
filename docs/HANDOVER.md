@@ -3,7 +3,7 @@
 > Levende overleveringsfil. Oppdateres ved hver milepæl og ved arbeidsstans.
 > Ny AI-økt: les denne + CLAUDE.md + ROADMAP.md, fortsett der «Neste steg» sier.
 
-**Sist oppdatert:** 2026-08-19 (økt 2, v0.5.0 ferdig)
+**Sist oppdatert:** 2026-08-19 (økt 2, v0.6.0 ferdig)
 
 ## Status
 
@@ -39,6 +39,12 @@
   `src/services/brief.js` (ren data, ingen LLM). Verifisert mot ekte FPL-data:
   GW1, deadline «fredag 21. august kl. 19:30», skadeliste, tre kapteinsforslag
   og kampprogram gruppert per dag. 26/26 tester grønne.
+- **v0.6.0 FERDIG og tagget**: `/live` + `GET /api/live.json` med live-poeng,
+  bonusestimat fra BPS (`estimateBonus`, 4 tester), kaptein- og benkvekting,
+  kampstillinger og miniliga-topp. Frontend poller kun mens kamper pågår og
+  stopper når runden er ferdig. 30/30 tester grønne.
+  Merk: JSON-en som legges inn i `views/live.ejs` escaper `<` fordi lagnavn
+  kommer fra andre FPL-brukere — ikke fjern den escapingen.
 - **VIKTIG om sesongen:** 2026/27 har ikke startet. FPL melder neste GW = 1 med
   deadline 2026-08-21T17:30Z. Før den er passert har FPL ingen picks, ingen
   historikk og ingen ligatabeller: `/lag` viser tomtilstanden «Fant ingen
@@ -59,10 +65,13 @@
 
 ## Neste steg (i rekkefølge)
 
-1. **Milepæl v0.6.0 — /live.** Følg plan-filen fra «Task 6.1»: `estimateBonus()`
-   i `analysis.js` (TDD) → `/live`-side + `GET /api/live.json` + betinget
-   polling i `public/app.js` → release v0.6.0.
-2. Deretter v0.7.0 (nyheter + `ai.js`) og videre i plan-filens rekkefølge.
+1. **Milepæl v0.7.0 — /nyheter med AI-oppsummering.** Følg plan-filen fra
+   «Task 7.1»: `npm install fast-xml-parser @anthropic-ai/sdk` → `ai.js` →
+   `news.js` → `/nyheter`-side + panel på dashboardet → release v0.7.0.
+   **Krever fra bruker:** `ANTHROPIC_API_KEY` i Coolify for at AI-delen skal
+   gjøre noe. Uten nøkkel viser appen rå nyhetsliste — det er by design.
+2. Deretter v0.8.0 (AI-brief + rådgiver) og v0.9.0 (Discord-auto-brief, krever
+   `DISCORD_WEBHOOK_URL`), så v1.0.0-polish.
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 

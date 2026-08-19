@@ -38,9 +38,9 @@ committet (og pushet hvis remote finnes).
 
 ## v0.6.0 — Live-visning
 
-- [ ] /live: mine spilleres live-poeng, bonusestimat, miniliga-ranker
-- [ ] `GET /api/live.json` + polling hvert 60. sek kun mens kamper pågår
-- [ ] «Sist oppdatert»-indikator
+- [x] /live: mine spilleres live-poeng, bonusestimat, miniliga-ranker
+- [x] `GET /api/live.json` + polling hvert 60. sek kun mens kamper pågår
+- [x] «Sist oppdatert»-indikator
 
 ## v0.7.0 — Nyheter med AI-oppsummering
 
