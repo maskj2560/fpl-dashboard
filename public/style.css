@@ -736,6 +736,13 @@ table.sortable th[aria-sort='ascending']::after {
   font-size: 0.92rem;
 }
 
+footer .version {
+  margin: 0.25rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  opacity: 0.75;
+}
+
 /* ---------- Mobil (≤ 480 px) ---------- */
 
 @media (max-width: 480px) {

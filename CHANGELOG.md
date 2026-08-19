@@ -7,11 +7,15 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-08-19
+
 ### Added
 
 - Mobiltilpasning for skjermer under 480 px: topbaren er ikke lenger sticky,
   strammere marger, smalere filterfelt og ordbryting av lange navn
 - Tomtilstand på nyhetssiden når ingen feed svarer
+- Versjonsnummer og «sist oppdatert» nederst på hver side, inkludert feilsidene.
+  Tidspunktet er når serveren startet, altså når siste versjon ble deployet
 
 ## [0.9.0] - 2026-08-19
 

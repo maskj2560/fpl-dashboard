@@ -3,7 +3,7 @@
 > Levende overleveringsfil. Oppdateres ved hver milepæl og ved arbeidsstans.
 > Ny AI-økt: les denne + CLAUDE.md + ROADMAP.md, fortsett der «Neste steg» sier.
 
-**Sist oppdatert:** 2026-08-19 (økt 2, v0.9.0 ferdig)
+**Sist oppdatert:** 2026-08-19 (økt 2, **v1.0.0 ferdig — hele planen gjennomført**)
 
 ## Status
 
@@ -58,6 +58,16 @@
   før deadline (`BRIEF_HOURS_BEFORE_DEADLINE`, default 24), med AI-briefen når
   nøkkel finnes og data-briefen ellers. Verifisert mot lokal mock-webhook.
   Uten `DISCORD_WEBHOOK_URL` er scheduleren inaktiv og serveren upåvirket.
+- **v1.0.0 FERDIG og tagget**: polish. Mobil-media-query under 480 px (topbar
+  ikke lenger sticky, strammere marger, ordbryting), tomtilstand på nyhetssiden,
+  README-tabellen komplett. Verifisert: 35/35 tester, lint 0, alle ti ruter 200
+  lokalt + 404 på ukjent sti, feilsiden vises når FPL-API-et er nede (simulert),
+  `docker build` og container-health OK.
+- **Åpne oppgaver som krever bruker (ikke feil i koden):**
+  1. `ANTHROPIC_API_KEY` i Coolify → slår på AI-nyheter, AI-brief og AI-rådgiver
+  2. `DISCORD_WEBHOOK_URL` i Coolify → slår på auto-brief før deadline
+  3. Bekreft mobilvisningen på ekte telefon
+  4. Skjermbilder til README (krever nettleser)
 - **AI-status:** all AI er av i prod fram til `ANTHROPIC_API_KEY` settes i
   Coolify. Uten nøkkel viser `/nyheter` rå feed-liste, og dashboardpanelet
   er skjult — det er tilsiktet, ikke en feil. `AI_MODEL` er `claude-sonnet-5`
@@ -85,12 +95,15 @@
 
 ## Neste steg (i rekkefølge)
 
-1. **Milepæl v1.0.0 — polish (Task 10.1).** Mobilgjennomgang på 375 px,
-   tomtilstander, feiltilstander uten nett og uten `.env`, TTL-gjennomgang mot
-   CLAUDE.md, README med alle sider ✅ + skjermbilder, full verifisering
-   (`npm test`, `npm run lint`, alle ruter, `docker build`).
-2. **Venter på bruker:** `ANTHROPIC_API_KEY` og `DISCORD_WEBHOOK_URL` i Coolify.
-   Begge funksjonene er ferdig kodet og inaktive til variablene finnes.
+Implementeringsplanen er gjennomført i sin helhet (v0.2.0 → v1.0.0). Videre
+arbeid er ikke planlagt ennå. Naturlige neste skritt:
+
+1. **Sett miljøvariablene i Coolify** (`ANTHROPIC_API_KEY`, `DISCORD_WEBHOOK_URL`)
+   og verifiser AI-seksjonene og auto-briefen i prod.
+2. **Første ekte gameweek 21. august:** sjekk `/lag`, `/live` og `/liga` når
+   sesongen faktisk har startet — flere grener har til nå bare vært verifisert
+   med mockdata fordi FPL ikke har picks eller tabeller før første deadline.
+3. Idéer som ikke er planlagt ligger under «Senere / idéer» i `ROADMAP.md`.
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 
@@ -107,6 +120,13 @@
 - 2026-08-19: «Oppdater ROADMAP, CHANGELOG, CLAUDE.md, HANDOVER kontinuerlig og ofte — alltid oppdatert» → fast rutine: alle fire sjekkes/oppdateres ved hver delfunksjon og hver commit, ikke bare ved milepæler
 - 2026-08-19: «Logget inn i gh. Repo skal være PRIVAT. Coolify på dash.marsk.no, hoster marsk.no + utevakt.marsk.no, denne appen skal på fpl.marsk.no» → privat repo opprettet og pushet
 - 2026-08-19: «Lag prompt til Claude in Chrome for Coolify-oppsettet + rapport-prompt tilbake» → prompt levert i chat; venter på rapport («RAPPORT TIL CLAUDE CODE — Coolify-deploy fpl-dashboard») før v0.2.0 fortsetter
+- 2026-08-19 (økt 2): «Neste gang du pusher kan du legge til versjon og siste
+  update nederst på siden + oppdatere den hver gang det pushes» → footeren viser
+  nå `v<versjon> · sist oppdatert <tidspunkt>`. Versjonen leses fra
+  `package.json` ved oppstart, og tidspunktet er serverens oppstartstid — som i
+  praksis er deploy-tidspunktet, siden Coolify starter ny container per push.
+  Ingen manuell oppdatering trengs; husk bare å bumpe `version` i `package.json`
+  ved hver release, slik release-rutinen allerede sier.
 - 2026-08-19 (økt 2): «Hvordan planlegger du å bruke AI og sånt på brief? Blir
   det via API? Si ifra hvis du trenger noe» → svart: Anthropic API via
   `@anthropic-ai/sdk`, først i v0.8.0. v0.5.0-briefen er ren data uten LLM og

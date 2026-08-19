@@ -1,9 +1,11 @@
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 import compression from 'compression';
 import config from './config.js';
 import { isGameUpdating } from './services/fplClient.js';
+import { formatDateTime } from './services/format.js';
 import indexRouter from './routes/index.js';
 import healthRouter from './routes/health.js';
 import playersRouter from './routes/players.js';
@@ -17,6 +19,11 @@ import { startScheduler } from './services/notify.js';
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const app = express();
+
+// Versjon og oppstartstidspunkt vises i footeren. Oppstartstidspunktet er
+// deploy-tidspunktet i praksis: Coolify starter en ny container per push.
+const { version } = JSON.parse(fs.readFileSync(path.join(rootDir, 'package.json'), 'utf8'));
+const startedAt = formatDateTime(new Date().toISOString());
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(rootDir, 'views'));
@@ -36,6 +43,8 @@ app.use((req, res, next) => {
         title: data.title ?? 'FPL-dashboard',
         path: req.path,
         gameUpdating: isGameUpdating(),
+        version,
+        startedAt,
       });
     });
   };
@@ -65,7 +74,7 @@ app.use((err, req, res, next) => {
     if (renderErr) return res.type('text/plain').send('Noe gikk galt.');
     res.render(
       'layout',
-      { body, title: 'Feil', path: req.path, gameUpdating: false },
+      { body, title: 'Feil', path: req.path, gameUpdating: false, version, startedAt },
       (layoutErr, html) => {
         if (layoutErr) return res.type('text/plain').send('Noe gikk galt.');
         res.send(html);
