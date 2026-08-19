@@ -7,6 +7,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+- **Statstripa på /lag lyver ikke om tall som mangler.** «Totalt» og «Overall
+  rank» viste tall fra forrige sesong før troppen finnes — nå står det `–` i
+  hele stripa, som for de tre andre feltene
+
 - **FDR-matrisen viser flere runder på mobil.** Lagets fullnavn skjules visuelt
   (skjermlesere får det fortsatt) og cellene er strammere under 480 px
 

@@ -5,8 +5,8 @@
 
 <div class="stat-strip">
   <div class="stat"><span class="stat-val"><%= squadView ? squadView.entryHistory.points : '–' %></span><span class="stat-lbl">GW-poeng</span></div>
-  <div class="stat"><span class="stat-val"><%= formatNumber(entry.summary_overall_points) %></span><span class="stat-lbl">Totalt</span></div>
-  <div class="stat"><span class="stat-val"><%= formatNumber(entry.summary_overall_rank) %></span><span class="stat-lbl">Overall rank</span></div>
+  <div class="stat"><span class="stat-val"><%= squadView ? formatNumber(entry.summary_overall_points) : '–' %></span><span class="stat-lbl">Totalt</span></div>
+  <div class="stat"><span class="stat-val"><%= squadView ? formatNumber(entry.summary_overall_rank) : '–' %></span><span class="stat-lbl">Overall rank</span></div>
   <div class="stat"><span class="stat-val"><%= squadView ? formatPrice(squadView.entryHistory.value - squadView.entryHistory.bank) : '–' %></span><span class="stat-lbl">Lagverdi (£m)</span></div>
   <div class="stat"><span class="stat-val"><%= squadView ? formatPrice(squadView.entryHistory.bank) : '–' %></span><span class="stat-lbl">Bank (£m)</span></div>
 </div>
