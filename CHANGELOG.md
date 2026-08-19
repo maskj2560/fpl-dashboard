@@ -7,6 +7,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+- **Tabelloverskriftene er lesbare.** De sto i `--text-faint` (3,8:1 mot
+  kortbakgrunnen) og er flyttet til det nye tokenet `--dim-strong` (5,3:1).
+  `--text-faint` hadde ingen andre brukere og er fjernet
+
 - **Samme nyhetssak vises ikke lenger flere ganger.** Saker dedupliseres på
   normalisert lenke (uten sporingsparametre) og normalisert tittel, slik at
   duplikater fra to feeder eller samme feed forsvinner

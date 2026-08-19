@@ -22,7 +22,7 @@
   /* Tekst */
   --text: #f0edfa;
   --text-dim: #a49bc4;
-  --text-faint: #746b96; /* KUN dekor/store tall — ikke løpende tekst */
+  --dim-strong: #8c83ad; /* dempet, men lesbar: 5,3:1 mot --surface */
 
   /* Aksenter — grønn = handling/positivt, magenta = kaptein/live/negativt varsel */
   --accent: #00e58c;
@@ -38,7 +38,7 @@
   --fdr-1: #0e8c4f;
   --fdr-2: #27a35f;
   --fdr-3: #4a4168;
-  --fdr-4: #d24069;
+  --fdr-4: #bd3a5f;
   --fdr-5: #97183f;
   --fdr-blank: #221b36;
 
@@ -416,7 +416,7 @@ table.data th {
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--text-faint);
+  color: var(--dim-strong);
   font-weight: 600;
   padding: 0.35rem 0.6rem;
   border-bottom: 1px solid var(--border-strong);
