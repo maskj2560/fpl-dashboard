@@ -336,7 +336,8 @@ table.sortable th[aria-sort='ascending']::after {
 - [x] **Steg 4:** `package.json`: `"version": "0.2.0"`
 - [x] **Steg 5:** `docs/HANDOVER.md`: oppdater status (v0.2.0 ferdig, neste v0.3.0), fjern WIP-seksjonen for v0.2.0
 - [x] **Steg 6:** Commit `docs: release v0.2.0`; `git tag v0.2.0`; `git push origin main --tags`
-- [ ] **Steg 7:** Verifiser prod etter ~2 min: `(Invoke-WebRequest https://fpl.marsk.no/spillere -UseBasicParsing).StatusCode` → 200
+- [x] **Steg 7:** Verifiser prod etter ~2 min: `(Invoke-WebRequest https://fpl.marsk.no/spillere -UseBasicParsing).StatusCode` → 200
+      ✅ 200 bekreftet — Coolify auto-deploy fra `main` fungerer.
 
 ---
 

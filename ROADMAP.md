@@ -12,7 +12,7 @@ committet (og pushet hvis remote finnes).
 - [x] `/health`-endepunkt
 - [x] Dockerfile + .dockerignore + README med Coolify-oppskrift
 - [x] Tester for cache.js
-- [ ] **→ Deploy til Coolify med auto-deploy skjer her**
+- [x] **→ Deploy til Coolify med auto-deploy skjer her** (live på https://fpl.marsk.no)
 
 ## v0.2.0 — Spillere
 

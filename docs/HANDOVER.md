@@ -17,11 +17,10 @@
   Røyk-testet lokalt (200 på / og /health, 404 OK) OG i Docker-container (health 200).
 - **GitHub FERDIG**: privat repo `https://github.com/maskj2560/fpl-dashboard`,
   main + tag v0.1.0 pushet, remote `origin` koblet. Bruker: maskj2560.
-- **Coolify GJENSTÅR**: instans på `dash.marsk.no` (hoster marsk.no og
-  utevakt.marsk.no). Appen skal på `fpl.marsk.no`. Venter på brukerens valg:
-  UI-oppsett selv (oppskrift i README) eller automatisering via Coolify-API
-  (trenger API-token i fil + eksisterende GitHub App-source i Coolify).
-  DNS: A-post for fpl.marsk.no må pekes mot serveren (hvis ikke wildcard finnes).
+- **Coolify FERDIG og verifisert (økt 2)**: appen er live på https://fpl.marsk.no
+  (bak Cloudflare). Auto-deploy fra `main` er bekreftet: push av v0.2.0 ga 200 på
+  `/spillere` i prod noen minutter senere. Verifiser etter hver push med
+  `(Invoke-WebRequest https://fpl.marsk.no/<side> -UseBasicParsing).StatusCode`.
 - **v0.2.0 FERDIG og tagget**: `/spillere` montert med nav-lenke, full tabell,
   klientside-sortering på alle kolonner og filtrering (søk/posisjon/lag/maks pris)
   uten sidelasting, stiler for filterpanel og sorterbare overskrifter.
