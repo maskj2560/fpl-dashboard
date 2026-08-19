@@ -7,6 +7,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-08-20
+
+Rettelser etter visuell QA av v1.1.1 i prod (1440 px og 390 px).
+
 ### Changed
 
 - **AI-briefen bes eksplisitt om norske fotballuttrykk** («holdt nullen»
