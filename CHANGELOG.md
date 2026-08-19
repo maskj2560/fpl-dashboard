@@ -7,6 +7,11 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+- **Skadetekstene på dashbordet er på norsk.** FPL leverer statusteksten på
+  engelsk («Ankle injury - 75% chance of playing»). «Ukens flagg» viser den nå
+  oversatt («Ankelskade – 75 % sjanse for spilletid»), inkludert overganger,
+  utlån, utestengelser og forventet retur. Ukjente mønstre vises uendret
+
 - **FDR-4-ruten har lesbar tekst.** Fargen er mørknet fra `#d24069` til
   `#bd3a5f`, som gir 4,6:1 mot den hvite teksten og fortsatt er tydelig skilt
   fra FDR-5

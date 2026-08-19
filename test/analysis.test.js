@@ -6,6 +6,7 @@ import {
   topForm,
   mostTransferredIn,
   mostTransferredOut,
+  translateFplNews,
   fdrMatrix,
   formatPrice,
   averageFdr,
@@ -344,4 +345,44 @@ test('estimateBonus: likhet paa andreplass gir 2+2, ingen enerpoeng', () => {
 test('estimateBonus taaler manglende stats', () => {
   assert.equal(estimateBonus({ stats: [] }).size, 0);
   assert.equal(estimateBonus({}).size, 0);
+});
+
+// ---- P2-2: FPL-ens engelske statustekster på norsk ------------------------
+
+test('translateFplNews oversetter skadetype med spillesjanse', () => {
+  assert.equal(
+    translateFplNews('Ankle injury - 75% chance of playing'),
+    'Ankelskade – 75 % sjanse for spilletid',
+  );
+});
+
+test('translateFplNews oversetter ukjent returdato', () => {
+  assert.equal(translateFplNews('Foot injury - Unknown return date'), 'Fotskade – uavklart');
+});
+
+test('translateFplNews oversetter forventet retur med måned', () => {
+  assert.equal(translateFplNews('Knock - Expected back 21 Aug'), 'Smell – ventes tilbake 21. aug.');
+});
+
+test('translateFplNews oversetter overganger og utlån', () => {
+  assert.equal(translateFplNews('Has joined Real Madrid permanently'), 'Overgang til Real Madrid (permanent)');
+  assert.equal(translateFplNews('Has joined Sunderland on loan'), 'Overgang til Sunderland (på lån)');
+  assert.equal(translateFplNews('Loaned to Ipswich'), 'Lånt ut til Ipswich');
+});
+
+test('translateFplNews oversetter utestengelse', () => {
+  assert.equal(translateFplNews('Suspended - Expected back 25 Aug'), 'Utestengt – ventes tilbake 25. aug.');
+});
+
+test('translateFplNews beholder ukjent skadetype, men oversetter suffikset', () => {
+  assert.equal(
+    translateFplNews('Personal reasons - 50% chance of playing'),
+    'Personal reasons – 50 % sjanse for spilletid',
+  );
+});
+
+test('translateFplNews lar ukjent mønster og tom tekst stå urørt', () => {
+  assert.equal(translateFplNews('Left the club by mutual consent'), 'Left the club by mutual consent');
+  assert.equal(translateFplNews(''), '');
+  assert.equal(translateFplNews(null), '');
 });

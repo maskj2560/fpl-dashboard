@@ -12,6 +12,7 @@ function renderView(name, locals) {
 
 const cases = [
   ['dashboard', fx.dashboard, 'Neste deadline'],
+  ['dashboard', fx.dashboard, 'Kneskade – 25 % sjanse for spilletid'],
   ['dashboard', fx.dashboardEmpty, 'Ingen kommende deadline'],
   ['dashboard', fx.dashboardEmpty, 'Formtallene nullstilles'],
   ['dashboard', fx.dashboardEmpty, 'Ingen overganger er registrert'],

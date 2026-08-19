@@ -33,7 +33,7 @@
               <tr>
                 <td>
                   <strong><%= p.web_name %></strong>
-                  <% if (p.news) { %><span class="news"><%= p.news %></span><% } %>
+                  <% if (p.news) { %><span class="news"><%= translateFplNews(p.news) %></span><% } %>
                 </td>
                 <td><%= teamsById.get(p.team)?.short_name ?? '?' %></td>
                 <td class="num"><%= p.selected_by_percent %> %</td>

@@ -10,6 +10,7 @@ import {
   fdrMatrix,
   formatPrice,
   POSITIONS_SHORT,
+  translateFplNews,
 } from '../services/analysis.js';
 import { formatDateTime, formatNumber } from '../services/format.js';
 import { getNews } from '../services/news.js';
@@ -54,6 +55,7 @@ router.get('/', async (req, res, next) => {
       formatPrice,
       formatDateTime,
       formatNumber,
+      translateFplNews,
     });
   } catch (err) {
     next(err);

@@ -1,7 +1,7 @@
 // Mock-locals for view-render-testene. Ingen nettverkskall.
 // Fasit er viewene selv: hvert objekt her dekker alle locals viewet refererer.
 import { formatDateTime, formatNumber } from '../../src/services/format.js';
-import { formatPrice, POSITIONS, POSITIONS_SHORT } from '../../src/services/analysis.js';
+import { formatPrice, POSITIONS, POSITIONS_SHORT, translateFplNews } from '../../src/services/analysis.js';
 
 // STATUS_LABELS er definert lokalt i rutene (index.js/players.js), ikke eksportert.
 const STATUS_LABELS = {
@@ -23,12 +23,15 @@ const player = (id, name, extra = {}) => ({
   transfers_out_event: 500, ...extra,
 });
 
-const shared = { teamsById, STATUS_LABELS, POSITIONS_SHORT, formatDateTime, formatPrice, formatNumber };
+const shared = {
+  teamsById, STATUS_LABELS, POSITIONS_SHORT, formatDateTime, formatPrice, formatNumber,
+  translateFplNews,
+};
 
 export const dashboard = {
   ...shared,
   deadlineEvent: { name: 'Gameweek 1', deadline_time: '2026-08-21T17:30:00Z' },
-  flagged: [player(1, 'Saka', { status: 'i', news: 'Kneskade', chance_of_playing_next_round: 25 })],
+  flagged: [player(1, 'Saka', { status: 'i', news: 'Knee injury - 25% chance of playing', chance_of_playing_next_round: 25 })],
   inForm: [player(2, 'Salah', { team: 2 })],
   boughtMost: [player(3, 'Haaland')],
   soldMost: [player(4, 'Watkins')],
