@@ -7,6 +7,19 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Fixed
+
+- **Assets versjoneres med innholdshash** (`/style.css?v=<hash>`). Cloudflare
+  serverte utdatert CSS og JS etter deploy, slik at hele v1.1.0-designet var
+  usynlig i prod. Versjonerte URL-er caches for alltid (`immutable`),
+  uversjonerte får `no-cache`. Fonten versjoneres manuelt (`?v=1`) i både
+  preload-lenken og `@font-face`
+
+### Added
+
+- `DEPLOY.md`: deploy-flyt, asset-cache-reglene og engangssteget for
+  Cloudflare-purge
+
 ## [1.1.0] - 2026-08-19
 
 ### Added

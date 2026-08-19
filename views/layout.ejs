@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><%= title %> · FPL-dashboard</title>
   <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">⚽</text></svg>'>
-  <link rel="preload" href="/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/style.css">
+  <!-- Fonten er uendret innhold: ?v bumpes for hånd, og MÅ være identisk med
+       @font-face-URL-en i style.css, ellers lastes fonten to ganger. -->
+  <link rel="preload" href="/fonts/archivo-var.woff2?v=1" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/style.css?v=<%= assetVersion %>">
 </head>
 <body>
   <header class="topbar">
@@ -40,6 +42,6 @@
     <p class="version">v<%= version %> · sist oppdatert <%= startedAt %></p>
   </footer>
 
-  <script src="/app.js" defer></script>
+  <script src="/app.js?v=<%= assetVersion %>" defer></script>
 </body>
 </html>

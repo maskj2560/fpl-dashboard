@@ -4,7 +4,7 @@
 
 @font-face {
   font-family: 'Archivo';
-  src: url('/fonts/archivo-var.woff2') format('woff2-variations');
+  src: url('/fonts/archivo-var.woff2?v=1') format('woff2-variations');
   font-weight: 400 900;
   font-stretch: 100%;
   font-display: swap;

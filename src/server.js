@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -25,12 +26,41 @@ const app = express();
 const { version } = JSON.parse(fs.readFileSync(path.join(rootDir, 'package.json'), 'utf8'));
 const startedAt = formatDateTime(new Date().toISOString());
 
+// Innholdshash av CSS + JS. Endres en av filene, endres hashen — og dermed
+// `?v=`-en i layout.ejs. Da hentes en ny URL i stedet for at Cloudflare og
+// nettleseren serverer utdaterte assets etter deploy (QA-funn P0-1).
+const assetVersion = crypto
+  .createHash('sha1')
+  .update(fs.readFileSync(path.join(rootDir, 'public', 'style.css')))
+  .update(fs.readFileSync(path.join(rootDir, 'public', 'app.js')))
+  .digest('hex')
+  .slice(0, 8);
+
+// Gyldig versjonsstreng: innholdshashen (8 hex) eller et manuelt tall — fonten
+// er uendret innhold og bumpes for hånd (`?v=1`, se DEPLOY.md).
+const VERSION_PARAM = /^([0-9a-f]{8}|[0-9]{1,4})$/;
+
 app.set('view engine', 'ejs');
 app.set('views', path.join(rootDir, 'views'));
 
 app.use(compression());
 app.use(express.json());
-app.use(express.static(path.join(rootDir, 'public'), { maxAge: '1d' }));
+app.use(
+  express.static(path.join(rootDir, 'public'), {
+    setHeaders(res) {
+      // Versjonert URL → innholdet kan aldri endre seg, cache for alltid.
+      // Uversjonert URL → må revalideres, ellers blir gamle filer liggende på
+      // edge-cachen etter deploy.
+      const v = res.req?.query?.v;
+      res.setHeader(
+        'Cache-Control',
+        typeof v === 'string' && VERSION_PARAM.test(v)
+          ? 'public, max-age=31536000, immutable'
+          : 'no-cache',
+      );
+    },
+  }),
+);
 
 // res.renderPage(view, data): rendrer viewet og legger resultatet inn i
 // layout.ejs som `body` — vår layout-løsning uten ekstra avhengigheter.
@@ -46,6 +76,7 @@ app.use((req, res, next) => {
         path: req.originalUrl.split('?')[0],
         gameUpdating: isGameUpdating(),
         version,
+        assetVersion,
         startedAt,
       });
     });
@@ -76,7 +107,15 @@ app.use((err, req, res, next) => {
     if (renderErr) return res.type('text/plain').send('Noe gikk galt.');
     res.render(
       'layout',
-      { body, title: 'Feil', path: req.originalUrl.split('?')[0], gameUpdating: false, version, startedAt },
+      {
+        body,
+        title: 'Feil',
+        path: req.originalUrl.split('?')[0],
+        gameUpdating: false,
+        version,
+        assetVersion,
+        startedAt,
+      },
       (layoutErr, html) => {
         if (layoutErr) return res.type('text/plain').send('Noe gikk galt.');
         res.send(html);
