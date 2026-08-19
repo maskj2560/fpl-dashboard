@@ -219,7 +219,9 @@ export function rankGraph(historyCurrent, width = 600, height = 140) {
       return `${x},${y}`;
     })
     .join(' ');
-  return { points, min, max, first: values[0], last: values[values.length - 1] };
+  // Lukket polygon for arealfyll under linjen. Ett punkt gir ingen flate.
+  const area = ranks.length > 1 ? `${points} ${width},${height} 0,${height}` : null;
+  return { points, area, min, max, first: values[0], last: values[values.length - 1] };
 }
 
 /**

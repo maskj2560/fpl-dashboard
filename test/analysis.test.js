@@ -257,6 +257,16 @@ test('rankGraph lager polyline-punkter, lav rank overst', () => {
   assert.equal(rankGraph([{ event: 1, overall_rank: 5 }], 600, 140).points, '0,70');
 });
 
+test('rankGraph gir lukket areal-polygon under linjen', () => {
+  const g = rankGraph([{ event: 1, overall_rank: 100 }, { event: 2, overall_rank: 50 }], 600, 140);
+  assert.equal(g.area, `${g.points} 600,140 0,140`);
+});
+
+test('rankGraph gir null-areal for ett punkt', () => {
+  const g = rankGraph([{ event: 1, overall_rank: 5 }], 600, 140);
+  assert.equal(g.area, null);
+});
+
 test('differentials finner spillere kun den ene har, sortert paa eierandel', () => {
   const elements = [
     player({ id: 1, selected_by_percent: '50.0' }),

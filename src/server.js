@@ -76,7 +76,7 @@ app.use((err, req, res, next) => {
     if (renderErr) return res.type('text/plain').send('Noe gikk galt.');
     res.render(
       'layout',
-      { body, title: 'Feil', path: req.path, gameUpdating: false, version, startedAt },
+      { body, title: 'Feil', path: req.originalUrl.split('?')[0], gameUpdating: false, version, startedAt },
       (layoutErr, html) => {
         if (layoutErr) return res.type('text/plain').send('Noe gikk galt.');
         res.send(html);
