@@ -232,7 +232,8 @@
     btn.disabled = true;
     btn.textContent = 'Tenker …';
     out.hidden = false;
-    out.textContent = 'Henter råd …';
+    // Tre prikker som animeres bak prefers-reduced-motion; ellers ren tekst.
+    out.innerHTML = '<p class="loading">Henter råd <span class="dots"><i></i><i></i><i></i></span></p>';
     try {
       const res = await fetch('/api/ai-rad', { method: 'POST' });
       const data = await res.json();

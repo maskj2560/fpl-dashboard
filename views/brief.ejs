@@ -49,7 +49,7 @@
 
 <section class="card card-wide">
   <h2>Kamper i runden</h2>
-  <% if (brief.fixturesByDay.length === 0) { %><p class="empty">Ingen kamper funnet.</p><% } %>
+  <% if (brief.fixturesByDay.length === 0) { %><p class="empty">Ingen kamper funnet i denne runden ennå. Kampprogrammet legges ut av FPL noen dager før deadline.</p><% } %>
   <div class="grid">
     <% for (const d of brief.fixturesByDay) { %>
       <div>
@@ -80,5 +80,5 @@
     </section>
   </div>
 <% } else { %>
-  <section class="card"><p class="empty">Sett FPL_TEAM_ID for å få personlige anbefalinger i briefen.</p></section>
+  <section class="card"><p class="empty">Sett <code>FPL_TEAM_ID</code> for å få kaptein- og transferforslag basert på din egen tropp.</p></section>
 <% } %>

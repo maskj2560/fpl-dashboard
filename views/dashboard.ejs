@@ -13,7 +13,7 @@
 <% } else { %>
   <section class="hero">
     <h1>Ingen kommende deadline</h1>
-    <p class="hero-date">Sesongen er ferdig eller ikke i gang ennå.</p>
+    <p class="hero-date">Sesongen er ferdig eller ikke i gang ennå. Nedtellingen kommer tilbake så snart FPL åpner neste runde.</p>
   </section>
 <% } %>
 
@@ -21,7 +21,7 @@
   <section class="card">
     <h2>Ukens flagg</h2>
     <% if (flagged.length === 0) { %>
-      <p class="empty">Ingen spillere er flagget akkurat nå.</p>
+      <p class="empty">Ingen spillere er flagget nå. Status endrer seg ofte etter pressekonferansene — sjekk igjen nærmere deadline.</p>
     <% } else { %>
       <div class="table-scroll">
         <table class="data">
@@ -159,8 +159,8 @@
 </section>
 
 <% if (newsPoints && newsPoints.length > 0) { %>
-  <section class="card card-wide">
-    <h2>Siste FPL-nytt (AI)</h2>
+  <section class="card card-wide card-ai">
+    <h2><span class="h2-title"><span class="ai-badge">AI</span> Siste FPL-nytt</span></h2>
     <ul class="rec-list"><% for (const p of newsPoints) { %><li><%= p.replace(/\*\*/g, '') %></li><% } %></ul>
     <p class="hint"><a href="/nyheter">Alle nyheter →</a></p>
   </section>

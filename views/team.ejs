@@ -12,7 +12,13 @@
 </div>
 
 <% if (!squadView) { %>
-  <section class="card"><p class="empty">Fant ingen lagoppstilling ennå — sesongen har kanskje ikke startet.</p></section>
+  <section class="card">
+    <p class="empty">
+      Fant ingen lagoppstilling ennå. FPL gir ikke ut troppen din før den
+      første deadlinen i sesongen har passert — se nedtellingen på
+      <a href="/">dashboardet</a>. Da fylles denne siden av seg selv.
+    </p>
+  </section>
 <% } else { %>
   <section class="card card-wide">
     <h2>Oppstilling</h2>
