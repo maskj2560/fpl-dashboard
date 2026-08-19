@@ -12,6 +12,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - `brief.js`-service som setter sammen gameweek-briefen fra rene data:
   skadenytt for høyt eide spillere, globale kapteinsvalg, kamper gruppert
   per dag i norsk tid, og egne anbefalinger når `FPL_TEAM_ID` er satt
+- Brief-side (`/brief`) med deadline, skadenytt, kapteinsvalg, kampprogram
+  per dag og egne kaptein- og transferkandidater
+- `GET /api/brief.json` med samme brief som JSON
 
 ## [0.4.0] - 2026-08-19
 

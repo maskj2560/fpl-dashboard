@@ -1327,7 +1327,7 @@ export function buildBrief({ bootstrap, fixtures, myTeam = null }) {
 
 **Files:** Create: `src/routes/brief.js`, `src/routes/api.js`, `views/brief.ejs`; Modify: `src/server.js` (monter `/brief` og `/api`), `views/layout.ejs` (nav `Brief`)
 
-- [ ] **Steg 1:** Opprett `src/routes/brief.js`:
+- [x] **Steg 1:** Opprett `src/routes/brief.js`:
 ```js
 import { Router } from 'express';
 import config from '../config.js';
@@ -1371,7 +1371,7 @@ router.get('/', async (req, res, next) => {
 
 export default router;
 ```
-- [ ] **Steg 2:** Opprett `src/routes/api.js`:
+- [x] **Steg 2:** Opprett `src/routes/api.js`:
 ```js
 import { Router } from 'express';
 import { assembleBrief } from './brief.js';
@@ -1388,7 +1388,7 @@ router.get('/brief.json', async (req, res, next) => {
 
 export default router;
 ```
-- [ ] **Steg 3:** Opprett `views/brief.ejs` (bruk eksisterende klasser; struktur):
+- [x] **Steg 3:** Opprett `views/brief.ejs` (bruk eksisterende klasser; struktur):
 ```ejs
 <section class="page-head">
   <h1>Gameweek-brief<% if (brief.gameweek) { %> — <%= brief.gameweek.name %><% } %></h1>
@@ -1448,8 +1448,11 @@ export default router;
   <section class="card"><p class="empty">Sett FPL_TEAM_ID for å få personlige anbefalinger i briefen.</p></section>
 <% } %>
 ```
-- [ ] **Steg 4:** Monter i server.js: `app.use('/brief', briefRouter);` og `app.use('/api', apiRouter);` + nav `Brief`. Røyk-test `/brief` (200) og `/api/brief.json` (200, gyldig JSON med `gameweek`-felt). Test + lint grønne.
-- [ ] **Steg 5:** Commit `feat: gameweek-brief som side og JSON-API`
+- [x] **Steg 4:** Monter i server.js: `app.use('/brief', briefRouter);` og `app.use('/api', apiRouter);` + nav `Brief`. Røyk-test `/brief` (200) og `/api/brief.json` (200, gyldig JSON med `gameweek`-felt). Test + lint grønne.
+      Mot ekte FPL-data: `/brief` 200, `/api/brief.json` 200 med
+      `gameweek.id = 1`, deadline «fredag 21. august kl. 19:30», 1 skade,
+      3 kapteinsforslag og 4 kampdager. 26/26 tester, lint 0.
+- [x] **Steg 5:** Commit `feat: gameweek-brief som side og JSON-API`
 
 ### Task 5.3: Release v0.5.0
 - [ ] Som Task 2.4: CHANGELOG `[0.5.0]`, ROADMAP, version, HANDOVER, `docs: release v0.5.0`, tag, push, verifiser prod /brief og /api/brief.json
