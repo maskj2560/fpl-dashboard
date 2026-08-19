@@ -232,7 +232,7 @@ app.use('/spillere', playersRouter);
 
 **Files:** Modify: `public/style.css` (APPEND nederst, før `/* ---------- Bevegelse ---------- */`-blokken)
 
-- [ ] **Steg 1:** Legg til:
+- [x] **Steg 1:** Legg til:
 ```css
 /* ---------- Sidehode og filtre (/spillere) ---------- */
 
@@ -325,8 +325,8 @@ table.sortable th[aria-sort='ascending']::after {
   color: var(--accent);
 }
 ```
-- [ ] **Steg 2:** Røyk-test `/spillere` (200) + åpne gjerne i nettleser og sjekk at sortering/filter virker.
-- [ ] **Steg 3:** Commit `feat: stiler for filtre og sorterbare tabeller`
+- [x] **Steg 2:** Røyk-test `/spillere` (200) + åpne gjerne i nettleser og sjekk at sortering/filter virker.
+- [x] **Steg 3:** Commit `feat: stiler for filtre og sorterbare tabeller`
 
 ### Task 2.4: Release v0.2.0
 

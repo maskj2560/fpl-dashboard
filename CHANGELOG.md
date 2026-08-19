@@ -13,6 +13,7 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Klientside-sortering på alle kolonner i spillertabellen (klikk eller
   tastatur på kolonneoverskriften, med retningsindikator)
 - Filtrering på posisjon, lag og maks pris + tekstsøk, alt uten sidelasting
+- Stiler for sidehode, filterpanel og sorterbare kolonneoverskrifter
 
 ## [0.1.0] - 2026-08-19
 
