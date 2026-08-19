@@ -1,0 +1,39 @@
+# HANDOVER — FPL-dashboard
+
+> Levende overleveringsfil. Oppdateres ved hver milepæl og ved arbeidsstans.
+> Ny AI-økt: les denne + CLAUDE.md + ROADMAP.md, fortsett der «Neste steg» sier.
+
+**Sist oppdatert:** 2026-08-19 (økt 1, Steg 0 pågår)
+
+## Status
+
+- Plan godkjent av bruker. Full plan: `C:\Users\mariu\.claude\plans\full-claude-code-prompt-ancient-crescent.md`
+  (kopi av essensen finnes i CLAUDE.md + ROADMAP.md — de er autoritative)
+- Steg 0 pågår: CLAUDE.md, CHANGELOG.md, ROADMAP.md opprettet. Git init + første commit gjenstår.
+- Ingen kode skrevet ennå. Ingen npm-pakker installert. Ingen git-remote.
+
+## Brukerens beslutninger (fra brainstorming, IKKE re-spør)
+
+- AI-modell: `claude-sonnet-5` overalt via `AI_MODEL`-env (Haiku 4.5 som billig-alternativ)
+- Scope utvidet med: AI-gameweek-brief (v0.8.0), AI transfer-rådgiver (v0.8.0),
+  auto-brief til Discord før deadline (v0.9.0)
+- Kostnadskrav: AI må være billig for én person — alt on-demand + cachet
+- Layout: egen liten EJS-layout-helper, IKKE express-ejs-layouts
+- RSS: `fast-xml-parser` når v0.7.0 startes
+- Bruker stopper økter ved ~95 % usage → oppdater denne filen grundig før stopp
+
+## Neste steg (i rekkefølge)
+
+1. `git init` + commit `chore: initial project docs` (Steg 0 ferdig)
+2. Milepæl v0.1.0 etter planen i ROADMAP.md — commit-rekkefølge:
+   scaffolding → config.js → cache.js+tester → fplClient.js → server/dashboard → analysis-tester → Docker/README → release 0.1.0 + tag
+
+## Miljø
+
+- Windows 11, PowerShell. Node v24.11.1, npm 11.6.2, git 2.45.1
+- Arbeidsmappe: `c:\Users\mariu\Documents\Claude Code\FPL`
+- FPL_TEAM_ID: ukjent — bruker setter selv i `.env` (placeholder i `.env.example`)
+
+## Åpne beslutninger / kjente feil
+
+- Ingen ennå.
