@@ -1,3 +1,11 @@
+// Modul 0: Scroll aktiv nav-lenke inn i syne på smale skjermer.
+(function () {
+  'use strict';
+
+  const active = document.querySelector('.topbar nav a[aria-current="page"]');
+  if (active) active.scrollIntoView({ inline: 'center', block: 'nearest' });
+})();
+
 // Modul 1: Nedtelling til neste deadline. Leser ISO-tidspunkt fra data-deadline.
 (function () {
   'use strict';

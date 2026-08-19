@@ -91,7 +91,7 @@ committet (og pushet hvis remote finnes).
 - [x] View-render-tester for alle sider med mockdata og tomtilstander,
       inkludert låsing av XSS-escapingen i live/news/brief (sikkerhetsnett)
 - [x] Lokal Archivo-font + kontrastverifisert tokenpalett
-- [ ] Én-linjes scrollbar navigasjon, hero som broadcast-scoreboard
+- [x] Én-linjes scrollbar navigasjon med sticky topbar (hero gjenstår)
 - [ ] Enhetlig kort- og tabellsystem på alle sider
 - [ ] /spillere, /lag (pitch + arealgraf), /live, /liga, /brief, /nyheter
 - [ ] Gjennomdesignede tom- og feiltilstander, mobil-finpuss

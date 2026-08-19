@@ -38,6 +38,39 @@ for (const [name, locals, marker] of cases) {
   });
 }
 
+// layout.ejs var lenge utenfor testdekningen, og både en EJS-syntaksfeil og en
+// ødelagt aria-current slapp gjennom. Den rendres derfor her også.
+const layoutLocals = (path) => ({
+  body: '<p>innhold</p>', title: 'Test', path,
+  gameUpdating: false, version: '1.0.1', startedAt: '19.08.2026, 21:00',
+});
+
+const NAV = [
+  ['/', 'Dashboard'],
+  ['/spillere', 'Spillere'],
+  ['/lag', 'Lag'],
+  ['/liga', 'Liga'],
+  ['/brief', 'Brief'],
+  ['/live', 'Live'],
+  ['/nyheter', 'Nyheter'],
+];
+
+for (const [path, label] of NAV) {
+  test(`layout.ejs markerer «${label}» som aktiv side for ${path}`, async () => {
+    const html = await renderView('layout', layoutLocals(path));
+    const marked = [...html.matchAll(/aria-current="page">([^<]+)</g)].map((m) => m[1]);
+    assert.deepEqual(marked, [label], `${path}: feil aktiv nav-lenke`);
+    assert.ok(!html.includes('&#34;page&#34;'), 'aria-current ble escapet');
+  });
+}
+
+test('layout.ejs viser 503-banneret bare når spillet oppdateres', async () => {
+  const uten = await renderView('layout', layoutLocals('/'));
+  const med = await renderView('layout', { ...layoutLocals('/'), gameUpdating: true });
+  assert.ok(!uten.includes('FPL oppdaterer spillet'));
+  assert.ok(med.includes('FPL oppdaterer spillet'));
+});
+
 test('live.ejs escaper < i lagnavn inne i script-blokken', async () => {
   const html = await renderView('live', fx.live);
   assert.ok(!html.includes('</script><img'), 'lagnavn brøt ut av script-taggen');

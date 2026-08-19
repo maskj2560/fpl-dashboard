@@ -41,7 +41,9 @@ app.use((req, res, next) => {
       res.render('layout', {
         body,
         title: data.title ?? 'FPL-dashboard',
-        path: req.path,
+        // req.path er relativ til router-mounten (alltid '/' inne i f.eks.
+        // /spillere), så nav-markeringen må bruke hele stien.
+        path: req.originalUrl.split('?')[0],
         gameUpdating: isGameUpdating(),
         version,
         startedAt,

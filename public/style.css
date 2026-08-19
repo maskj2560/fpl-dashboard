@@ -97,24 +97,29 @@ a:hover {
 
 /* ---------- Toppmeny ---------- */
 
+/* Topbaren er én linje overalt. På smale skjermer scroller nav-en vannrett
+   med kantfade i stedet for å brekke til flere linjer. */
 .topbar {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-  padding: 0.9rem 1.25rem;
+  gap: var(--space-5);
+  padding: 0.7rem 1.25rem;
   border-bottom: 1px solid var(--border);
   background: var(--surface);
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
+  backdrop-filter: blur(10px);
   position: sticky;
   top: 0;
   z-index: 10;
 }
 
 .wordmark {
+  font-family: var(--font-display);
   font-weight: 800;
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   letter-spacing: -0.02em;
   color: var(--text);
+  flex: 0 0 auto;
 }
 
 .wordmark span {
@@ -124,15 +129,23 @@ a:hover {
 
 .topbar nav {
   display: flex;
-  gap: 0.25rem;
-  flex-wrap: wrap;
+  gap: var(--space-1);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.topbar nav::-webkit-scrollbar {
+  display: none;
 }
 
 .topbar nav a {
+  flex: 0 0 auto;
   color: var(--text-dim);
-  padding: 0.35rem 0.7rem;
-  border-radius: 6px;
-  font-size: 0.95rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 99px;
+  font-size: 0.92rem;
+  font-weight: 500;
 }
 
 .topbar nav a:hover {
@@ -144,6 +157,19 @@ a:hover {
 .topbar nav a[aria-current='page'] {
   color: var(--accent);
   background: var(--accent-soft);
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .topbar {
+    gap: var(--space-3);
+    padding: 0.55rem 0.9rem;
+  }
+
+  .topbar nav {
+    mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 14px), transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 14px), transparent);
+  }
 }
 
 /* ---------- Banner (503) ---------- */
@@ -784,16 +810,9 @@ footer .version {
 /* ---------- Mobil (≤ 480 px) ---------- */
 
 @media (max-width: 480px) {
-  /* Sju nav-lenker blir to–tre linjer på mobil: da stjeler en sticky topbar
-     for mye av skjermen, og den slippes fri. */
-  .topbar {
-    position: static;
-    gap: 0.5rem 0.75rem;
-    padding: 0.6rem 0.9rem;
-  }
-
+  /* Topbaren er nå én scrollbar linje på ~48 px og kan trygt være sticky. */
   .topbar nav a {
-    padding: 0.3rem 0.5rem;
+    padding: 0.3rem 0.6rem;
     font-size: 0.9rem;
   }
 

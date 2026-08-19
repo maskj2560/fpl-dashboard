@@ -17,9 +17,15 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Ny visuell retning «Matchday»: selvhostet Archivo (variabel, OFL, 34 kB) som
   display-snitt for titler og tall, og en fornyet fiolett kampkveld-palett der
   alle tekst- og merkefarger er kontrastverifisert mot WCAG
+- Topbaren er én linje på alle skjermstørrelser. På mobil sveiper du gjennom
+  menyen i stedet for at den brekker til flere linjer, aktiv side scrolles
+  automatisk inn i syne, og baren er sticky igjen
 
 ### Fixed
 
+- Navigasjonen markerer riktig side igjen. `aria-current` ble escapet av EJS og
+  stien var relativ til router-mounten, så bare «Dashboard» kunne bli markert —
+  og markeringen nådde verken CSS-en eller skjermlesere
 - Auto-briefen sendes ikke på nytt når appen deployes eller restartes i
   sendevinduet før deadline. Er det planlagte send-tidspunktet passert med
   mer enn én time, markeres runden som håndtert og hoppes over

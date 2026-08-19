@@ -775,7 +775,7 @@ tilstand, alt synlig med ett sveip.
 
       NB: `backdrop-filter`/`color-mix` har fallback — behold
       `background: var(--surface);` som egen linje FØR color-mix-linjen.
-- [ ] **Steg 2:** Nytt i toppen av `public/app.js` (modul 0):
+- [x] **Steg 2:** Nytt i toppen av `public/app.js` (modul 0):
 
 ```js
 // Modul 0: Scroll aktiv nav-lenke inn i syne pa smale skjermer.
@@ -786,8 +786,30 @@ tilstand, alt synlig med ett sveip.
 })();
 ```
 
-- [ ] **Steg 3:** `npm test` + lint + lokal røyk (`/` 200, nav-markup intakt).
+- [x] **Steg 3:** `npm test` + lint + lokal røyk (`/` 200, nav-markup intakt).
       Commit: `feat: en-linjes scrollbar navigasjon med sticky topbar`
+
+      **Avvik fra planen — to ekte bugger avdekket i `aria-current`:**
+      Røyk-testen viste at INGEN side hadde et gyldig `aria-current`-attributt.
+      To feil samtidig, begge fra før makeoveren:
+      1) `views/layout.ejs` brukte `<%= 'aria-current="page"' %>`, som escaper
+      anførselstegnene til `&#34;`. Attributtet ble dermed aldri gyldig — verken
+      CSS-regelen `[aria-current='page']` eller skjermlesere så det.
+      Rettet til `<%- %>` (verdiene er faste strenger, ikke brukerinnhold).
+      2) `src/server.js` sendte `req.path` til layouten. Inne i en montert
+      router (`app.use('/spillere', playersRouter)`) er `req.path` alltid `/`,
+      så `path.startsWith('/spillere')` var alltid usann og «Dashboard» ble
+      markert på hver eneste side. Rettet til `req.originalUrl.split('?')[0]`.
+      Verifisert etter fiksen: hver av de sju sidene har nøyaktig én markert
+      nav-lenke, og den peker på riktig side.
+
+      **Avvik nr. 3 (utvidet sikkerhetsnett):** Et forsøk på å dokumentere
+      fiksen med en `<%# … %>`-EJS-kommentar som inneholdt `<%=` brakk
+      layouten fullstendig (`Could not find matching close tag for "<%#"`) —
+      alle sider ga 500. M2-testene fanget det ikke, fordi planen holder
+      `layout.ejs` utenfor. `test/views.test.js` er derfor utvidet med åtte
+      layout-tester: én per nav-lenke (nøyaktig én aktiv, ikke escapet) pluss
+      503-banneret. `npm test` 69/69 grønne, `npm run lint` 0 feil.
 - [ ] **Steg 4:** Push → verifiser prod 200 → **QA-runde 1 til bruker**
       (se checklisten i Task 3.12: topbar/nav på telefon).
 
