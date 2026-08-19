@@ -69,6 +69,7 @@
 - 2026-08-19: «Fiks deploy til Coolify og GitHub og auto-deploy først» → PRIORITET før v0.2.0 fortsetter: GitHub-repo + push + Coolify-oppsett. Blokkert på `gh auth login` fra bruker.
 - 2026-08-19: «Oppdater ROADMAP, CHANGELOG, CLAUDE.md, HANDOVER kontinuerlig og ofte — alltid oppdatert» → fast rutine: alle fire sjekkes/oppdateres ved hver delfunksjon og hver commit, ikke bare ved milepæler
 - 2026-08-19: «Logget inn i gh. Repo skal være PRIVAT. Coolify på dash.marsk.no, hoster marsk.no + utevakt.marsk.no, denne appen skal på fpl.marsk.no» → privat repo opprettet og pushet
+- 2026-08-19: «Lag prompt til Claude in Chrome for Coolify-oppsettet + rapport-prompt tilbake» → prompt levert i chat; venter på rapport («RAPPORT TIL CLAUDE CODE — Coolify-deploy fpl-dashboard») før v0.2.0 fortsetter
 
 ## Miljø
 
