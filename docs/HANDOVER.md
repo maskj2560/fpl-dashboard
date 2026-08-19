@@ -63,6 +63,10 @@
   README-tabellen komplett. Verifisert: 35/35 tester, lint 0, alle ti ruter 200
   lokalt + 404 på ukjent sti, feilsiden vises når FPL-API-et er nede (simulert),
   `docker build` og container-health OK.
+- **Prod verifisert på v1.0.0** (2026-08-19): footeren viser `v1.0.0 · sist
+  oppdatert …`, og alle ti ruter svarer 200 på https://fpl.marsk.no
+  (`/`, `/spillere`, `/lag`, `/liga`, `/brief`, `/live`, `/nyheter`, `/health`,
+  `/api/brief.json`, `/api/live.json`).
 - **Åpne oppgaver som krever bruker (ikke feil i koden):**
   1. `ANTHROPIC_API_KEY` i Coolify → slår på AI-nyheter, AI-brief og AI-rådgiver
   2. `DISCORD_WEBHOOK_URL` i Coolify → slår på auto-brief før deadline
