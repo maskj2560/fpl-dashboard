@@ -3,7 +3,7 @@
 > Levende overleveringsfil. Oppdateres ved hver milepæl og ved arbeidsstans.
 > Ny AI-økt: les denne + CLAUDE.md + ROADMAP.md, fortsett der «Neste steg» sier.
 
-**Sist oppdatert:** 2026-08-19 (økt 2, v0.7.0 ferdig)
+**Sist oppdatert:** 2026-08-19 (økt 2, v0.8.0 ferdig)
 
 ## Status
 
@@ -49,6 +49,11 @@
   `NEWS_FEEDS` overstyrer, cachet 15 min) og valgfri AI-oppsummering via ny
   `ai.js`. Nyhetspanel på dashboardet. Nye avhengigheter: `@anthropic-ai/sdk`
   og `fast-xml-parser` — de to eneste planen tillater. 33/33 tester grønne.
+- **v0.8.0 FERDIG og tagget**: AI-brief øverst på `/brief` (maks én generering
+  per time per gameweek, data-briefen alltid under som fallback) og
+  «Spør AI om råd»-knapp på `/lag` mot `POST /api/ai-rad` (cachet én time per
+  lag og gameweek). Promptbyggere i `prompts.js` med tester — 35/35 grønne.
+  All AI-tekst escapes før `**fet**` blir `<strong>`.
 - **AI-status:** all AI er av i prod fram til `ANTHROPIC_API_KEY` settes i
   Coolify. Uten nøkkel viser `/nyheter` rå feed-liste, og dashboardpanelet
   er skjult — det er tilsiktet, ikke en feil. `AI_MODEL` er `claude-sonnet-5`
@@ -76,12 +81,13 @@
 
 ## Neste steg (i rekkefølge)
 
-1. **Milepæl v0.8.0 — AI-brief og transfer-rådgiver.** Følg plan-filen fra
-   «Task 8.1»: `prompts.js` med `buildBriefPrompt`/`buildAdvicePrompt` (TDD) →
-   AI-versjon av `/brief` → «Spør AI om råd»-knapp på `/lag` med
-   `POST /api/ai-rad` → release v0.8.0.
-2. Deretter v0.9.0 (Discord-auto-brief, krever `DISCORD_WEBHOOK_URL`) og
-   v1.0.0-polish.
+1. **Milepæl v0.9.0 — Auto-brief til Discord.** Følg plan-filen fra «Task 9.1»:
+   `src/services/notify.js` med deadline-scheduler → `startScheduler()` etter
+   `app.listen` → release v0.9.0. **Krever fra bruker:** `DISCORD_WEBHOOK_URL`
+   i Coolify (Discord-kanal → Innstillinger → Integrasjoner → Webhooks).
+   Uten URL er scheduleren inaktiv.
+2. Deretter v1.0.0-polish (Task 10.1): mobilgjennomgang, tomtilstander,
+   feiltilstander, TTL-gjennomgang, README med skjermbilder.
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 

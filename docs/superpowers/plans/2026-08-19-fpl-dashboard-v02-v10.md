@@ -2387,7 +2387,7 @@ og CSS-append:
       35/35 tester, lint 0.
 
 ### Task 8.4: Release v0.8.0
-- [ ] Som Task 2.4 (CHANGELOG `[0.8.0]`, ROADMAP v0.8.0-punktene, version, HANDOVER, tag, push, verifiser prod)
+- [x] Som Task 2.4 (CHANGELOG `[0.8.0]`, ROADMAP v0.8.0-punktene, version, HANDOVER, tag, push, verifiser prod)
 
 ---
 

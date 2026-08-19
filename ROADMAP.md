@@ -54,11 +54,11 @@ committet (og pushet hvis remote finnes).
 
 ## v0.8.0 — AI-brief og transfer-rådgiver
 
-- [ ] AI-versjon av /brief: modellen skriver briefen på norsk fra data-briefens
+- [x] AI-versjon av /brief: modellen skriver briefen på norsk fra data-briefens
       JSON — maks én generering per time, cachet, data-brief som fallback
-- [ ] «Spør AI om råd»-knapp på /lag → `POST /api/ai-rad` med tropp +
+- [x] «Spør AI om råd»-knapp på /lag → `POST /api/ai-rad` med tropp +
       analysis-data, begrunnede råd tilbake, cachet 1 time
-- [ ] Tester for prompt-bygging (rene funksjoner)
+- [x] Tester for prompt-bygging (rene funksjoner)
 
 ## v0.9.0 — Auto-brief før deadline
 
