@@ -1467,7 +1467,7 @@ export default router;
 
 **Interfaces (produseres):** `estimateBonus(fixture) → Map<elementId, bonus>` — leser `fixture.stats` (identifier `bps`), FPL-bonusregler med delte plasser.
 
-- [ ] **Steg 1 (RED):** Append test:
+- [x] **Steg 1 (RED):** Append test:
 ```js
 function fixtureWithBps(hs, as) {
   return {
@@ -1505,8 +1505,8 @@ test('estimateBonus taaler manglende stats', () => {
   assert.equal(estimateBonus({}).size, 0);
 });
 ```
-- [ ] **Steg 2:** `npm test` → FEILER.
-- [ ] **Steg 3 (GREEN):** Append i analysis.js:
+- [x] **Steg 2:** `npm test` → FEILER.
+- [x] **Steg 3 (GREEN):** Append i analysis.js:
 ```js
 /**
  * Bonusestimat fra BPS i en pågående kamp. Topp 3 BPS får 3/2/1.
@@ -1534,7 +1534,7 @@ export function estimateBonus(fixture) {
   return result;
 }
 ```
-- [ ] **Steg 4:** `npm test` grønn. Commit `feat: bonusestimat fra BPS`
+- [x] **Steg 4:** `npm test` grønn (30/30). Commit `feat: bonusestimat fra BPS`
 
 ### Task 6.2: /api/live.json og /live-side med betinget polling
 

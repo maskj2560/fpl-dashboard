@@ -7,6 +7,11 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+
+- Bonusestimat (`estimateBonus`) som leser BPS fra pågående kamper og
+  fordeler 3/2/1 etter FPL-reglene, inkludert delte plasser
+
 ## [0.5.0] - 2026-08-19
 
 ### Added

@@ -15,6 +15,7 @@ import {
   transferInCandidates,
   rankGraph,
   differentials,
+  estimateBonus,
 } from '../src/services/analysis.js';
 
 function player(overrides = {}) {
@@ -266,4 +267,40 @@ test('differentials finner spillere kun den ene har, sortert paa eierandel', () 
   const d = differentials(new Set([1, 2]), new Set([1, 3, 4]), elements);
   assert.deepEqual(d.theirs.map((p) => p.id), [3, 4], 'de har, jeg mangler');
   assert.deepEqual(d.mine.map((p) => p.id), [2], 'jeg har, de mangler');
+});
+
+function fixtureWithBps(hs, as) {
+  return {
+    stats: [
+      { identifier: 'bps', h: hs.map(([element, value]) => ({ element, value })), a: as.map(([element, value]) => ({ element, value })) },
+    ],
+  };
+}
+
+test('estimateBonus gir 3/2/1 til topp 3 BPS', () => {
+  const b = estimateBonus(fixtureWithBps([[1, 30], [2, 25]], [[3, 28], [4, 10]]));
+  assert.equal(b.get(1), 3);
+  assert.equal(b.get(3), 2);
+  assert.equal(b.get(2), 1);
+  assert.equal(b.get(4), undefined);
+});
+
+test('estimateBonus deler ved likhet: to paa topp gir 3+3 og deretter 1', () => {
+  const b = estimateBonus(fixtureWithBps([[1, 30], [2, 30]], [[3, 20]]));
+  assert.equal(b.get(1), 3);
+  assert.equal(b.get(2), 3);
+  assert.equal(b.get(3), 1);
+});
+
+test('estimateBonus: likhet paa andreplass gir 2+2, ingen enerpoeng', () => {
+  const b = estimateBonus(fixtureWithBps([[1, 30], [2, 25], [3, 25], [4, 20]], []));
+  assert.equal(b.get(1), 3);
+  assert.equal(b.get(2), 2);
+  assert.equal(b.get(3), 2);
+  assert.equal(b.get(4), undefined);
+});
+
+test('estimateBonus taaler manglende stats', () => {
+  assert.equal(estimateBonus({ stats: [] }).size, 0);
+  assert.equal(estimateBonus({}).size, 0);
 });

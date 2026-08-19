@@ -222,6 +222,32 @@ export function rankGraph(historyCurrent, width = 600, height = 140) {
   return { points, min, max, first: values[0], last: values[values.length - 1] };
 }
 
+/**
+ * Bonusestimat fra BPS i en pågående kamp. Topp 3 BPS får 3/2/1.
+ * Likhet deler plassen etter FPL-reglene (3,3→1 · 3,2,2 · 3,3,3 · 3,2,1,1).
+ */
+export function estimateBonus(fixture) {
+  const result = new Map();
+  const bpsStat = fixture.stats?.find((s) => s.identifier === 'bps');
+  if (!bpsStat) return result;
+  const all = [...(bpsStat.h ?? []), ...(bpsStat.a ?? [])]
+    .filter((e) => e.value > 0)
+    .sort((a, b) => b.value - a.value);
+  if (all.length === 0) return result;
+
+  const awards = [3, 2, 1];
+  let index = 0;
+  let awardSlot = 0;
+  while (index < all.length && awardSlot < 3) {
+    const tied = all.filter((e) => e.value === all[index].value);
+    const award = awards[awardSlot];
+    for (const e of tied) result.set(e.element, award);
+    awardSlot += tied.length;
+    index += tied.length;
+  }
+  return result;
+}
+
 /** Differensialer: spillere rivalen har som jeg mangler («theirs») og omvendt («mine»). */
 export function differentials(myIds, rivalIds, elements) {
   const byOwnership = (a, b) =>
