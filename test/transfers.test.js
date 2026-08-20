@@ -1,6 +1,7 @@
-import { test } from 'node:test';
+import { test, describe, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildTransferAnalysis } from '../src/services/transfers.js';
+import { buildTransferAnalysis, assembleTransferAnalysis } from '../src/services/transfers.js';
+import { clear } from '../src/services/cache.js';
 
 // GW1–2 ferdige, GW3 pågår → maxGw 3.
 const bootstrap = {
@@ -215,4 +216,60 @@ test('før sesongstart (maxGw 0) er alt pending', () => {
   });
   assert.equal(a.maxGw, 0);
   assert.equal(a.rows[0].pending, true);
+});
+
+// Assemble-testene mocker global fetch (mønster fra test/fplClient.test.js);
+// hooks scopes til denne describe-blokken så de rene testene over er uberørt.
+describe('assembleTransferAnalysis', () => {
+  const originalFetch = globalThis.fetch;
+  let calls;
+
+  beforeEach(() => {
+    clear();
+    calls = [];
+  });
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+  });
+
+  test('henter kun rundene fra tidligste transfer, aldri element-summary', async () => {
+    const routes = [
+      [/bootstrap-static\/$/, bootstrap],
+      [/entry\/42\/transfers\/$/, [t(11, 10, 2)]],
+      [/entry\/42\/history\/$/, history],
+      [/event\/2\/live\/$/, liveFor({ 10: 9, 11: 1 })],
+      [/event\/3\/live\/$/, liveFor({ 10: 2, 11: 0 })],
+    ];
+    globalThis.fetch = async (url) => {
+      const hit = routes.find(([re]) => re.test(String(url)));
+      assert.ok(hit, `uventet URL: ${url}`);
+      calls.push(String(url));
+      return { ok: true, status: 200, json: async () => hit[1] };
+    };
+
+    const a = await assembleTransferAnalysis({ teamId: 42 });
+
+    assert.equal(a.rows[0].diff, 10); // (9+2) − (1+0)
+    assert.ok(!calls.some((u) => /event\/1\/live/.test(u)), 'runde 1 skal ikke hentes');
+    assert.ok(!calls.some((u) => /element-summary/.test(u)), 'aldri element-summary');
+  });
+
+  test('uten transfers hentes ingen live-runder', async () => {
+    globalThis.fetch = async (url) => {
+      calls.push(String(url));
+      if (/transfers\/$/.test(String(url))) {
+        return { ok: true, status: 200, json: async () => [] };
+      }
+      if (/history\/$/.test(String(url))) {
+        return { ok: true, status: 200, json: async () => history };
+      }
+      return { ok: true, status: 200, json: async () => bootstrap };
+    };
+
+    const a = await assembleTransferAnalysis({ teamId: 42 });
+
+    assert.equal(a.totals.count, 0);
+    assert.ok(!calls.some((u) => /\/live\//.test(u)), 'ingen live-kall uten transfers');
+  });
 });

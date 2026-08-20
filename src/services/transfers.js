@@ -4,6 +4,14 @@
 // gjaldt, til inn-spilleren ble solgt igjen eller ut-spilleren kjøpt
 // tilbake. Free hit-transfers reverseres av FPL og terminerer aldri andre
 // vinduer.
+import config from '../config.js';
+import {
+  getBootstrap,
+  getEntryHistory,
+  getEntryTransfers,
+  getLive,
+  getLiveHistoric,
+} from './fplClient.js';
 import { byId, resolvedGw } from './analysis.js';
 
 // Skjemaet for entry/{id}/transfers/ er uverifisert før sesongstart —
@@ -116,4 +124,34 @@ export function buildTransferAnalysis({ transfers, history, bootstrap, liveByGw 
     worstIndex,
     maxGw,
   };
+}
+
+/** Henter alt /overganger trenger. `teamId`-parameteren er test-hook. */
+export async function assembleTransferAnalysis({ teamId = config.fplTeamId } = {}) {
+  const [bootstrap, transfers, history] = await Promise.all([
+    getBootstrap(),
+    getEntryTransfers(teamId),
+    getEntryHistory(teamId),
+  ]);
+
+  const maxGw = resolvedGw(bootstrap.events);
+  const eventsById = new Map(bootstrap.events.map((e) => [e.id, e]));
+  const validEvents = (Array.isArray(transfers) ? transfers : [])
+    .filter(isValidTransfer)
+    .map((t) => t.event);
+  const firstEvent = validEvents.length ? Math.min(...validEvents) : Infinity;
+
+  // Poeng per runde hentes kun for vinduet som faktisk trengs — ferdige
+  // runder med lang TTL, pågående med kort. Aldri element-summary (N+1).
+  const liveByGw = new Map();
+  if (firstEvent <= maxGw) {
+    const gws = [];
+    for (let gw = firstEvent; gw <= maxGw; gw++) gws.push(gw);
+    const results = await Promise.all(
+      gws.map((gw) => (eventsById.get(gw)?.finished ? getLiveHistoric(gw) : getLive(gw))),
+    );
+    gws.forEach((gw, i) => liveByGw.set(gw, results[i]));
+  }
+
+  return buildTransferAnalysis({ transfers, history, bootstrap, liveByGw });
 }
