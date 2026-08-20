@@ -6,55 +6,11 @@ Formatet følger [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-- **Rundebriefen viser avsluttet sesong i stedet for runde 1-data** når det
-  ikke finnes en kommende runde (P2-4)
-- **Live-siden våkner av seg selv.** Pollingen startet bare hvis kamper alt
-  pågikk da siden ble lastet, og stoppet for godt ved første pause — en fane
-  åpnet før avspark, eller i pausen mellom lørdagskampene, frøs. Nå settes ett
-  vekkesignal ved neste avspark, og 60-sekunderspollingen starter og stopper
-  med kampene (P0-3)
-- **Bonusestimatet forsvinner ikke i dobbel runde.** Bekreftet bonus fra en
-  ferdigspilt kamp skjulte estimatet for kampen som pågikk; estimatene summeres
-  nå per spiller og telles aldri dobbelt (P1-14)
-- **Spillerlista og dashbordet viser samme statustekst.** «Utilgjengelig» ble
-  vist som «Utilgj.» på /spillere fordi teksten fantes i to kopier (P2-2)
-- **Feil på `/api/*` svarer JSON i stedet for en HTML-feilside.** Klienten
-  leste svaret som JSON og viste «Nettverksfeil» uansett hva som gikk galt;
-  nå kommer den faktiske feilmeldingen fram (P1-7)
-- **`?v=`-parameteren gir bare evig cache for versjoner serveren faktisk
-  serverer.** Tidligere holdt det at verdien så riktig ut, slik at en gammel
-  container under en deploy kunne få Cloudflare til å låse utdaterte filer
-  under den nye adressen (P1-10)
-- **`/health` svarer umiddelbart selv om FPL henger.** Proben ventet tidligere
-  på et FPL-kall med retry-stige (opptil ~30 s), noe som kunne gi Coolify en
-  restart-loop. Ligatallet leses nå fra siste kjente verdi og oppdateres i
-  bakgrunnen (P1-9)
-- **Feilende AI-kall gjentas ikke i det uendelige.** Ved feil eller tomt svar
-  ventes det fem minutter før nytt forsøk; tidligere fyrte hvert sidebesøk på
-  /nyheter og /brief et nytt betalt kall så lenge feilen varte (P1-8)
-- **Auto-briefen kan ikke lenger sendes to ganger fordi sjekk-intervallet
-  tikker midt i en pågående sending** (P1-6), og vinduet der en redeploy kan
-  re-poste briefen er strammet inn fra 1 time til 15 minutter, med logglinje
-  når det inntreffer (P1-5)
-- **Skadenytt er norsk også i rundebriefen, Discord-meldingen og AI-prompten.**
-  «Hamstring injury - Expected back 21 Aug» sto tidligere på engelsk midt i
-  den norske teksten; oversettelsen skjer nå i kilden (P1-12)
-- **Tvilsomme spillere («Usikker») regnes ikke lenger som sikre startere.**
-  Uten publisert spilletidsprosent ga status `d` full sannsynlighet, så
-  spilleren kunne dukke opp som kapteinsforslag med «Full spilletid ventet».
-  Nå brukes FPLs egen konvensjon på 75 % (P1-11)
-- **Nye engelske skadefraser fra FPL logges også i produksjon** (én gang per
-  tekst), slik at manglende oversettelser oppdages der de faktisk vises (P1-13)
-- **Live-siden viser stillinger og kampklokke uten opptil 15 minutters
-  forsinkelse.** Rundens kamper caches nå i 1 minutt (som live-dataene);
-  hele sesongens kampliste caches fortsatt i 15 minutter (P0-3, del 1)
-- **Én rar dato i en RSS-feed tømmer ikke lenger nyhetslisten.** En `pubDate`
-  som ikke lot seg tolke kastet, og da forsvant alle sakene fra den kilden.
-  Saken beholdes nå uten tidsstempel (P0-4)
-- **Discord-briefen deles riktig opp.** Chunkeren kunne sende en tom melding
-  eller en over Discords 2000-tegnsgrense; begge gir 400, og da ble briefen
-  aldri fullført — neste sjekk re-postet de første delene. Lange avsnitt uten
-  linjeskift splittes nå på ordgrense, og tomme meldinger oppstår ikke (P0-2)
+
+## [1.1.3] - 2026-08-20
+
+Kvalitetspass: 29 verifiserte funn fra en full kodegjennomgang, rettet med
+tester. Ingen nye funksjoner — alt handler om at det som finnes ikke svikter.
 
 ### Fixed
 
@@ -62,6 +18,63 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   fjernet.** Picks (5 min cache) og bootstrap (15 min cache) kan komme i
   utakt; da svarte /live, /lag, /brief og `/api/*.json` 500. Ukjente
   pick-elementer droppes nå med en logglinje, og resten av troppen vises (P0-1)
+- **Discord-briefen deles riktig opp.** Chunkeren kunne sende en tom melding
+  eller en over Discords 2000-tegnsgrense; begge gir 400, og da ble briefen
+  aldri fullført — neste sjekk re-postet de første delene. Lange avsnitt uten
+  linjeskift splittes nå på ordgrense, og tomme meldinger oppstår ikke (P0-2)
+- **Live-siden våkner av seg selv.** Pollingen startet bare hvis kamper alt
+  pågikk da siden ble lastet, og stoppet for godt ved første pause — en fane
+  åpnet før avspark, eller i pausen mellom lørdagskampene, frøs. Nå settes ett
+  vekkesignal ved neste avspark, og 60-sekunderspollingen starter og stopper
+  med kampene. Rundens kamper caches i 1 minutt (som live-dataene), så
+  stillinger og kampklokke henger ikke opptil et kvarter etter (P0-3)
+- **Én rar dato i en RSS-feed tømmer ikke lenger nyhetslisten.** En `pubDate`
+  som ikke lot seg tolke kastet, og da forsvant alle sakene fra den kilden.
+  Saken beholdes nå uten tidsstempel (P0-4)
+- **Auto-briefen kan ikke lenger sendes to ganger fordi sjekk-intervallet
+  tikker midt i en pågående sending** (P1-6), og vinduet der en redeploy kan
+  re-poste briefen er strammet inn fra 1 time til 15 minutter, med logglinje
+  når det inntreffer (P1-5)
+- **Feil på `/api/*` svarer JSON i stedet for en HTML-feilside.** Klienten
+  leste svaret som JSON og viste «Nettverksfeil» uansett hva som gikk galt;
+  nå kommer den faktiske feilmeldingen fram (P1-7)
+- **Feilende AI-kall gjentas ikke i det uendelige.** Ved feil eller tomt svar
+  ventes det fem minutter før nytt forsøk; tidligere fyrte hvert sidebesøk på
+  /nyheter og /brief et nytt betalt kall så lenge feilen varte (P1-8)
+- **`/health` svarer umiddelbart selv om FPL henger.** Proben ventet tidligere
+  på et FPL-kall med retry-stige (opptil ~30 s), noe som kunne gi Coolify en
+  restart-loop. Ligatallet leses nå fra siste kjente verdi og oppdateres i
+  bakgrunnen (P1-9)
+- **`?v=`-parameteren gir bare evig cache for versjoner serveren faktisk
+  serverer.** Tidligere holdt det at verdien så riktig ut, slik at en gammel
+  container under en deploy kunne få Cloudflare til å låse utdaterte filer
+  under den nye adressen (P1-10)
+- **Tvilsomme spillere («Usikker») regnes ikke lenger som sikre startere.**
+  Uten publisert spilletidsprosent ga status `d` full sannsynlighet, så
+  spilleren kunne dukke opp som kapteinsforslag med «Full spilletid ventet».
+  Nå brukes FPLs egen konvensjon på 75 % (P1-11)
+- **Skadenytt er norsk også i rundebriefen, Discord-meldingen og AI-prompten.**
+  «Hamstring injury - Expected back 21 Aug» sto tidligere på engelsk midt i
+  den norske teksten; oversettelsen skjer nå i kilden (P1-12)
+- **Nye engelske skadefraser fra FPL logges også i produksjon** (én gang per
+  tekst), slik at manglende oversettelser oppdages der de faktisk vises (P1-13)
+- **Bonusestimatet forsvinner ikke i dobbel runde.** Bekreftet bonus fra en
+  ferdigspilt kamp skjulte estimatet for kampen som pågikk; estimatene summeres
+  nå per spiller og telles aldri dobbelt (P1-14)
+- **Spillerlista og dashbordet viser samme statustekst.** «Utilgjengelig» ble
+  vist som «Utilgj.» på /spillere fordi teksten fantes i to kopier (P2-2)
+- **Rundebriefen viser avsluttet sesong i stedet for runde 1-data** når det
+  ikke finnes en kommende runde (P2-4)
+
+### Changed
+
+- **Forretningslogikken er flyttet ut av rutene** til `services/brief.js` og
+  nye `services/live.js`, og AI-briefen genereres av én delt `generateAiBrief()`
+  som /brief og auto-briefen deler — de kunne før divergere stille. Ikke
+  synlig i UI-et, men payloaden på `/api/live.json` har mistet tre ubrukte
+  felter (`pos`, `multiplier`, `updatedAt`) og fått `nextKickoff` (P2-1)
+- **FDR-snittene bygges én gang per kall** i stedet for én full skann av
+  kamplista per kandidat (P2-3)
 
 ## [1.1.2] - 2026-08-20
 

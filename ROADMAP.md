@@ -119,6 +119,32 @@ committet (og pushet hvis remote finnes).
 - [x] Verifisert lokalt (118 tester, lint 0, Playwright 38/38 på 390 + 1440 px)
       og i prod (alle ruter 200, ny asset-hash, oversettelser synlige)
 
+## v1.1.3 — kvalitetspass (29 verifiserte funn)
+
+- [x] P0-1 uguardede pick-oppslag ga 500 på /live, /lag, /brief og /api
+- [x] P0-2 Discord-chunkeren kunne sende tom eller for lang melding
+- [x] P0-3 live-pollingen startet aldri før avspark og gjenopptok aldri;
+      per-runde-fixtures fikk 1 min TTL og payloaden fikk `nextKickoff`
+- [x] P0-4 én ugyldig `pubDate` tømte hele nyhetsfeeden
+- [x] P1-5/6 dubletter av auto-briefen (15 min-vindu + `sending`-flagg)
+- [x] P1-7 `/api/*`-feil svarer JSON
+- [x] P1-8 backoff etter feilende AI-kall (5 min)
+- [x] P1-9 `/health` venter aldri på FPL
+- [x] P1-10 `?v=` gir immutable kun ved identitet med serverens versjon
+- [x] P1-11 status `d` uten prosent → 0,75 spilletid
+- [x] P1-12 skadenytt oversettes i briefkilden (view, Discord, AI-prompt)
+- [x] P1-13 oversettelsesdrift varsles også i prod, dedupet per prosess
+- [x] P1-14 bonusestimat riktig i dobbel runde
+- [x] P2-1 forretningslogikk ut av rutene (`services/live.js`,
+      `assembleBrief`/`generateAiBrief` i `services/brief.js`)
+- [x] P2-2 delte konstanter og hjelpere (`STATUS_LABELS`, `resolvedGw`,
+      `byId`, `formatDay`/`formatTime`, delt `escapeHtml`)
+- [x] P2-3 `teamFdrMap()` — ett FDR-oppslag per lag per kall
+- [x] P2-4 brief etter sesongslutt viser avsluttet tilstand
+- [x] P3-6 CLAUDE.md: `max_tokens`-tallene rettet + arkitekturkart oppdatert
+- [x] Verifisert lokalt (185 tester, lint 0, alle ti ruter 200 med AI/Discord av)
+- [ ] P1-5b og P3-1…P3-5 → «v1.2.0-kandidater» under
+
 ## Senere / idéer (ikke planlagt)
 
 ### v1.2.0-kandidater (samles under sesongstart-verifiseringen, M4)

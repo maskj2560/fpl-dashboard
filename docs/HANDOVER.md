@@ -5,11 +5,20 @@
 
 **Sist oppdatert:** 2026-08-20 (økt 8 sesongstart-verifisering PÅGÅR; økt 9 kvalitetspass v1.1.3 ferdig på branch, ikke merget)
 
-## PARALLELL ØKT (9): kvalitetspass v1.1.3 — FERDIG PÅ BRANCH, IKKE MERGET
+## ØKT 9: kvalitetspass v1.1.3 — MERGET TIL MAIN OG PUSHET
 
-Branch `fix/kvalitetspass-v113`, 13 commits. **Ikke pushet, ikke merget** —
-venter på Marius' klarsignal. `npm test` 185/185 grønne, `npm run lint` 0.
+Branch `fix/kvalitetspass-v113` merget til `main` med `--no-ff` og pushet
+2026-08-20 ~03:00 (godt utenfor sendevinduet 19:00–21:00; ingen auto-brief
+sendt ennå i dag, så P1-5-dublettrisikoen var ikke i spill).
+`npm test` 185/185 grønne, `npm run lint` 0.
 Kjøreprompt: `docs/neste-okt-prompt-kvalitetspass.md` (29 verifiserte funn).
+
+**Merk for sesongstart-verifiseringen:** sjekkpunkt A–D observerer nå v1.1.3,
+ikke v1.1.2. Endret oppførsel som er verdt å se etter: live-siden poller
+etter en tilstandsmaskin (starter/stopper med kampene, våkner ved avspark),
+`/api/live.json` har fått `nextKickoff` og mistet `pos`/`multiplier`/
+`updatedAt`, skadenytt i briefen og Discord-meldingen er norsk, og AI-kall
+har 5 min backoff etter en feil.
 
 Rettet (funn-ID i commitmeldingene):
 
@@ -49,9 +58,9 @@ ukjent sti 404. `/api/brief.json` matcher nullpunkt-fasiten fra sjekkpunkt 0:
 `Cache-Control` verifisert: riktig hash og `?v=1` → `immutable`, `?v=deadbeef`
 og uversjonert → `no-cache`.
 
-**Merge/deploy venter på Marius.** Koordineres med sesongstart-verifiseringen:
-tidligst etter at torsdagens auto-brief og fredagens deadline er passert, og
-aldri i sendevinduet 19:00–21:00 torsdag.
+**Merget og deployet** etter klarsignal fra Marius 2026-08-20 ~02:55. Tidspunktet
+var trygt: sendevinduet 19:00–21:00 torsdag var langt unna, og dagens auto-brief
+hadde ikke gått ennå, så en redeploy kunne ikke re-poste noe.
 
 ## AKTIV ØKT (8): sesongstart-verifisering (M4) — sjekkpunkter
 
@@ -364,6 +373,9 @@ task for task. Kort oversikt:
 - 2026-08-20 (økt 9, midt i arbeidet): «Hvordan er status på gjennomføringen?»
   Handling: statusoversikt gitt i økten (ferdige funn, gjenstående), arbeidet
   fortsatte uten omprioritering.
+- 2026-08-20 (økt 9, ~02:55): «Okay du kan pushe til main». Handling: versjonen
+  kuttet som v1.1.3 (package.json, CHANGELOG, ROADMAP), branchen merget med
+  `--no-ff` og pushet. Coolify auto-deployer.
 
 - 2026-08-20 (økt 8, 01:37): kjøreprompt for sesongstart-verifiseringen sendt
   (`docs/neste-okt-prompt-sesongstart.md`-innholdet). Handling: plan skrevet
