@@ -158,7 +158,7 @@ _Plan: `docs/plan-hva-hvis-transfers.md`._
 
 ## v1.2.1 — failure-backoff i cache.js (P3-2)
 
-_Plan: `docs/plan-cache-backoff.md`. Merges først etter sjekkpunkt D._
+_Plan: `docs/plan-cache-backoff.md`._
 
 - [x] 30 s backoff per nøkkel etter mislykket revalidering (TDD, 6 nye tester)
 - [x] Røyktest lokalt (11 ruter 200, AI/Discord av) + handover

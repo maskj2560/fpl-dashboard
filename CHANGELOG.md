@@ -7,6 +7,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-08-20
+
 ### Fixed
 
 - **Ved FPL-nedetid slutter sidene å hamre på API-et.** Når en
