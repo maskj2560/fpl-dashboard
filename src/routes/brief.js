@@ -2,7 +2,7 @@ import { Router } from 'express';
 import config from '../config.js';
 import { getBootstrap, getFixtures, getPicks, FplError } from '../services/fplClient.js';
 import { buildBrief } from '../services/brief.js';
-import { currentEvent, nextEvent, resolvePicks } from '../services/analysis.js';
+import { nextEvent, resolvePicks, resolvedGw, byId } from '../services/analysis.js';
 import { buildBriefPrompt, sanitizeBriefText } from '../services/prompts.js';
 import * as ai from '../services/ai.js';
 
@@ -13,13 +13,13 @@ export async function assembleBrief() {
   const [bootstrap, fixtures] = await Promise.all([getBootstrap(), getFixtures()]);
   let myTeam = null;
   if (config.hasTeamId) {
-    const gw = currentEvent(bootstrap.events)?.id ?? (nextEvent(bootstrap.events)?.id ?? 2) - 1;
+    const gw = resolvedGw(bootstrap.events);
     if (gw >= 1) {
       try {
         const picks = await getPicks(config.fplTeamId, gw);
-        const byId = new Map(bootstrap.elements.map((e) => [e.id, e]));
+        const elementsById = byId(bootstrap.elements);
         myTeam = {
-          squadPlayers: resolvePicks(picks.picks, byId).map((s) => s.player),
+          squadPlayers: resolvePicks(picks.picks, elementsById).map((s) => s.player),
           elements: bootstrap.elements,
           bank: picks.entry_history.bank,
           fromGw: nextEvent(bootstrap.events)?.id ?? gw,

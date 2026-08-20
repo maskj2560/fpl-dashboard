@@ -18,6 +18,9 @@ import {
   differentials,
   estimateBonus,
   resolvePicks,
+  resolvedGw,
+  byId,
+  STATUS_LABELS,
 } from '../src/services/analysis.js';
 
 function player(overrides = {}) {
@@ -503,4 +506,39 @@ test('translateFplNews advarer om ukjent mønster, men bare én gang per tekst',
   }
   assert.equal(warnings.length, 1, warnings.join(' / '));
   assert.match(warnings[0], /Quantum entanglement/);
+});
+
+// ---- P2-2: delte hjelpere -------------------------------------------------
+
+test('resolvedGw velger aktiv runde når den finnes', () => {
+  const events = [
+    { id: 4, is_current: false, is_next: false },
+    { id: 5, is_current: true, is_next: false },
+    { id: 6, is_current: false, is_next: true },
+  ];
+  assert.equal(resolvedGw(events), 5);
+});
+
+test('resolvedGw gir runden før neste når ingen er aktiv', () => {
+  assert.equal(resolvedGw([{ id: 6, is_next: true }]), 5);
+});
+
+test('resolvedGw gir 0 før sesongstart og etter sesongslutt', () => {
+  assert.equal(resolvedGw([{ id: 1, is_next: true }]), 0, 'pre-season');
+  assert.equal(resolvedGw([{ id: 38, is_current: false, is_next: false }]), 0, 'post-season');
+  assert.equal(resolvedGw([]), 0);
+});
+
+test('byId lager oppslag på id', () => {
+  const map = byId([{ id: 3, navn: 'c' }, { id: 1, navn: 'a' }]);
+  assert.equal(map.get(1).navn, 'a');
+  assert.equal(map.get(3).navn, 'c');
+  assert.equal(map.get(2), undefined);
+  assert.equal(byId([]).size, 0);
+});
+
+test('STATUS_LABELS er delt og bruker full form for utilgjengelig', () => {
+  assert.equal(STATUS_LABELS.a, 'Klar');
+  assert.equal(STATUS_LABELS.d, 'Usikker');
+  assert.equal(STATUS_LABELS.n, 'Utilgjengelig');
 });

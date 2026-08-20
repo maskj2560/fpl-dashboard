@@ -8,9 +8,10 @@ import {
   rankGraph,
   formatPrice,
   nextEvent,
-  currentEvent,
   POSITIONS_SHORT,
   resolvePicks,
+  resolvedGw,
+  byId,
 } from '../services/analysis.js';
 import { formatNumber } from '../services/format.js';
 
@@ -28,9 +29,8 @@ router.get('/', async (req, res, next) => {
       getEntryHistory(config.fplTeamId),
     ]);
     const { events, elements, teams } = bootstrap;
-    const current = currentEvent(events);
     const upcoming = nextEvent(events);
-    const gw = current?.id ?? (upcoming ? upcoming.id - 1 : 0);
+    const gw = resolvedGw(events);
 
     let picks = null;
     if (gw >= 1) {
@@ -42,8 +42,8 @@ router.get('/', async (req, res, next) => {
       }
     }
 
-    const elementsById = new Map(elements.map((e) => [e.id, e]));
-    const teamsById = new Map(teams.map((t) => [t.id, t]));
+    const elementsById = byId(elements);
+    const teamsById = byId(teams);
     const fromGw = upcoming?.id ?? gw;
 
     let squadView = null;

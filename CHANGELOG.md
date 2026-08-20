@@ -6,6 +6,8 @@ Formatet følger [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- **Spillerlista og dashbordet viser samme statustekst.** «Utilgjengelig» ble
+  vist som «Utilgj.» på /spillere fordi teksten fantes i to kopier (P2-2)
 - **Feil på `/api/*` svarer JSON i stedet for en HTML-feilside.** Klienten
   leste svaret som JSON og viste «Nettverksfeil» uansett hva som gikk galt;
   nå kommer den faktiske feilmeldingen fram (P1-7)

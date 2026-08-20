@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import config from '../config.js';
 import { getBootstrap, getLeagueStandings, getPicks, FplError } from '../services/fplClient.js';
-import { currentEvent, nextEvent, differentials } from '../services/analysis.js';
+import { resolvedGw, differentials } from '../services/analysis.js';
 import { formatNumber } from '../services/format.js';
 import { resolveLeagueIds } from '../services/leagues.js';
 
@@ -21,7 +21,7 @@ router.get('/', async (req, res, next) => {
   if (!config.hasTeamId) return res.renderPage('no-team', { title: 'Miniligaer' });
   try {
     const bootstrap = await getBootstrap();
-    const gw = currentEvent(bootstrap.events)?.id ?? (nextEvent(bootstrap.events)?.id ?? 2) - 1;
+    const gw = resolvedGw(bootstrap.events);
     const leagueIds = await resolveLeagueIds();
     const leagues = await Promise.all(leagueIds.map((id) => getLeagueStandings(id)));
 

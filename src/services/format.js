@@ -24,3 +24,26 @@ export function formatNumber(n) {
 export function formatEventName(name) {
   return String(name ?? '').replace(/^Gameweek\s+/i, 'Runde ');
 }
+
+const day = new Intl.DateTimeFormat('nb-NO', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+  timeZone: config.tz,
+});
+
+const time = new Intl.DateTimeFormat('nb-NO', {
+  hour: '2-digit',
+  minute: '2-digit',
+  timeZone: config.tz,
+});
+
+/** «fredag 21. august» */
+export function formatDay(iso) {
+  return day.format(new Date(iso));
+}
+
+/** «19:30» */
+export function formatTime(iso) {
+  return time.format(new Date(iso));
+}

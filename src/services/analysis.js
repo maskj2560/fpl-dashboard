@@ -10,8 +10,36 @@ export const POSITIONS = Object.freeze({
 
 export const POSITIONS_SHORT = Object.freeze({ 1: 'K', 2: 'F', 3: 'M', 4: 'A' });
 
+/** FPL-ens `status`-koder på norsk. Delt av dashbordet og spillerlista. */
+export const STATUS_LABELS = Object.freeze({
+  a: 'Klar',
+  d: 'Usikker',
+  i: 'Skadet',
+  s: 'Suspendert',
+  u: 'Ute',
+  n: 'Utilgjengelig',
+});
+
+/** Oppslag id → objekt. Brukes på alle bootstrap-listene. */
+export function byId(list) {
+  return new Map(list.map((x) => [x.id, x]));
+}
+
 export function nextEvent(events) {
   return events.find((e) => e.is_next) ?? null;
+}
+
+/**
+ * Runden vi henter lagdata for: den aktive når den finnes, ellers runden før
+ * neste (før sesongstart er neste 1 → 0). Ingen aktiv og ingen neste runde
+ * (etter sesongslutt) gir også 0. 0 betyr «ingen runde å hente picks for» —
+ * kallstedene gater på `gw >= 1`.
+ */
+export function resolvedGw(events) {
+  const current = currentEvent(events);
+  if (current) return current.id;
+  const upcoming = nextEvent(events);
+  return upcoming ? upcoming.id - 1 : 0;
 }
 
 export function currentEvent(events) {

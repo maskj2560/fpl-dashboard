@@ -1,22 +1,13 @@
 import { Router } from 'express';
 import { getBootstrap } from '../services/fplClient.js';
-import { formatPrice, POSITIONS, POSITIONS_SHORT } from '../services/analysis.js';
+import { formatPrice, POSITIONS, POSITIONS_SHORT, STATUS_LABELS, byId } from '../services/analysis.js';
 
 const router = Router();
-
-const STATUS_LABELS = {
-  a: 'Klar',
-  d: 'Usikker',
-  i: 'Skadet',
-  s: 'Suspendert',
-  u: 'Ute',
-  n: 'Utilgj.',
-};
 
 router.get('/', async (req, res, next) => {
   try {
     const { teams, elements } = await getBootstrap();
-    const teamsById = new Map(teams.map((t) => [t.id, t]));
+    const teamsById = byId(teams);
 
     const players = [...elements].sort((a, b) => b.total_points - a.total_points);
 

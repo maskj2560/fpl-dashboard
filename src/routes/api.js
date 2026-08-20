@@ -6,6 +6,7 @@ import {
   currentEvent,
   estimateBonus,
   resolvePicks,
+  byId,
   POSITIONS_SHORT,
   transferOutCandidates,
   nextEvent,
@@ -32,8 +33,8 @@ export async function assembleLive() {
   const [fixtures, live] = await Promise.all([getFixtures(gw), getLive(gw)]);
   const anyLive = fixtures.some((f) => f.started && !f.finished);
   const liveById = new Map(live.elements.map((e) => [e.id, e.stats]));
-  const elementsById = new Map(bootstrap.elements.map((e) => [e.id, e]));
-  const teamsById = new Map(bootstrap.teams.map((t) => [t.id, t]));
+  const elementsById = byId(bootstrap.elements);
+  const teamsById = byId(bootstrap.teams);
 
   // Bonusestimat kun for kamper som ikke er ferdige (ferdige har ekte bonus i stats)
   const bonusEst = new Map();
@@ -122,9 +123,9 @@ router.post('/ai-rad', async (req, res, next) => {
       getPicks(config.fplTeamId, gw),
       getFixtures(),
     ]);
-    const byId = new Map(bootstrap.elements.map((e) => [e.id, e]));
-    const teamsById = new Map(bootstrap.teams.map((t) => [t.id, t]));
-    const squad = resolvePicks(picks.picks, byId).map((s) => s.player);
+    const elementsById = byId(bootstrap.elements);
+    const teamsById = byId(bootstrap.teams);
+    const squad = resolvePicks(picks.picks, elementsById).map((s) => s.player);
     const fromGw = nextEvent(bootstrap.events)?.id ?? gw;
 
     const result = await ai.generate({

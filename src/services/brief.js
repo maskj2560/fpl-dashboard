@@ -1,5 +1,4 @@
 // Bygger gameweek-briefen fra rene data (ingen LLM her).
-import config from '../config.js';
 import {
   nextEvent,
   flaggedPlayers,
@@ -8,20 +7,9 @@ import {
   transferInCandidates,
   averageFdr,
   translateFplNews,
+  byId,
 } from './analysis.js';
-import { formatDateTime, formatEventName } from './format.js';
-
-const dayFmt = new Intl.DateTimeFormat('nb-NO', {
-  weekday: 'long',
-  day: 'numeric',
-  month: 'long',
-  timeZone: config.tz,
-});
-const timeFmt = new Intl.DateTimeFormat('nb-NO', {
-  hour: '2-digit',
-  minute: '2-digit',
-  timeZone: config.tz,
-});
+import { formatDateTime, formatDay, formatEventName, formatTime } from './format.js';
 
 /**
  * Grupperer kampene per dag. `deadline` (ISO) er valgfri: er den satt, får
@@ -36,7 +24,7 @@ export function groupFixturesByDay(fixtures, teamsById, deadline = null) {
   const days = [];
   for (const f of sorted) {
     const date = new Date(f.kickoff_time);
-    const day = dayFmt.format(date);
+    const day = formatDay(f.kickoff_time);
     let bucket = days.find((d) => d.day === day);
     if (!bucket) {
       bucket = { day, matches: [] };
@@ -45,7 +33,7 @@ export function groupFixturesByDay(fixtures, teamsById, deadline = null) {
     bucket.matches.push({
       home: teamsById.get(f.team_h)?.name ?? '?',
       away: teamsById.get(f.team_a)?.name ?? '?',
-      kickoff: timeFmt.format(date),
+      kickoff: formatTime(f.kickoff_time),
       kickoffIso: f.kickoff_time,
       beforeDeadline: deadlineMs === null ? null : date.getTime() < deadlineMs,
     });
@@ -67,7 +55,7 @@ function globalCaptains(elements, fixtures, fromGw, limit = 3) {
 
 export function buildBrief({ bootstrap, fixtures, myTeam = null }) {
   const { events, elements, teams } = bootstrap;
-  const teamsById = new Map(teams.map((t) => [t.id, t]));
+  const teamsById = byId(teams);
   const upcoming = nextEvent(events);
   const fromGw = upcoming?.id ?? 1;
   const gwFixtures = fixtures.filter((f) => f.event === fromGw);
