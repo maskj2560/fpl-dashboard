@@ -6,6 +6,10 @@ Formatet følger [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- **`/health` svarer umiddelbart selv om FPL henger.** Proben ventet tidligere
+  på et FPL-kall med retry-stige (opptil ~30 s), noe som kunne gi Coolify en
+  restart-loop. Ligatallet leses nå fra siste kjente verdi og oppdateres i
+  bakgrunnen (P1-9)
 - **Feilende AI-kall gjentas ikke i det uendelige.** Ved feil eller tomt svar
   ventes det fem minutter før nytt forsøk; tidligere fyrte hvert sidebesøk på
   /nyheter og /brief et nytt betalt kall så lenge feilen varte (P1-8)
