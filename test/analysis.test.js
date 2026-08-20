@@ -10,6 +10,7 @@ import {
   fdrMatrix,
   formatPrice,
   averageFdr,
+  teamFdrMap,
   playProbability,
   captainSuggestions,
   transferOutCandidates,
@@ -549,4 +550,25 @@ test('hasConfirmedBonus skiller bekreftet bonus fra bare BPS', () => {
   assert.equal(hasConfirmedBonus({ stats: [{ identifier: 'bonus', h: [], a: [] }] }), false);
   assert.equal(hasConfirmedBonus({ stats: [{ identifier: 'bonus', h: [{ element: 1, value: 3 }], a: [] }] }), true);
   assert.equal(hasConfirmedBonus({}), false);
+});
+
+// ---- P2-3: ett oppslag per lag i stedet for full skann per kandidat --------
+
+test('teamFdrMap gir samme snitt som averageFdr for hvert lag', () => {
+  const fixtures = [
+    { event: 5, team_h: 1, team_a: 2, team_h_difficulty: 2, team_a_difficulty: 4 },
+    { event: 6, team_h: 2, team_a: 3, team_h_difficulty: 3, team_a_difficulty: 5 },
+    { event: 7, team_h: 1, team_a: 3, team_h_difficulty: 4, team_a_difficulty: 2 },
+    { event: 9, team_h: 1, team_a: 2, team_h_difficulty: 1, team_a_difficulty: 1 },
+    { event: null, team_h: 1, team_a: 3, team_h_difficulty: 5, team_a_difficulty: 5 },
+  ];
+  const map = teamFdrMap(fixtures, 5, 3);
+  for (const teamId of [1, 2, 3]) {
+    assert.equal(map.get(teamId) ?? null, averageFdr(fixtures, teamId, 5, 3), `lag ${teamId}`);
+  }
+});
+
+test('teamFdrMap utelater lag uten kamper i vinduet', () => {
+  const map = teamFdrMap([{ event: 9, team_h: 1, team_a: 2, team_h_difficulty: 2, team_a_difficulty: 4 }], 5, 3);
+  assert.equal(map.size, 0);
 });

@@ -183,6 +183,28 @@ export function averageFdr(fixtures, teamId, fromGw, count = 3) {
   return diffs.reduce((s, d) => s + d, 0) / diffs.length;
 }
 
+/**
+ * Snitt-FDR for ALLE lag i samme vindu, i én gjennomgang av kamplista.
+ * averageFdr skanner hele lista per spiller; med hundrevis av kandidater ble
+ * det unødvendig mange runder over de samme kampene for 20 lagverdier.
+ * Lag uten kamper i vinduet mangler i mappet (samme som averageFdr sin null).
+ */
+export function teamFdrMap(fixtures, fromGw, count = 3) {
+  const sums = new Map(); // teamId -> [sum, antall]
+  const add = (teamId, difficulty) => {
+    const entry = sums.get(teamId) ?? [0, 0];
+    entry[0] += difficulty;
+    entry[1] += 1;
+    sums.set(teamId, entry);
+  };
+  for (const f of fixtures) {
+    if (f.event == null || f.event < fromGw || f.event >= fromGw + count) continue;
+    add(f.team_h, f.team_h_difficulty);
+    add(f.team_a, f.team_a_difficulty);
+  }
+  return new Map([...sums].map(([teamId, [sum, n]]) => [teamId, sum / n]));
+}
+
 /** Sannsynlighet (0–1) for at spilleren får spilletid neste runde. */
 export function playProbability(p) {
   if (p.chance_of_playing_next_round != null) return p.chance_of_playing_next_round / 100;
@@ -198,10 +220,11 @@ export function playProbability(p) {
  * Keepere utelates. Returnerer topp `limit` med begrunnelser.
  */
 export function captainSuggestions(squad, fixtures, fromGw, limit = 3) {
+  const fdrByTeam = teamFdrMap(fixtures, fromGw, 1);
   return squad
     .filter((p) => p.element_type !== 1)
     .map((p) => {
-      const avgFdr = averageFdr(fixtures, p.team, fromGw, 1);
+      const avgFdr = fdrByTeam.get(p.team) ?? null;
       const ease = 6 - (avgFdr ?? 3.5);
       const probability = playProbability(p);
       const score = (parseFloat(p.form) || 0) * ease * probability;
@@ -240,6 +263,7 @@ export function transferOutCandidates(squad, fixtures, fromGw) {
  */
 export function transferInCandidates(outPlayer, elements, squadIds, bankTenths, fixtures, fromGw, limit = 3) {
   const budget = outPlayer.now_cost + bankTenths;
+  const fdrByTeam = teamFdrMap(fixtures, fromGw, 3);
   return elements
     .filter(
       (p) =>
@@ -250,8 +274,7 @@ export function transferInCandidates(outPlayer, elements, squadIds, bankTenths, 
         playProbability(p) >= 0.75,
     )
     .map((p) => {
-      const avgFdr = averageFdr(fixtures, p.team, fromGw, 3);
-      const ease = 6 - (avgFdr ?? 3.5);
+      const ease = 6 - (fdrByTeam.get(p.team) ?? 3.5);
       const score = (parseFloat(p.form) || 0) * ease + (p.total_points / p.now_cost) * 2;
       return { player: p, score };
     })

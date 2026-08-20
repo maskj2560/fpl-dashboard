@@ -96,3 +96,20 @@ test('buildBrief beholder «Ingen detaljer» når FPL ikke har news-tekst', () =
   const brief = buildBrief({ bootstrap: { ...bootstrapFixture, elements }, fixtures: [] });
   assert.equal(brief.injuries[0].news, 'Ingen detaljer');
 });
+
+// ---- P2-4: ingen kommende runde etter sesongslutt --------------------------
+
+test('buildBrief viser avsluttet tilstand når ingen runde er kommende', () => {
+  const events = [{ id: 38, name: 'Gameweek 38', deadline_time: '2027-05-20T17:30:00Z', is_next: false }];
+  const fixtures = [
+    { event: 1, team_h: 1, team_a: 2, kickoff_time: '2026-08-21T17:30:00Z', team_h_difficulty: 2, team_a_difficulty: 4 },
+  ];
+  const brief = buildBrief({ bootstrap: { ...bootstrapFixture, events }, fixtures });
+
+  assert.equal(brief.gameweek, null);
+  assert.deepEqual(brief.fixturesByDay, [], 'skal ikke falle tilbake på runde 1');
+  assert.deepEqual(brief.fixturesBeforeDeadline, []);
+  assert.deepEqual(brief.captains, []);
+  assert.deepEqual(brief.injuries, []);
+  assert.equal(brief.mine, null);
+});

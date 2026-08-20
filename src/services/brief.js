@@ -10,7 +10,7 @@ import {
   captainSuggestions,
   transferOutCandidates,
   transferInCandidates,
-  averageFdr,
+  teamFdrMap,
   translateFplNews,
   byId,
   resolvedGw,
@@ -50,10 +50,11 @@ export function groupFixturesByDay(fixtures, teamsById, deadline = null) {
 
 /** Globale kapteinsvalg: høyt eid + form + lett fixture. */
 function globalCaptains(elements, fixtures, fromGw, limit = 3) {
+  const fdrByTeam = teamFdrMap(fixtures, fromGw, 1);
   return elements
     .filter((p) => (parseFloat(p.selected_by_percent) || 0) >= 15 && p.minutes > 0)
     .map((p) => {
-      const avgFdr = averageFdr(fixtures, p.team, fromGw, 1);
+      const avgFdr = fdrByTeam.get(p.team) ?? null;
       return { p, score: (parseFloat(p.form) || 0) * (6 - (avgFdr ?? 3.5)), avgFdr };
     })
     .sort((a, b) => b.score - a.score)
@@ -64,7 +65,21 @@ export function buildBrief({ bootstrap, fixtures, myTeam = null }) {
   const { events, elements, teams } = bootstrap;
   const teamsById = byId(teams);
   const upcoming = nextEvent(events);
-  const fromGw = upcoming?.id ?? 1;
+  // Etter siste runde finnes ingen kommende runde. Uten dette ble briefen
+  // bygget på runde 1-data. Viewet har allerede en tom tilstand for
+  // `gameweek: null` — den er den riktige her.
+  if (!upcoming) {
+    return {
+      generatedAt: new Date().toISOString(),
+      gameweek: null,
+      injuries: [],
+      captains: [],
+      fixturesByDay: [],
+      fixturesBeforeDeadline: [],
+      mine: null,
+    };
+  }
+  const fromGw = upcoming.id;
   const gwFixtures = fixtures.filter((f) => f.event === fromGw);
 
   const injuries = flaggedPlayers(elements, 12)
@@ -101,7 +116,7 @@ export function buildBrief({ bootstrap, fixtures, myTeam = null }) {
     };
   }
 
-  const fixturesByDay = groupFixturesByDay(gwFixtures, teamsById, upcoming?.deadline_time ?? null);
+  const fixturesByDay = groupFixturesByDay(gwFixtures, teamsById, upcoming.deadline_time);
   const fixturesBeforeDeadline = fixturesByDay
     .flatMap((d) => d.matches)
     .filter((m) => m.beforeDeadline)
@@ -109,14 +124,12 @@ export function buildBrief({ bootstrap, fixtures, myTeam = null }) {
 
   return {
     generatedAt: new Date().toISOString(),
-    gameweek: upcoming
-      ? {
-          id: upcoming.id,
-          name: formatEventName(upcoming.name),
-          deadline: upcoming.deadline_time,
-          deadlineFormatted: formatDateTime(upcoming.deadline_time),
-        }
-      : null,
+    gameweek: {
+      id: upcoming.id,
+      name: formatEventName(upcoming.name),
+      deadline: upcoming.deadline_time,
+      deadlineFormatted: formatDateTime(upcoming.deadline_time),
+    },
     injuries,
     captains,
     fixturesByDay,

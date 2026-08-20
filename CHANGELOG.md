@@ -6,6 +6,8 @@ Formatet følger [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- **Rundebriefen viser avsluttet sesong i stedet for runde 1-data** når det
+  ikke finnes en kommende runde (P2-4)
 - **Live-siden våkner av seg selv.** Pollingen startet bare hvis kamper alt
   pågikk da siden ble lastet, og stoppet for godt ved første pause — en fane
   åpnet før avspark, eller i pausen mellom lørdagskampene, frøs. Nå settes ett
