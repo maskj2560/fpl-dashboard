@@ -67,6 +67,28 @@ const maskDots = (line) =>
     .replace(/(\d)\.(?=\d)/g, `$1${DOT_MASK}`); // klokkeslett/desimaltall: «21.00», «2.5»
 const unmaskDots = (s) => s.replaceAll(DOT_MASK, '.');
 
+// FPL-navn (`teams.name`) → skriveformer modellen kan bruke i stedet.
+// Lag uten oppføring matches på navnet fra dataene alene — nyopprykkede lag
+// virker uten endring her; legg til en rad først når FPL-navnet og vanlig
+// skriftform ikke overlapper. Tvetydige enkeltord («City», «United») skal
+// bevisst IKKE inn: i tvil beholder funksjonen teksten.
+const TEAM_ALIASES = {
+  'Spurs': ['Tottenham', 'Tottenham Hotspur'],
+  'Man City': ['Manchester City'],
+  'Man Utd': ['Manchester United'],
+  "Nott'm Forest": ['Nottingham Forest', 'Forest'],
+  'Aston Villa': ['Villa'],
+  'Coventry City': ['Coventry'],
+  'Hull City': ['Hull'],
+  'Ipswich Town': ['Ipswich'],
+};
+
+const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+// Ordgrense + valgfri genitiv («Liverpools», «Spurs'») — hindrer treff inni
+// ord («Forestillingen» er ikke «Forest»). Case-sensitiv, som includes var.
+const teamNameRe = (name) =>
+  new RegExp(`(?<![\\p{L}\\p{N}])${escapeRe(name)}(?:'?s|')?(?![\\p{L}\\p{N}])`, 'u');
+
 /**
  * Etterkontroll av AI-briefen: fjerner setninger som påstår noe om «før» eller
  * «etter deadline» som ikke stemmer med de forhåndsberegnede kampdataene.
@@ -86,7 +108,11 @@ export function sanitizeBriefText(text, brief) {
     (m.beforeDeadline ? before : after).add(m.away);
   }
   const anyBefore = before.size > 0;
-  const names = (sentence, set) => [...set].some((name) => sentence.includes(name));
+  const toMatchers = (set) =>
+    [...set].flatMap((name) => [name, ...(TEAM_ALIASES[name] ?? [])]).map(teamNameRe);
+  const beforeMatchers = toMatchers(before);
+  const afterMatchers = toMatchers(after);
+  const names = (sentence, matchers) => matchers.some((re) => re.test(sentence));
   // Negerte utsagn («ingen kamper starter før deadline») er ikke påstander om
   // at en bestemt kamp ligger før deadline, og skal ikke kontrolleres her.
   const NEGATION = /\b(ingen|ikke|verken|aldri)\b/i;
@@ -100,8 +126,8 @@ export function sanitizeBriefText(text, brief) {
     if (!claimsBefore && !claimsAfter) return true;
     if (NEGATION.test(sentence)) return true;
     // Nevner setningen bare lag som spiller på «feil» side av deadline, er den gal.
-    if (claimsBefore && names(sentence, after) && !names(sentence, before)) return false;
-    if (claimsAfter && names(sentence, before) && !names(sentence, after)) return false;
+    if (claimsBefore && names(sentence, afterMatchers) && !names(sentence, beforeMatchers)) return false;
+    if (claimsAfter && names(sentence, beforeMatchers) && !names(sentence, afterMatchers)) return false;
     // Uten lagnavn: bare utsagn om selve kampene kan motbevises av dataene.
     if (claimsBefore && !anyBefore && OM_KAMPER.test(sentence)) return false;
     return true;

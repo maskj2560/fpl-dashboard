@@ -163,6 +163,18 @@ _Plan: `docs/plan-cache-backoff.md`._
 - [x] 30 s backoff per nøkkel etter mislykket revalidering (TDD, 6 nye tester)
 - [x] Røyktest lokalt (11 ruter 200, AI/Discord av) + handover
 
+## sanitizeBriefText-robusthet (P3-4) — på branch `fix/sanitize-brief`, ikke merget
+
+_Plan: `docs/plan-sanitize-brief.md`. Merges først etter sjekkpunkt D, på
+klarsignal. NB: det gamle kandidat-punktet sa «matches mot FPLs kortnavn
+(‘Spurs’)» — presist er det `teams.name`, som selv er kortform for noen
+klubber («Spurs», «Man Utd») og lang form for andre («Coventry City»);
+alias-tabellen dekker begge retninger._
+
+- [x] Setningssplitting tåler norske forkortelser og klokkeslett (TDD, 5 nye tester)
+- [x] Lagnavn-alias (`TEAM_ALIASES`) + ordgrense/genitiv-matching (TDD, 5 nye tester)
+- [ ] Røyktest lokalt (11 ruter 200, AI/Discord av) + handover
+
 ## Senere / idéer (ikke planlagt)
 
 ### v1.2.0-kandidater (samles under sesongstart-verifiseringen, M4)
@@ -186,10 +198,6 @@ ikke gjort midt i sesongstart-verifiseringen):
   rundturen (5–20 s). Cache.js-mønsteret ville servert cachet tekst med én
   gang og regenerert i bakgrunnen. NB: endrer semantikken «AI-kall skjer ved
   sidebesøk» som verifiseringen bygger på — må avklares først.
-- **`sanitizeBriefText` robusthet** (`prompts.js`): setningssplittingen deler
-  på forkortelsespunktum («kl.», «f.eks.»), og lagnavn matches kun mot FPLs
-  kortnavn («Spurs») selv om modellen kan skrive «Tottenham». Vurder alias-map
-  + splitting som kjenner forkortelsene.
 - **`filterSummaryPoints` dybde** (`news.js`): genitiv («Haalands») bommer på
   substring-matchen, så korrekte punkter droppes. Robustheten ligger ett nivå
   opp: be modellen sitere kildeindeks per punkt og verifiser indeksen.

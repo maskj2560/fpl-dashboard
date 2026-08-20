@@ -13,6 +13,11 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   forkortelser («kl.», «f.eks.») eller klokkeslett («21.00») — færre
   feilfjernede setninger, og uriktige deadline-påstander med forkortelse i
   setningen fanges nå.
+- AI-briefens etterkontroll gjenkjenner nå lagnavn-varianter («Tottenham»
+  for FPLs «Spurs», «Manchester United» for «Man Utd», «Coventry» for
+  «Coventry City» osv.) med ordgrenser og genitiv, så uriktige
+  deadline-påstander fanges selv når modellen skriver et annet navn enn
+  FPL-dataene — uten at lagnavn treffer inni andre ord.
 
 ## [1.2.1] - 2026-08-20
 

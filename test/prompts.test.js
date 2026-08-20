@@ -184,3 +184,68 @@ test('sanitizeBriefText fjerner uriktig påstand selv med forkortelse i setninge
 
   assert.equal(sanitizeBriefText(text, briefUtenTidligeKamper), '');
 });
+
+// ---- P3-4: lagnavn-alias og ordgrenser ----------------------------------
+// FPLs `teams.name` er selv kortform for flere klubber («Spurs», «Man Utd»),
+// mens modellen gjerne skriver «Tottenham»/«Manchester United». Uten alias
+// slapp uriktige påstander gjennom. Ordgrensen hindrer samtidig treff inni
+// ord, og genitiv-støtten bevarer treffene substring-matchingen ga oss.
+
+const briefMedSpurs = {
+  fixturesByDay: [{
+    day: 'fredag 21. august',
+    matches: [
+      { home: 'Spurs', away: 'Newcastle', kickoff: '21:00', beforeDeadline: false },
+      { home: 'Man Utd', away: 'Everton', kickoff: '20:00', beforeDeadline: false },
+      { home: 'Arsenal', away: 'Chelsea', kickoff: '18:00', beforeDeadline: true },
+    ],
+  }],
+};
+
+test('sanitizeBriefText fjerner uriktig påstand når modellen skriver «Tottenham» og dataene «Spurs»', () => {
+  const text = 'Tottenham spiller sin kamp før deadline.';
+
+  assert.equal(sanitizeBriefText(text, briefMedSpurs), '');
+});
+
+test('sanitizeBriefText fjerner uriktig påstand med «Manchester United» for «Man Utd»', () => {
+  const text = 'Manchester United spiller før deadline.';
+
+  assert.equal(sanitizeBriefText(text, briefMedSpurs), '');
+});
+
+test('sanitizeBriefText beholder korrekt påstand skrevet med kallenavn', () => {
+  const briefMedSpursFoer = {
+    fixturesByDay: [{
+      day: 'fredag 21. august',
+      matches: [
+        { home: 'Spurs', away: 'Newcastle', kickoff: '18:00', beforeDeadline: true },
+        { home: 'Liverpool', away: 'Bournemouth', kickoff: '21:00', beforeDeadline: false },
+      ],
+    }],
+  };
+  const text = '**Tottenham** spiller før deadline, så velg kaptein tidlig.';
+
+  assert.equal(sanitizeBriefText(text, briefMedSpursFoer), text);
+});
+
+test('sanitizeBriefText matcher ikke lagnavn inni ord (ordgrense)', () => {
+  const briefMedForest = {
+    fixturesByDay: [{
+      day: 'fredag 21. august',
+      matches: [
+        { home: "Nott'm Forest", away: 'Sunderland', kickoff: '21:00', beforeDeadline: false },
+        { home: 'Arsenal', away: 'Chelsea', kickoff: '18:00', beforeDeadline: true },
+      ],
+    }],
+  };
+  const text = 'Forestill deg: flere kamper starter før deadline.';
+
+  assert.equal(sanitizeBriefText(text, briefMedForest), text);
+});
+
+test('sanitizeBriefText matcher genitiv («Liverpools») også etter ordgrense-endringen', () => {
+  const text = 'Liverpools kamp spilles før deadline.';
+
+  assert.equal(sanitizeBriefText(text, briefMedTidsfakta), '');
+});
