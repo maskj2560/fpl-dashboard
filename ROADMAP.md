@@ -145,6 +145,18 @@ committet (og pushet hvis remote finnes).
 - [x] Verifisert lokalt (185 tester, lint 0, alle ti ruter 200 med AI/Discord av)
 - [ ] P1-5b og P3-1…P3-5 → «v1.2.0-kandidater» under
 
+## v1.2.0 — «Overganger»: historisk hva hvis-analyse (planlagt)
+
+_Plan: `docs/plan-hva-hvis-transfers.md`. Versjonsnummeret settes endelig ved
+release; rykker M4-kandidatene først, forskyves det._
+
+- [ ] fplClient: `getEntryTransfers` (5 min) + `getLiveHistoric` (6 t, kun ferdige runder)
+- [ ] `transfers.js`: buildTransferAnalysis — vindu, diff, straff, chips, kanttilfeller
+- [ ] `assembleTransferAnalysis` — henting via cache, maks 38 live-kall
+- [ ] /overganger: view, rute, nav, tomtilstander, view-tester
+- [ ] Røyktest lokalt (alle ruter 200, AI/Discord av) + docs
+- [ ] Etter GW2: verifiser transfers-skjemaet mot ekte data
+
 ## Senere / idéer (ikke planlagt)
 
 ### v1.2.0-kandidater (samles under sesongstart-verifiseringen, M4)
@@ -186,6 +198,7 @@ ikke gjort midt i sesongstart-verifiseringen):
 
 ### Andre idéer
 
-- Historisk «hva hvis»-analyse av egne transfers
+- AI-kommentar til overgangsanalysen (bevisst utelatt fra v1: tallene taler
+  for seg, koster per generering — ettermonteres via ai.js ved behov)
 - Prisendrings-varsler
 - E-postvarsling som alternativ til Discord

@@ -3,7 +3,23 @@
 > Levende overleveringsfil. Oppdateres ved hver milepæl og ved arbeidsstans.
 > Ny AI-økt: les denne + CLAUDE.md + ROADMAP.md, fortsett der «Neste steg» sier.
 
-**Sist oppdatert:** 2026-08-20 (økt 8 sesongstart-verifisering PÅGÅR; økt 9 kvalitetspass v1.1.3 ferdig på branch, ikke merget)
+**Sist oppdatert:** 2026-08-20 (økt 10 «Overganger» pågår på branch; økt 8 sesongstart-verifisering PÅGÅR med sjekkpunkter)
+
+## ØKT 10: «Overganger» — historisk hva hvis-analyse (PÅGÅR, branch `feat/hva-hvis-transfers`)
+
+Kjøreprompt: `docs/neste-okt-prompt-hva-hvis-transfers.md`. Plan skrevet i
+plan mode, **godkjent av Marius 2026-08-20**, ligger i
+`docs/plan-hva-hvis-transfers.md` (task-for-task med TDD og komplett kode).
+
+Marius' beslutninger (AskUserQuestion i planfasen):
+1. Egen side **«Overganger» på `/overganger`** (ikke /bytter, ikke seksjon på /lag)
+2. **Uten AI-kommentar i v1** (lagt som idé i ROADMAP)
+
+Status: Task 1 (docs + branch) pågår. Neste: Task 2 (fplClient) → Task 3
+(buildTransferAnalysis) → Task 4 (assemble) → Task 5 (side/nav) → Task 6
+(røyktest + handover). **Ikke merge, ikke push uten klarsignal.** Rører ikke
+oppførsel økt 8 observerer (`getLive` uendret — historikk-TTL er ny funksjon
+`getLiveHistoric`).
 
 ## ØKT 9: kvalitetspass v1.1.3 — I PROD (2026-08-20 ~03:00)
 
@@ -388,6 +404,13 @@ task for task. Kort oversikt:
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 
+- 2026-08-20 (økt 10): kjøreprompt for «historisk hva hvis-analyse av egne
+  transfers» sendt (`docs/neste-okt-prompt-hva-hvis-transfers.md`), plan mode.
+  Handling: kodebase kartlagt, plan skrevet og validert, to spørsmål stilt.
+- 2026-08-20 (økt 10): svar på AskUserQuestion — «Egen side "Overganger"»
+  (URL /overganger) og «Uten AI i v1». Handling: valgene låst inn i planen.
+- 2026-08-20 (økt 10): planen godkjent i plan mode + «keep going where you
+  left off». Handling: utførelse startet på branch `feat/hva-hvis-transfers`.
 - 2026-08-20 (økt 9): kjøreprompt for kvalitetspasset v1.1.3 sendt
   (`docs/neste-okt-prompt-kvalitetspass.md`, 29 verifiserte funn P0–P3).
   Handling: alle P0-, P1- og P2-funn rettet med tester på branchen
