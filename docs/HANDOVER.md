@@ -183,6 +183,16 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 
+- 2026-08-20 (økt 14, ~16:00): «kan du sørge for at discord webhooken sender
+  en @everyone når den sender brief?» Handling: gjort på EGEN branch
+  `feat/discord-everyone` (ut fra `main`, commit `75e1f96`) — holdes atskilt
+  fra P3-4 så de kan merges uavhengig. `@everyone` legges på i
+  `postToDiscord`, ikke i brief-teksten, så kanalen pinges nøyaktig én gang
+  selv når briefen deles i flere meldinger. `allowed_mentions.parse` er satt
+  til `['everyone']`, som samtidig slår av bruker-/rollementions fra
+  AI-teksten. TDD: 228 → 231 tester, 3 rødt observert først, deretter
+  231/231 + lint 0. Ikke pushet — kveldens brief (~19:30) går som før, uten
+  ping. Får effekt først ved deploy etter sjekkpunkt D.
 - 2026-08-20 (økt 14, etter P3-4): «går det fint om jeg nå venter til 1930
   med den briefen (i dag er torsdag). også fikser vi videre derfra. steg A».
   Handling: bekreftet — auto-briefen postes ~19:30 torsdag (24 t før
