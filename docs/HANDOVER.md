@@ -183,6 +183,14 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 
+- 2026-08-20 (økt 14, etter P3-4): «går det fint om jeg nå venter til 1930
+  med den briefen (i dag er torsdag). også fikser vi videre derfra. steg A».
+  Handling: bekreftet — auto-briefen postes ~19:30 torsdag (24 t før
+  GW1-deadline fredag 19:30), sjekkpunkt A gjøres ~19:45. Ingenting fra
+  P3-4-økten påvirker den: branchen er ikke pushet, prod kjører v1.2.0 med
+  den GAMLE `sanitizeBriefText`. Kveldens brief er derfor en gratis ekte test
+  av dagens versjon — teksten bør tas vare på som fixture til P3-4/P3-5.
+  Push-forbudet torsdag 19–21 er uansett ikke i veien (ingenting skal pushes).
 - 2026-08-20 (økt 14): kjøreprompt «Oppdrag (Opus 5): utfør
   sanitize-brief-planen (P3-4)» — les HANDOVER (ikke forstyrr den aktive
   sesongstart-verifiseringen A–D), CLAUDE.md og `docs/plan-sanitize-brief.md`;
