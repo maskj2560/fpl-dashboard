@@ -5,13 +5,20 @@ import config from '../config.js';
 
 const store = new Map(); // cacheKey -> {text, generatedAt}
 const inFlight = new Map();
+const lastFailureAt = new Map(); // cacheKey -> tidspunkt for siste mislykkede kall
+// Feiler kallet (ugyldig nøkkel, tom kreditt, avkortet svar), ventes det så
+// lenge før neste forsøk. Uten dette fyrer hvert sidebesøk et nytt betalt kall.
+const FAILURE_BACKOFF_MS = 5 * 60_000;
 let client = null;
+let injectedClient = null; // kun satt av tester via _setClient
+let now = () => Date.now();
 
 export function isEnabled() {
-  return Boolean(config.anthropicApiKey);
+  return Boolean(config.anthropicApiKey || injectedClient);
 }
 
 function getClient() {
+  if (injectedClient) return injectedClient;
   if (!client) client = new Anthropic({ apiKey: config.anthropicApiKey });
   return client;
 }
@@ -30,8 +37,11 @@ function getClient() {
 export async function generate({ cacheKey, minIntervalMs, system, prompt, maxTokens = 2000 }) {
   if (!isEnabled()) return null;
   const cached = store.get(cacheKey);
-  if (cached && Date.now() - cached.generatedAt < minIntervalMs) return cached;
+  if (cached && now() - cached.generatedAt < minIntervalMs) return cached;
   if (inFlight.has(cacheKey)) return inFlight.get(cacheKey);
+
+  const failedAt = lastFailureAt.get(cacheKey);
+  if (failedAt != null && now() - failedAt < FAILURE_BACKOFF_MS) return cached ?? null;
 
   const p = (async () => {
     try {
@@ -49,12 +59,18 @@ export async function generate({ cacheKey, minIntervalMs, system, prompt, maxTok
       console.log(
         `AI-kall: ${cacheKey} modell=${res.model} inn=${res.usage?.input_tokens ?? '?'} ut=${res.usage?.output_tokens ?? '?'} tokens`
       );
-      if (!text) return cached ?? null; // tomt svar (f.eks. avkortet) — behold forrige
-      const entry = { text, generatedAt: Date.now() };
+      if (!text) {
+        // Tomt svar (f.eks. avkortet) — behold forrige, og vent før nytt forsøk.
+        lastFailureAt.set(cacheKey, now());
+        return cached ?? null;
+      }
+      const entry = { text, generatedAt: now() };
       store.set(cacheKey, entry);
+      lastFailureAt.delete(cacheKey);
       return entry;
     } catch (err) {
       console.error('AI-kall feilet:', err.message);
+      lastFailureAt.set(cacheKey, now());
       return cached ?? null; // behold gammel oppsummering ved feil
     } finally {
       inFlight.delete(cacheKey);
@@ -62,4 +78,22 @@ export async function generate({ cacheKey, minIntervalMs, system, prompt, maxTok
   })();
   inFlight.set(cacheKey, p);
   return p;
+}
+
+// Test-hooks (samme mønster som cache.js). Aldri brukt i produksjon.
+
+/** Injiserer en fake Anthropic-klient. null = tilbake til den ekte. */
+export function _setClient(fake) {
+  injectedClient = fake;
+}
+
+/** Overstyrer klokken. null = tilbake til Date.now. */
+export function _setNow(fn) {
+  now = fn ?? (() => Date.now());
+}
+
+export function _reset() {
+  store.clear();
+  inFlight.clear();
+  lastFailureAt.clear();
 }

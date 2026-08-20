@@ -6,6 +6,9 @@ Formatet følger [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- **Feilende AI-kall gjentas ikke i det uendelige.** Ved feil eller tomt svar
+  ventes det fem minutter før nytt forsøk; tidligere fyrte hvert sidebesøk på
+  /nyheter og /brief et nytt betalt kall så lenge feilen varte (P1-8)
 - **Auto-briefen kan ikke lenger sendes to ganger fordi sjekk-intervallet
   tikker midt i en pågående sending** (P1-6), og vinduet der en redeploy kan
   re-poste briefen er strammet inn fra 1 time til 15 minutter, med logglinje
