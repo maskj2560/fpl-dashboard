@@ -6,6 +6,13 @@ Formatet følger [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- **Feil på `/api/*` svarer JSON i stedet for en HTML-feilside.** Klienten
+  leste svaret som JSON og viste «Nettverksfeil» uansett hva som gikk galt;
+  nå kommer den faktiske feilmeldingen fram (P1-7)
+- **`?v=`-parameteren gir bare evig cache for versjoner serveren faktisk
+  serverer.** Tidligere holdt det at verdien så riktig ut, slik at en gammel
+  container under en deploy kunne få Cloudflare til å låse utdaterte filer
+  under den nye adressen (P1-10)
 - **`/health` svarer umiddelbart selv om FPL henger.** Proben ventet tidligere
   på et FPL-kall med retry-stige (opptil ~30 s), noe som kunne gi Coolify en
   restart-loop. Ligatallet leses nå fra siste kjente verdi og oppdateres i

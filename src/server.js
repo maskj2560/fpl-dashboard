@@ -7,6 +7,7 @@ import compression from 'compression';
 import config from './config.js';
 import { isGameUpdating } from './services/fplClient.js';
 import { formatDateTime } from './services/format.js';
+import { cacheControlFor, createErrorHandler } from './middleware.js';
 import indexRouter from './routes/index.js';
 import healthRouter from './routes/health.js';
 import playersRouter from './routes/players.js';
@@ -36,9 +37,6 @@ const assetVersion = crypto
   .digest('hex')
   .slice(0, 8);
 
-// Gyldig versjonsstreng: innholdshashen (8 hex) eller et manuelt tall — fonten
-// er uendret innhold og bumpes for hånd (`?v=1`, se DEPLOY.md).
-const VERSION_PARAM = /^([0-9a-f]{8}|[0-9]{1,4})$/;
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(rootDir, 'views'));
@@ -51,13 +49,7 @@ app.use(
       // Versjonert URL → innholdet kan aldri endre seg, cache for alltid.
       // Uversjonert URL → må revalideres, ellers blir gamle filer liggende på
       // edge-cachen etter deploy.
-      const v = res.req?.query?.v;
-      res.setHeader(
-        'Cache-Control',
-        typeof v === 'string' && VERSION_PARAM.test(v)
-          ? 'public, max-age=31536000, immutable'
-          : 'no-cache',
-      );
+      res.setHeader('Cache-Control', cacheControlFor(res.req?.query?.v, assetVersion));
     },
   }),
 );
@@ -98,31 +90,7 @@ app.use((req, res) => {
   res.status(404).renderPage('404', { title: 'Ikke funnet' });
 });
 
-// eslint-disable-next-line no-unused-vars -- Express krever 4 argumenter for feil-middleware
-app.use((err, req, res, next) => {
-  console.error('Uventet feil:', err);
-  if (res.headersSent) return;
-  res.status(500);
-  res.render('error', {}, (renderErr, body) => {
-    if (renderErr) return res.type('text/plain').send('Noe gikk galt.');
-    res.render(
-      'layout',
-      {
-        body,
-        title: 'Feil',
-        path: req.originalUrl.split('?')[0],
-        gameUpdating: false,
-        version,
-        assetVersion,
-        startedAt,
-      },
-      (layoutErr, html) => {
-        if (layoutErr) return res.type('text/plain').send('Noe gikk galt.');
-        res.send(html);
-      },
-    );
-  });
-});
+app.use(createErrorHandler({ version, assetVersion, startedAt }));
 
 app.listen(config.port, () => {
   console.log(`FPL-dashboard lytter på http://localhost:${config.port}`);
