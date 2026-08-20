@@ -5,7 +5,7 @@
 
 **Sist oppdatert:** 2026-08-20 (økt 8 sesongstart-verifisering PÅGÅR; økt 9 kvalitetspass v1.1.3 ferdig på branch, ikke merget)
 
-## ØKT 9: kvalitetspass v1.1.3 — MERGET TIL MAIN OG PUSHET
+## ØKT 9: kvalitetspass v1.1.3 — I PROD (2026-08-20 ~03:00)
 
 Branch `fix/kvalitetspass-v113` merget til `main` med `--no-ff` og pushet
 2026-08-20 ~03:00 (godt utenfor sendevinduet 19:00–21:00; ingen auto-brief
@@ -58,9 +58,31 @@ ukjent sti 404. `/api/brief.json` matcher nullpunkt-fasiten fra sjekkpunkt 0:
 `Cache-Control` verifisert: riktig hash og `?v=1` → `immutable`, `?v=deadbeef`
 og uversjonert → `no-cache`.
 
-**Merget og deployet** etter klarsignal fra Marius 2026-08-20 ~02:55. Tidspunktet
-var trygt: sendevinduet 19:00–21:00 torsdag var langt unna, og dagens auto-brief
-hadde ikke gått ennå, så en redeploy kunne ikke re-poste noe.
+**Merget, deployet og verifisert i prod** etter klarsignal fra Marius
+2026-08-20 ~02:55. Tidspunktet var trygt: sendevinduet 19:00–21:00 torsdag var
+langt unna, og dagens auto-brief hadde ikke gått ennå, så redeployen kunne ikke
+re-poste noe. Push 02:59, deployen ute 02:59:38 (30 s). Tag `v1.1.3` pushet.
+
+Verifisert i prod (kommandoer kjørt ~03:02, output sett):
+
+- Alle ti ruter 200, ukjent sti 404
+- Footer `v1.1.3` på alle sju HTML-sidene
+- `/health`: `ai:true, aiModel:claude-sonnet-5, discord:true, teamId:true, leagues:1`
+- Ny asset-hash `2ba078b0` matcher sha1 av `public/style.css` + `public/app.js`
+  slik de ligger i git (LF) — servert innhold er altså det som ble pushet.
+  `?v=2ba078b0` → `immutable`; `?v=deadbeef` får det ikke lenger (P1-10 virker)
+- `/api/live.json` har `nextKickoff` og har mistet `pos`/`multiplier`/`updatedAt`
+- `/api/brief.json` matcher nullpunkt-fasiten fra sjekkpunkt 0: «Runde 1»,
+  deadline «fredag 21. august kl. 19:30», `injuries: []`,
+  `fixturesBeforeDeadline: []`, kapteiner Raya/Gabriel/Calafiori (ARS), 4 kampdager
+- Ingen Cloudflare-purge nødvendig (ny asset-URL kommer automatisk)
+
+Åpen observasjon (ikke en regresjon fra v1.1.3): Cloudflare svarer
+`Cache-Control: max-age=14400` med `cf-cache-status: REVALIDATED` på
+uversjonerte assets, altså sonens Browser Cache TTL som overstyrer originens
+`no-cache`. Originen er verifisert riktig lokalt. Lav konsekvens siden alle
+assets refereres versjonert fra HTML-en, men verdt å vite ved framtidig
+feilsøking av «gammel CSS».
 
 ## AKTIV ØKT (8): sesongstart-verifisering (M4) — sjekkpunkter
 
