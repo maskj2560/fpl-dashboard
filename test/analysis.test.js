@@ -17,6 +17,7 @@ import {
   rankGraph,
   differentials,
   estimateBonus,
+  hasConfirmedBonus,
   resolvePicks,
   resolvedGw,
   byId,
@@ -541,4 +542,11 @@ test('STATUS_LABELS er delt og bruker full form for utilgjengelig', () => {
   assert.equal(STATUS_LABELS.a, 'Klar');
   assert.equal(STATUS_LABELS.d, 'Usikker');
   assert.equal(STATUS_LABELS.n, 'Utilgjengelig');
+});
+
+test('hasConfirmedBonus skiller bekreftet bonus fra bare BPS', () => {
+  assert.equal(hasConfirmedBonus({ stats: [{ identifier: 'bps', h: [{ element: 1, value: 30 }], a: [] }] }), false);
+  assert.equal(hasConfirmedBonus({ stats: [{ identifier: 'bonus', h: [], a: [] }] }), false);
+  assert.equal(hasConfirmedBonus({ stats: [{ identifier: 'bonus', h: [{ element: 1, value: 3 }], a: [] }] }), true);
+  assert.equal(hasConfirmedBonus({}), false);
 });

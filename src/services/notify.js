@@ -4,9 +4,7 @@
 import config from '../config.js';
 import { getBootstrap } from './fplClient.js';
 import { nextEvent } from './analysis.js';
-import { assembleBrief } from '../routes/brief.js';
-import { buildBriefPrompt, sanitizeBriefText } from './prompts.js';
-import * as ai from './ai.js';
+import { assembleBrief, generateAiBrief } from './brief.js';
 
 const CHECK_INTERVAL = 6 * 60 * 60_000;
 // Sender ikke mer enn 15 min etter planlagt tid. `lastSentEvent` lever bare i
@@ -94,18 +92,7 @@ async function send(event) {
 /** Hele Discord-meldingen: AI-briefen når den finnes, ellers data-briefen. */
 async function composeMessage() {
   const brief = await assembleBrief();
-  let text = null;
-  if (ai.isEnabled()) {
-    const aiBrief = await ai.generate({
-      cacheKey: `ai-brief-gw${brief.gameweek?.id ?? 0}`,
-      minIntervalMs: 60 * 60_000,
-      system: 'Du er en norsk Fantasy Premier League-ekspert. Skriv presist og handlingsorientert.',
-      prompt: buildBriefPrompt(brief),
-      maxTokens: 4000,
-    });
-    text = aiBrief?.text ? sanitizeBriefText(aiBrief.text, brief) : null;
-  }
-  if (!text) text = dataBriefText(brief);
+  const text = (await generateAiBrief(brief))?.text || dataBriefText(brief);
 
   const header = `**Rundebrief — ${brief.gameweek?.name ?? ''}**\nDeadline: ${brief.gameweek?.deadlineFormatted ?? 'ukjent'}\nhttps://fpl.marsk.no/brief\n\n`;
   return header + text;

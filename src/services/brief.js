@@ -1,4 +1,9 @@
-// Bygger gameweek-briefen fra rene data (ingen LLM her).
+// Bygger gameweek-briefen: buildBrief er ren datalogikk, assembleBrief henter
+// den fra FPL, og generateAiBrief legger AI-teksten på toppen når nøkkel finnes.
+import config from '../config.js';
+import { getBootstrap, getFixtures, getPicks, FplError } from './fplClient.js';
+import { buildBriefPrompt, sanitizeBriefText } from './prompts.js';
+import * as ai from './ai.js';
 import {
   nextEvent,
   flaggedPlayers,
@@ -8,6 +13,8 @@ import {
   averageFdr,
   translateFplNews,
   byId,
+  resolvedGw,
+  resolvePicks,
 } from './analysis.js';
 import { formatDateTime, formatDay, formatEventName, formatTime } from './format.js';
 
@@ -116,4 +123,52 @@ export function buildBrief({ bootstrap, fixtures, myTeam = null }) {
     fixturesBeforeDeadline,
     mine,
   };
+}
+
+/**
+ * Setter sammen data-briefen fra FPL. Delt av /brief, /api/brief.json og
+ * auto-briefen til Discord.
+ */
+export async function assembleBrief() {
+  const [bootstrap, fixtures] = await Promise.all([getBootstrap(), getFixtures()]);
+  let myTeam = null;
+  if (config.hasTeamId) {
+    const gw = resolvedGw(bootstrap.events);
+    if (gw >= 1) {
+      try {
+        const picks = await getPicks(config.fplTeamId, gw);
+        myTeam = {
+          squadPlayers: resolvePicks(picks.picks, byId(bootstrap.elements)).map((s) => s.player),
+          elements: bootstrap.elements,
+          bank: picks.entry_history.bank,
+          fromGw: nextEvent(bootstrap.events)?.id ?? gw,
+        };
+      } catch (err) {
+        // 404 = ingen picks for runden ennå (typisk før sesongstart).
+        if (!(err instanceof FplError && err.status === 404)) throw err;
+      }
+    }
+  }
+  return buildBrief({ bootstrap, fixtures, myTeam });
+}
+
+/**
+ * AI-briefen for en ferdig bygd data-brief. Én implementasjon delt av /brief
+ * og auto-briefen; tidligere lå blokken ordrett begge steder og kunne drive
+ * fra hverandre. Returnerer null når AI er av, kallet feilet eller svaret var
+ * tomt — data-briefen er alltid fallback.
+ */
+export async function generateAiBrief(brief) {
+  if (!ai.isEnabled()) return null;
+  const result = await ai.generate({
+    cacheKey: `ai-brief-gw${brief.gameweek?.id ?? 0}`,
+    minIntervalMs: 60 * 60_000,
+    system: 'Du er en norsk Fantasy Premier League-ekspert. Skriv presist og handlingsorientert.',
+    prompt: buildBriefPrompt(brief),
+    maxTokens: 4000,
+  });
+  if (!result?.text) return null;
+  // Etterkontroll: modellen har påstått ting om deadline som ikke stemte med
+  // kampdataene. Uriktige setninger fjernes før briefen vises.
+  return { ...result, text: sanitizeBriefText(result.text, brief) };
 }

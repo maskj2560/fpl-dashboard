@@ -9,6 +9,22 @@ function escapeHtml(s) {
     .replace(/'/g, '&#39;');
 }
 
+// Live-polling: ett kall i minuttet mens kamper pågår, og et enkelt
+// vekkesignal ved neste avspark ellers. Aldri et intervall utenfor kampvinduer.
+const LIVE_POLL_MS = 60000;
+const LIVE_KICKOFF_BUFFER_MS = 30000;
+
+/**
+ * Hvor lenge siden skal vente før den sjekker på nytt når ingen kamper pågår.
+ * null = ingenting å vente på (kamper pågår alt, eller ingen kjent avspark).
+ */
+function nextWakeupDelay(live, nowMs, bufferMs) {
+  if (!live || live.anyLive || !live.nextKickoff) return null;
+  const at = new Date(live.nextKickoff).getTime();
+  if (!Number.isFinite(at)) return null;
+  return Math.max(at + bufferMs - nowMs, 0);
+}
+
 // Modul 0: Mobilmenyen. Scroller aktiv lenke inn i syne, og togglar
 // kantfade-klassene som viser at menyen har mer innhold sidelengs.
 (function () {
@@ -215,25 +231,44 @@ function escapeHtml(s) {
     statusEl.textContent = live.anyLive ? 'Kamper pågår' : 'Ingen kamper pågår akkurat nå';
     updatedEl.textContent = 'Sist oppdatert ' + new Date().toLocaleTimeString('nb-NO');
     pulseEl.classList.toggle('pulse-on', live.anyLive);
-    return live.anyLive;
+    return live;
   }
 
-  let anyLive = render(JSON.parse(dataEl.textContent));
+  let interval = null;
+  let wakeup = null;
+
+  // Tilstandsmaskin, ikke et engangsvalg ved sidelast: pågår kamper, går et
+  // 60 s-intervall. Gjør de ikke det, stoppes intervalet og siden sover til
+  // neste kjente avspark — så en fane som åpnes før kampstart, eller står åpen
+  // i pausen mellom lørdagskampene, våkner av seg selv.
+  function schedule(live) {
+    clearTimeout(wakeup);
+    wakeup = null;
+    if (live.anyLive) {
+      if (!interval) interval = setInterval(poll, LIVE_POLL_MS);
+      return;
+    }
+    clearInterval(interval);
+    interval = null;
+    const delay = nextWakeupDelay(live, Date.now(), LIVE_KICKOFF_BUFFER_MS);
+    if (delay !== null) wakeup = setTimeout(poll, delay);
+  }
 
   async function poll() {
     try {
       const res = await fetch('/api/live.json');
-      if (!res.ok) return;
-      anyLive = render(await res.json());
-      if (!anyLive) clearInterval(timer);
+      if (res.ok) {
+        schedule(render(await res.json()));
+        return;
+      }
     } catch {
-      // Nettverksglipp — prøver igjen neste tick.
+      // Nettverksglipp — håndteres som en feilet henting under.
     }
+    // Går et intervall, tar neste tick den. Ellers ett nytt forsøk om et minutt.
+    if (!interval) wakeup = setTimeout(poll, LIVE_POLL_MS);
   }
 
-  // Poll KUN mens kamper pågår — aldri utenfor kampvinduer.
-  let timer = null;
-  if (anyLive) timer = setInterval(poll, 60000);
+  schedule(render(JSON.parse(dataEl.textContent)));
 })();
 
 // Modul 4: AI-rådgiver på /lag.

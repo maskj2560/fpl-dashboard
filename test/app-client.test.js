@@ -26,6 +26,9 @@ function loadAppScript() {
   };
   vm.createContext(context);
   vm.runInContext(code, context);
+  // const/let på toppnivå havner i kontekstens leksikalske scope, ikke på
+  // globalobjektet — de leses derfor med et uttrykk.
+  context.evaluate = (expression) => vm.runInContext(expression, context);
   return context;
 }
 
@@ -40,4 +43,37 @@ test('escapeHtml escaper også anførselstegn', () => {
 test('escapeHtml takler verdier som ikke er strenger', () => {
   assert.equal(app.escapeHtml(42), '42');
   assert.equal(app.escapeHtml(null), 'null');
+});
+
+// ---- P0-3: live-polling skal våkne ved avspark og aldri polle utenfor ------
+
+test('polleintervallet er minst 55 sekunder', () => {
+  const pollMs = app.evaluate('LIVE_POLL_MS');
+  assert.ok(pollMs >= 55000, `LIVE_POLL_MS=${pollMs}`);
+});
+
+test('nextWakeupDelay venter til avspark pluss buffer når ingen kamper pågår', () => {
+  const now = Date.parse('2026-08-22T12:00:00Z');
+  const delay = app.nextWakeupDelay(
+    { anyLive: false, nextKickoff: '2026-08-22T14:00:00Z' },
+    now,
+    30000,
+  );
+  assert.equal(delay, 2 * 60 * 60_000 + 30000);
+});
+
+test('nextWakeupDelay gir 0 når avsparket alt er passert', () => {
+  const now = Date.parse('2026-08-22T14:05:00Z');
+  assert.equal(
+    app.nextWakeupDelay({ anyLive: false, nextKickoff: '2026-08-22T14:00:00Z' }, now, 30000),
+    0,
+  );
+});
+
+test('nextWakeupDelay gir null når kamper pågår eller avspark er ukjent', () => {
+  const now = Date.now();
+  assert.equal(app.nextWakeupDelay({ anyLive: true, nextKickoff: '2026-08-22T14:00:00Z' }, now, 30000), null);
+  assert.equal(app.nextWakeupDelay({ anyLive: false, nextKickoff: null }, now, 30000), null);
+  assert.equal(app.nextWakeupDelay({ anyLive: false, nextKickoff: 'tull' }, now, 30000), null);
+  assert.equal(app.nextWakeupDelay(null, now, 30000), null);
 });

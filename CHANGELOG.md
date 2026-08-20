@@ -6,6 +6,14 @@ Formatet følger [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- **Live-siden våkner av seg selv.** Pollingen startet bare hvis kamper alt
+  pågikk da siden ble lastet, og stoppet for godt ved første pause — en fane
+  åpnet før avspark, eller i pausen mellom lørdagskampene, frøs. Nå settes ett
+  vekkesignal ved neste avspark, og 60-sekunderspollingen starter og stopper
+  med kampene (P0-3)
+- **Bonusestimatet forsvinner ikke i dobbel runde.** Bekreftet bonus fra en
+  ferdigspilt kamp skjulte estimatet for kampen som pågikk; estimatene summeres
+  nå per spiller og telles aldri dobbelt (P1-14)
 - **Spillerlista og dashbordet viser samme statustekst.** «Utilgjengelig» ble
   vist som «Utilgj.» på /spillere fordi teksten fantes i to kopier (P2-2)
 - **Feil på `/api/*` svarer JSON i stedet for en HTML-feilside.** Klienten

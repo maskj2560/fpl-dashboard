@@ -285,6 +285,16 @@ export function rankGraph(historyCurrent, width = 600, height = 140) {
  * Bonusestimat fra BPS i en pågående kamp. Topp 3 BPS får 3/2/1.
  * Likhet deler plassen etter FPL-reglene (3,3→1 · 3,2,2 · 3,3,3 · 3,2,1,1).
  */
+/**
+ * Har kampen fått bekreftet bonus? Da ligger poengene allerede i spillerens
+ * total_points, og et estimat på toppen ville telt dem to ganger.
+ */
+export function hasConfirmedBonus(fixture) {
+  return (fixture.stats ?? []).some(
+    (s) => s.identifier === 'bonus' && (s.h?.length ?? 0) + (s.a?.length ?? 0) > 0,
+  );
+}
+
 export function estimateBonus(fixture) {
   const result = new Map();
   const bpsStat = fixture.stats?.find((s) => s.identifier === 'bps');
