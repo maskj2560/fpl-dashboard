@@ -90,20 +90,45 @@ function dataBriefText(brief) {
   return lines.join('\n');
 }
 
-async function postToDiscord(text) {
-  // Discord tillater maks 2000 tegn per melding — del opp på avsnitt.
+/** Deler en linje som er lengre enn taket, helst på ordgrense. */
+function splitLongLine(line, max) {
+  if (line.length <= max) return [line];
+  const parts = [];
+  let rest = line;
+  while (rest.length > max) {
+    let cut = rest.lastIndexOf(' ', max);
+    if (cut <= 0) cut = max; // ett langt ord uten mellomrom
+    parts.push(rest.slice(0, cut));
+    rest = rest.slice(cut).replace(/^ +/, '');
+  }
+  if (rest) parts.push(rest);
+  return parts;
+}
+
+/**
+ * Deler teksten i meldinger Discord godtar (maks 2000 tegn). Deler primært på
+ * linjeskift; en enkeltlinje over taket hard-splittes. Tomme chunks oppstår
+ * aldri — Discord avviser dem med 400, og da ville resten av briefen uteblitt.
+ */
+export function chunkDiscordText(text, max = 1900) {
   const chunks = [];
   let current = '';
-  for (const paragraph of text.split('\n')) {
-    if (current.length + paragraph.length + 1 > 1900) {
-      chunks.push(current);
-      current = '';
+  const flush = () => {
+    if (current) chunks.push(current);
+    current = '';
+  };
+  for (const line of String(text ?? '').split('\n')) {
+    for (const piece of splitLongLine(line, max)) {
+      if (current && current.length + piece.length + 1 > max) flush();
+      current += (current ? '\n' : '') + piece;
     }
-    current += (current ? '\n' : '') + paragraph;
   }
-  if (current) chunks.push(current);
+  flush();
+  return chunks;
+}
 
-  for (const content of chunks) {
+async function postToDiscord(text) {
+  for (const content of chunkDiscordText(text)) {
     const res = await fetch(config.discordWebhookUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

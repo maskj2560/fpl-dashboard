@@ -6,6 +6,10 @@ Formatet følger [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- **Discord-briefen deles riktig opp.** Chunkeren kunne sende en tom melding
+  eller en over Discords 2000-tegnsgrense; begge gir 400, og da ble briefen
+  aldri fullført — neste sjekk re-postet de første delene. Lange avsnitt uten
+  linjeskift splittes nå på ordgrense, og tomme meldinger oppstår ikke (P0-2)
 
 ### Fixed
 
