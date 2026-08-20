@@ -3,9 +3,28 @@
 > Levende overleveringsfil. Oppdateres ved hver milepæl og ved arbeidsstans.
 > Ny AI-økt: les denne + CLAUDE.md + ROADMAP.md, fortsett der «Neste steg» sier.
 
-**Sist oppdatert:** 2026-08-20 (økt 10 «Overganger» pågår på branch; økt 8 sesongstart-verifisering PÅGÅR med sjekkpunkter)
+**Sist oppdatert:** 2026-08-20 ~14:45 (økt 10 «Overganger» v1.2.0 I PROD; økt 8 sesongstart-verifisering PÅGÅR med sjekkpunkter)
 
-## ØKT 10: «Overganger» — historisk hva hvis-analyse (PÅGÅR, branch `feat/hva-hvis-transfers`)
+## ØKT 10: «Overganger» — v1.2.0 I PROD (2026-08-20 ~14:40)
+
+**Merget og deployet etter klarsignal fra Marius ~14:33** (godt utenfor
+sendevinduet torsdag 19–21). Release v1.2.0 kuttet på branchen, merge
+`--no-ff` til main, 212/212 + lint 0 verifisert på main FØR push. Tag
+`v1.2.0` pushet etter prod-verifisering.
+
+Verifisert i prod ~14:40 (kommandoer kjørt, output sett): alle 11 ruter 200
+inkl. `/overganger`, 404 på ukjent sti, footer `v1.2.0`, nav-punktet
+«Overganger» synlig, tomtilstanden «Ingen overganger registrert ennå» vises
+(korrekt før sesongstart), `/health` = `ai:true, aiModel:claude-sonnet-5,
+discord:true, teamId:true, leagues:1`. style.css/app.js er uendret i denne
+releasen → samme asset-hash, ingen Cloudflare-hensyn.
+
+**Merk for økt 8 (sjekkpunkt A i kveld):** prod kjører nå v1.2.0, ikke
+v1.1.3. Ingen observert oppførsel er endret (`getLive`, notify, brief,
+banner urørt) — eneste synlige forskjell er footer-versjonen og den nye
+siden/nav-punktet. Redeployen skjedde ~14:40, timer før sendevinduet;
+auto-briefen i kveld påvirkes ikke (scheduler re-armert ved oppstart, send-
+tidspunktet er ikke passert).
 
 Kjøreprompt: `docs/neste-okt-prompt-hva-hvis-transfers.md`. Plan skrevet i
 plan mode, **godkjent av Marius 2026-08-20**, ligger i
@@ -436,7 +455,15 @@ task for task. Kort oversikt:
   left off». Handling: utførelse startet på branch `feat/hva-hvis-transfers`;
   alle 6 tasks fullført samme dag (212/212 tester, lint 0, røyktest OK).
   Uhell underveis: 2 ekte AI-kall i første røyktestkjøring pga.
-  `loadEnvFile()` — se ØKT 10-seksjonen. Ikke merget/pushet.
+  `loadEnvFile()` — se ØKT 10-seksjonen.
+- 2026-08-20 (økt 10, ~14:33): «Jeg er klar for å merge» + spørsmål om hva
+  «skjemaverifisering etter GW2» betyr. Handling: forklart (feltnavnene i
+  transfers-endepunktet er uverifiserte til første ekte overgang finnes);
+  release v1.2.0 kuttet, merget `--no-ff`, pushet, prod verifisert ~14:40,
+  tag `v1.2.0` pushet.
+- 2026-08-20 (økt 10, ~14:40): «Hvor mye av planen er gjennomført?»
+  Handling: statusrapport gitt — alle 6 tasks (36/36 steg) ferdige; kun
+  «Etter GW2»-sjekklisten gjenstår (krever ekte data).
 - 2026-08-20 (økt 9): kjøreprompt for kvalitetspasset v1.1.3 sendt
   (`docs/neste-okt-prompt-kvalitetspass.md`, 29 verifiserte funn P0–P3).
   Handling: alle P0-, P1- og P2-funn rettet med tester på branchen

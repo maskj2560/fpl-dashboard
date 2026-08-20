@@ -1053,7 +1053,7 @@ export default router;
 Task 1–6 fullført på branch `feat/hva-hvis-transfers` (6 commits, se git-loggen).
 212/212 tester grønne, lint 0. Røyktest: alle 11 ruter 200, 404 OK,
 tomtilstand og nav-lenke bekreftet, `/health` viste `ai:false, discord:false`.
-Ikke merget, ikke pushet — venter på klarsignal fra Marius.
+MERGET og deployet 2026-08-20 ~14:40 etter klarsignal: v1.2.0 i prod, alle 11 ruter 200, footer v1.2.0, tag v1.2.0 pushet.
 
 **Avvik fra planen (Task 6, Step 1):** «ingen nøkler i scratchpad-.env» er
 IKKE nok. `src/config.js` kjører `process.loadEnvFile()`, som leser repoets
