@@ -6,6 +6,9 @@ Formatet følger [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- **Skadenytt er norsk også i rundebriefen, Discord-meldingen og AI-prompten.**
+  «Hamstring injury - Expected back 21 Aug» sto tidligere på engelsk midt i
+  den norske teksten; oversettelsen skjer nå i kilden (P1-12)
 - **Tvilsomme spillere («Usikker») regnes ikke lenger som sikre startere.**
   Uten publisert spilletidsprosent ga status `d` full sannsynlighet, så
   spilleren kunne dukke opp som kapteinsforslag med «Full spilletid ventet».

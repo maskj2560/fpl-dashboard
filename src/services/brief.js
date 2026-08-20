@@ -7,6 +7,7 @@ import {
   transferOutCandidates,
   transferInCandidates,
   averageFdr,
+  translateFplNews,
 } from './analysis.js';
 import { formatDateTime, formatEventName } from './format.js';
 
@@ -77,7 +78,9 @@ export function buildBrief({ bootstrap, fixtures, myTeam = null }) {
       name: p.web_name,
       team: teamsById.get(p.team)?.short_name ?? '?',
       ownership: p.selected_by_percent,
-      news: p.news || 'Ingen detaljer',
+      // Oversatt i kilden: da arver view, Discord-fallbacken og AI-prompten
+      // norsken uten hver sin kopi av oversettelsen.
+      news: translateFplNews(p.news) || 'Ingen detaljer',
       status: p.status,
     }));
 
