@@ -6,6 +6,10 @@ Formatet følger [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- **Auto-briefen kan ikke lenger sendes to ganger fordi sjekk-intervallet
+  tikker midt i en pågående sending** (P1-6), og vinduet der en redeploy kan
+  re-poste briefen er strammet inn fra 1 time til 15 minutter, med logglinje
+  når det inntreffer (P1-5)
 - **Skadenytt er norsk også i rundebriefen, Discord-meldingen og AI-prompten.**
   «Hamstring injury - Expected back 21 Aug» sto tidligere på engelsk midt i
   den norske teksten; oversettelsen skjer nå i kilden (P1-12)

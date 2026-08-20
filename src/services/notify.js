@@ -9,17 +9,26 @@ import { buildBriefPrompt, sanitizeBriefText } from './prompts.js';
 import * as ai from './ai.js';
 
 const CHECK_INTERVAL = 6 * 60 * 60_000;
-const MAX_LATE_MS = 60 * 60_000; // sender ikke mer enn 1 t etter planlagt tid
+// Sender ikke mer enn 15 min etter planlagt tid. `lastSentEvent` lever bare i
+// minnet, så en redeploy innenfor dette vinduet re-poster briefen. Vinduet er
+// holdt kort for å begrense sjansen, og loggen sier fra når det inntreffer.
+// Varig løsning krever persistens på tvers av containere — se ROADMAP.
+const MAX_LATE_MS = 15 * 60_000;
 let timer = null;
 let lastSentEvent = null;
+let sending = false;
 
-/** Ren beslutning om auto-brief: vent, planlegg timer, eller hopp over. */
+/**
+ * Ren beslutning om auto-brief: vent, planlegg timer, eller hopp over.
+ * `lateMs` er hvor lenge siden sendetidspunktet passerte (0 om det er i framtiden).
+ */
 export function sendDecision({ deadlineTime, hoursBefore, nowMs, checkIntervalMs }) {
   const sendAt = new Date(deadlineTime).getTime() - hoursBefore * 60 * 60_000;
   const delayMs = sendAt - nowMs;
-  if (delayMs > checkIntervalMs) return { action: 'wait', delayMs };
-  if (delayMs < -MAX_LATE_MS) return { action: 'skip', delayMs };
-  return { action: 'schedule', delayMs: Math.max(delayMs, 0) };
+  const lateMs = Math.max(-delayMs, 0);
+  if (delayMs > checkIntervalMs) return { action: 'wait', delayMs, lateMs };
+  if (delayMs < -MAX_LATE_MS) return { action: 'skip', delayMs, lateMs };
+  return { action: 'schedule', delayMs: Math.max(delayMs, 0), lateMs };
 }
 
 export function startScheduler() {
@@ -31,6 +40,7 @@ export function startScheduler() {
 
 async function check() {
   try {
+    if (sending) return; // en sending pågår — den setter lastSentEvent selv
     const { events } = await getBootstrap();
     const upcoming = nextEvent(events);
     if (!upcoming || upcoming.id === lastSentEvent) return;
@@ -48,6 +58,13 @@ async function check() {
       console.log(`Auto-brief hoppet over for ${upcoming.name}: send-tidspunktet er passert`);
       return;
     }
+    if (d.lateMs > 0) {
+      // Typisk en redeploy rett etter at briefen ble sendt fra forrige
+      // container. Da kan meldingen bli en dublett — logg det så det er sporbart.
+      console.log(
+        `Auto-brief planlagt ved oppstart ${Math.round(d.lateMs / 60_000)} min etter sendetidspunktet for ${upcoming.name}`,
+      );
+    }
     clearTimeout(timer);
     timer = setTimeout(() => send(upcoming), d.delayMs);
     timer.unref?.();
@@ -57,29 +74,60 @@ async function check() {
 }
 
 async function send(event) {
+  // 6-timers-sjekken kan tikke mens en sending pågår: AI-kallet og Discord-
+  // posten tar sekunder, og lastSentEvent settes først etterpå. Uten dette
+  // flagget slipper begge gjennom guarden og kanalen får to like meldinger.
+  if (sending || event.id === lastSentEvent) return;
+  sending = true;
   try {
-    if (event.id === lastSentEvent) return;
-    const brief = await assembleBrief();
-    let text = null;
-    if (ai.isEnabled()) {
-      const aiBrief = await ai.generate({
-        cacheKey: `ai-brief-gw${brief.gameweek?.id ?? 0}`,
-        minIntervalMs: 60 * 60_000,
-        system: 'Du er en norsk Fantasy Premier League-ekspert. Skriv presist og handlingsorientert.',
-        prompt: buildBriefPrompt(brief),
-        maxTokens: 4000,
-      });
-      text = aiBrief?.text ? sanitizeBriefText(aiBrief.text, brief) : null;
-    }
-    if (!text) text = dataBriefText(brief);
-
-    const header = `**Rundebrief — ${brief.gameweek?.name ?? ''}**\nDeadline: ${brief.gameweek?.deadlineFormatted ?? 'ukjent'}\nhttps://fpl.marsk.no/brief\n\n`;
-    await postToDiscord(header + text);
+    const message = await (hooks.compose ?? composeMessage)();
+    await (hooks.post ?? postToDiscord)(message);
     lastSentEvent = event.id;
     console.log(`Auto-brief sendt for ${event.name}`);
   } catch (err) {
     console.error('Auto-brief-sending feilet:', err.message);
+  } finally {
+    sending = false;
   }
+}
+
+/** Hele Discord-meldingen: AI-briefen når den finnes, ellers data-briefen. */
+async function composeMessage() {
+  const brief = await assembleBrief();
+  let text = null;
+  if (ai.isEnabled()) {
+    const aiBrief = await ai.generate({
+      cacheKey: `ai-brief-gw${brief.gameweek?.id ?? 0}`,
+      minIntervalMs: 60 * 60_000,
+      system: 'Du er en norsk Fantasy Premier League-ekspert. Skriv presist og handlingsorientert.',
+      prompt: buildBriefPrompt(brief),
+      maxTokens: 4000,
+    });
+    text = aiBrief?.text ? sanitizeBriefText(aiBrief.text, brief) : null;
+  }
+  if (!text) text = dataBriefText(brief);
+
+  const header = `**Rundebrief — ${brief.gameweek?.name ?? ''}**\nDeadline: ${brief.gameweek?.deadlineFormatted ?? 'ukjent'}\nhttps://fpl.marsk.no/brief\n\n`;
+  return header + text;
+}
+
+// Test-hooks (samme mønster som _setNow i cache.js): lar send-stien kjøres
+// uten nettverk. Aldri satt i produksjon.
+const hooks = { compose: null, post: null };
+
+export const _send = send;
+
+export function _setHooks(overrides) {
+  Object.assign(hooks, overrides);
+}
+
+export function _reset() {
+  clearTimeout(timer);
+  timer = null;
+  lastSentEvent = null;
+  sending = false;
+  hooks.compose = null;
+  hooks.post = null;
 }
 
 function dataBriefText(brief) {

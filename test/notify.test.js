@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { sendDecision, chunkDiscordText } from '../src/services/notify.js';
+import { sendDecision, chunkDiscordText, _send, _setHooks, _reset } from '../src/services/notify.js';
 
 const H = 60 * 60_000;
 const CHECK = 6 * H;
@@ -19,13 +19,13 @@ test('innenfor sjekkintervallet: planlegg timer med riktig delay', () => {
   assert.equal(d.delayMs, 2 * H);
 });
 
-test('inntil 1 t etter planlagt tid: send umiddelbart (delay 0)', () => {
-  const d = sendDecision({ deadlineTime: deadline, hoursBefore: 24, nowMs: sendAt + 30 * 60_000, checkIntervalMs: CHECK });
+test('rett etter planlagt tid: send umiddelbart (delay 0)', () => {
+  const d = sendDecision({ deadlineTime: deadline, hoursBefore: 24, nowMs: sendAt + 5 * 60_000, checkIntervalMs: CHECK });
   assert.equal(d.action, 'schedule');
   assert.equal(d.delayMs, 0);
 });
 
-test('mer enn 1 t etter planlagt tid: hopp over (anti-spam ved deploy)', () => {
+test('lenge etter planlagt tid: hopp over (anti-spam ved deploy)', () => {
   const d = sendDecision({ deadlineTime: deadline, hoursBefore: 24, nowMs: sendAt + 2 * H, checkIntervalMs: CHECK });
   assert.equal(d.action, 'skip');
 });
@@ -66,4 +66,70 @@ test('chunkDiscordText deler på linjeskift og beholder innholdet', () => {
   assert.ok(chunks.length > 1);
   for (const c of chunks) assert.ok(c.length <= 300);
   assert.equal(chunks.join('\n'), text);
+});
+
+// ---- P1-5: kortere dublett-vindu etter redeploy -----------------------------
+
+test('inntil 15 min etter planlagt tid: send fortsatt, og marker hvor sent', () => {
+  const d = sendDecision({ deadlineTime: deadline, hoursBefore: 24, nowMs: sendAt + 14 * 60_000, checkIntervalMs: CHECK });
+  assert.equal(d.action, 'schedule');
+  assert.equal(d.delayMs, 0);
+  assert.equal(d.lateMs, 14 * 60_000);
+});
+
+test('mer enn 15 min etter planlagt tid: hopp over', () => {
+  const d = sendDecision({ deadlineTime: deadline, hoursBefore: 24, nowMs: sendAt + 16 * 60_000, checkIntervalMs: CHECK });
+  assert.equal(d.action, 'skip');
+});
+
+test('før planlagt tid er lateMs 0', () => {
+  const d = sendDecision({ deadlineTime: deadline, hoursBefore: 24, nowMs: sendAt - 2 * H, checkIntervalMs: CHECK });
+  assert.equal(d.lateMs, 0);
+});
+
+// ---- P1-6: to samtidige sendinger skal gi én Discord-post -------------------
+
+test('send poster bare én gang når to kall overlapper', async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => {
+    throw new Error('testen skal aldri nå nettverket');
+  };
+  const posts = [];
+  let release;
+  const gate = new Promise((resolve) => {
+    release = resolve;
+  });
+  _reset();
+  _setHooks({
+    compose: async () => {
+      await gate;
+      return 'brief-tekst';
+    },
+    post: async (text) => {
+      posts.push(text);
+    },
+  });
+  try {
+    const first = _send({ id: 5, name: 'Runde 5' });
+    const second = _send({ id: 5, name: 'Runde 5' });
+    release();
+    await Promise.all([first, second]);
+    assert.deepEqual(posts, ['brief-tekst']);
+  } finally {
+    _reset();
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test('send hopper over runde som allerede er sendt', async () => {
+  const posts = [];
+  _reset();
+  _setHooks({ compose: async () => 'tekst', post: async (t) => posts.push(t) });
+  try {
+    await _send({ id: 7, name: 'Runde 7' });
+    await _send({ id: 7, name: 'Runde 7' });
+    assert.equal(posts.length, 1);
+  } finally {
+    _reset();
+  }
 });

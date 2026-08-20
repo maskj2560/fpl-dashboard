@@ -126,7 +126,11 @@ committet (og pushet hvis remote finnes).
 _Ikke-kritiske funn fra verifiseringen 20.–24. august legges her. Ingen av
 dem fikses uten avtale._
 
-- (tom foreløpig)
+- **Persistent «brief sendt»-markør for auto-briefen.** `lastSentEvent` lever
+  bare i minnet, så en redeploy innenfor MAX_LATE_MS (15 min) etter en sendt
+  brief re-poster den. Varig løsning krever tilstand som overlever containeren
+  (fil på volum eller ekstern kilde) — arkitekturbeslutning som må tas
+  bevisst, ikke smugles inn (kvalitetspass v1.1.3, P1-5b)
 
 ### Andre idéer
 
