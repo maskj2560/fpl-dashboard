@@ -5,7 +5,7 @@
 > Versjonshistorikk og detaljer ligger i CHANGELOG.md, ROADMAP.md og git —
 > denne filen holder kun nåtilstand, aktive økter og lærdommer.
 
-**Sist oppdatert:** 2026-08-20 ~15:00 (v1.2.0 i prod; sesongstart-verifisering aktiv)
+**Sist oppdatert:** 2026-08-20 ~14:55 (cache-backoff-plan godkjent; sesongstart-verifisering aktiv)
 
 ## Status akkurat nå
 
@@ -23,8 +23,11 @@
 - Prod kjører v1.2.0, ikke v1.1.3 som sjekkpunktplanen antok — ingen
   observert oppførsel er endret (getLive, notify, brief, banner urørt);
   synlig forskjell er footer-versjonen og det nye nav-punktet «Overganger».
-- Neste kjøreklare oppgave: `docs/neste-okt-prompt-cache-backoff.md`
-  (P3-2, trygg under verifiseringen — merges først etter sjekkpunkt D).
+- **P3-2 cache-backoff er PLANLAGT og godkjent** (økt 11, Fable i plan mode):
+  plan i `docs/plan-cache-backoff.md`, kjøreprompt for Opus 5-utførelsen i
+  `docs/neste-okt-prompt-cache-backoff-utforelse.md`. Utføres på branch
+  `fix/cache-backoff` — aldri push uten klarsignal, merges først etter
+  sjekkpunkt D. Trygg under verifiseringen (rører kun cache.js + tester).
 
 ## Sjekkpunkter for økt 8 (Marius pinger økten)
 
@@ -122,6 +125,12 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 
+- 2026-08-20 (økt 11, ~14:55): kjøreprompt for planlegging av cache-backoff
+  (P3-2) gitt til Fable i plan mode; underveis: «Så nå lager du en prompt jeg
+  kan sende til Opus? For å gjennomføre planen?» → bekreftet. Handling: plan
+  godkjent og lagret som `docs/plan-cache-backoff.md`, kort Opus 5-prompt i
+  `docs/neste-okt-prompt-cache-backoff-utforelse.md`, HANDOVER oppdatert,
+  committet lokalt uten push.
 - 2026-08-20 (økt 10, ~15:00): «Gå gjennom docs-filen, rydd — ikke poeng med
   masse historikk. Finn en oppgave som kan gjøres akkurat nå og lag en
   kopierbar prompt til en ny AI-agent.» Handling: HANDOVER.md ryddet (denne
