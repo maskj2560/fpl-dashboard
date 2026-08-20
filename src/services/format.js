@@ -47,3 +47,12 @@ export function formatDay(iso) {
 export function formatTime(iso) {
   return time.format(new Date(iso));
 }
+
+/** Poengdifferanse med fortegn og norsk komma: +10, −4, −1,3. */
+export function formatSigned(n) {
+  const rounded = Math.round(n * 10) / 10;
+  const abs = Math.abs(rounded).toLocaleString('nb-NO');
+  if (rounded > 0) return `+${abs}`;
+  if (rounded < 0) return `−${abs}`;
+  return '0';
+}

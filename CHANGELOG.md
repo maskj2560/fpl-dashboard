@@ -7,6 +7,18 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+
+- **Ny side «Overganger» (/overganger).** For hver overgang du har gjort i
+  sesongen: poengene spilleren du hentet faktisk ga, mot poengene spilleren
+  du solgte ville gitt, så lenge byttet var i effekt (til spilleren du
+  hentet ble solgt videre eller den du solgte hentet tilbake) — minus
+  poengstraff. Totalsum, poengstraff og beste/verste bytte øverst. Wildcard-
+  og Free Hit-runder merkes (Free Hit måles kun i sin egen runde, siden
+  laget reverseres). Før første overgang forklarer siden hva den kommer til
+  å måle. Målingen bruker rå spillerpoeng uten benk- og kapteinsvekting —
+  det står på siden.
+
 ## [1.1.3] - 2026-08-20
 
 Kvalitetspass: 29 verifiserte funn fra en full kodegjennomgang, rettet med

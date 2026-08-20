@@ -150,10 +150,10 @@ committet (og pushet hvis remote finnes).
 _Plan: `docs/plan-hva-hvis-transfers.md`. Versjonsnummeret settes endelig ved
 release; rykker M4-kandidatene først, forskyves det._
 
-- [ ] fplClient: `getEntryTransfers` (5 min) + `getLiveHistoric` (6 t, kun ferdige runder)
-- [ ] `transfers.js`: buildTransferAnalysis — vindu, diff, straff, chips, kanttilfeller
-- [ ] `assembleTransferAnalysis` — henting via cache, maks 38 live-kall
-- [ ] /overganger: view, rute, nav, tomtilstander, view-tester
+- [x] fplClient: `getEntryTransfers` (5 min) + `getLiveHistoric` (6 t, kun ferdige runder)
+- [x] `transfers.js`: buildTransferAnalysis — vindu, diff, straff, chips, kanttilfeller
+- [x] `assembleTransferAnalysis` — henting via cache, maks 38 live-kall
+- [x] /overganger: view, rute, nav, tomtilstander, view-tester
 - [ ] Røyktest lokalt (alle ruter 200, AI/Discord av) + docs
 - [ ] Etter GW2: verifiser transfers-skjemaet mot ekte data
 
