@@ -97,6 +97,12 @@ export function getEntryHistory(teamId) {
   });
 }
 
+export function getEntryTransfers(teamId) {
+  return getOrFetch(`transfers:${teamId}`, () => fplFetch(`entry/${teamId}/transfers/`), {
+    ttl: 5 * MIN,
+  });
+}
+
 export function getPicks(teamId, gw) {
   return getOrFetch(`picks:${teamId}:${gw}`, () => fplFetch(`entry/${teamId}/event/${gw}/picks/`), {
     ttl: 5 * MIN,
@@ -105,6 +111,17 @@ export function getPicks(teamId, gw) {
 
 export function getLive(gw) {
   return getOrFetch(`live:${gw}`, () => fplFetch(`event/${gw}/live/`), { ttl: 1 * MIN });
+}
+
+/**
+ * Live-poeng for en FERDIG runde. Samme endepunkt og cache-nøkkel som
+ * getLive(), men 6 t TTL: poengene i en ferdigspilt runde er i praksis
+ * immutable. Delt nøkkel betyr at første skriver setter TTL-en — derfor
+ * skal denne KUN kalles for runder bootstrap melder `finished`, ellers
+ * kunne live-siden servert timegammel data for pågående runde.
+ */
+export function getLiveHistoric(gw) {
+  return getOrFetch(`live:${gw}`, () => fplFetch(`event/${gw}/live/`), { ttl: 360 * MIN });
 }
 
 export function getLeagueStandings(leagueId, page = 1) {

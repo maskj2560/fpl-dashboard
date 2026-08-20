@@ -1,7 +1,15 @@
 import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { clear, _setNow, _flush } from '../src/services/cache.js';
-import { getBootstrap, getFixtures, getLive, isGameUpdating, FplError } from '../src/services/fplClient.js';
+import {
+  getBootstrap,
+  getFixtures,
+  getLive,
+  getLiveHistoric,
+  getEntryTransfers,
+  isGameUpdating,
+  FplError,
+} from '../src/services/fplClient.js';
 
 // Mocker global fetch — ingen nettverkskall i tester.
 const originalFetch = globalThis.fetch;
@@ -121,6 +129,37 @@ test('fixtures for én runde revalideres etter ett minutt, helsesongen ikke', as
     const season = fetchCalls.filter((c) => /fixtures\/$/.test(c.url)).length;
     assert.equal(perGw, 2, 'runde-fixtures skal hentes på nytt');
     assert.equal(season, 1, 'helsesong-fixtures skal fortsatt ligge i cache');
+  } finally {
+    _setNow(null);
+  }
+});
+
+// ---- Overganger: transfers-endepunktet og historiske live-poeng ------------
+
+test('getEntryTransfers henter entry/{id}/transfers/ og cacher', async () => {
+  mockFetch(() => jsonResponse([{ element_in: 10, element_out: 11, event: 2 }]));
+
+  const first = await getEntryTransfers(42);
+  const second = await getEntryTransfers(42);
+
+  assert.deepEqual(first, [{ element_in: 10, element_out: 11, event: 2 }]);
+  assert.equal(second, first);
+  assert.equal(fetchCalls.length, 1);
+  assert.match(fetchCalls[0].url, /entry\/42\/transfers\/$/);
+});
+
+test('getLiveHistoric deler nøkkel med getLive og lever lenger enn 1 min', async () => {
+  mockFetch(() => jsonResponse({ elements: [] }));
+  let clock = 1_000_000;
+  _setNow(() => clock);
+  try {
+    await getLiveHistoric(2);
+    await getLive(2); // samme nøkkel: ingen ny henting
+    assert.equal(fetchCalls.length, 1);
+
+    clock += 5 * 60_000; // 5 min: forbi getLives TTL, godt innenfor 6 t
+    await getLiveHistoric(2);
+    assert.equal(fetchCalls.length, 1, 'ferdig runde skal ikke revalideres etter 5 min');
   } finally {
     _setNow(null);
   }
