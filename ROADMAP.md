@@ -173,7 +173,7 @@ alias-tabellen dekker begge retninger._
 
 - [x] Setningssplitting tåler norske forkortelser og klokkeslett (TDD, 5 nye tester)
 - [x] Lagnavn-alias (`TEAM_ALIASES`) + ordgrense/genitiv-matching (TDD, 5 nye tester)
-- [ ] Røyktest lokalt (11 ruter 200, AI/Discord av) + handover
+- [x] Røyktest lokalt (11 ruter 200, AI/Discord av) + handover
 
 ## Senere / idéer (ikke planlagt)
 

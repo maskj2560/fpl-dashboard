@@ -5,12 +5,34 @@
 > Versjonshistorikk og detaljer ligger i CHANGELOG.md, ROADMAP.md og git —
 > denne filen holder kun nåtilstand, aktive økter og lærdommer.
 
-**Sist oppdatert:** 2026-08-20 (økt 13, Fable: P3-4-plan godkjent; sesongstart-verifisering aktiv)
+**Sist oppdatert:** 2026-08-20 (økt 14, Opus 5: P3-4 utført på branch; sesongstart-verifisering aktiv)
 
 ## Status akkurat nå
 
-- **P3-4 `sanitizeBriefText`-robusthet: plan GODKJENT, klar for Opus 5.**
-  (økt 13, Fable i plan mode.) Plan: `docs/plan-sanitize-brief.md` —
+- **P3-4 `sanitizeBriefText`-robusthet: UTFØRT på branch `fix/sanitize-brief`
+  — IKKE merget, IKKE pushet.** (økt 14, Opus 5. Planen fulgt uten avvik.)
+  - Commits: `28ab239` (forkortelses-/klokkeslett-maskering i
+    setningssplittingen + 5 tester + CHANGELOG), `de2616d` (`TEAM_ALIASES` +
+    ordgrense/genitiv-matching + 5 tester + CHANGELOG/ROADMAP),
+    og siste commit på branchen (handover + røyktestbevis, denne).
+  - Kun `src/services/prompts.js`, `test/prompts.test.js` og docs er rørt.
+    Ingen oppførsel som sjekkpunkt A–D observerer er endret (ingen nettverk,
+    ingen timere, ingen AI-prompt-endring).
+  - Bevis: TDD-rødt observert først begge tasks — Task 1: 223 tester,
+    219 pass, **4 fail** (nøyaktig de fire splitting-testene); Task 2:
+    228 tester, 226 pass, **2 fail** (de to alias-testene). Deretter
+    `npm test` **228/228** og `npm run lint` exit 0 etter hver commit.
+    Utgangspunkt på `main` var 218/218.
+  - Røyktest port 3010 med tomme nøkler (scratchpad-`.env`):
+    `/health` = `{"status":"ok","features":{"ai":false,"aiModel":null,`
+    `"discord":false,"teamId":true,"leagues":0}}` (`leagues:0` fordi
+    scratchpad-env-en ikke setter `LEAGUE_IDS` — `/liga` svarte likevel 200),
+    alle 11 ruter 200, ukjent sti 404, **0 AI-kall** i serverloggen.
+  - **Neste steg — krever klarsignal fra Marius:** merge til `main` etter
+    sjekkpunkt D (søndag/mandag), evt. som v1.2.2. Push av `main` +
+    tag `v1.2.1` gjenstår fortsatt separat (se punktet under).
+- **P3-4-planen (godkjent i økt 13, Fable i plan mode):**
+  `docs/plan-sanitize-brief.md` —
   to delfunksjoner med TDD (forkortelses-maskering i setningssplittingen,
   lagnavn-alias + ordgrense/genitiv-matching), 10 nye tester, 218 → 228.
   Utførelsesprompt til Opus 5: `docs/neste-okt-prompt-sanitize-brief-utforelse.md`.
@@ -73,6 +95,8 @@ Plan: `C:\Users\mariu\.claude\plans\oppdrag-verifiser-sesongstarten-wise-puffin.
 | D | søndag/mandag | kostnadskontroll (`AI-kall:`-linjer), skjermbilder, mobilsjekk, v1.2.x-kandidater, avslutning |
 
 **AI-kall-telleliste (budsjett ~3 utover automatiske):** brukt **0 av ~3**.
+(Uendret etter økt 14: P3-4-utførelsen gjorde **0 AI-kall** — tester bruker
+hardkodet tekst, og røyktesten kjørte med tomme nøkler, `/health` `ai:false`.)
 NB: 2 lokale AI-kall skjedde ved et uhell i økt 10s røyktest (se lærdommer) —
 de vises i Anthropic-forbruket, IKKE i Coolify-loggen.
 
@@ -148,10 +172,9 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 
 ## Åpne punkter
 
-- **Neste steg: Opus 5 utfører P3-4** med prompten i
-  `docs/neste-okt-prompt-sanitize-brief-utforelse.md` (planen er godkjent,
-  se Status). Trygg under sjekkpunkt A–D: ren tekstfunksjon, ingen AI-kall,
-  branch `fix/sanitize-brief`, ingen push.
+- **P3-4 er ferdig kodet** (branch `fix/sanitize-brief`, se Status).
+  Gjenstår: merge etter sjekkpunkt D på klarsignal fra Marius — samme
+  klarsignal som push av `main` + tag `v1.2.1`.
 - M5: skjermbilder til README + mobilbekreftelse (krever Marius).
 - v1.2.x-kandidater i ROADMAP (P1-5b + P3-1…P3-5): fikses kun etter avtale.
   P3-2 har kjøreklar prompt (se Status). P3-3/P3-5 krever avklaring med
@@ -160,6 +183,17 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 
+- 2026-08-20 (økt 14): kjøreprompt «Oppdrag (Opus 5): utfør
+  sanitize-brief-planen (P3-4)» — les HANDOVER (ikke forstyrr den aktive
+  sesongstart-verifiseringen A–D), CLAUDE.md og `docs/plan-sanitize-brief.md`;
+  følg planen nøyaktig task for task, ingen re-planlegging, ingen subagenter;
+  branch `fix/sanitize-brief`, aldri push, ikke merge før sjekkpunkt D +
+  klarsignal; ikke rør `main`s upushede commits/tag `v1.2.1`; ingen AI-kall;
+  TDD med rødt observert først; røyktest med tomme nøkler på PORT=3010 der
+  `/health` sjekkes først; bevis (kommando + output) for hver verifisering;
+  loggføring; tiltale Marius. Handling: utført som beskrevet — tre commits
+  (`28ab239`, `de2616d` + denne docs-commiten), 218 → 228 tester, lint 0,
+  røyktest OK, 0 AI-kall, ingen push, ingen merge. Ingen avvik fra planen.
 - 2026-08-20 (økt 13): kjøreprompt «Oppdrag (Fable, plan mode): robust
   sanitizeBriefText (P3-4)» — planlegg i plan mode, Opus 5 utfører; harde
   regler: branch `fix/sanitize-brief`, aldri push, ikke merge før sjekkpunkt
