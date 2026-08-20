@@ -25,7 +25,8 @@ src/config.js      env-variabler: PORT, FPL_TEAM_ID, LEAGUE_IDS, TZ,
 src/routes/        tynne ruter: én fil per side + api.js
 src/services/
   fplClient.js     ENESTE modul med nettverkskall til FPL-API-et
-  cache.js         TTL-cache med stale-while-revalidate og in-flight dedup
+  cache.js         TTL-cache med stale-while-revalidate, in-flight dedup
+                   og 30 s backoff per nøkkel etter mislykket revalidering
   analysis.js      rene funksjoner: kaptein-/transferanbefalinger, FDR, differensialer
   brief.js         gameweek-briefen: buildBrief (ren data), assembleBrief
                    (henter fra FPL), generateAiBrief (AI-teksten, delt av

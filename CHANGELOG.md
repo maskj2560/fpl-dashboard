@@ -7,6 +7,14 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Fixed
+
+- **Ved FPL-nedetid slutter sidene å hamre på API-et.** Når en
+  bakgrunnsoppdatering av cachet FPL-data feiler, venter cachen nå 30
+  sekunder per nøkkel før neste forsøk (før: nytt forsøk på opptil ~10 s
+  ved hver eneste sidevisning). Gamle data serveres umiddelbart som før,
+  og et vellykket forsøk nullstiller ventetiden (P3-2)
+
 ## [1.2.0] - 2026-08-20
 
 ### Added
