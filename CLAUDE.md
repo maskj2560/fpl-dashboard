@@ -31,6 +31,9 @@ src/services/
                    (henter fra FPL), generateAiBrief (AI-teksten, delt av
                    /brief og auto-briefen)
   live.js          live-visningen: buildLive (ren data), assembleLive (henter)
+  transfers.js     «Overganger»-siden: buildTransferAnalysis (ren hva
+                   hvis-analyse av egne transfers), assembleTransferAnalysis
+                   (henter — maks 38 live-kall, aldri element-summary)
   leagues.js       hvilke ligaer som vises; knownLeagueCount() for /health
   ai.js            felles Claude API-service: lazy init, modell fra config,
                    cache med minimumsintervall per funksjon
