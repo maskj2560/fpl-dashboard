@@ -5,10 +5,21 @@
 > Versjonshistorikk og detaljer ligger i CHANGELOG.md, ROADMAP.md og git —
 > denne filen holder kun nåtilstand, aktive økter og lærdommer.
 
-**Sist oppdatert:** 2026-08-20 ~15:10 (v1.2.1 cache-backoff merget lokalt, ikke pushet; sesongstart-verifisering aktiv)
+**Sist oppdatert:** 2026-08-20 (økt 13, Fable: P3-4-plan godkjent; sesongstart-verifisering aktiv)
 
 ## Status akkurat nå
 
+- **P3-4 `sanitizeBriefText`-robusthet: plan GODKJENT, klar for Opus 5.**
+  (økt 13, Fable i plan mode.) Plan: `docs/plan-sanitize-brief.md` —
+  to delfunksjoner med TDD (forkortelses-maskering i setningssplittingen,
+  lagnavn-alias + ordgrense/genitiv-matching), 10 nye tester, 218 → 228.
+  Utførelsesprompt til Opus 5: `docs/neste-okt-prompt-sanitize-brief-utforelse.md`.
+  Branch `fix/sanitize-brief`, ingen push, ingen merge før sjekkpunkt D.
+  Verifisert i planøkten mot GW1-snapshotet: FPLs `teams.name` er selv
+  kortform for flere klubber («Spurs», «Man Utd», «Nott'm Forest») og lang
+  form for andre («Coventry City», «Hull City», «Ipswich Town») —
+  alias-tabellen i planen dekker begge retninger; ROADMAP-punktets
+  «kortnavn»-påstand korrigeres som del av utførelsen.
 - **v1.2.0 «Overganger» er i prod** (2026-08-20 ~14:40, tag pushet).
   Ny side `/overganger`: historisk hva hvis-analyse av egne transfers.
   Verifisert i prod: alle 11 ruter 200, 404 OK, footer v1.2.0, tomtilstanden
@@ -137,11 +148,10 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 
 ## Åpne punkter
 
-- **Neste planlagte oppgave: P3-4 `sanitizeBriefText`-robusthet.**
-  Planleggingsprompt til Fable klar i
-  `docs/neste-okt-prompt-sanitize-brief.md` (Fable planlegger → lager
-  Opus 5-prompt → Opus 5 utfører). Trygg under sjekkpunkt A–D: ren
-  tekstfunksjon, ingen AI-kall, branch `fix/sanitize-brief`, ingen push.
+- **Neste steg: Opus 5 utfører P3-4** med prompten i
+  `docs/neste-okt-prompt-sanitize-brief-utforelse.md` (planen er godkjent,
+  se Status). Trygg under sjekkpunkt A–D: ren tekstfunksjon, ingen AI-kall,
+  branch `fix/sanitize-brief`, ingen push.
 - M5: skjermbilder til README + mobilbekreftelse (krever Marius).
 - v1.2.x-kandidater i ROADMAP (P1-5b + P3-1…P3-5): fikses kun etter avtale.
   P3-2 har kjøreklar prompt (se Status). P3-3/P3-5 krever avklaring med
@@ -150,6 +160,15 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 
+- 2026-08-20 (økt 13): kjøreprompt «Oppdrag (Fable, plan mode): robust
+  sanitizeBriefText (P3-4)» — planlegg i plan mode, Opus 5 utfører; harde
+  regler: branch `fix/sanitize-brief`, aldri push, ikke merge før sjekkpunkt
+  D, aldri deploy torsdag 19–21, ingen AI-kall, TDD/node:test uten nettverk
+  og ekte timere, ingen nye avhengigheter, bevis for alt, loggføring,
+  tiltale Marius. Handling: plan godkjent i plan mode og lagret som
+  `docs/plan-sanitize-brief.md`; Opus 5-prompt skrevet til
+  `docs/neste-okt-prompt-sanitize-brief-utforelse.md` (+ limt i chatten);
+  HANDOVER oppdatert; committet lokalt på `main` uten push. 0 AI-kall.
 - 2026-08-20 (økt 12, ~15:20): kjøreprompt «Oppdrag (Opus 5): utfør
   cache-backoff-planen (P3-2)» — følg planen nøyaktig, branch
   `fix/cache-backoff`, TDD med rødt observert først, ingen push, ingen merge
