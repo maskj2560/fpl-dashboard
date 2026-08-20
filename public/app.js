@@ -1,3 +1,30 @@
+// Delt HTML-escaping for modulene under. Escaper også anførselstegn, slik at
+// verdien er trygg både som tekstinnhold og inne i et attributt.
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// Live-polling: ett kall i minuttet mens kamper pågår, og et enkelt
+// vekkesignal ved neste avspark ellers. Aldri et intervall utenfor kampvinduer.
+const LIVE_POLL_MS = 60000;
+const LIVE_KICKOFF_BUFFER_MS = 30000;
+
+/**
+ * Hvor lenge siden skal vente før den sjekker på nytt når ingen kamper pågår.
+ * null = ingenting å vente på (kamper pågår alt, eller ingen kjent avspark).
+ */
+function nextWakeupDelay(live, nowMs, bufferMs) {
+  if (!live || live.anyLive || !live.nextKickoff) return null;
+  const at = new Date(live.nextKickoff).getTime();
+  if (!Number.isFinite(at)) return null;
+  return Math.max(at + bufferMs - nowMs, 0);
+}
+
 // Modul 0: Mobilmenyen. Scroller aktiv lenke inn i syne, og togglar
 // kantfade-klassene som viser at menyen har mer innhold sidelengs.
 (function () {
@@ -159,19 +186,14 @@
   const updatedEl = document.getElementById('live-updated');
   const pulseEl = document.getElementById('live-pulse');
 
-  function esc(s) {
-    const d = document.createElement('span');
-    d.textContent = s;
-    return d.innerHTML;
-  }
 
   function render(live) {
     if (totalEl) totalEl.textContent = live.totalLive == null ? '–' : live.totalLive;
     playersBody.innerHTML = live.myPlayers
       .map(function (p) {
         return (
-          '<tr' + (p.onBench ? ' class="row-bench"' : '') + '><td><strong>' + esc(p.name) + '</strong>' +
-          (p.isCaptain ? ' <b class="cap">C</b>' : '') + ' <span class="dim">' + esc(p.team) + '</span></td>' +
+          '<tr' + (p.onBench ? ' class="row-bench"' : '') + '><td><strong>' + escapeHtml(p.name) + '</strong>' +
+          (p.isCaptain ? ' <b class="cap">C</b>' : '') + ' <span class="dim">' + escapeHtml(p.team) + '</span></td>' +
           '<td class="num">' + p.minutes + "'</td>" +
           '<td class="num">' + p.points + '</td>' +
           '<td class="num' + (p.bonusEst > 0 ? ' accent' : '') + '">' + (p.bonusEst > 0 ? '+' + p.bonusEst : '–') + '</td>' +
@@ -185,9 +207,9 @@
         const live1 = m.started && !m.finished;
         return (
           '<div class="match' + (live1 ? ' match-live' : '') + '">' +
-          '<span class="match-team">' + esc(m.home) + '</span>' +
+          '<span class="match-team">' + escapeHtml(m.home) + '</span>' +
           '<span class="match-score">' + (m.homeScore == null ? '–' : m.homeScore + '–' + m.awayScore) + '</span>' +
-          '<span class="match-team">' + esc(m.away) + '</span>' +
+          '<span class="match-team">' + escapeHtml(m.away) + '</span>' +
           '<span class="match-status">' + status + '</span>' +
           '</div>'
         );
@@ -196,10 +218,10 @@
     leaguesRoot.innerHTML = live.leagues
       .map(function (l) {
         return (
-          '<section class="card"><h2>' + esc(l.name) + '</h2><div class="table-scroll"><table class="data"><thead><tr><th class="num">#</th><th>Lag</th><th class="num">GW</th><th class="num">Totalt</th></tr></thead><tbody>' +
+          '<section class="card"><h2>' + escapeHtml(l.name) + '</h2><div class="table-scroll"><table class="data"><thead><tr><th class="num">#</th><th>Lag</th><th class="num">GW</th><th class="num">Totalt</th></tr></thead><tbody>' +
           l.top
             .map(function (r) {
-              return '<tr' + (r.me ? ' class="row-me"' : '') + '><td class="num">' + r.rank + '</td><td>' + esc(r.name) + '</td><td class="num">' + r.gw + '</td><td class="num">' + r.total + '</td></tr>';
+              return '<tr' + (r.me ? ' class="row-me"' : '') + '><td class="num">' + r.rank + '</td><td>' + escapeHtml(r.name) + '</td><td class="num">' + r.gw + '</td><td class="num">' + r.total + '</td></tr>';
             })
             .join('') +
           '</tbody></table></div></section>'
@@ -209,25 +231,44 @@
     statusEl.textContent = live.anyLive ? 'Kamper pågår' : 'Ingen kamper pågår akkurat nå';
     updatedEl.textContent = 'Sist oppdatert ' + new Date().toLocaleTimeString('nb-NO');
     pulseEl.classList.toggle('pulse-on', live.anyLive);
-    return live.anyLive;
+    return live;
   }
 
-  let anyLive = render(JSON.parse(dataEl.textContent));
+  let interval = null;
+  let wakeup = null;
+
+  // Tilstandsmaskin, ikke et engangsvalg ved sidelast: pågår kamper, går et
+  // 60 s-intervall. Gjør de ikke det, stoppes intervalet og siden sover til
+  // neste kjente avspark — så en fane som åpnes før kampstart, eller står åpen
+  // i pausen mellom lørdagskampene, våkner av seg selv.
+  function schedule(live) {
+    clearTimeout(wakeup);
+    wakeup = null;
+    if (live.anyLive) {
+      if (!interval) interval = setInterval(poll, LIVE_POLL_MS);
+      return;
+    }
+    clearInterval(interval);
+    interval = null;
+    const delay = nextWakeupDelay(live, Date.now(), LIVE_KICKOFF_BUFFER_MS);
+    if (delay !== null) wakeup = setTimeout(poll, delay);
+  }
 
   async function poll() {
     try {
       const res = await fetch('/api/live.json');
-      if (!res.ok) return;
-      anyLive = render(await res.json());
-      if (!anyLive) clearInterval(timer);
+      if (res.ok) {
+        schedule(render(await res.json()));
+        return;
+      }
     } catch {
-      // Nettverksglipp — prøver igjen neste tick.
+      // Nettverksglipp — håndteres som en feilet henting under.
     }
+    // Går et intervall, tar neste tick den. Ellers ett nytt forsøk om et minutt.
+    if (!interval) wakeup = setTimeout(poll, LIVE_POLL_MS);
   }
 
-  // Poll KUN mens kamper pågår — aldri utenfor kampvinduer.
-  let timer = null;
-  if (anyLive) timer = setInterval(poll, 60000);
+  schedule(render(JSON.parse(dataEl.textContent)));
 })();
 
 // Modul 4: AI-rådgiver på /lag.
@@ -238,9 +279,6 @@
   const out = document.getElementById('ai-advice-result');
   if (!btn || !out) return;
 
-  function escapeHtml(s) {
-    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  }
 
   btn.addEventListener('click', async () => {
     btn.disabled = true;

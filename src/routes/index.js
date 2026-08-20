@@ -11,20 +11,14 @@ import {
   formatPrice,
   POSITIONS_SHORT,
   translateFplNews,
+  byId,
+  STATUS_LABELS,
 } from '../services/analysis.js';
 import { formatDateTime, formatEventName, formatNumber } from '../services/format.js';
 import { getNews } from '../services/news.js';
 
 const router = Router();
 
-const STATUS_LABELS = {
-  a: 'Klar',
-  d: 'Usikker',
-  i: 'Skadet',
-  s: 'Suspendert',
-  u: 'Ute',
-  n: 'Utilgjengelig',
-};
 
 router.get('/', async (req, res, next) => {
   try {
@@ -39,7 +33,7 @@ router.get('/', async (req, res, next) => {
     const rawEvent = nextEvent(events);
     const deadlineEvent = rawEvent ? { ...rawEvent, name: formatEventName(rawEvent.name) } : null;
     const fromGw = deadlineEvent?.id ?? currentEvent(events)?.id ?? 1;
-    const teamsById = new Map(teams.map((t) => [t.id, t]));
+    const teamsById = byId(teams);
 
     res.renderPage('dashboard', {
       title: 'Dashbord',

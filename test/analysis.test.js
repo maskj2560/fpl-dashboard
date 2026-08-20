@@ -10,6 +10,7 @@ import {
   fdrMatrix,
   formatPrice,
   averageFdr,
+  teamFdrMap,
   playProbability,
   captainSuggestions,
   transferOutCandidates,
@@ -17,6 +18,11 @@ import {
   rankGraph,
   differentials,
   estimateBonus,
+  hasConfirmedBonus,
+  resolvePicks,
+  resolvedGw,
+  byId,
+  STATUS_LABELS,
 } from '../src/services/analysis.js';
 
 function player(overrides = {}) {
@@ -434,4 +440,135 @@ test('translateFplNews varsler i dev når et mønster ikke matcher', (t) => {
   warn.mock.resetCalls();
   translateFplNews('Ankle injury - 75% chance of playing');
   assert.equal(warn.mock.callCount(), 0, 'kjent mønster skal ikke varsle');
+});
+
+// ---- P0-1: picks som peker på ukjente elementer ----------------------------
+
+test('resolvePicks kobler picks mot elementer og beholder rekkefølgen', () => {
+  const byId = new Map([
+    [1, { id: 1, web_name: 'Raya' }],
+    [2, { id: 2, web_name: 'Saka' }],
+  ]);
+  const resolved = resolvePicks([{ element: 2 }, { element: 1 }], byId);
+  assert.deepEqual(
+    resolved.map((r) => r.player.web_name),
+    ['Saka', 'Raya'],
+  );
+  assert.equal(resolved[0].pick.element, 2);
+});
+
+test('resolvePicks dropper pick uten element i bootstrap og advarer', () => {
+  const byId = new Map([[1, { id: 1, web_name: 'Raya' }]]);
+  const warnings = [];
+  const original = console.warn;
+  console.warn = (...args) => warnings.push(args);
+  try {
+    const resolved = resolvePicks([{ element: 1 }, { element: 999 }], byId);
+    assert.equal(resolved.length, 1);
+    assert.equal(resolved[0].player.web_name, 'Raya');
+  } finally {
+    console.warn = original;
+  }
+  assert.equal(warnings.length, 1);
+  assert.match(warnings[0].join(' '), /999/);
+});
+
+test('resolvePicks tåler tom eller manglende pick-liste', () => {
+  assert.deepEqual(resolvePicks([], new Map()), []);
+  assert.deepEqual(resolvePicks(undefined, new Map()), []);
+});
+
+// ---- P1-11: tvilsom spiller uten publisert prosent -------------------------
+
+test('playProbability gir 0,75 for status d uten publisert prosent', () => {
+  assert.equal(playProbability(player({ status: 'd', chance_of_playing_next_round: null })), 0.75);
+});
+
+test('captainSuggestions merker tvilsom spiller uten prosent som redusert spilletid', () => {
+  const squad = [player({ id: 1, element_type: 3, team: 1, form: '8.0', status: 'd', chance_of_playing_next_round: null })];
+  const [top] = captainSuggestions(squad, [{ event: 5, team_h: 1, team_a: 2, team_h_difficulty: 2, team_a_difficulty: 4 }], 5);
+  assert.ok(top.reasons.includes('Spilletid 75 %'), top.reasons.join(' | '));
+  assert.equal(top.probability, 0.75);
+});
+
+// ---- P1-13: oversettelses-drift skal varsles også i prod -------------------
+
+test('translateFplNews advarer om ukjent mønster, men bare én gang per tekst', () => {
+  const warnings = [];
+  const original = console.warn;
+  const prev = process.env.NODE_ENV;
+  process.env.NODE_ENV = 'production';
+  console.warn = (...args) => warnings.push(args.join(' '));
+  try {
+    translateFplNews('Quantum entanglement - Expected back never');
+    translateFplNews('Quantum entanglement - Expected back never');
+  } finally {
+    console.warn = original;
+    process.env.NODE_ENV = prev;
+  }
+  assert.equal(warnings.length, 1, warnings.join(' / '));
+  assert.match(warnings[0], /Quantum entanglement/);
+});
+
+// ---- P2-2: delte hjelpere -------------------------------------------------
+
+test('resolvedGw velger aktiv runde når den finnes', () => {
+  const events = [
+    { id: 4, is_current: false, is_next: false },
+    { id: 5, is_current: true, is_next: false },
+    { id: 6, is_current: false, is_next: true },
+  ];
+  assert.equal(resolvedGw(events), 5);
+});
+
+test('resolvedGw gir runden før neste når ingen er aktiv', () => {
+  assert.equal(resolvedGw([{ id: 6, is_next: true }]), 5);
+});
+
+test('resolvedGw gir 0 før sesongstart og etter sesongslutt', () => {
+  assert.equal(resolvedGw([{ id: 1, is_next: true }]), 0, 'pre-season');
+  assert.equal(resolvedGw([{ id: 38, is_current: false, is_next: false }]), 0, 'post-season');
+  assert.equal(resolvedGw([]), 0);
+});
+
+test('byId lager oppslag på id', () => {
+  const map = byId([{ id: 3, navn: 'c' }, { id: 1, navn: 'a' }]);
+  assert.equal(map.get(1).navn, 'a');
+  assert.equal(map.get(3).navn, 'c');
+  assert.equal(map.get(2), undefined);
+  assert.equal(byId([]).size, 0);
+});
+
+test('STATUS_LABELS er delt og bruker full form for utilgjengelig', () => {
+  assert.equal(STATUS_LABELS.a, 'Klar');
+  assert.equal(STATUS_LABELS.d, 'Usikker');
+  assert.equal(STATUS_LABELS.n, 'Utilgjengelig');
+});
+
+test('hasConfirmedBonus skiller bekreftet bonus fra bare BPS', () => {
+  assert.equal(hasConfirmedBonus({ stats: [{ identifier: 'bps', h: [{ element: 1, value: 30 }], a: [] }] }), false);
+  assert.equal(hasConfirmedBonus({ stats: [{ identifier: 'bonus', h: [], a: [] }] }), false);
+  assert.equal(hasConfirmedBonus({ stats: [{ identifier: 'bonus', h: [{ element: 1, value: 3 }], a: [] }] }), true);
+  assert.equal(hasConfirmedBonus({}), false);
+});
+
+// ---- P2-3: ett oppslag per lag i stedet for full skann per kandidat --------
+
+test('teamFdrMap gir samme snitt som averageFdr for hvert lag', () => {
+  const fixtures = [
+    { event: 5, team_h: 1, team_a: 2, team_h_difficulty: 2, team_a_difficulty: 4 },
+    { event: 6, team_h: 2, team_a: 3, team_h_difficulty: 3, team_a_difficulty: 5 },
+    { event: 7, team_h: 1, team_a: 3, team_h_difficulty: 4, team_a_difficulty: 2 },
+    { event: 9, team_h: 1, team_a: 2, team_h_difficulty: 1, team_a_difficulty: 1 },
+    { event: null, team_h: 1, team_a: 3, team_h_difficulty: 5, team_a_difficulty: 5 },
+  ];
+  const map = teamFdrMap(fixtures, 5, 3);
+  for (const teamId of [1, 2, 3]) {
+    assert.equal(map.get(teamId) ?? null, averageFdr(fixtures, teamId, 5, 3), `lag ${teamId}`);
+  }
+});
+
+test('teamFdrMap utelater lag uten kamper i vinduet', () => {
+  const map = teamFdrMap([{ event: 9, team_h: 1, team_a: 2, team_h_difficulty: 2, team_a_difficulty: 4 }], 5, 3);
+  assert.equal(map.size, 0);
 });

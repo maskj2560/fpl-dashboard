@@ -16,7 +16,9 @@ npm run lint    # ESLint (flat config)
 ## Arkitektur
 
 ```
-src/server.js      oppstart, middleware (compression, static, feilhåndtering)
+src/server.js      oppstart og montering (starter lytteren ved import)
+src/middleware.js  rene middleware-byggere: cacheControlFor, createErrorHandler
+                   (ligger utenfor server.js så de kan testes)
 src/config.js      env-variabler: PORT, FPL_TEAM_ID, LEAGUE_IDS, TZ,
                    NEWS_FEEDS, ANTHROPIC_API_KEY (valgfri), AI_MODEL,
                    DISCORD_WEBHOOK_URL (valgfri), BRIEF_HOURS_BEFORE_DEADLINE
@@ -25,14 +27,21 @@ src/services/
   fplClient.js     ENESTE modul med nettverkskall til FPL-API-et
   cache.js         TTL-cache med stale-while-revalidate og in-flight dedup
   analysis.js      rene funksjoner: kaptein-/transferanbefalinger, FDR, differensialer
-  brief.js         setter sammen gameweek-briefen (ren data, uten LLM)
+  brief.js         gameweek-briefen: buildBrief (ren data), assembleBrief
+                   (henter fra FPL), generateAiBrief (AI-teksten, delt av
+                   /brief og auto-briefen)
+  live.js          live-visningen: buildLive (ren data), assembleLive (henter)
+  leagues.js       hvilke ligaer som vises; knownLeagueCount() for /health
   ai.js            felles Claude API-service: lazy init, modell fra config,
                    cache med minimumsintervall per funksjon
   news.js          RSS-nyheter + valgfri AI-oppsummering (via ai.js, cachet)
   notify.js        deadline-scheduler + Discord-webhook for auto-brief (valgfri)
 views/             EJS med layout + partials
 public/            style.css (CSS-variabler i :root), app.js (vanilla JS)
-test/              tester for analysis.js og cache.js — ingen nettverkskall i tester
+test/              node:test — ingen nettverkskall. Fakes injiseres via små
+                   test-hooks (_setNow/_flush/clear i cache.js, _setClient/
+                   _setNow/_reset i ai.js, _send/_setHooks/_reset i notify.js)
+                   eller ved å mocke global fetch (test/fplClient.test.js)
 ```
 
 Dataflyt: routes → services → fplClient → FPL-API. Nettverkskall mot FPL skjer
@@ -60,14 +69,23 @@ Alle AI-kall går gjennom `ai.js`. Modell konfigureres med `AI_MODEL`
 Fire funksjoner, alle kun aktive når `ANTHROPIC_API_KEY` er satt:
 
 1. **Nyhetsoppsummering** (`news.js`): RSS-titler + ingresser oppsummeres til
-   korte norske FPL-punkter. Maks én generering per 30 min, `max_tokens` ~600.
+   korte norske FPL-punkter. Maks én generering per 30 min, `max_tokens` 2000.
 2. **AI-gameweek-brief** (/brief): modellen skriver hele briefen på norsk fra
-   data-briefens JSON. Maks én generering per time, `max_tokens` ~1500.
+   data-briefens JSON. Maks én generering per time, `max_tokens` 4000.
    Data-briefen er alltid fallback.
 3. **AI transfer-rådgiver** (/lag): kun ved klikk, cachet 1 time,
-   `max_tokens` ~1500.
+   `max_tokens` 4000.
+
+`max_tokens` er satt romsligere enn svarlengden tilsier fordi adaptiv tenkning
+på Sonnet 5 trekker fra samme budsjett — taket hindrer avkortede svar, og
+ubrukte tokens koster ingenting. Lengden styres av instruksjonene i prompten.
 4. **Auto-brief** (`notify.js`): postes til `DISCORD_WEBHOOK_URL` X timer før
    deadline (`BRIEF_HOURS_BEFORE_DEADLINE`, default 24). 1–2 kall per uke.
+   Bruker samme `generateAiBrief()` som /brief, så de to kan ikke divergere.
+
+Ved feil eller tomt svar venter `ai.js` 5 minutter før nytt forsøk på samme
+nøkkel (`FAILURE_BACKOFF_MS`), slik at en ugyldig nøkkel ikke gir ett betalt
+kall per sidebesøk.
 
 Kostnadsregler: alt on-demand + cachet for alle besøkende, korte prompts.
 Uten nøkkel vises rå data (feed-liste, data-brief) — AI er alltid et tillegg,

@@ -3,7 +3,64 @@
 > Levende overleveringsfil. Oppdateres ved hver milepæl og ved arbeidsstans.
 > Ny AI-økt: les denne + CLAUDE.md + ROADMAP.md, fortsett der «Neste steg» sier.
 
-**Sist oppdatert:** 2026-08-20 ~01:45 (økt 8, **sesongstart-verifisering (M4) PÅGÅR — sjekkpunktstyrt**)
+**Sist oppdatert:** 2026-08-20 (økt 8 sesongstart-verifisering PÅGÅR; økt 9 kvalitetspass v1.1.3 ferdig på branch, ikke merget)
+
+## ØKT 9: kvalitetspass v1.1.3 — MERGET TIL MAIN OG PUSHET
+
+Branch `fix/kvalitetspass-v113` merget til `main` med `--no-ff` og pushet
+2026-08-20 ~03:00 (godt utenfor sendevinduet 19:00–21:00; ingen auto-brief
+sendt ennå i dag, så P1-5-dublettrisikoen var ikke i spill).
+`npm test` 185/185 grønne, `npm run lint` 0.
+Kjøreprompt: `docs/neste-okt-prompt-kvalitetspass.md` (29 verifiserte funn).
+
+**Merk for sesongstart-verifiseringen:** sjekkpunkt A–D observerer nå v1.1.3,
+ikke v1.1.2. Endret oppførsel som er verdt å se etter: live-siden poller
+etter en tilstandsmaskin (starter/stopper med kampene, våkner ved avspark),
+`/api/live.json` har fått `nextKickoff` og mistet `pos`/`multiplier`/
+`updatedAt`, skadenytt i briefen og Discord-meldingen er norsk, og AI-kall
+har 5 min backoff etter en feil.
+
+Rettet (funn-ID i commitmeldingene):
+
+| Funn | Rettelse |
+| --- | --- |
+| P0-1 | `resolvePicks()` — ukjent pick-element velter ikke /live, /lag, /brief, /api |
+| P0-2 | `chunkDiscordText()` — ingen tomme eller >2000-tegns Discord-meldinger |
+| P0-3 | `getFixtures(gw)` 1 min TTL; `nextKickoff` i payloaden; klienten er en tilstandsmaskin som våkner ved avspark |
+| P0-4 | Ugyldig `pubDate` dropper ikke hele RSS-feeden |
+| P1-5/6 | `MAX_LATE_MS` 60 → 15 min + logg; `sending`-flagg mot dobbelpost |
+| P1-7 | `/api/*`-feil svarer JSON |
+| P1-8 | AI-backoff 5 min etter feil/tomt svar |
+| P1-9 | `/health` venter aldri på FPL (`knownLeagueCount`) |
+| P1-10 | `?v=` gir immutable kun ved identitet med `assetVersion`/`FONT_VERSION` |
+| P1-11 | Status `d` uten prosent → 0,75 spilletid |
+| P1-12 | Skadenytt oversettes i briefkilden (view + Discord + AI-prompt) |
+| P1-13 | Oversettelsesdrift varsles også i prod, dedupet per prosess |
+| P1-14 | Bonusestimat per pågående kamp, summert — riktig i dobbel runde |
+| P2-1 | `assembleBrief`/`assembleLive` → services; ny `live.js`; `generateAiBrief()` deles av /brief og auto-briefen |
+| P2-2 | `STATUS_LABELS`, `resolvedGw`, `byId`, `formatDay`/`formatTime`, delt `escapeHtml` |
+| P2-3 | `teamFdrMap()` — ett oppslag per lag i stedet for full skann per kandidat |
+| P2-4 | Brief etter sesongslutt viser avsluttet tilstand, ikke runde 1-data |
+| P3-6 | CLAUDE.md: `max_tokens` 2000/4000 med begrunnelse; arkitekturkart oppdatert |
+
+Ikke gjort (ligger i ROADMAP under «v1.2.0-kandidater»): P1-5b persistent
+«brief sendt»-markør, og P3-1…P3-5 (`gameUpdating`-livssyklus, SWR-backoff i
+cache.js, SWR i ai.js, `sanitizeBriefText`-robusthet, `filterSummaryPoints`).
+P3-3 og P3-5 krever avklaring med Marius før de røres.
+
+Verifisert lokalt (kommandoer kjørt, output sett): 185/185 tester, lint 0, og
+røyktest mot lokal server på port 3010 med **AI og Discord slått av** (egen
+`.env` i scratchpad — prod-nøklene i repoets `.env` ble ikke brukt, ingen
+AI-kall, ingen webhook-post, scheduleren startet ikke). Alle ti ruter 200,
+ukjent sti 404. `/api/brief.json` matcher nullpunkt-fasiten fra sjekkpunkt 0:
+«Runde 1», deadline «fredag 21. august kl. 19:30», `injuries: []`,
+`fixturesBeforeDeadline: []`, 3 kapteiner, 4 kampdager.
+`Cache-Control` verifisert: riktig hash og `?v=1` → `immutable`, `?v=deadbeef`
+og uversjonert → `no-cache`.
+
+**Merget og deployet** etter klarsignal fra Marius 2026-08-20 ~02:55. Tidspunktet
+var trygt: sendevinduet 19:00–21:00 torsdag var langt unna, og dagens auto-brief
+hadde ikke gått ennå, så en redeploy kunne ikke re-poste noe.
 
 ## AKTIV ØKT (8): sesongstart-verifisering (M4) — sjekkpunkter
 
@@ -309,6 +366,17 @@ task for task. Kort oversikt:
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 
+- 2026-08-20 (økt 9): kjøreprompt for kvalitetspasset v1.1.3 sendt
+  (`docs/neste-okt-prompt-kvalitetspass.md`, 29 verifiserte funn P0–P3).
+  Handling: alle P0-, P1- og P2-funn rettet med tester på branchen
+  `fix/kvalitetspass-v113`, P3 dokumentert/lagt i ROADMAP. Ikke pushet.
+- 2026-08-20 (økt 9, midt i arbeidet): «Hvordan er status på gjennomføringen?»
+  Handling: statusoversikt gitt i økten (ferdige funn, gjenstående), arbeidet
+  fortsatte uten omprioritering.
+- 2026-08-20 (økt 9, ~02:55): «Okay du kan pushe til main». Handling: versjonen
+  kuttet som v1.1.3 (package.json, CHANGELOG, ROADMAP), branchen merget med
+  `--no-ff` og pushet. Coolify auto-deployer.
+
 - 2026-08-20 (økt 8, 01:37): kjøreprompt for sesongstart-verifiseringen sendt
   (`docs/neste-okt-prompt-sesongstart.md`-innholdet). Handling: plan skrevet
   og godkjent, sjekkpunkt 0 (prep) utført.
@@ -324,6 +392,17 @@ task for task. Kort oversikt:
   aktiv: sender 24 t før deadline` + `FPL-dashboard lytter på
   http://localhost:3000`. Handling: bekreftet korrekt tilstand — scheduler
   armert, venter på ~19:30.
+- 2026-08-20 (økt 8, ~02:00): «Er det noe annet vi kan jobbe med i
+  mellomtiden?» → valg «Kvalitetspass». Handling: branch
+  `fix/kvalitetspass-v113` opprettet, `test/fplClient.test.js` lagt til
+  (124/124 grønne), full kodegjennomgang kjørt (8 review-vinkler, /code-review
+  high) og alle funn verifisert mot koden — 29 funn rapportert.
+- 2026-08-20 (økt 8, ~02:30): «Lag alle funnene dine om til en veldig
+  detaljert prompt … til en ny ai agent med opus 5» + «Så venter vi med steg
+  A og B greiene». Handling: `docs/neste-okt-prompt-kvalitetspass.md` skrevet
+  (P0–P3 med fix-design og testkrav per funn). Sjekkpunkt A–D står uendret og
+  venter på ping. VIKTIG for kvalitetspass-agenten: aldri push uten Marius'
+  klarsignal, aldri deploy i sendevinduet torsdag 19:00–21:00.
 
 - 2026-08-19: «Ikke limit deg så mye — lag det så bra du kan med gode nok modeller»
 - 2026-08-19: «Men selve AI-en i fantasy må være relativt billig å bruke for én person»

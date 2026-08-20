@@ -10,8 +10,36 @@ export const POSITIONS = Object.freeze({
 
 export const POSITIONS_SHORT = Object.freeze({ 1: 'K', 2: 'F', 3: 'M', 4: 'A' });
 
+/** FPL-ens `status`-koder på norsk. Delt av dashbordet og spillerlista. */
+export const STATUS_LABELS = Object.freeze({
+  a: 'Klar',
+  d: 'Usikker',
+  i: 'Skadet',
+  s: 'Suspendert',
+  u: 'Ute',
+  n: 'Utilgjengelig',
+});
+
+/** Oppslag id → objekt. Brukes på alle bootstrap-listene. */
+export function byId(list) {
+  return new Map(list.map((x) => [x.id, x]));
+}
+
 export function nextEvent(events) {
   return events.find((e) => e.is_next) ?? null;
+}
+
+/**
+ * Runden vi henter lagdata for: den aktive når den finnes, ellers runden før
+ * neste (før sesongstart er neste 1 → 0). Ingen aktiv og ingen neste runde
+ * (etter sesongslutt) gir også 0. 0 betyr «ingen runde å hente picks for» —
+ * kallstedene gater på `gw >= 1`.
+ */
+export function resolvedGw(events) {
+  const current = currentEvent(events);
+  if (current) return current.id;
+  const upcoming = nextEvent(events);
+  return upcoming ? upcoming.id - 1 : 0;
 }
 
 export function currentEvent(events) {
@@ -21,6 +49,25 @@ export function currentEvent(events) {
 /** Pris i tideler → «5.5» (£m). */
 export function formatPrice(nowCost) {
   return (nowCost / 10).toFixed(1);
+}
+
+/**
+ * Kobler picks mot bootstrap-elementene: `[{ pick, player }]`.
+ * Picks (5 min TTL) og bootstrap (15 min TTL) kan komme i utakt, og en spiller
+ * kan være fjernet fra spillet. Pick-er uten element droppes med en advarsel —
+ * resten av troppen vises som normalt i stedet for at siden svarer 500.
+ */
+export function resolvePicks(picks, elementsById) {
+  const resolved = [];
+  for (const pick of picks ?? []) {
+    const player = elementsById.get(pick.element);
+    if (!player) {
+      console.warn('Pick-element %d mangler i bootstrap', pick.element);
+      continue;
+    }
+    resolved.push({ pick, player });
+  }
+  return resolved;
 }
 
 function ownership(p) {
@@ -136,10 +183,36 @@ export function averageFdr(fixtures, teamId, fromGw, count = 3) {
   return diffs.reduce((s, d) => s + d, 0) / diffs.length;
 }
 
+/**
+ * Snitt-FDR for ALLE lag i samme vindu, i én gjennomgang av kamplista.
+ * averageFdr skanner hele lista per spiller; med hundrevis av kandidater ble
+ * det unødvendig mange runder over de samme kampene for 20 lagverdier.
+ * Lag uten kamper i vinduet mangler i mappet (samme som averageFdr sin null).
+ */
+export function teamFdrMap(fixtures, fromGw, count = 3) {
+  const sums = new Map(); // teamId -> [sum, antall]
+  const add = (teamId, difficulty) => {
+    const entry = sums.get(teamId) ?? [0, 0];
+    entry[0] += difficulty;
+    entry[1] += 1;
+    sums.set(teamId, entry);
+  };
+  for (const f of fixtures) {
+    if (f.event == null || f.event < fromGw || f.event >= fromGw + count) continue;
+    add(f.team_h, f.team_h_difficulty);
+    add(f.team_a, f.team_a_difficulty);
+  }
+  return new Map([...sums].map(([teamId, [sum, n]]) => [teamId, sum / n]));
+}
+
 /** Sannsynlighet (0–1) for at spilleren får spilletid neste runde. */
 export function playProbability(p) {
   if (p.chance_of_playing_next_round != null) return p.chance_of_playing_next_round / 100;
-  return p.status === 'a' || p.status === 'd' ? 1 : 0;
+  // FPL flagger ofte 'd' (tvilsom) før prosenten publiseres. 0,75 er FPL-ens
+  // egen konvensjon for «doubtful» — uten den scorer spilleren som sikker
+  // starter, både i kapteinsforslag og i innkjøpsfilteret (≥ 0,75).
+  if (p.status === 'd') return 0.75;
+  return p.status === 'a' ? 1 : 0;
 }
 
 /**
@@ -147,10 +220,11 @@ export function playProbability(p) {
  * Keepere utelates. Returnerer topp `limit` med begrunnelser.
  */
 export function captainSuggestions(squad, fixtures, fromGw, limit = 3) {
+  const fdrByTeam = teamFdrMap(fixtures, fromGw, 1);
   return squad
     .filter((p) => p.element_type !== 1)
     .map((p) => {
-      const avgFdr = averageFdr(fixtures, p.team, fromGw, 1);
+      const avgFdr = fdrByTeam.get(p.team) ?? null;
       const ease = 6 - (avgFdr ?? 3.5);
       const probability = playProbability(p);
       const score = (parseFloat(p.form) || 0) * ease * probability;
@@ -189,6 +263,7 @@ export function transferOutCandidates(squad, fixtures, fromGw) {
  */
 export function transferInCandidates(outPlayer, elements, squadIds, bankTenths, fixtures, fromGw, limit = 3) {
   const budget = outPlayer.now_cost + bankTenths;
+  const fdrByTeam = teamFdrMap(fixtures, fromGw, 3);
   return elements
     .filter(
       (p) =>
@@ -199,8 +274,7 @@ export function transferInCandidates(outPlayer, elements, squadIds, bankTenths, 
         playProbability(p) >= 0.75,
     )
     .map((p) => {
-      const avgFdr = averageFdr(fixtures, p.team, fromGw, 3);
-      const ease = 6 - (avgFdr ?? 3.5);
+      const ease = 6 - (fdrByTeam.get(p.team) ?? 3.5);
       const score = (parseFloat(p.form) || 0) * ease + (p.total_points / p.now_cost) * 2;
       return { player: p, score };
     })
@@ -234,6 +308,16 @@ export function rankGraph(historyCurrent, width = 600, height = 140) {
  * Bonusestimat fra BPS i en pågående kamp. Topp 3 BPS får 3/2/1.
  * Likhet deler plassen etter FPL-reglene (3,3→1 · 3,2,2 · 3,3,3 · 3,2,1,1).
  */
+/**
+ * Har kampen fått bekreftet bonus? Da ligger poengene allerede i spillerens
+ * total_points, og et estimat på toppen ville telt dem to ganger.
+ */
+export function hasConfirmedBonus(fixture) {
+  return (fixture.stats ?? []).some(
+    (s) => s.identifier === 'bonus' && (s.h?.length ?? 0) + (s.a?.length ?? 0) > 0,
+  );
+}
+
 export function estimateBonus(fixture) {
   const result = new Map();
   const bpsStat = fixture.stats?.find((s) => s.identifier === 'bps');
@@ -334,11 +418,17 @@ function translateDetail(detail) {
   return null;
 }
 
-/** Nye engelske fraser skal oppdages i dev, ikke først i UI-et i prod. */
+// Hver ukjent tekst varsles én gang per prosess — logg, ikke loggspam.
+const warnedNews = new Set();
+
+/**
+ * Nye engelske fraser skal oppdages der de faktisk dukker opp. Prod ser
+ * FPL-ens nye strenger først, så varselet gjelder alle miljøer.
+ */
 function warnUnmatched(text) {
-  if (process.env.NODE_ENV !== 'production') {
-    console.warn(`FPL-news uten oversettelsesmønster: «${text}»`);
-  }
+  if (warnedNews.has(text)) return;
+  warnedNews.add(text);
+  console.warn(`FPL-news uten oversettelsesmønster: «${text}»`);
 }
 
 /**
@@ -348,7 +438,7 @@ function warnUnmatched(text) {
  * «<type> - Expected back <dato>», «Has joined <klubb> permanently»,
  * «Has joined <klubb> on loan [until <dato> | for the rest of the season]»,
  * «Loaned to <klubb>», «Suspended until <dato>», «has returned to <klubb>».
- * Ukjente mønstre vises uendret, med console.warn i dev.
+ * Ukjente mønstre vises uendret, med console.warn (én gang per tekst).
  */
 export function translateFplNews(news) {
   const text = String(news ?? '').trim();
