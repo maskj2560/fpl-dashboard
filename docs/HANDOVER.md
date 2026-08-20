@@ -137,6 +137,11 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 
 ## Åpne punkter
 
+- **Neste planlagte oppgave: P3-4 `sanitizeBriefText`-robusthet.**
+  Planleggingsprompt til Fable klar i
+  `docs/neste-okt-prompt-sanitize-brief.md` (Fable planlegger → lager
+  Opus 5-prompt → Opus 5 utfører). Trygg under sjekkpunkt A–D: ren
+  tekstfunksjon, ingen AI-kall, branch `fix/sanitize-brief`, ingen push.
 - M5: skjermbilder til README + mobilbekreftelse (krever Marius).
 - v1.2.x-kandidater i ROADMAP (P1-5b + P3-1…P3-5): fikses kun etter avtale.
   P3-2 har kjøreklar prompt (se Status). P3-3/P3-5 krever avklaring med
@@ -152,6 +157,14 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
   Handling: utført som beskrevet, to commits lokalt (`a1f7a5d` + denne
   docs-commiten),
   212 → 218 tester, lint 0, røyktest OK. Ingen avvik fra planen.
+- 2026-08-20 (økt 12, ~15:15): «Lag en ny prompt til claude med alle
+  eksisterende regler … skal ikke stå i veien for sjekkpunktene A B C D, be
+  fable også lage en prompt som skal sendes til opus 5». Handling:
+  `docs/neste-okt-prompt-sanitize-brief.md` skrevet — planleggingsoppdrag til
+  Fable for **P3-4 `sanitizeBriefText`-robusthet**, valgt fordi det er en ren
+  tekstfunksjon (null nettverk, null AI-kall, rører ikke live-polling,
+  auto-brief-scheduler eller banner). Prompten krever at Fable leverer en kort
+  Opus 5-utførelsesprompt.
 - 2026-08-20 (økt 12, ~15:05): «Og gjør alt i neste steg» → varslet om at
   push auto-deployer prod midt i sesongstart-verifiseringen, og at hans egen
   regel sier merge først etter sjekkpunkt D. Valgte **«merge + release + tag
