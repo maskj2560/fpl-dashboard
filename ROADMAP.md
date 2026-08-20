@@ -126,6 +126,32 @@ committet (og pushet hvis remote finnes).
 _Ikke-kritiske funn fra verifiseringen 20.–24. august legges her. Ingen av
 dem fikses uten avtale._
 
+Fra kvalitetspasset v1.1.3 (P3-funn — reelle, men større redesign; bevisst
+ikke gjort midt i sesongstart-verifiseringen):
+
+- **`gameUpdating`-livssyklus** (`fplClient.js`): flagget er globalt, settes av
+  503 på ett endepunkt og nullstilles av suksess på et hvilket som helst annet.
+  Med varm cache kan banneret bli stående i 15 min etter at FPL er friskt, og
+  ved kaldstart under et oppdateringsvindu 500-er sidene i stedet for å vise
+  banneret. Redesign: tidsstemplet flagg eller status per endepunkt i
+  cache-metadata.
+- **Failure-backoff i `cache.js`**: ved varig FPL-nedetid trigger hver request
+  en ny bakgrunnshenting (3 forsøk × 10 s). Legg minst 30 s mellom mislykkede
+  revalideringer per nøkkel, og vurder alderstak på stale data + `dataAlder`
+  i payloaden.
+- **SWR i `ai.js`**: første besøkende per intervall venter hele Claude-
+  rundturen (5–20 s). Cache.js-mønsteret ville servert cachet tekst med én
+  gang og regenerert i bakgrunnen. NB: endrer semantikken «AI-kall skjer ved
+  sidebesøk» som verifiseringen bygger på — må avklares først.
+- **`sanitizeBriefText` robusthet** (`prompts.js`): setningssplittingen deler
+  på forkortelsespunktum («kl.», «f.eks.»), og lagnavn matches kun mot FPLs
+  kortnavn («Spurs») selv om modellen kan skrive «Tottenham». Vurder alias-map
+  + splitting som kjenner forkortelsene.
+- **`filterSummaryPoints` dybde** (`news.js`): genitiv («Haalands») bommer på
+  substring-matchen, så korrekte punkter droppes. Robustheten ligger ett nivå
+  opp: be modellen sitere kildeindeks per punkt og verifiser indeksen.
+  Promptendring → koster AI-kall å teste, må avtales.
+
 - **Persistent «brief sendt»-markør for auto-briefen.** `lastSentEvent` lever
   bare i minnet, så en redeploy innenfor MAX_LATE_MS (15 min) etter en sendt
   brief re-poster den. Varig løsning krever tilstand som overlever containeren
