@@ -10,6 +10,7 @@ import {
   nextEvent,
   currentEvent,
   POSITIONS_SHORT,
+  resolvePicks,
 } from '../services/analysis.js';
 import { formatNumber } from '../services/format.js';
 
@@ -48,7 +49,7 @@ router.get('/', async (req, res, next) => {
     let squadView = null;
     let recommendations = null;
     if (picks) {
-      const squad = picks.picks.map((pk) => ({ pick: pk, player: elementsById.get(pk.element) }));
+      const squad = resolvePicks(picks.picks, elementsById);
       const starters = squad.filter((s) => s.pick.position <= 11);
       const bench = squad.filter((s) => s.pick.position >= 12);
       const byLine = {

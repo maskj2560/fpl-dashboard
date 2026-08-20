@@ -17,6 +17,7 @@ import {
   rankGraph,
   differentials,
   estimateBonus,
+  resolvePicks,
 } from '../src/services/analysis.js';
 
 function player(overrides = {}) {
@@ -434,4 +435,40 @@ test('translateFplNews varsler i dev når et mønster ikke matcher', (t) => {
   warn.mock.resetCalls();
   translateFplNews('Ankle injury - 75% chance of playing');
   assert.equal(warn.mock.callCount(), 0, 'kjent mønster skal ikke varsle');
+});
+
+// ---- P0-1: picks som peker på ukjente elementer ----------------------------
+
+test('resolvePicks kobler picks mot elementer og beholder rekkefølgen', () => {
+  const byId = new Map([
+    [1, { id: 1, web_name: 'Raya' }],
+    [2, { id: 2, web_name: 'Saka' }],
+  ]);
+  const resolved = resolvePicks([{ element: 2 }, { element: 1 }], byId);
+  assert.deepEqual(
+    resolved.map((r) => r.player.web_name),
+    ['Saka', 'Raya'],
+  );
+  assert.equal(resolved[0].pick.element, 2);
+});
+
+test('resolvePicks dropper pick uten element i bootstrap og advarer', () => {
+  const byId = new Map([[1, { id: 1, web_name: 'Raya' }]]);
+  const warnings = [];
+  const original = console.warn;
+  console.warn = (...args) => warnings.push(args);
+  try {
+    const resolved = resolvePicks([{ element: 1 }, { element: 999 }], byId);
+    assert.equal(resolved.length, 1);
+    assert.equal(resolved[0].player.web_name, 'Raya');
+  } finally {
+    console.warn = original;
+  }
+  assert.equal(warnings.length, 1);
+  assert.match(warnings[0].join(' '), /999/);
+});
+
+test('resolvePicks tåler tom eller manglende pick-liste', () => {
+  assert.deepEqual(resolvePicks([], new Map()), []);
+  assert.deepEqual(resolvePicks(undefined, new Map()), []);
 });

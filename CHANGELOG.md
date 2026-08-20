@@ -7,6 +7,13 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Fixed
+
+- **Sidene krasjer ikke lenger når troppen inneholder en spiller FPL har
+  fjernet.** Picks (5 min cache) og bootstrap (15 min cache) kan komme i
+  utakt; da svarte /live, /lag, /brief og `/api/*.json` 500. Ukjente
+  pick-elementer droppes nå med en logglinje, og resten av troppen vises (P0-1)
+
 ## [1.1.2] - 2026-08-20
 
 Rettelser etter visuell QA av v1.1.1 i prod (1440 px og 390 px).

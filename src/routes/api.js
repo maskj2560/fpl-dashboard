@@ -5,6 +5,7 @@ import { getBootstrap, getFixtures, getLive, getPicks, getLeagueStandings, getEn
 import {
   currentEvent,
   estimateBonus,
+  resolvePicks,
   POSITIONS_SHORT,
   transferOutCandidates,
   nextEvent,
@@ -46,8 +47,7 @@ export async function assembleLive() {
   let totalLive = null;
   try {
     const picks = await getPicks(config.fplTeamId, gw);
-    myPlayers = picks.picks.map((pk) => {
-      const p = elementsById.get(pk.element);
+    myPlayers = resolvePicks(picks.picks, elementsById).map(({ pick: pk, player: p }) => {
       const stats = liveById.get(pk.element) ?? { total_points: 0, minutes: 0, bonus: 0 };
       const bonus = stats.bonus > 0 ? 0 : (bonusEst.get(pk.element) ?? 0);
       return {
@@ -124,7 +124,7 @@ router.post('/ai-rad', async (req, res, next) => {
     ]);
     const byId = new Map(bootstrap.elements.map((e) => [e.id, e]));
     const teamsById = new Map(bootstrap.teams.map((t) => [t.id, t]));
-    const squad = picks.picks.map((p) => byId.get(p.element));
+    const squad = resolvePicks(picks.picks, byId).map((s) => s.player);
     const fromGw = nextEvent(bootstrap.events)?.id ?? gw;
 
     const result = await ai.generate({

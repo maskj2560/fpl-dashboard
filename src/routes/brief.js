@@ -2,7 +2,7 @@ import { Router } from 'express';
 import config from '../config.js';
 import { getBootstrap, getFixtures, getPicks, FplError } from '../services/fplClient.js';
 import { buildBrief } from '../services/brief.js';
-import { currentEvent, nextEvent } from '../services/analysis.js';
+import { currentEvent, nextEvent, resolvePicks } from '../services/analysis.js';
 import { buildBriefPrompt, sanitizeBriefText } from '../services/prompts.js';
 import * as ai from '../services/ai.js';
 
@@ -19,7 +19,7 @@ export async function assembleBrief() {
         const picks = await getPicks(config.fplTeamId, gw);
         const byId = new Map(bootstrap.elements.map((e) => [e.id, e]));
         myTeam = {
-          squadPlayers: picks.picks.map((p) => byId.get(p.element)),
+          squadPlayers: resolvePicks(picks.picks, byId).map((s) => s.player),
           elements: bootstrap.elements,
           bank: picks.entry_history.bank,
           fromGw: nextEvent(bootstrap.events)?.id ?? gw,

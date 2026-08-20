@@ -23,6 +23,25 @@ export function formatPrice(nowCost) {
   return (nowCost / 10).toFixed(1);
 }
 
+/**
+ * Kobler picks mot bootstrap-elementene: `[{ pick, player }]`.
+ * Picks (5 min TTL) og bootstrap (15 min TTL) kan komme i utakt, og en spiller
+ * kan være fjernet fra spillet. Pick-er uten element droppes med en advarsel —
+ * resten av troppen vises som normalt i stedet for at siden svarer 500.
+ */
+export function resolvePicks(picks, elementsById) {
+  const resolved = [];
+  for (const pick of picks ?? []) {
+    const player = elementsById.get(pick.element);
+    if (!player) {
+      console.warn('Pick-element %d mangler i bootstrap', pick.element);
+      continue;
+    }
+    resolved.push({ pick, player });
+  }
+  return resolved;
+}
+
 function ownership(p) {
   return parseFloat(p.selected_by_percent) || 0;
 }
