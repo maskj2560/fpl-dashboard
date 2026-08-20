@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { buildBriefPrompt, buildAdvicePrompt, sanitizeBriefText } from '../src/services/prompts.js';
+import { briefTextGw1, briefGw1 } from './fixtures/brief-gw1.js';
 
 test('buildBriefPrompt tar med deadline, skader og kapteiner', () => {
   const prompt = buildBriefPrompt({
@@ -248,4 +249,17 @@ test('sanitizeBriefText matcher genitiv («Liverpools») også etter ordgrense-e
   const text = 'Liverpools kamp spilles før deadline.';
 
   assert.equal(sanitizeBriefText(text, briefMedTidsfakta), '');
+});
+
+// ---- Regresjon mot ekte prod-brief (GW1, 2026-08-20) -----------------------
+
+test('ekte AI-brief fra prod går uendret gjennom etterkontrollen', () => {
+  assert.equal(sanitizeBriefText(briefTextGw1, briefGw1), briefTextGw1);
+});
+
+test('den ekte briefen inneholder tilfellene P3-4 ble laget for', () => {
+  // Feiler denne, har fixturen mistet det som gjorde den verdt å ta vare på.
+  assert.match(briefTextGw1, /kl\. 19:30/); // punktum midt i setning
+  assert.match(briefTextGw1, /mot Coventry\b/); // alias for FPLs «Coventry City»
+  assert.match(briefTextGw1, /Spurs' nye sesong/); // genitiv med apostrof
 });
