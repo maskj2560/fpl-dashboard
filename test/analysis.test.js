@@ -472,3 +472,35 @@ test('resolvePicks tåler tom eller manglende pick-liste', () => {
   assert.deepEqual(resolvePicks([], new Map()), []);
   assert.deepEqual(resolvePicks(undefined, new Map()), []);
 });
+
+// ---- P1-11: tvilsom spiller uten publisert prosent -------------------------
+
+test('playProbability gir 0,75 for status d uten publisert prosent', () => {
+  assert.equal(playProbability(player({ status: 'd', chance_of_playing_next_round: null })), 0.75);
+});
+
+test('captainSuggestions merker tvilsom spiller uten prosent som redusert spilletid', () => {
+  const squad = [player({ id: 1, element_type: 3, team: 1, form: '8.0', status: 'd', chance_of_playing_next_round: null })];
+  const [top] = captainSuggestions(squad, [{ event: 5, team_h: 1, team_a: 2, team_h_difficulty: 2, team_a_difficulty: 4 }], 5);
+  assert.ok(top.reasons.includes('Spilletid 75 %'), top.reasons.join(' | '));
+  assert.equal(top.probability, 0.75);
+});
+
+// ---- P1-13: oversettelses-drift skal varsles også i prod -------------------
+
+test('translateFplNews advarer om ukjent mønster, men bare én gang per tekst', () => {
+  const warnings = [];
+  const original = console.warn;
+  const prev = process.env.NODE_ENV;
+  process.env.NODE_ENV = 'production';
+  console.warn = (...args) => warnings.push(args.join(' '));
+  try {
+    translateFplNews('Quantum entanglement - Expected back never');
+    translateFplNews('Quantum entanglement - Expected back never');
+  } finally {
+    console.warn = original;
+    process.env.NODE_ENV = prev;
+  }
+  assert.equal(warnings.length, 1, warnings.join(' / '));
+  assert.match(warnings[0], /Quantum entanglement/);
+});

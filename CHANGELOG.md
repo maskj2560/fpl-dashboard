@@ -6,6 +6,12 @@ Formatet følger [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- **Tvilsomme spillere («Usikker») regnes ikke lenger som sikre startere.**
+  Uten publisert spilletidsprosent ga status `d` full sannsynlighet, så
+  spilleren kunne dukke opp som kapteinsforslag med «Full spilletid ventet».
+  Nå brukes FPLs egen konvensjon på 75 % (P1-11)
+- **Nye engelske skadefraser fra FPL logges også i produksjon** (én gang per
+  tekst), slik at manglende oversettelser oppdages der de faktisk vises (P1-13)
 - **Live-siden viser stillinger og kampklokke uten opptil 15 minutters
   forsinkelse.** Rundens kamper caches nå i 1 minutt (som live-dataene);
   hele sesongens kampliste caches fortsatt i 15 minutter (P0-3, del 1)

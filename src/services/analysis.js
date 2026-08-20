@@ -158,7 +158,11 @@ export function averageFdr(fixtures, teamId, fromGw, count = 3) {
 /** Sannsynlighet (0–1) for at spilleren får spilletid neste runde. */
 export function playProbability(p) {
   if (p.chance_of_playing_next_round != null) return p.chance_of_playing_next_round / 100;
-  return p.status === 'a' || p.status === 'd' ? 1 : 0;
+  // FPL flagger ofte 'd' (tvilsom) før prosenten publiseres. 0,75 er FPL-ens
+  // egen konvensjon for «doubtful» — uten den scorer spilleren som sikker
+  // starter, både i kapteinsforslag og i innkjøpsfilteret (≥ 0,75).
+  if (p.status === 'd') return 0.75;
+  return p.status === 'a' ? 1 : 0;
 }
 
 /**
@@ -353,11 +357,17 @@ function translateDetail(detail) {
   return null;
 }
 
-/** Nye engelske fraser skal oppdages i dev, ikke først i UI-et i prod. */
+// Hver ukjent tekst varsles én gang per prosess — logg, ikke loggspam.
+const warnedNews = new Set();
+
+/**
+ * Nye engelske fraser skal oppdages der de faktisk dukker opp. Prod ser
+ * FPL-ens nye strenger først, så varselet gjelder alle miljøer.
+ */
 function warnUnmatched(text) {
-  if (process.env.NODE_ENV !== 'production') {
-    console.warn(`FPL-news uten oversettelsesmønster: «${text}»`);
-  }
+  if (warnedNews.has(text)) return;
+  warnedNews.add(text);
+  console.warn(`FPL-news uten oversettelsesmønster: «${text}»`);
 }
 
 /**
@@ -367,7 +377,7 @@ function warnUnmatched(text) {
  * «<type> - Expected back <dato>», «Has joined <klubb> permanently»,
  * «Has joined <klubb> on loan [until <dato> | for the rest of the season]»,
  * «Loaned to <klubb>», «Suspended until <dato>», «has returned to <klubb>».
- * Ukjente mønstre vises uendret, med console.warn i dev.
+ * Ukjente mønstre vises uendret, med console.warn (én gang per tekst).
  */
 export function translateFplNews(news) {
   const text = String(news ?? '').trim();
