@@ -161,7 +161,7 @@ _Plan: `docs/plan-hva-hvis-transfers.md`._
 _Plan: `docs/plan-cache-backoff.md`. Merges først etter sjekkpunkt D._
 
 - [x] 30 s backoff per nøkkel etter mislykket revalidering (TDD, 6 nye tester)
-- [ ] Røyktest lokalt (11 ruter 200, AI/Discord av) + handover
+- [x] Røyktest lokalt (11 ruter 200, AI/Discord av) + handover
 
 ## Senere / idéer (ikke planlagt)
 

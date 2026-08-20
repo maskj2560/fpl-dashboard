@@ -5,7 +5,7 @@
 > Versjonshistorikk og detaljer ligger i CHANGELOG.md, ROADMAP.md og git —
 > denne filen holder kun nåtilstand, aktive økter og lærdommer.
 
-**Sist oppdatert:** 2026-08-20 ~14:55 (cache-backoff-plan godkjent; sesongstart-verifisering aktiv)
+**Sist oppdatert:** 2026-08-20 ~15:40 (cache-backoff implementert på branch; sesongstart-verifisering aktiv)
 
 ## Status akkurat nå
 
@@ -23,11 +23,24 @@
 - Prod kjører v1.2.0, ikke v1.1.3 som sjekkpunktplanen antok — ingen
   observert oppførsel er endret (getLive, notify, brief, banner urørt);
   synlig forskjell er footer-versjonen og det nye nav-punktet «Overganger».
-- **P3-2 cache-backoff er PLANLAGT og godkjent** (økt 11, Fable i plan mode):
-  plan i `docs/plan-cache-backoff.md`, kjøreprompt for Opus 5-utførelsen i
-  `docs/neste-okt-prompt-cache-backoff-utforelse.md`. Utføres på branch
-  `fix/cache-backoff` — aldri push uten klarsignal, merges først etter
-  sjekkpunkt D. Trygg under verifiseringen (rører kun cache.js + tester).
+- **P3-2 cache-backoff er FERDIG LOKALT på branch `fix/cache-backoff`**
+  (økt 12, Opus 5). Ikke pushet, ikke merget. Plan: `docs/plan-cache-backoff.md`
+  (fulgt uten avvik). Innhold: 30 s backoff per nøkkel i `src/services/cache.js`
+  etter mislykket bakgrunnsrevalidering — stale verdi serveres fortsatt
+  umiddelbart, suksess nullstiller backoffen, `clear()` tømmer tilstanden.
+  Kun cache.js + tester + docs er rørt; ingen observert oppførsel i
+  sesongstart-verifiseringen er endret.
+  - Commits: `a1f7a5d` (impl + 6 tester + CHANGELOG/ROADMAP/CLAUDE.md),
+    + denne filens siste commit (handover + røyktestbevis).
+  - Bevis: TDD-rødt observert først (218 tester, 216 pass, 2 fail — nøyaktig
+    de to planen forutså), deretter `npm test` **218/218** og
+    `npm run lint` exit 0. Røyktest på port 3010 med tomme nøkler:
+    `/health` = `ai:false, discord:false`, alle 11 ruter 200, ukjent sti 404,
+    0 AI-kall i serverloggen.
+  - **Neste steg:** merges til `main` FØRST etter sjekkpunkt D (søndag/mandag),
+    og aldri torsdag 19:00–21:00. Da: `git checkout main`,
+    `git merge --no-ff fix/cache-backoff`, release v1.2.1 (flytt
+    `[Unreleased]`-seksjonen i CHANGELOG til `[1.2.1]` med dato + tag).
 
 ## Sjekkpunkter for økt 8 (Marius pinger økten)
 
@@ -125,6 +138,13 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 
+- 2026-08-20 (økt 12, ~15:20): kjøreprompt «Oppdrag (Opus 5): utfør
+  cache-backoff-planen (P3-2)» — følg planen nøyaktig, branch
+  `fix/cache-backoff`, TDD med rødt observert først, ingen push, ingen merge
+  før sjekkpunkt D, røyktest med tomme nøkler, bevis for hver verifisering.
+  Handling: utført som beskrevet, to commits lokalt (`a1f7a5d` + denne
+  docs-commiten),
+  212 → 218 tester, lint 0, røyktest OK. Ingen avvik fra planen.
 - 2026-08-20 (økt 11, ~14:55): kjøreprompt for planlegging av cache-backoff
   (P3-2) gitt til Fable i plan mode; underveis: «Så nå lager du en prompt jeg
   kan sende til Opus? For å gjennomføre planen?» → bekreftet. Handling: plan
