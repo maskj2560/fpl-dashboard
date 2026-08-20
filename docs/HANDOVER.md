@@ -397,7 +397,16 @@ task for task. Kort oversikt:
   fortsatte uten omprioritering.
 - 2026-08-20 (økt 9, ~02:55): «Okay du kan pushe til main». Handling: versjonen
   kuttet som v1.1.3 (package.json, CHANGELOG, ROADMAP), branchen merget med
-  `--no-ff` og pushet. Coolify auto-deployer.
+  `--no-ff` og pushet. Coolify auto-deployer. Prod verifisert 03:02, tag
+  `v1.1.3` pushet.
+- 2026-08-20 (økt 9, ~03:10): ba om en kjøreprompt til Fable for «historisk
+  hva hvis-analyse av egne transfers» — plan først, deretter implementering,
+  med alle reglene inkludert dokumentoppdateringene. Handling: skrevet til
+  `docs/neste-okt-prompt-hva-hvis-transfers.md`. Datagrunnlaget verifisert mot
+  FPL-API-et først: `entry/{id}/transfers/` finnes men er tom (FPL nullstiller
+  ved sesongskifte), `entry/{id}/history/` har `current: []`, og
+  `element-summary/{id}/history` er tom før sesongstart — funksjonen har altså
+  ingen data før GW2, og tomtilstanden er hovedtilstanden de første ukene.
 
 - 2026-08-20 (økt 8, 01:37): kjøreprompt for sesongstart-verifiseringen sendt
   (`docs/neste-okt-prompt-sesongstart.md`-innholdet). Handling: plan skrevet
