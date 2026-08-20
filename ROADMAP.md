@@ -154,7 +154,7 @@ release; rykker M4-kandidatene først, forskyves det._
 - [x] `transfers.js`: buildTransferAnalysis — vindu, diff, straff, chips, kanttilfeller
 - [x] `assembleTransferAnalysis` — henting via cache, maks 38 live-kall
 - [x] /overganger: view, rute, nav, tomtilstander, view-tester
-- [ ] Røyktest lokalt (alle ruter 200, AI/Discord av) + docs
+- [x] Røyktest lokalt (alle ruter 200, AI/Discord av) + docs
 - [ ] Etter GW2: verifiser transfers-skjemaet mot ekte data
 
 ## Senere / idéer (ikke planlagt)

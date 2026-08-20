@@ -243,10 +243,10 @@ Dokumentert skjema per record: `element_in`, `element_in_cost`,
 
 **Interfaces:** ingen kode — dokumenter og branch.
 
-- [ ] **Step 1:** `git checkout -b feat/hva-hvis-transfers` (fra `main`,
+- [x] **Step 1:** `git checkout -b feat/hva-hvis-transfers` (fra `main`,
       verifiser `git status` rent først)
-- [ ] **Step 2:** Kopier denne planen inn i `docs/plan-hva-hvis-transfers.md`
-- [ ] **Step 3:** ROADMAP: fjern linjen «Historisk «hva hvis»-analyse av egne
+- [x] **Step 2:** Kopier denne planen inn i `docs/plan-hva-hvis-transfers.md`
+- [x] **Step 3:** ROADMAP: fjern linjen «Historisk «hva hvis»-analyse av egne
       transfers» fra «Andre idéer»; legg ny seksjon etter v1.1.3:
 
 ```markdown
@@ -266,12 +266,12 @@ release; rykker M4-kandidatene først, forskyves det._
       og under «Andre idéer»: `- AI-kommentar til overgangsanalysen (bevisst
       utelatt fra v1: tallene taler for seg, koster per generering —
       ettermonteres via ai.js ved behov)`
-- [ ] **Step 4:** HANDOVER: logg oppdraget + Marius' to beslutninger
+- [x] **Step 4:** HANDOVER: logg oppdraget + Marius' to beslutninger
       (side «Overganger» på /overganger; uten AI) i «Logg over
       brukerbeskjeder», og legg en kort «ØKT 10»-statusseksjon.
-- [ ] **Step 5:** `npm test` og `npm run lint` (skal være 185/185 og 0 —
+- [x] **Step 5:** `npm test` og `npm run lint` (skal være 185/185 og 0 —
       ingen kodeendring)
-- [ ] **Step 6:** Commit: `docs: plan og roadmap for hva hvis-analyse av transfers`
+- [x] **Step 6:** Commit: `docs: plan og roadmap for hva hvis-analyse av transfers`
 
 ### Task 2: fplClient — `getEntryTransfers` + `getLiveHistoric`
 
@@ -284,7 +284,7 @@ release; rykker M4-kandidatene først, forskyves det._
 - Produces: `getEntryTransfers(teamId) → Promise<Array>` og
   `getLiveHistoric(gw) → Promise<{ elements: [...] }>` — brukes av Task 4.
 
-- [ ] **Step 1: Skriv feilende tester** (mønster: eksisterende mockFetch/
+- [x] **Step 1: Skriv feilende tester** (mønster: eksisterende mockFetch/
       jsonResponse i samme fil)
 
 ```js
@@ -317,8 +317,8 @@ test('getLiveHistoric deler nøkkel med getLive og lever lenger enn 1 min', asyn
 });
 ```
 
-- [ ] **Step 2:** `npm test` → FAIL («getEntryTransfers is not a function»)
-- [ ] **Step 3: Implementer** i `fplClient.js`:
+- [x] **Step 2:** `npm test` → FAIL («getEntryTransfers is not a function»)
+- [x] **Step 3: Implementer** i `fplClient.js`:
 
 ```js
 export function getEntryTransfers(teamId) {
@@ -339,10 +339,10 @@ export function getLiveHistoric(gw) {
 }
 ```
 
-- [ ] **Step 4:** `npm test` → PASS. `npm run lint` → 0.
-- [ ] **Step 5:** CLAUDE.md FPL-API-lista: legg til «entry-transfers 5 min»
+- [x] **Step 4:** `npm test` → PASS. `npm run lint` → 0.
+- [x] **Step 5:** CLAUDE.md FPL-API-lista: legg til «entry-transfers 5 min»
       og «historiske live-runder 6 t (immutable når runden er ferdig)».
-- [ ] **Step 6:** Commit: `feat: fplClient henter transfers og historiske live-poeng`
+- [x] **Step 6:** Commit: `feat: fplClient henter transfers og historiske live-poeng`
 
 ### Task 3: `buildTransferAnalysis` — hele den rene kjernen
 
@@ -357,7 +357,7 @@ export function getLiveHistoric(gw) {
   → returstrukturen definert over. `liveByGw` er `Map<gw, liveResponse>` der
   liveResponse er rå `{ elements: [{ id, stats: { total_points } }] }`.
 
-- [ ] **Step 1: Skriv feilende tester** med delt fixture øverst i
+- [x] **Step 1: Skriv feilende tester** med delt fixture øverst i
       `test/transfers.test.js`:
 
 ```js
@@ -559,8 +559,8 @@ test('før sesongstart (maxGw 0) er alt pending', () => {
 });
 ```
 
-- [ ] **Step 2:** `npm test` → FAIL (modulen finnes ikke)
-- [ ] **Step 3: Implementer** `src/services/transfers.js`:
+- [x] **Step 2:** `npm test` → FAIL (modulen finnes ikke)
+- [x] **Step 3: Implementer** `src/services/transfers.js`:
 
 ```js
 // Historisk «hva hvis»-analyse av egne transfers: hva hver overgang faktisk
@@ -689,11 +689,11 @@ export function buildTransferAnalysis({ transfers, history, bootstrap, liveByGw 
 }
 ```
 
-- [ ] **Step 4:** `npm test` → PASS. `npm run lint` → 0.
-- [ ] **Step 5:** CLAUDE.md filkart under `src/services/`: `transfers.js
+- [x] **Step 4:** `npm test` → PASS. `npm run lint` → 0.
+- [x] **Step 5:** CLAUDE.md filkart under `src/services/`: `transfers.js
       historisk hva hvis-analyse: buildTransferAnalysis (ren),
       assembleTransferAnalysis (henter)`.
-- [ ] **Step 6:** Commit: `feat: buildTransferAnalysis — hva hvis-analysen som ren funksjon`
+- [x] **Step 6:** Commit: `feat: buildTransferAnalysis — hva hvis-analysen som ren funksjon`
 
 ### Task 4: `assembleTransferAnalysis` — henting
 
@@ -706,7 +706,7 @@ export function buildTransferAnalysis({ transfers, history, bootstrap, liveByGw 
   brukes av ruten i Task 5. `teamId`-parameteren er test-hook (default
   `config.fplTeamId`).
 
-- [ ] **Step 1: Skriv feilende tester.** Disse mocker global fetch — legg dem
+- [x] **Step 1: Skriv feilende tester.** Disse mocker global fetch — legg dem
       nederst i `test/transfers.test.js` med egne `beforeEach`/`afterEach`
       (importer `clear` fra cache.js; gjenopprett `globalThis.fetch`), slik
       at de rene testene over forblir uten setup:
@@ -751,8 +751,8 @@ test('assembleTransferAnalysis uten transfers henter ingen live-runder', async (
 });
 ```
 
-- [ ] **Step 2:** `npm test` → FAIL
-- [ ] **Step 3: Implementer** i `transfers.js`:
+- [x] **Step 2:** `npm test` → FAIL
+- [x] **Step 3: Implementer** i `transfers.js`:
 
 ```js
 /** Henter alt /overganger trenger. `teamId`-parameteren er test-hook. */
@@ -784,8 +784,8 @@ export async function assembleTransferAnalysis({ teamId = config.fplTeamId } = {
 }
 ```
 
-- [ ] **Step 4:** `npm test` → PASS. `npm run lint` → 0.
-- [ ] **Step 5:** Commit: `feat: assembleTransferAnalysis henter analysen via cache`
+- [x] **Step 4:** `npm test` → PASS. `npm run lint` → 0.
+- [x] **Step 5:** Commit: `feat: assembleTransferAnalysis henter analysen via cache`
 
 ### Task 5: Siden — view, rute, nav, formatSigned
 
@@ -803,7 +803,7 @@ export async function assembleTransferAnalysis({ teamId = config.fplTeamId } = {
 - Consumes: `assembleTransferAnalysis` (Task 4), `formatSigned` (ny).
 - Produces: rute `/overganger` (200), nav-punkt «Overganger».
 
-- [ ] **Step 1: Feilende tester først.**
+- [x] **Step 1: Feilende tester først.**
 
 `formatSigned` (ved siden av eksisterende format-tester):
 
@@ -853,8 +853,8 @@ export const transfersPending = {
 
 og i `NAV`-lista: `['/overganger', 'Overganger'],`
 
-- [ ] **Step 2:** `npm test` → FAIL (view finnes ikke, nav-lenken mangler)
-- [ ] **Step 3: Implementer.**
+- [x] **Step 2:** `npm test` → FAIL (view finnes ikke, nav-lenken mangler)
+- [x] **Step 3: Implementer.**
 
 `src/services/format.js`:
 
@@ -965,9 +965,9 @@ export default router;
 <% } %>
 ```
 
-- [ ] **Step 4:** `npm test` → PASS (inkl. nye view- og NAV-tester).
+- [x] **Step 4:** `npm test` → PASS (inkl. nye view- og NAV-tester).
       `npm run lint` → 0.
-- [ ] **Step 5:** CHANGELOG under `[Unreleased]`:
+- [x] **Step 5:** CHANGELOG under `[Unreleased]`:
 
 ```markdown
 ### Added
@@ -984,7 +984,7 @@ export default router;
 ```
 
       ROADMAP: huk av gjennomførte punkter i v1.2.0-seksjonen.
-- [ ] **Step 6:** Commit: `feat: /overganger — historisk hva hvis-analyse av transfers`
+- [x] **Step 6:** Commit: `feat: /overganger — historisk hva hvis-analyse av transfers`
 
 ### Task 6: Røyktest, HANDOVER og sluttrapport
 
@@ -993,24 +993,24 @@ export default router;
   `ROADMAP.md` (avhuking)
 - Scratchpad: egen `.env` (ALDRI repoets `.env`, aldri committes)
 
-- [ ] **Step 1:** Lag `.env` i scratchpad: `PORT=3010`,
+- [x] **Step 1:** Lag `.env` i scratchpad: `PORT=3010`,
       `FPL_TEAM_ID=5330646`, INGEN `ANTHROPIC_API_KEY`, INGEN
       `DISCORD_WEBHOOK_URL`.
-- [ ] **Step 2:** Start serveren:
+- [x] **Step 2:** Start serveren:
       `node --env-file="<scratchpad>\.env" src/server.js` (bakgrunn).
-- [ ] **Step 3:** Verifiser med Invoke-WebRequest: alle 11 ruter 200
+- [x] **Step 3:** Verifiser med Invoke-WebRequest: alle 11 ruter 200
       (`/`, `/spillere`, `/lag`, `/overganger`, `/liga`, `/brief`, `/live`,
       `/nyheter`, `/health`, `/api/brief.json`, `/api/live.json`), 404 på
       ukjent sti, og at `/overganger` inneholder «Ingen overganger registrert
       ennå» (tomtilstanden er fasit før sesongstart). Bekreft i konsollen:
       ingen AI-kall-linjer, ingen Discord-scheduler-melding om aktiv sending.
-- [ ] **Step 4:** Stopp serveren. `npm test` + `npm run lint` en siste gang —
+- [x] **Step 4:** Stopp serveren. `npm test` + `npm run lint` en siste gang —
       rapporter tallene ordrett.
-- [ ] **Step 5:** HANDOVER: status for økten, «Etter GW2»-sjekklisten under,
+- [x] **Step 5:** HANDOVER: status for økten, «Etter GW2»-sjekklisten under,
       logg alle beskjeder fra Marius. Planfilen i docs/ oppdateres med
       faktisk status/avvik.
-- [ ] **Step 6:** Commit: `docs: handover og røyktestbevis for /overganger`
-- [ ] **Step 7:** Rapport til Marius i chatten: hva som er bygget,
+- [x] **Step 6:** Commit: `docs: handover og røyktestbevis for /overganger`
+- [x] **Step 7:** Rapport til Marius i chatten: hva som er bygget,
       beslutningene (med Marius' to valg), hva som bevisst er utelatt
       (AI-kommentar, /api-endepunkt, picks-vekting, persistens), hva som
       gjenstår (skjemaverifisering etter GW2, merge/push-klarsignal).
@@ -1045,3 +1045,25 @@ export default router;
 - **Persistens** — analysen regnes ut på forespørsel fra FPL-API-et;
   databasebeslutning tas ikke her.
 - **P3-funn og v1.2.0-kandidater** — egne oppdrag, røres ikke.
+
+---
+
+## Status 2026-08-20 (utført)
+
+Task 1–6 fullført på branch `feat/hva-hvis-transfers` (6 commits, se git-loggen).
+212/212 tester grønne, lint 0. Røyktest: alle 11 ruter 200, 404 OK,
+tomtilstand og nav-lenke bekreftet, `/health` viste `ai:false, discord:false`.
+Ikke merget, ikke pushet — venter på klarsignal fra Marius.
+
+**Avvik fra planen (Task 6, Step 1):** «ingen nøkler i scratchpad-.env» er
+IKKE nok. `src/config.js` kjører `process.loadEnvFile()`, som leser repoets
+`.env` (med prod-nøklene) uansett `--env-file`. Første røyktestkjøring gjorde
+derfor 2 ekte AI-kall og armerte Discord-scheduleren (ingen melding ble
+sendt — send-tidspunktet var timer unna; serveren ble drept umiddelbart).
+Riktig teknikk (samme som v1.1.2-røyktesten): sett nøklene som TOMME i
+scratchpad-.env (`ANTHROPIC_API_KEY=` og `DISCORD_WEBHOOK_URL=`) —
+`--env-file` setter dem først, og `loadEnvFile` overskriver ikke
+eksisterende variabler. Verifisert: `/health` ga `ai:false, discord:false`,
+konsollen hadde ingen AI-kall og ingen scheduler-linje.
+
+Gjenstår: «Etter GW2»-sjekklisten over (skjemaverifisering mot ekte data).
