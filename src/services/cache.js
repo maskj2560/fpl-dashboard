@@ -1,9 +1,14 @@
 // Generisk TTL-cache med stale-while-revalidate og in-flight dedup.
 // Utløpt verdi serveres umiddelbart mens ny hentes i bakgrunnen; N samtidige
-// kall til samme nøkkel gir ett fetcher-kall.
+// kall til samme nøkkel gir ett fetcher-kall. Etter en mislykket henting
+// ventes FAILURE_BACKOFF_MS før ny revalidering av samme nøkkel — stale
+// verdi serveres fortsatt umiddelbart i mellomtiden.
+
+const FAILURE_BACKOFF_MS = 30_000;
 
 const store = new Map(); // key -> { value, expiresAt }
 const inFlight = new Map(); // key -> Promise
+const lastFailedAt = new Map(); // key -> tidspunkt for siste mislykkede henting
 
 let now = () => Date.now();
 
@@ -15,10 +20,14 @@ export async function getOrFetch(key, fetcher, { ttl }) {
   }
 
   if (entry) {
-    // Stale: server gammel verdi med en gang, oppdater i bakgrunnen.
-    fetchDeduped(key, fetcher, ttl).catch(() => {
-      // Revalidering feilet — stale verdi beholdes.
-    });
+    // Stale: server gammel verdi med en gang, oppdater i bakgrunnen —
+    // men ikke før backoff-vinduet etter forrige feil er over.
+    const failedAt = lastFailedAt.get(key);
+    if (failedAt === undefined || now() - failedAt >= FAILURE_BACKOFF_MS) {
+      fetchDeduped(key, fetcher, ttl).catch(() => {
+        // Revalidering feilet — stale verdi beholdes.
+      });
+    }
     return entry.value;
   }
 
@@ -32,7 +41,11 @@ function fetchDeduped(key, fetcher, ttl) {
       try {
         const value = await fetcher();
         store.set(key, { value, expiresAt: now() + ttl });
+        lastFailedAt.delete(key);
         return value;
+      } catch (err) {
+        lastFailedAt.set(key, now());
+        throw err;
       } finally {
         inFlight.delete(key);
       }
@@ -55,4 +68,5 @@ export function _setNow(fn) {
 export function clear() {
   store.clear();
   inFlight.clear();
+  lastFailedAt.clear();
 }

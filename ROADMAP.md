@@ -156,6 +156,13 @@ _Plan: `docs/plan-hva-hvis-transfers.md`._
 - [x] Røyktest lokalt (alle ruter 200, AI/Discord av) + docs
 - [ ] Etter GW2: verifiser transfers-skjemaet mot ekte data
 
+## v1.2.1 — failure-backoff i cache.js (P3-2)
+
+_Plan: `docs/plan-cache-backoff.md`._
+
+- [x] 30 s backoff per nøkkel etter mislykket revalidering (TDD, 6 nye tester)
+- [x] Røyktest lokalt (11 ruter 200, AI/Discord av) + handover
+
 ## Senere / idéer (ikke planlagt)
 
 ### v1.2.0-kandidater (samles under sesongstart-verifiseringen, M4)
@@ -172,10 +179,9 @@ ikke gjort midt i sesongstart-verifiseringen):
   ved kaldstart under et oppdateringsvindu 500-er sidene i stedet for å vise
   banneret. Redesign: tidsstemplet flagg eller status per endepunkt i
   cache-metadata.
-- **Failure-backoff i `cache.js`**: ved varig FPL-nedetid trigger hver request
-  en ny bakgrunnshenting (3 forsøk × 10 s). Legg minst 30 s mellom mislykkede
-  revalideringer per nøkkel, og vurder alderstak på stale data + `dataAlder`
-  i payloaden.
+- **Alderstak på stale data + `dataAlder` i payloaden** (rest av P3-2 —
+  backoffen er gjort i v1.2.1): å skjule/markere for gamle data er en
+  produktbeslutning og en payload-kontraktsendring; tas separat med Marius.
 - **SWR i `ai.js`**: første besøkende per intervall venter hele Claude-
   rundturen (5–20 s). Cache.js-mønsteret ville servert cachet tekst med én
   gang og regenerert i bakgrunnen. NB: endrer semantikken «AI-kall skjer ved
