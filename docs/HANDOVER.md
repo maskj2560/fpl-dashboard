@@ -183,6 +183,18 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 
+- 2026-08-20 (økt 14, ~19:35): limte inn hele Discord-meldingen fra
+  auto-briefen + «hva gjøres videre?». Handling: sjekkpunkt A påbegynt.
+  Briefen kom presis 19:30 — auto-brief-scheduleren virker i prod.
+  Teksten er lagret uendret som `test/fixtures/brief-gw1.js` med to
+  regresjonstester (229 → 231, grønt, lint 0, commit `0e507a4`).
+  Bekreftet fra ekte tekst: P3-3-tidsfaktaene følges («samtlige kamper
+  spilles etter at deadline har passert»), norske uttrykk brukes («holdt
+  nullen», «runde»), og ny `sanitizeBriefText` lar teksten stå uendret.
+  Nytt funn ført i ROADMAP: kapteinslista er vilkårlig ved sesongstart
+  (form 0.0 → score 0 for alle). GJENSTÅR for Marius: Coolify-logg og
+  `/api/brief.json` — se «Sjekkpunkt A».
+
 - 2026-08-20 (økt 14, ~16:00): «kan du sørge for at discord webhooken sender
   en @everyone når den sender brief?» Handling: gjort på EGEN branch
   `feat/discord-everyone` (ut fra `main`, commit `75e1f96`) — holdes atskilt

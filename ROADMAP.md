@@ -182,6 +182,22 @@ alias-tabellen dekker begge retninger._
 _Ikke-kritiske funn fra verifiseringen 20.–24. august legges her. Ingen av
 dem fikses uten avtale._
 
+- **Kapteinslista er vilkårlig ved sesongstart** (funn fra sjekkpunkt A, ekte
+  GW1-brief 20. august). `globalCaptains()` i `brief.js` rangerer på
+  `form * (6 - avgFdr)`. Før første kamp er `form` 0.0 for samtlige spillere,
+  så alle får score 0 og den stabile sorteringen faller tilbake på
+  `elements`-rekkefølgen — i praksis FPLs element-ID, der Arsenal ligger
+  først. Prod-briefen foreslo derfor Raya, Calafiori og Gabriel, altså
+  keeper + to Arsenal-forsvarere, som «kapteinsvalg». Mulig fiks: fall
+  tilbake på `ep_next` (FPLs forventede poeng) eller forrige sesongs
+  `points_per_game` når summen av `form` er 0. Gjelder runde 1–2; fra runde 3
+  har `form` reelle tall.
+- **Prompt-etiketten «Mest aktuelle kapteiner globalt» overselger dataene.**
+  Lista er høyt eide spillere med lett kamp, ikke målt kapteinsandel.
+  Modellen skrev den om til «de mest brukte kapteinsvalgene globalt» — en
+  påstand dataene ikke dekker. Etiketten i `buildBriefPrompt` bør si hva
+  lista faktisk er. Henger sammen med punktet over.
+
 Fra kvalitetspasset v1.1.3 (P3-funn — reelle, men større redesign; bevisst
 ikke gjort midt i sesongstart-verifiseringen):
 
