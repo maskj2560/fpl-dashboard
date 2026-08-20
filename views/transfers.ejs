@@ -1,0 +1,57 @@
+<section class="page-head">
+  <h1>Overganger</h1>
+  <p class="dim">Hva byttene dine var verdt: poengene spilleren du hentet
+  faktisk fikk, minus poengene spilleren du solgte fikk, så lenge byttet var
+  i effekt — rå spillerpoeng uten benk- og kapteinsvekting, minus
+  poengstraff. Hvert bytte måles for seg.</p>
+</section>
+
+<% if (analysis.totals.count === 0) { %>
+  <section class="card">
+    <p class="empty">
+      Ingen overganger registrert ennå. Din første overgang kan tidligst
+      gjelde runde 2 — når du bytter en spiller, dukker regnskapet opp her:
+      poeng inn mot poeng ut for hvert bytte, straff, og summen for sesongen.
+    </p>
+  </section>
+<% } else { %>
+  <% const played = analysis.rows.filter((r) => r.played); %>
+  <div class="stat-strip">
+    <div class="stat"><span class="stat-val <%= analysis.totals.netto > 0 ? 'accent' : (analysis.totals.netto < 0 ? 'negative' : '') %>"><%= played.length ? formatSigned(analysis.totals.netto) : '–' %></span><span class="stat-lbl">Netto totalt</span></div>
+    <div class="stat"><span class="stat-val"><%= analysis.totals.count %></span><span class="stat-lbl">Overganger</span></div>
+    <div class="stat"><span class="stat-val"><%= analysis.totals.cost > 0 ? formatSigned(-analysis.totals.cost) : '0' %></span><span class="stat-lbl">Poengstraff</span></div>
+    <div class="stat"><span class="stat-val"><%= analysis.bestIndex !== null ? analysis.rows[analysis.bestIndex].inn.name : '–' %></span><span class="stat-lbl">Beste bytte</span></div>
+    <div class="stat"><span class="stat-val"><%= analysis.worstIndex !== null ? analysis.rows[analysis.worstIndex].inn.name : '–' %></span><span class="stat-lbl">Verste bytte</span></div>
+  </div>
+
+  <section class="card card-wide">
+    <h2>Bytte for bytte</h2>
+    <% if (analysis.totals.skipped > 0) { %>
+      <p class="dim"><%= analysis.totals.skipped %> overganger kunne ikke tolkes fra FPL-dataene og er utelatt.</p>
+    <% } %>
+    <div class="table-scroll">
+      <table class="data">
+        <thead>
+          <tr><th>Runde</th><th>Inn</th><th>Ut</th><th class="num">Poengdiff</th><th class="num">Straff</th><th class="num">Netto</th><th>Periode</th></tr>
+        </thead>
+        <tbody>
+          <% for (let i = analysis.rows.length - 1; i >= 0; i--) { const r = analysis.rows[i]; %>
+            <tr>
+              <td><%= r.event %><% if (r.chip === 'wildcard') { %> <span class="status">Wildcard</span><% } else if (r.chip === 'freehit') { %> <span class="status">Free Hit</span><% } %></td>
+              <td><%= r.inn.name %><% if (r.played) { %> <span class="dim"><%= r.inn.points %> p</span><% } %></td>
+              <td><%= r.ut.name %><% if (r.played) { %> <span class="dim"><%= r.ut.points %> p</span><% } %></td>
+              <td class="num"><%= r.played ? formatSigned(r.diff) : '–' %></td>
+              <td class="num"><%= r.penaltyShare > 0 ? formatSigned(-r.penaltyShare) : '0' %></td>
+              <td class="num <%= r.played && r.netto > 0 ? 'accent' : (r.played && r.netto < 0 ? 'negative' : '') %>">
+                <%= r.played ? formatSigned(r.netto) : '–' %>
+                <% if (i === analysis.bestIndex) { %> <span class="status">Beste</span><% } %>
+                <% if (i === analysis.worstIndex) { %> <span class="status">Verste</span><% } %>
+              </td>
+              <td class="dim"><% if (r.pending) { %>Venter på runde <%= r.event %><% } else if (!r.played) { %>Angret før deadline<% } else if (r.window.from === r.window.to) { %>R<%= r.window.from %><% } else { %>R<%= r.window.from %>–R<%= r.window.to %><% } %></td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+<% } %>

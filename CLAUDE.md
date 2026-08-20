@@ -31,6 +31,9 @@ src/services/
                    (henter fra FPL), generateAiBrief (AI-teksten, delt av
                    /brief og auto-briefen)
   live.js          live-visningen: buildLive (ren data), assembleLive (henter)
+  transfers.js     «Overganger»-siden: buildTransferAnalysis (ren hva
+                   hvis-analyse av egne transfers), assembleTransferAnalysis
+                   (henter — maks 38 live-kall, aldri element-summary)
   leagues.js       hvilke ligaer som vises; knownLeagueCount() for /health
   ai.js            felles Claude API-service: lazy init, modell fra config,
                    cache med minimumsintervall per funksjon
@@ -58,7 +61,10 @@ Base `https://fantasy.premierleague.com/api/` — åpent, ingen nøkkel. Viktig:
 - `bootstrap-static/` er hovedkilden (events/teams/elements) — cache 15 min
 - Under kampoppdateringer kan API-et gi 503 «The game is being updated»:
   server cachet data med banner, ikke krasj
-- Live-data (`event/{gw}/live/`) caches maks 1 min; entry/picks 5 min
+- Live-data (`event/{gw}/live/`) caches maks 1 min; entry/picks/transfers
+  5 min. Ferdige runder hentes via `getLiveHistoric(gw)` — samme endepunkt
+  og cache-nøkkel, 6 t TTL (poengene er i praksis immutable); kalles kun
+  når bootstrap sier runden er `finished`
 - Frontend poller live-data kun mens kamper pågår — aldri poll utenfor
   kampvinduer, og all polling går via serverens cache (aldri rett mot FPL)
 

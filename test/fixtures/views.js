@@ -214,3 +214,45 @@ export const newsUnsafeLink = {
   ...news,
   items: [{ title: 'Ond lenke', link: 'javascript:alert(1)', source: 'Ukjent', published: null }],
 };
+
+// «Overganger»-siden: data, tomtilstand og transfer som venter på runden sin.
+export const transfers = {
+  title: 'Overganger',
+  formatSigned: (n) => String(n),
+  analysis: {
+    rows: [
+      { event: 2, chip: null, inn: { id: 10, name: 'Haaland', points: 11 }, ut: { id: 11, name: 'Watkins', points: 1 }, diff: 10, penaltyShare: 4, netto: 6, window: { from: 2, to: 3 }, played: true, pending: false },
+      { event: 3, chip: 'freehit', inn: { id: 12, name: 'Salah', points: 6 }, ut: { id: 14, name: 'Isak', points: 3 }, diff: 3, penaltyShare: 0, netto: 3, window: { from: 3, to: 3 }, played: true, pending: false },
+    ],
+    totals: { diff: 13, cost: 4, netto: 9, count: 2, skipped: 0 },
+    bestIndex: 0,
+    worstIndex: 1,
+    maxGw: 3,
+  },
+};
+
+export const transfersEmpty = {
+  title: 'Overganger',
+  formatSigned: (n) => String(n),
+  analysis: {
+    rows: [],
+    totals: { diff: 0, cost: 0, netto: 0, count: 0, skipped: 0 },
+    bestIndex: null,
+    worstIndex: null,
+    maxGw: 0,
+  },
+};
+
+export const transfersPending = {
+  title: 'Overganger',
+  formatSigned: (n) => String(n),
+  analysis: {
+    rows: [
+      { event: 2, chip: null, inn: { id: 10, name: 'Haaland', points: 0 }, ut: { id: 11, name: 'Watkins', points: 0 }, diff: 0, penaltyShare: 0, netto: 0, window: null, played: false, pending: true },
+    ],
+    totals: { diff: 0, cost: 0, netto: 0, count: 1, skipped: 0 },
+    bestIndex: null,
+    worstIndex: null,
+    maxGw: 1,
+  },
+};

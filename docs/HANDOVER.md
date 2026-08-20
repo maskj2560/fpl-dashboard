@@ -3,7 +3,46 @@
 > Levende overleveringsfil. Oppdateres ved hver milepæl og ved arbeidsstans.
 > Ny AI-økt: les denne + CLAUDE.md + ROADMAP.md, fortsett der «Neste steg» sier.
 
-**Sist oppdatert:** 2026-08-20 (økt 8 sesongstart-verifisering PÅGÅR; økt 9 kvalitetspass v1.1.3 ferdig på branch, ikke merget)
+**Sist oppdatert:** 2026-08-20 (økt 10 «Overganger» pågår på branch; økt 8 sesongstart-verifisering PÅGÅR med sjekkpunkter)
+
+## ØKT 10: «Overganger» — historisk hva hvis-analyse (PÅGÅR, branch `feat/hva-hvis-transfers`)
+
+Kjøreprompt: `docs/neste-okt-prompt-hva-hvis-transfers.md`. Plan skrevet i
+plan mode, **godkjent av Marius 2026-08-20**, ligger i
+`docs/plan-hva-hvis-transfers.md` (task-for-task med TDD og komplett kode).
+
+Marius' beslutninger (AskUserQuestion i planfasen):
+1. Egen side **«Overganger» på `/overganger`** (ikke /bytter, ikke seksjon på /lag)
+2. **Uten AI-kommentar i v1** (lagt som idé i ROADMAP)
+
+**Status: FERDIG på branchen (6 commits), IKKE merget, IKKE pushet.**
+Venter på klarsignal fra Marius. `npm test` 212/212 grønne (27 nye tester),
+`npm run lint` 0. Røyktest lokalt med AI/Discord av: alle 11 ruter 200
+(inkl. `/overganger`), 404 OK, tomtilstanden «Ingen overganger registrert
+ennå» vises, `/health` ga `ai:false, discord:false, teamId:true`. Rører ikke
+oppførsel økt 8 observerer (`getLive` uendret — historikk-TTL er ny funksjon
+`getLiveHistoric` med delt cache-nøkkel, kalles kun for ferdige runder).
+
+Det som er bygget: `src/services/transfers.js` (buildTransferAnalysis ren +
+assembleTransferAnalysis), `getEntryTransfers`/`getLiveHistoric` i fplClient,
+`/overganger`-rute + view + nav-punkt «Overganger», `formatSigned` i
+format.js. Full plan med beslutninger og avvik:
+`docs/plan-hva-hvis-transfers.md`.
+
+**UHELL under røyktesten (loggført av ærlighet, prod upåvirket):** første
+kjøring brukte en scratchpad-.env UTEN nøkler — men `config.js` sin
+`process.loadEnvFile()` leser repoets `.env` uansett, så serveren startet
+med prod-nøklene: 2 ekte AI-kall skjedde lokalt (news-summary inn=1221/
+ut=633 + ai-brief-gw1 inn=715/ut=824, øre-beløp) og Discord-scheduleren ble
+armert. INGEN melding ble sendt (send-tidspunktet ~19:30 var timer unna;
+prosessen ble drept med én gang). Riktig teknikk (brukt i andre kjøring, og
+dokumentert i planfilen): sett `ANTHROPIC_API_KEY=` og `DISCORD_WEBHOOK_URL=`
+som TOMME i scratchpad-.env — `--env-file` vinner over `loadEnvFile`.
+NB for økt 8s kostnadskontroll: de 2 kallene vises i Anthropic-forbruket,
+men IKKE i Coolify-loggen (de kjørte lokalt).
+
+Gjenstår etter merge: «Etter GW2»-sjekklisten i planfilen (verifiser
+transfers-skjemaets feltnavn mot ekte data, se siden med ekte data, mobil).
 
 ## ØKT 9: kvalitetspass v1.1.3 — I PROD (2026-08-20 ~03:00)
 
@@ -388,6 +427,16 @@ task for task. Kort oversikt:
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 
+- 2026-08-20 (økt 10): kjøreprompt for «historisk hva hvis-analyse av egne
+  transfers» sendt (`docs/neste-okt-prompt-hva-hvis-transfers.md`), plan mode.
+  Handling: kodebase kartlagt, plan skrevet og validert, to spørsmål stilt.
+- 2026-08-20 (økt 10): svar på AskUserQuestion — «Egen side "Overganger"»
+  (URL /overganger) og «Uten AI i v1». Handling: valgene låst inn i planen.
+- 2026-08-20 (økt 10): planen godkjent i plan mode + «keep going where you
+  left off». Handling: utførelse startet på branch `feat/hva-hvis-transfers`;
+  alle 6 tasks fullført samme dag (212/212 tester, lint 0, røyktest OK).
+  Uhell underveis: 2 ekte AI-kall i første røyktestkjøring pga.
+  `loadEnvFile()` — se ØKT 10-seksjonen. Ikke merget/pushet.
 - 2026-08-20 (økt 9): kjøreprompt for kvalitetspasset v1.1.3 sendt
   (`docs/neste-okt-prompt-kvalitetspass.md`, 29 verifiserte funn P0–P3).
   Handling: alle P0-, P1- og P2-funn rettet med tester på branchen
