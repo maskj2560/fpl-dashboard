@@ -145,10 +145,9 @@ committet (og pushet hvis remote finnes).
 - [x] Verifisert lokalt (185 tester, lint 0, alle ti ruter 200 med AI/Discord av)
 - [ ] P1-5b og P3-1…P3-5 → «v1.2.0-kandidater» under
 
-## v1.2.0 — «Overganger»: historisk hva hvis-analyse (planlagt)
+## v1.2.0 — «Overganger»: historisk hva hvis-analyse
 
-_Plan: `docs/plan-hva-hvis-transfers.md`. Versjonsnummeret settes endelig ved
-release; rykker M4-kandidatene først, forskyves det._
+_Plan: `docs/plan-hva-hvis-transfers.md`._
 
 - [x] fplClient: `getEntryTransfers` (5 min) + `getLiveHistoric` (6 t, kun ferdige runder)
 - [x] `transfers.js`: buildTransferAnalysis — vindu, diff, straff, chips, kanttilfeller
