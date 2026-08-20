@@ -19,16 +19,27 @@ async function fetchFeed(url) {
   });
   if (!res.ok) throw new Error(`Feed ${url} svarte ${res.status}`);
   const xml = parser.parse(await res.text());
-  const channel = xml?.rss?.channel;
+  return parseFeedItems(xml?.rss?.channel, url);
+}
+
+/**
+ * Plukker sakene ut av en RSS-kanal. En uparsebar `pubDate` gir `published:
+ * null` — kaster vi her, forkaster Promise.allSettled hele feeden, og én rar
+ * dato ville tømt nyhetslisten stille.
+ */
+export function parseFeedItems(channel, url) {
   if (!channel) return [];
   const items = Array.isArray(channel.item) ? channel.item : [channel.item].filter(Boolean);
-  return items.map((i) => ({
-    title: String(i.title ?? ''),
-    link: String(i.link ?? ''),
-    description: String(i.description ?? '').replace(/<[^>]*>/g, '').slice(0, 300),
-    published: i.pubDate ? new Date(i.pubDate).toISOString() : null,
-    source: String(channel.title ?? url),
-  }));
+  return items.map((i) => {
+    const date = i.pubDate ? new Date(i.pubDate) : null;
+    return {
+      title: String(i.title ?? ''),
+      link: String(i.link ?? ''),
+      description: String(i.description ?? '').replace(/<[^>]*>/g, '').slice(0, 300),
+      published: date && !Number.isNaN(date.getTime()) ? date.toISOString() : null,
+      source: String(channel.title ?? url),
+    };
+  });
 }
 
 export function getNewsItems() {

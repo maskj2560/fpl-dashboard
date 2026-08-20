@@ -6,6 +6,7 @@ import {
   dedupeNewsItems,
   filterSummaryPoints,
   properNames,
+  parseFeedItems,
 } from '../src/services/news.js';
 
 test('buildNewsPrompt tar med titler og krav om norsk + fete navn', () => {
@@ -116,4 +117,29 @@ test('buildNewsPrompt forbyr detaljer som ikke står i sakene', () => {
 
   assert.match(prompt, /Bruk kun personer, klubber og hendelser som står i sakene/);
   assert.match(prompt, /ingen overgangstype, beløp, kontraktslengde/);
+});
+
+// ---- P0-4: ugyldig pubDate skal ikke velte hele feeden ---------------------
+
+test('parseFeedItems beholder saken når pubDate ikke lar seg tolke', () => {
+  const items = parseFeedItems(
+    {
+      title: 'BBC Sport',
+      item: [
+        { title: 'Gyldig', link: 'https://a', pubDate: 'Wed, 20 Aug 2025 10:00:00 GMT' },
+        { title: 'Rar dato', link: 'https://b', pubDate: 'ikke en dato' },
+      ],
+    },
+    'https://feed',
+  );
+  assert.equal(items.length, 2);
+  assert.equal(items[0].published, '2025-08-20T10:00:00.000Z');
+  assert.equal(items[1].published, null);
+  assert.equal(items[1].title, 'Rar dato');
+});
+
+test('parseFeedItems takler manglende pubDate og enkeltstående item', () => {
+  const items = parseFeedItems({ title: 'Sky', item: { title: 'Alene', link: 'https://c' } }, 'https://feed');
+  assert.deepEqual(items.map((i) => [i.title, i.published, i.source]), [['Alene', null, 'Sky']]);
+  assert.deepEqual(parseFeedItems(null, 'https://feed'), []);
 });
