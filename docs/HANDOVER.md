@@ -324,6 +324,17 @@ task for task. Kort oversikt:
   aktiv: sender 24 t før deadline` + `FPL-dashboard lytter på
   http://localhost:3000`. Handling: bekreftet korrekt tilstand — scheduler
   armert, venter på ~19:30.
+- 2026-08-20 (økt 8, ~02:00): «Er det noe annet vi kan jobbe med i
+  mellomtiden?» → valg «Kvalitetspass». Handling: branch
+  `fix/kvalitetspass-v113` opprettet, `test/fplClient.test.js` lagt til
+  (124/124 grønne), full kodegjennomgang kjørt (8 review-vinkler, /code-review
+  high) og alle funn verifisert mot koden — 29 funn rapportert.
+- 2026-08-20 (økt 8, ~02:30): «Lag alle funnene dine om til en veldig
+  detaljert prompt … til en ny ai agent med opus 5» + «Så venter vi med steg
+  A og B greiene». Handling: `docs/neste-okt-prompt-kvalitetspass.md` skrevet
+  (P0–P3 med fix-design og testkrav per funn). Sjekkpunkt A–D står uendret og
+  venter på ping. VIKTIG for kvalitetspass-agenten: aldri push uten Marius'
+  klarsignal, aldri deploy i sendevinduet torsdag 19:00–21:00.
 
 - 2026-08-19: «Ikke limit deg så mye — lag det så bra du kan med gode nok modeller»
 - 2026-08-19: «Men selve AI-en i fantasy må være relativt billig å bruke for én person»
