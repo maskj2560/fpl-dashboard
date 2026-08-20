@@ -141,3 +141,46 @@ test('sanitizeBriefText beholder råd der «før deadline» er et tidspunkt', ()
 
   assert.equal(sanitizeBriefText(text, briefMedTidsfakta), text);
 });
+
+// ---- P3-4: setningssplitting som tåler forkortelser ---------------------
+// `line.match(/[^.!?]+[.!?]*/g)` delte på ethvert punktum — også i «kl.» og
+// «21.00» — så halve setninger ble vurdert hver for seg. Da kan halvparten
+// mangle lagnavnet eller negasjonen som gjør helheten korrekt.
+
+const briefUtenTidligeKamper = {
+  ...briefMedTidsfakta,
+  fixturesByDay: [{
+    day: 'fredag 21. august',
+    matches: [{ home: 'Liverpool', away: 'Bournemouth', kickoff: '21:00', beforeDeadline: false }],
+  }],
+  fixturesBeforeDeadline: [],
+};
+
+test('sanitizeBriefText: tom tekst og manglende brief er uendret', () => {
+  assert.equal(sanitizeBriefText('', briefMedTidsfakta), '');
+  assert.equal(sanitizeBriefText('Alt spilles før deadline.', undefined), 'Alt spilles før deadline.');
+});
+
+test('sanitizeBriefText splitter ikke på «kl.» — korrekt sammensatt setning beholdes', () => {
+  const text = '**Arsenal**–Chelsea (kl. 18:00) spilles før deadline, mens Liverpool–Bournemouth går etter deadline.';
+
+  assert.equal(sanitizeBriefText(text, briefMedTidsfakta), text);
+});
+
+test('sanitizeBriefText: negasjon overlever «f.eks.» i samme setning', () => {
+  const text = 'Ingen av kampene, f.eks. Liverpool–Bournemouth, starter før deadline.';
+
+  assert.equal(sanitizeBriefText(text, briefUtenTidligeKamper), text);
+});
+
+test('sanitizeBriefText splitter ikke på klokkeslett med punktum', () => {
+  const text = 'Liverpool spiller først 21.00 — det er etter deadline, mens Arsenal–Chelsea (18.00) går før deadline.';
+
+  assert.equal(sanitizeBriefText(text, briefMedTidsfakta), text);
+});
+
+test('sanitizeBriefText fjerner uriktig påstand selv med forkortelse i setningen', () => {
+  const text = 'Kampen starter kl. 21:00 før deadline.';
+
+  assert.equal(sanitizeBriefText(text, briefUtenTidligeKamper), '');
+});

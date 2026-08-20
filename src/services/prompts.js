@@ -51,11 +51,29 @@ export function buildAdvicePrompt({ entryName, bank, squadLines, outs }) {
   ].join('\n');
 }
 
+// Norske forkortelser med punktum som ikke avslutter en setning. Punktumene
+// maskeres før setningssplitting og gjenopprettes etterpå. Bevisst en enkel,
+// eksplisitt liste: regelen «ikke splitt før liten bokstav» ville feilet for
+// «bl.a. Arsenal», der neste ord er et egennavn.
+const ABBREVIATIONS = ['f.eks.', 'bl.a.', 'dvs.', 'osv.', 'mfl.', 'evt.', 'pga.', 'o.l.', 'ca.', 'kl.', 'nr.', 'jf.'];
+const ABBR_RE = new RegExp(
+  `(?<!\\p{L})(?:${ABBREVIATIONS.map((a) => a.replaceAll('.', '\\.')).join('|')})`,
+  'giu',
+);
+const DOT_MASK = '\u0001';
+const maskDots = (line) =>
+  line
+    .replace(ABBR_RE, (abbr) => abbr.replaceAll('.', DOT_MASK))
+    .replace(/(\d)\.(?=\d)/g, `$1${DOT_MASK}`); // klokkeslett/desimaltall: «21.00», «2.5»
+const unmaskDots = (s) => s.replaceAll(DOT_MASK, '.');
+
 /**
  * Etterkontroll av AI-briefen: fjerner setninger som påstår noe om «før» eller
  * «etter deadline» som ikke stemmer med de forhåndsberegnede kampdataene.
  * Ren funksjon, ingen regenerering — svaret er uansett cachet en time, så det
  * robuste valget er å utelate setningen framfor å be modellen prøve igjen.
+ * Setninger splittes med maskering av norske forkortelser og klokkeslett, så
+ * punktum i «kl.»/«21.00» ikke kutter setningen i to.
  */
 export function sanitizeBriefText(text, brief) {
   const matches = (brief?.fixturesByDay ?? []).flatMap((d) => d.matches);
@@ -92,14 +110,15 @@ export function sanitizeBriefText(text, brief) {
   const dropped = [];
   const lines = text.split('\n').map((line) => {
     if (!/deadline/i.test(line)) return line;
-    const sentences = line.match(/[^.!?]+[.!?]*/g) ?? [line];
+    const masked = maskDots(line);
+    const sentences = masked.match(/[^.!?]+[.!?]*/g) ?? [masked];
     const kept = sentences.filter((s) => {
       if (keep(s)) return true;
-      dropped.push(s.trim());
+      dropped.push(unmaskDots(s).trim());
       return false;
     });
     if (kept.length === sentences.length) return line;
-    const rest = kept.join('').trim();
+    const rest = unmaskDots(kept.join('')).trim();
     // Er det bare et punktmerke eller en overskriftsmarkør igjen, ryddes linjen bort.
     return /^([-*]|#{1,3})?\s*$/.test(rest) ? null : rest;
   });

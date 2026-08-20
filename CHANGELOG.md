@@ -7,6 +7,13 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Fixed
+
+- AI-briefens etterkontroll kutter ikke lenger setninger midt i norske
+  forkortelser («kl.», «f.eks.») eller klokkeslett («21.00») — færre
+  feilfjernede setninger, og uriktige deadline-påstander med forkortelse i
+  setningen fanges nå.
+
 ## [1.2.1] - 2026-08-20
 
 ### Fixed
