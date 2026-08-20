@@ -68,9 +68,17 @@ export function getBootstrap() {
   return getOrFetch('bootstrap', () => fplFetch('bootstrap-static/'), { ttl: 15 * MIN });
 }
 
+/**
+ * Kampene. Uten `gw`: hele sesongen (endrer seg sjelden, 15 min).
+ * Med `gw`: rundens kamper, som live-siden leser stillinger, kampklokke og
+ * «pågår nå» fra — de må være ferske i kampvinduer, derfor 1 min som live-data.
+ * Kallet skjer bare mens /live er åpen, og SWR + dedup demper trykket.
+ */
 export function getFixtures(gw) {
   const path = gw ? `fixtures/?event=${gw}` : 'fixtures/';
-  return getOrFetch(`fixtures:${gw ?? 'alle'}`, () => fplFetch(path), { ttl: 15 * MIN });
+  return getOrFetch(`fixtures:${gw ?? 'alle'}`, () => fplFetch(path), {
+    ttl: gw ? 1 * MIN : 15 * MIN,
+  });
 }
 
 export function getElementSummary(playerId) {

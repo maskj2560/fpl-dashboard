@@ -1,7 +1,7 @@
 import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { clear } from '../src/services/cache.js';
-import { getBootstrap, getLive, isGameUpdating, FplError } from '../src/services/fplClient.js';
+import { clear, _setNow, _flush } from '../src/services/cache.js';
+import { getBootstrap, getFixtures, getLive, isGameUpdating, FplError } from '../src/services/fplClient.js';
 
 // Mocker global fetch — ingen nettverkskall i tester.
 const originalFetch = globalThis.fetch;
@@ -99,4 +99,29 @@ test('vedvarende 500 gir feil etter tre forsøk', async () => {
     return true;
   });
   assert.equal(fetchCalls.length, 3, 'ett kall + to retries');
+});
+
+// ---- P0-3: per-runde-fixtures må være ferske i kampvinduer -----------------
+
+test('fixtures for én runde revalideres etter ett minutt, helsesongen ikke', async () => {
+  mockFetch(() => jsonResponse([]));
+  let clock = 1_000_000;
+  _setNow(() => clock);
+  try {
+    await getFixtures(1);
+    await getFixtures();
+    assert.equal(fetchCalls.length, 2, 'ulike cache-nøkler');
+
+    clock += 2 * 60_000; // to minutter senere: midt i en kamp
+    await getFixtures(1);
+    await getFixtures();
+    await _flush();
+
+    const perGw = fetchCalls.filter((c) => /fixtures\/\?event=1$/.test(c.url)).length;
+    const season = fetchCalls.filter((c) => /fixtures\/$/.test(c.url)).length;
+    assert.equal(perGw, 2, 'runde-fixtures skal hentes på nytt');
+    assert.equal(season, 1, 'helsesong-fixtures skal fortsatt ligge i cache');
+  } finally {
+    _setNow(null);
+  }
 });
