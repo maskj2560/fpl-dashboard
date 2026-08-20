@@ -183,6 +183,23 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 
+- 2026-08-20 (økt 14, ~19:50): limte inn Coolify-loggen + «jeg er ikke hjemme
+  … kan du sjekke det opp eller kanskje jeg kan sjekke fra github?» Handling:
+  **sjekkpunkt A er LUKKET.** `/api/brief.json` hentet fra prod med curl
+  (offentlig URL, ruten kaller kun `assembleBrief` → 0 AI-kall).
+  GitHub kan ikke brukes til dette — det er live prod-data, og repoet er
+  dessuten ikke pushet siden v1.2.0.
+  Fasit mot briefen: `fixturesBeforeDeadline: []` ✅, `captains` = Raya 36,3 /
+  Gabriel 29,6 / Calafiori 32,6, alle form 0.0 ✅, `injuries` = 1 (Bruno G.).
+  Avvik funnet: briefen påsto «alle stiller friske» (feil), og skrev
+  Calafiori 32,3 % mot dataenes 32,6 % — begge ført i ROADMAP.
+  Loggen viste INGEN «AI-brief: fjernet …»-linje: gammel `sanitizeBriefText`
+  kuttet ingenting, så fixturen er ubeskåret modelltekst.
+  AI-kall torsdag: 3 × news-summary + 2 × ai-brief-gw1 (ett fra et
+  /brief-besøk, ett fra auto-briefen > 1 t senere — forventet).
+  Fikset underveis: «Unknown»-skadetypen, branch `fix/news-unknown`
+  (`d88b913`, ut fra `main`), 218 → 219 tester, rødt observert først.
+
 - 2026-08-20 (økt 14, ~19:35): limte inn hele Discord-meldingen fra
   auto-briefen + «hva gjøres videre?». Handling: sjekkpunkt A påbegynt.
   Briefen kom presis 19:30 — auto-brief-scheduleren virker i prod.

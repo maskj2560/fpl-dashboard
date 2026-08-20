@@ -182,6 +182,17 @@ alias-tabellen dekker begge retninger._
 _Ikke-kritiske funn fra verifiseringen 20.–24. august legges her. Ingen av
 dem fikses uten avtale._
 
+- **AI-briefen kan motsi datagrunnlaget uten at noe fanger det** (funn fra
+  sjekkpunkt A, verifisert mot prod-`/api/brief.json`). To avvik i GW1-briefen:
+  modellen skrev «Ingen nevneverdig skadenytt … Alle stiller i utgangspunktet
+  friske» selv om `injuries` inneholdt Bruno G. (ARS, 8,2 %, «Uavklart – 75 %
+  sjanse for spilletid»), og den oppga Calafiori til 32,3 % der dataene sier
+  32,6 %. `sanitizeBriefText` kontrollerer bare deadline-påstander, så ingen av
+  delene ble fanget. Mulig utvidelse (P3-5-familien): en tallkontroll som
+  sammenligner prosenter i teksten mot brief-JSON-en, og en regel om at
+  «ingen skadenytt» ikke kan stå når `injuries` er ikke-tom. NB: 8,2 % er lavt
+  eid, så «ikke nevneverdig» er en forsvarlig tolkning — det er «alle stiller
+  friske» som er direkte galt.
 - **Kapteinslista er vilkårlig ved sesongstart** (funn fra sjekkpunkt A, ekte
   GW1-brief 20. august). `globalCaptains()` i `brief.js` rangerer på
   `form * (6 - avgFdr)`. Før første kamp er `form` 0.0 for samtlige spillere,
