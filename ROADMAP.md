@@ -191,6 +191,21 @@ rekkefølgen `fix/sanitize-brief` → `fix/lag-anbefalinger` → `main`._
 - [x] Røyktest lokalt med tomme nøkler (11 ruter 200, 0 AI-kall) + handover
 - [ ] Etter sjekkpunkt D: 1 AI-kall for ende-til-ende-verifisering, så release v1.2.2
 
+## v1.2.3 — bonuskolonnen på /live (funn fra sjekkpunkt C)
+
+_Full analyse med rådata: `docs/sjekkpunkt-c-live.md`. Ikke påbegynt._
+
+FPL publiserer bonus provisorisk mens kampen pågår, så `hasConfirmedBonus()`
+slår til med én gang og `estimateBonus()` kjører aldri — kolonnen står tom
+hele kampen. Besluttet løsning (Marius 21. aug): vis FPLs publiserte bonus,
+merket som foreløpig, uten å legge den til «Effektivt» (den ligger allerede
+i poengsummen). BPS-estimatet beholdes for vinduet før FPL publiserer.
+
+- [ ] `publishedBonus(fixture)` i `analysis.js` (TDD)
+- [ ] `live.js`: skill publisert bonus (`bonusPublished`) fra estimat (`bonusEst`)
+- [ ] `public/app.js` + `views/live.ejs`: vis summen, kolonnen heter «Bonus»
+- [ ] Manuell verifisering under neste kampvindu (rendringen er utenfor testharnessen)
+
 ## Senere / idéer (ikke planlagt)
 
 ### v1.2.0-kandidater (samles under sesongstart-verifiseringen, M4)

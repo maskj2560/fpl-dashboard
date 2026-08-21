@@ -5,9 +5,31 @@
 > Versjonshistorikk og detaljer ligger i CHANGELOG.md, ROADMAP.md og git —
 > denne filen holder kun nåtilstand, aktive økter og lærdommer.
 
-**Sist oppdatert:** 2026-08-21 (økt 17, Opus 5: B-1…B-3 utført på `fix/lag-anbefalinger`, røyktestet, ikke pushet; sesongstart-verifisering aktiv)
+**Sist oppdatert:** 2026-08-21 (økt 17, Opus 5: B-1…B-3 utført på `fix/lag-anbefalinger`; sjekkpunkt C observert — polling grønt, bonuskolonne-funn dokumentert)
 
 ## Status akkurat nå
+
+- **Sjekkpunkt C: polling GRØNT, ett funn på bonuskolonnen.** (økt 17,
+  2026-08-21 ~22:10, observert av Marius via Claude in Chrome på prod under
+  Arsenal–Coventry.) Full analyse med rådata: `docs/sjekkpunkt-c-live.md`.
+  - Polling: tre kall til `/api/live.json`, nøyaktig 60 s mellom hvert, ingen
+    duplikater. Cachen tar støyten (5 raske curl → identisk payload, ~90 ms,
+    `cf-cache-status: DYNAMIC`). Statustekst, pulseprikk og kampstillinger
+    riktige, ingen konsollfeil. **Pollingintervall og fetch-logikk skal ikke
+    røres.**
+  - Gjenstår av C: stopp-testen når `anyLive` blir false etter siste
+    kampslutt (forventning: null nye `live.json`-kall).
+  - **Funn:** bonuskolonnen står tom hele kampen. Rotårsak verifisert mot
+    FPL-API-et: FPL publiserer bonus provisorisk MENS kampen pågår, så
+    `hasConfirmedBonus()` (`analysis.js:371`) slår til og `live.js:51`
+    hopper over kampen — `estimateBonus()` kjører aldri. Bonusen ligger
+    allerede i `total_points` (FPLs egen `explain` for Ødegaard: bonus +3 av
+    11 poeng), så vakten mot dobbelttelling er riktig; det er kolonnen som er
+    død. Løsning besluttet, se ROADMAP v1.2.3. **Ikke implementert** — Marius
+    stoppet utførelsen og ba om at funnene ble skrevet ned først.
+  - Avklart uten funn: Tzolis 5→4 poeng (vi leser `total_points` rått hvert
+    kall, ingen akkumulering — FPL reviderte selv) og van Ewijk 51'/0 poeng
+    (appearance +1, goals_conceded −1 = 0; korrekt).
 
 - **B-1…B-3 riktige anbefalinger på /lag: UTFØRT på branch
   `fix/lag-anbefalinger` — IKKE merget, IKKE pushet.** (økt 17,
