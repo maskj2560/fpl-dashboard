@@ -5,9 +5,22 @@
 > Versjonshistorikk og detaljer ligger i CHANGELOG.md, ROADMAP.md og git —
 > denne filen holder kun nåtilstand, aktive økter og lærdommer.
 
-**Sist oppdatert:** 2026-08-22 (økt 18, Fable: v1.2.3-planen UTVIDET med funn 2 fra stopp-testen — finished_provisional; klar for Opus 5)
+**Sist oppdatert:** 2026-08-22 (økt 19, Opus 5: v1.2.3 under utførelse på `fix/live-bonus`)
 
 ## Status akkurat nå
+
+- **v1.2.3 UNDER UTFØRELSE på branch `fix/live-bonus`** (økt 19, 2026-08-22,
+  Opus 5, fra `fix/lag-anbefalinger` @ `c5b9748`). Planen
+  `docs/plan-live-bonus.md` følges punkt for punkt. Baseline verifisert:
+  `npm test` **242/242** på fersk branch, som planen forutsa.
+  - Funn 2 (kampslutt) FERDIG: `matchDone` i `live.js`. TDD-rødt observert
+    (245 tester, 244 pass, **1 fail** — «kampen er ferdigspilt, ingen
+    polling»), deretter **245/245**, `npm run lint` exit 0.
+  - `publishedBonus()` i `analysis.js` FERDIG: rødt observert som
+    `SyntaxError: … does not provide an export named 'publishedBonus'`,
+    deretter 244/244.
+  - Gjenstår: bonus-endringen i `live.js` (tester 3–6 + 8), visningen
+    (`public/app.js` + `views/live.ejs`), røyktest med tomme nøkler.
 
 - **Sjekkpunkt C: polling GRØNT, ett funn på bonuskolonnen.** (økt 17,
   2026-08-21 ~22:10, observert av Marius via Claude in Chrome på prod under

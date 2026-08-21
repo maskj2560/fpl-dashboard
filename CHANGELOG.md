@@ -20,6 +20,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Fixed
 
+- **/live regner nå kampen som ferdig ved fløyta.** FPL setter
+  `finished_provisional` med én gang kampen er slutt, men `finished` først
+  ved rundeprosesseringen neste morgen. Siden leste bare `finished`, så
+  statusen sto på «Kamper pågår», kampen viste minuttall i stedet for
+  «Slutt», og hver åpne fane fortsatte å polle hele natten. Nå slår statusen
+  om til «Ingen kamper pågår» ved kampslutt, og pollingen stopper.
 - **/lag sier nå hvilken runde anbefalingene gjelder.** Siden viste «Runde 1»
   i undertittelen mens kaptein- og byttekandidatene hele tiden gjaldt neste
   runde. Anbefalingsseksjonen har fått overskriften «Anbefalinger for Runde

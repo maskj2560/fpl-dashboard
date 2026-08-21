@@ -20,6 +20,7 @@ import {
   differentials,
   estimateBonus,
   hasConfirmedBonus,
+  publishedBonus,
   resolvePicks,
   resolvedGw,
   byId,
@@ -551,6 +552,34 @@ test('hasConfirmedBonus skiller bekreftet bonus fra bare BPS', () => {
   assert.equal(hasConfirmedBonus({ stats: [{ identifier: 'bonus', h: [], a: [] }] }), false);
   assert.equal(hasConfirmedBonus({ stats: [{ identifier: 'bonus', h: [{ element: 1, value: 3 }], a: [] }] }), true);
   assert.equal(hasConfirmedBonus({}), false);
+});
+
+test('publishedBonus gir poeng per spiller fra bonus-statistikken, hjemme og borte samlet', () => {
+  const b = publishedBonus({
+    stats: [
+      { identifier: 'bps', h: [{ element: 1, value: 40 }], a: [] },
+      {
+        identifier: 'bonus',
+        h: [{ element: 1, value: 3 }, { element: 2, value: 1 }],
+        a: [{ element: 3, value: 2 }],
+      },
+    ],
+  });
+  assert.equal(b.get(1), 3);
+  assert.equal(b.get(2), 1);
+  assert.equal(b.get(3), 2, 'bortelaget teller med');
+  assert.equal(b.size, 3);
+});
+
+test('publishedBonus gir tom map naar stats mangler eller bonus-statistikken er tom', () => {
+  assert.equal(publishedBonus({}).size, 0, 'ingen stats');
+  assert.equal(publishedBonus({ stats: [] }).size, 0, 'tom stats-liste');
+  assert.equal(
+    publishedBonus({ stats: [{ identifier: 'bps', h: [{ element: 1, value: 30 }], a: [] }] }).size,
+    0,
+    'bare BPS, ingen publisert bonus',
+  );
+  assert.equal(publishedBonus({ stats: [{ identifier: 'bonus', h: [], a: [] }] }).size, 0);
 });
 
 // ---- P2-3: ett oppslag per lag i stedet for full skann per kandidat --------

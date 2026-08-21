@@ -185,6 +185,31 @@ test('matches speiler stilling og status fra fixtures', () => {
   ]);
 });
 
+test('kamp med finished_provisional regnes som ferdig, selv om finished ennaa er false', () => {
+  // FPL setter finished_provisional ved fløyta, men finished først ved
+  // rundeprosesseringen neste morgen. Leser vi bare finished, står siden på
+  // «Kamper pågår» og poller hele natten.
+  const result = buildLive({
+    bootstrap,
+    gw: 1,
+    fixtures: [
+      {
+        event: 1,
+        team_h: 1,
+        team_a: 2,
+        started: true,
+        finished: false,
+        finished_provisional: true,
+        minutes: 90,
+        team_h_score: 2,
+        team_a_score: 1,
+      },
+    ],
+  });
+  assert.equal(result.anyLive, false, 'kampen er ferdigspilt, ingen polling');
+  assert.equal(result.matches[0].finished, true, 'klienten skal vise «Slutt»');
+});
+
 test('payloaden har ingen døde felter', () => {
   const result = buildLive({
     bootstrap,

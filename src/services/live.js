@@ -24,6 +24,13 @@ function emptyLive() {
 }
 
 /**
+ * Er kampen ferdigspilt? FPL setter `finished_provisional` ved fløyta, men
+ * `finished` først ved rundeprosesseringen — som regel neste morgen. Leser vi
+ * bare `finished`, står live-statusen på og klienten poller hele natten.
+ */
+const matchDone = (f) => f.finished || f.finished_provisional;
+
+/**
  * Ren sammenstilling av live-payloaden — ingen nettverkskall.
  * `nextKickoff` lar klienten vekke seg selv ved avspark i stedet for å polle
  * utenfor kampvinduer.
@@ -35,7 +42,7 @@ export function buildLive({ bootstrap, gw, fixtures = [], live = null, picks = n
   const elementsById = byId(bootstrap.elements);
   const liveById = new Map((live?.elements ?? []).map((e) => [e.id, e.stats]));
 
-  const anyLive = fixtures.some((f) => f.started && !f.finished);
+  const anyLive = fixtures.some((f) => f.started && !matchDone(f));
   const nextKickoff =
     fixtures
       .filter((f) => !f.started && f.kickoff_time)
@@ -81,7 +88,7 @@ export function buildLive({ bootstrap, gw, fixtures = [], live = null, picks = n
     homeScore: f.team_h_score ?? null,
     awayScore: f.team_a_score ?? null,
     started: f.started,
-    finished: f.finished,
+    finished: Boolean(matchDone(f)),
     minutes: f.minutes,
   }));
 
