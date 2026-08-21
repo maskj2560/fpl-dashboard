@@ -5,7 +5,7 @@
 > Versjonshistorikk og detaljer ligger i CHANGELOG.md, ROADMAP.md og git —
 > denne filen holder kun nåtilstand, aktive økter og lærdommer.
 
-**Sist oppdatert:** 2026-08-21 (økt 18, Fable: plan for publisert bonus på /live (v1.2.3) GODKJENT, klar for Opus 5; sesongstart-verifisering aktiv)
+**Sist oppdatert:** 2026-08-22 (økt 18, Fable: v1.2.3-planen UTVIDET med funn 2 fra stopp-testen — finished_provisional; klar for Opus 5)
 
 ## Status akkurat nå
 
@@ -28,9 +28,13 @@
     død. Løsning besluttet, se ROADMAP v1.2.3. **Ikke implementert** — Marius
     stoppet utførelsen og ba om at funnene ble skrevet ned først.
     **Plan GODKJENT av Marius (økt 18): `docs/plan-live-bonus.md`** —
-    branch `fix/live-bonus` (fra `fix/lag-anbefalinger`), 6 nye tester
-    242 → 248, 0 AI-kall. Utførelsesprompt:
-    `docs/neste-okt-prompt-live-bonus-utforelse.md`.
+    branch `fix/live-bonus` (fra `fix/lag-anbefalinger`), 0 AI-kall.
+    UTVIDET 22. aug etter stopp-testen: FPL setter `finished` først ved
+    rundeprosesseringen (`finished_provisional` settes ved fløyta), så
+    /live sa «Kamper pågår» og pollet hele natten. Begge C-funnene fikses
+    i samme plan: 8 nye tester, 242 → 250. Utførelsesprompt:
+    `docs/neste-okt-prompt-live-bonus-utforelse.md`. Stopp-testen kan
+    først bestås etter deploy — åpent punkt under sjekkpunkt D.
   - Avklart uten funn: Tzolis 5→4 poeng (vi leser `total_points` rått hvert
     kall, ingen akkumulering — FPL reviderte selv) og van Ewijk 51'/0 poeng
     (appearance +1, goals_conceded −1 = 0; korrekt).
@@ -273,6 +277,13 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 
+- 2026-08-22 (økt 18, natt/morgen): limte inn stopp-test-rapporten fra
+  Claude in Chrome — testen lot seg ikke kjøre, /live sa «Kamper pågår» i
+  66+ min etter kampslutt (fire friske sidelaster, frosset innhold).
+  Handling: rotårsak verifisert mot FPL-API-et (finished_provisional vs
+  finished), cache-hypotesen avkreftet. Marius valgte «Utvid v1.2.3-planen»
+  — plan, prompt, ROADMAP og sjekkpunkt-C-dokumentet oppdatert og
+  committet. dataAlder bevisst utsatt (P3-2-rest). Ingen kode endret.
 - 2026-08-21 (økt 17, kveld): limte inn sjekkpunkt C-observasjonene fra
   Claude in Chrome, avbrøt påbegynt implementering med «jeg ønsker bare at du
   oppdaterer all denne informasjonen i fil eller noe». Handling: alt skrevet

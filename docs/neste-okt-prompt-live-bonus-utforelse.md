@@ -5,7 +5,7 @@ Du jobber i `c:\Users\mariu\Documents\Claude Code\FPL`.
 **Følg planen NØYAKTIG: `docs/plan-live-bonus.md`.** Beslutningen der er
 tatt av Marius — ikke re-spør, ikke re-planlegg. Les også `CLAUDE.md`
 (arkitekturregler, gjelder foran alt) og `docs/HANDOVER.md` (status —
-sesongstart-verifiseringen pågår, sjekkpunkt C er observert).
+sesongstart-verifiseringen pågår; sjekkpunkt C ga TO funn — begge fikses her).
 
 Harde regler (detaljer og rekkefølge står i planen):
 
@@ -13,7 +13,7 @@ Harde regler (detaljer og rekkefølge står i planen):
   `fix/lag-anbefalinger`) — verifiser, ikke committ på nytt. Ny branch
   `fix/live-bonus` derfra.
 - **TDD:** rødt observert før grønt. Baseline `npm test` skal være **242**
-  på fersk branch — avvik → stopp og rapporter. Mål: **248**.
+  på fersk branch — avvik → stopp og rapporter. Mål: **250**.
 - **0 AI-kall.** Røyktest med tomme nøkler (teknikken står i
   HANDOVER-lærdommene; verifiser `/health` → `ai:false`).
 - **Aldri push. Ingen merge.** Aldri deploy torsdag 19:00–21:00.

@@ -154,3 +154,66 @@ minutes +2 (63 min), goals_conceded -1 (3 mål)  → total_points 1
 Ved 51' og 2 baklengsmål: appearance +1, goals_conceded −1 = **0** —
 nøyaktig det som ble vist. Forsvarere får −1 per 2 baklengsmål.
 Ingen feil, ingen endring.
+
+## FUNN 2 — «Kamper pågår» hele natten etter kampslutt (stopp-testen 21.–22. aug)
+
+Stopp-testen (punkt 3 i sjekkpunkt C) lot seg ikke kjøre: avbruddsvilkåret
+(«Ingen kamper pågår akkurat nå») ble aldri oppfylt. Fire HELT friske
+sidelaster over 66 minutter, alle med byte-identisk innhold:
+
+```
+22:56:32  «Kamper pågår · Sist oppdatert 22:56:32»
+23:02:06  «Kamper pågår · Sist oppdatert 23:02:06»
+23:13:54  «Kamper pågår · Sist oppdatert 23:13:54»
+00:02:16  «Kamper pågår · Sist oppdatert 00:02:16»
+ARS 3–0 COV merket «90'» (aldri «Slutt»), pulserende prikk i alle fire.
+```
+
+Kampen var ferdigspilt i virkeligheten før første last.
+
+### Rotårsak (verifisert ~9 t etter kampslutt, 22. aug morgen)
+
+FPL-kilden `fixtures/?event=1` sa fortsatt:
+
+```
+started true | finished false | finished_provisional true | minutes 90
+```
+
+FPL setter `finished_provisional: true` ved fløyta, men `finished: true`
+først ved rundeprosesseringen (typisk neste morgen). Koden leser kun
+`f.finished`:
+
+- `anyLive = fixtures.some((f) => f.started && !f.finished)` (`live.js:38`)
+  → true hele natten.
+- `matches`-payloaden setter `finished: f.finished` (`live.js:84`) → klienten
+  viser «90'», aldri «Slutt», og prikken pulserer.
+
+Konsekvens: hver åpen fane pollet hvert 60. sekund hele natten — i strid
+med regelen «aldri poll utenfor kampvinduer».
+
+### Hypoteser som ble avkreftet
+
+- **Cache-/snapshot-frys:** nei — kilden selv serverte `finished: false` og
+  uendrede stats; cachen speilet kilden korrekt. De identiske sidelastene
+  var riktig gjengivelse av en ferdigspilt kamp.
+- **«Ikke startede kamper teller som pågående»:** nei — `some()`-betingelsen
+  krever `started`.
+
+### «Sist oppdatert» er en falsk friskhetsindikator
+
+`public/app.js:232` og `views/live.ejs:6` skriver `new Date()` ved render —
+sidelast-/polletidspunkt, aldri dataenes alder. Etter finished-fiksen er den
+i praksis sann når polling går (data maks ~1 min gamle). Ekte dataalder
+krever hentetidspunkt per cache-nøkkel og forblir ROADMAP-punktet
+«Alderstak på stale data + `dataAlder` i payloaden» (P3-2-rest) — bevisst
+utsatt (Marius 22. aug).
+
+### Besluttet løsning (Marius, 22. aug — IKKE re-spør)
+
+`matchDone(f) = f.finished || f.finished_provisional` brukes i `anyLive`,
+i `matches`-payloadens `finished`-felt og i bonusestimat-garden. Fikses i
+SAMME plan og branch som bonusfunnet (`docs/plan-live-bonus.md`,
+`fix/live-bonus`) — samme fil og løkke, egen branch ville gitt konflikt.
+
+Stopp-testen kan først bestås etter at fiksen er deployet — står som åpent
+punkt under sjekkpunkt D-oppfølgingen.

@@ -201,6 +201,8 @@ hele kampen. Besluttet løsning (Marius 21. aug): vis FPLs publiserte bonus,
 merket som foreløpig, uten å legge den til «Effektivt» (den ligger allerede
 i poengsummen). BPS-estimatet beholdes for vinduet før FPL publiserer.
 
+- [ ] `matchDone` (`finished || finished_provisional`) i `anyLive` og
+      `matches`-payloaden — statusen sto på hele natten etter kampslutt (TDD)
 - [ ] `publishedBonus(fixture)` i `analysis.js` (TDD)
 - [ ] `live.js`: skill publisert bonus (`bonusPublished`) fra estimat (`bonusEst`)
 - [ ] `public/app.js` + `views/live.ejs`: vis summen, kolonnen heter «Bonus»
