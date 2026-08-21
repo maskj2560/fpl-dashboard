@@ -193,7 +193,8 @@ rekkefølgen `fix/sanitize-brief` → `fix/lag-anbefalinger` → `main`._
 
 ## v1.2.3 — bonuskolonnen på /live (funn fra sjekkpunkt C)
 
-_Full analyse med rådata: `docs/sjekkpunkt-c-live.md`. Ikke påbegynt._
+_Full analyse med rådata: `docs/sjekkpunkt-c-live.md`. Under utførelse på
+branch `fix/live-bonus` (økt 19)._
 
 FPL publiserer bonus provisorisk mens kampen pågår, så `hasConfirmedBonus()`
 slår til med én gang og `estimateBonus()` kjører aldri — kolonnen står tom
@@ -203,8 +204,8 @@ i poengsummen). BPS-estimatet beholdes for vinduet før FPL publiserer.
 
 - [x] `matchDone` (`finished || finished_provisional`) i `anyLive` og
       `matches`-payloaden — statusen sto på hele natten etter kampslutt (TDD)
-- [ ] `publishedBonus(fixture)` i `analysis.js` (TDD)
-- [ ] `live.js`: skill publisert bonus (`bonusPublished`) fra estimat (`bonusEst`)
+- [x] `publishedBonus(fixture)` i `analysis.js` (TDD)
+- [x] `live.js`: skill publisert bonus (`bonusPublished`) fra estimat (`bonusEst`)
 - [ ] `public/app.js` + `views/live.ejs`: vis summen, kolonnen heter «Bonus»
 - [ ] Manuell verifisering under neste kampvindu (rendringen er utenfor testharnessen)
 

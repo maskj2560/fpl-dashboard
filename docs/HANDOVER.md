@@ -19,8 +19,13 @@
   - `publishedBonus()` i `analysis.js` FERDIG: rødt observert som
     `SyntaxError: … does not provide an export named 'publishedBonus'`,
     deretter 244/244.
-  - Gjenstår: bonus-endringen i `live.js` (tester 3–6 + 8), visningen
-    (`public/app.js` + `views/live.ejs`), røyktest med tomme nøkler.
+  - Funn 1 (bonus i datalaget) FERDIG: `bonusPub`/`bonusEst` atskilt i
+    `buildLive`, nytt radfelt `bonusPublished`. TDD-rødt observert (250
+    tester, 244 pass, **6 fail** — de fem nye bonustestene + «payloaden har
+    ingen døde felter»), deretter **250/250** som planen siktet mot,
+    `npm run lint` exit 0.
+  - Gjenstår: visningen (`public/app.js` + `views/live.ejs`), røyktest med
+    tomme nøkler.
 
 - **Sjekkpunkt C: polling GRØNT, ett funn på bonuskolonnen.** (økt 17,
   2026-08-21 ~22:10, observert av Marius via Claude in Chrome på prod under

@@ -210,6 +210,117 @@ test('kamp med finished_provisional regnes som ferdig, selv om finished ennaa er
   assert.equal(result.matches[0].finished, true, 'klienten skal vise «Slutt»');
 });
 
+test('publisert bonus i paagaaende kamp vises som bonusPublished, ikke som estimat', () => {
+  // FPL publiserer bonus provisorisk mens kampen pågår. Den ligger allerede i
+  // total_points, så den skal vises — men ikke legges til «Effektivt».
+  const result = buildLive({
+    bootstrap,
+    gw: 1,
+    fixtures: [
+      {
+        event: 1,
+        team_h: 1,
+        team_a: 2,
+        started: true,
+        finished: false,
+        stats: [bps([[10, 40]]), confirmedBonus([[10, 3]])],
+      },
+    ],
+    live: liveStats([[10, { total_points: 9, minutes: 62, bonus: 3 }]]),
+    picks: { picks: [{ element: 10, position: 1, multiplier: 1 }] },
+  });
+
+  assert.equal(result.myPlayers[0].bonusPublished, 3);
+  assert.equal(result.myPlayers[0].bonusEst, 0, 'ingen estimat naar FPL har publisert');
+  assert.equal(result.myPlayers[0].effective, 9, 'bonusen ligger alt i total_points');
+});
+
+test('dobbeltrunde: publisert bonus og estimat holdes atskilt paa samme rad', () => {
+  const result = buildLive({
+    bootstrap,
+    gw: 1,
+    fixtures: [
+      { event: 1, team_h: 1, team_a: 2, started: true, finished: true, stats: [confirmedBonus([[10, 3]])] },
+      { event: 1, team_h: 1, team_a: 2, started: true, finished: false, stats: [bps([[10, 40]])] },
+    ],
+    // total_points inneholder de 3 publiserte bonuspoengene fra kamp 1.
+    live: liveStats([[10, { total_points: 12, minutes: 135, bonus: 3 }]]),
+    picks: { picks: [{ element: 10, position: 1, multiplier: 1 }] },
+  });
+
+  assert.equal(result.myPlayers[0].bonusPublished, 3, 'fra den ferdige kampen');
+  assert.equal(result.myPlayers[0].bonusEst, 3, 'fra kampen som paagaar');
+  assert.equal(result.myPlayers[0].effective, 15, 'kun estimatet legges til');
+});
+
+test('ferdig kamp med bekreftet bonus viser bonusPublished', () => {
+  const result = buildLive({
+    bootstrap,
+    gw: 1,
+    fixtures: [
+      {
+        event: 1,
+        team_h: 1,
+        team_a: 2,
+        started: true,
+        finished: true,
+        stats: [bps([[10, 40]]), confirmedBonus([[10, 2]])],
+      },
+    ],
+    live: liveStats([[10, { total_points: 8, minutes: 90, bonus: 2 }]]),
+    picks: { picks: [{ element: 10, position: 1, multiplier: 2, is_captain: true }] },
+  });
+
+  assert.equal(result.myPlayers[0].bonusPublished, 2);
+  assert.equal(result.myPlayers[0].bonusEst, 0);
+  assert.equal(result.myPlayers[0].effective, 16, 'kapteinen dobler total_points, ikke bonusen paa nytt');
+});
+
+test('spiller uten bonus faar bonusPublished 0', () => {
+  const result = buildLive({
+    bootstrap,
+    gw: 1,
+    fixtures: [
+      {
+        event: 1,
+        team_h: 1,
+        team_a: 2,
+        started: true,
+        finished: false,
+        stats: [bps([[11, 40]]), confirmedBonus([[11, 3]])],
+      },
+    ],
+    live: liveStats([[10, { total_points: 2, minutes: 90, bonus: 0 }]]),
+    picks: { picks: [{ element: 10, position: 1, multiplier: 1 }] },
+  });
+
+  assert.equal(result.myPlayers[0].bonusPublished, 0);
+});
+
+test('ved floeyta slaas estimatet av, bare publisert bonus staar igjen', () => {
+  const result = buildLive({
+    bootstrap,
+    gw: 1,
+    fixtures: [
+      {
+        event: 1,
+        team_h: 1,
+        team_a: 2,
+        started: true,
+        finished: false,
+        finished_provisional: true,
+        stats: [bps([[10, 40]]), confirmedBonus([[10, 3]])],
+      },
+    ],
+    live: liveStats([[10, { total_points: 9, minutes: 90, bonus: 3 }]]),
+    picks: { picks: [{ element: 10, position: 1, multiplier: 1 }] },
+  });
+
+  assert.equal(result.myPlayers[0].bonusEst, 0);
+  assert.equal(result.myPlayers[0].bonusPublished, 3);
+  assert.equal(result.myPlayers[0].effective, 9);
+});
+
 test('payloaden har ingen døde felter', () => {
   const result = buildLive({
     bootstrap,
@@ -229,6 +340,7 @@ test('payloaden har ingen døde felter', () => {
   ]);
   assert.deepEqual(Object.keys(result.myPlayers[0]).sort(), [
     'bonusEst',
+    'bonusPublished',
     'effective',
     'isCaptain',
     'minutes',
