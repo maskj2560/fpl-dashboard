@@ -5,7 +5,7 @@
 > Versjonshistorikk og detaljer ligger i CHANGELOG.md, ROADMAP.md og git —
 > denne filen holder kun nåtilstand, aktive økter og lærdommer.
 
-**Sist oppdatert:** 2026-08-21 (økt 17, Opus 5: B-1…B-3 utført på `fix/lag-anbefalinger`; sjekkpunkt C observert — polling grønt, bonuskolonne-funn dokumentert)
+**Sist oppdatert:** 2026-08-21 (økt 18, Fable: plan for publisert bonus på /live (v1.2.3) GODKJENT, klar for Opus 5; sesongstart-verifisering aktiv)
 
 ## Status akkurat nå
 
@@ -27,6 +27,10 @@
     11 poeng), så vakten mot dobbelttelling er riktig; det er kolonnen som er
     død. Løsning besluttet, se ROADMAP v1.2.3. **Ikke implementert** — Marius
     stoppet utførelsen og ba om at funnene ble skrevet ned først.
+    **Plan GODKJENT av Marius (økt 18): `docs/plan-live-bonus.md`** —
+    branch `fix/live-bonus` (fra `fix/lag-anbefalinger`), 6 nye tester
+    242 → 248, 0 AI-kall. Utførelsesprompt:
+    `docs/neste-okt-prompt-live-bonus-utforelse.md`.
   - Avklart uten funn: Tzolis 5→4 poeng (vi leser `total_points` rått hvert
     kall, ingen akkumulering — FPL reviderte selv) og van Ewijk 51'/0 poeng
     (appearance +1, goals_conceded −1 = 0; korrekt).
@@ -269,6 +273,15 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 
+- 2026-08-21 (økt 17, kveld): limte inn sjekkpunkt C-observasjonene fra
+  Claude in Chrome, avbrøt påbegynt implementering med «jeg ønsker bare at du
+  oppdaterer all denne informasjonen i fil eller noe». Handling: alt skrevet
+  til `docs/sjekkpunkt-c-live.md` + ROADMAP/HANDOVER, committet `30a8dab`.
+  Ingen kode endret.
+- 2026-08-21 (økt 18): «les gjennom hele chatten og lag en solid plan …
+  du skal planlegge. opus skal gjennomføre» (byttet til Fable). Handling:
+  plan for v1.2.3 skrevet og godkjent (`docs/plan-live-bonus.md`),
+  utførelsesprompt levert, alt committet lokalt. Ingen push, 0 AI-kall.
 - 2026-08-21 (økt 17): kjøreprompt «Oppdrag (Opus 5): utfør planen for riktige
   anbefalinger på /lag (B-1…B-3)». Handling: baseline målt til 231/231 (planen
   sa 228) → stoppet og la fram avviket med årsak i stedet for å improvisere.
