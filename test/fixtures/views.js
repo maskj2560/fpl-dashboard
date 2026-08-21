@@ -65,6 +65,7 @@ export const team = {
     summary_overall_points: 100, summary_overall_rank: 500000,
   },
   gw: 1,
+  fromGw: 2,
   squadView: {
     activeChip: null,
     entryHistory: { points: 60, value: 1002, bank: 15 },
@@ -79,7 +80,7 @@ export const team = {
   graph: { points: '0,0 600,140', area: '0,0 600,140 600,140 0,140', min: 400000, last: 500000 },
   chips: [],
   recommendations: {
-    captains: [{ player: player(3, 'Saka'), reasons: ['Form 5.5', 'Lett kamp'] }],
+    captains: [{ player: player(3, 'Saka'), criterion: 'form', reasons: ['Form 5.5', 'Lett kamp'] }],
     transfers: [{
       out: { player: player(4, 'Watkins'), reasons: ['Ute av form'] },
       inn: [{ player: player(6, 'Isak', { team: 2 }) }],

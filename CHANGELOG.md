@@ -20,6 +20,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Fixed
 
+- **/lag sier nå hvilken runde anbefalingene gjelder.** Siden viste «Runde 1»
+  i undertittelen mens kaptein- og byttekandidatene hele tiden gjaldt neste
+  runde. Anbefalingsseksjonen har fått overskriften «Anbefalinger for Runde
+  N». Kapteinsboksen forklarer dessuten når rangeringen bygger på forventede
+  poeng i stedet for form, og viser en tomtilstand i stedet for en tom liste
+  når ingen i troppen er spilleklare.
 - **Kapteinsforslagene på /lag er ikke lenger vilkårlige ved sesongstart.**
   Før første kamp er formen 0.0 for alle, og lista viste da pick-rekkefølgen
   din som om den var en rangering (tre tilfeldige spillere, alle med

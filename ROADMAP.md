@@ -186,7 +186,8 @@ rekkefølgen `fix/sanitize-brief` → `fix/lag-anbefalinger` → `main`._
 - [x] B-1: ren helper `nextOpponents(fixtures, fromGw)` (TDD, 2 nye tester)
 - [x] B-2: AI-rådgiveren får runde, deadline, kaptein/vise og motstandere,
       og instrueres mot spekulasjon om gratis bytter (TDD, 3 nye tester)
-- [ ] B-3: «Anbefalinger for Runde N» + kriterie-/tomtilstand i kapteinsboksen
+- [x] B-3: «Anbefalinger for Runde N» + kriterie-/tomtilstand i kapteinsboksen
+      (TDD, 2 nye tester)
 - [ ] Røyktest lokalt med tomme nøkler + handover
 
 ## Senere / idéer (ikke planlagt)
