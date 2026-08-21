@@ -206,7 +206,7 @@ i poengsummen). BPS-estimatet beholdes for vinduet før FPL publiserer.
       `matches`-payloaden — statusen sto på hele natten etter kampslutt (TDD)
 - [x] `publishedBonus(fixture)` i `analysis.js` (TDD)
 - [x] `live.js`: skill publisert bonus (`bonusPublished`) fra estimat (`bonusEst`)
-- [ ] `public/app.js` + `views/live.ejs`: vis summen, kolonnen heter «Bonus»
+- [x] `public/app.js` + `views/live.ejs`: vis summen, kolonnen heter «Bonus»
 - [ ] Manuell verifisering under neste kampvindu (rendringen er utenfor testharnessen)
 
 ## Senere / idéer (ikke planlagt)

@@ -24,8 +24,13 @@
     tester, 244 pass, **6 fail** — de fem nye bonustestene + «payloaden har
     ingen døde felter»), deretter **250/250** som planen siktet mot,
     `npm run lint` exit 0.
-  - Gjenstår: visningen (`public/app.js` + `views/live.ejs`), røyktest med
-    tomme nøkler.
+  - Visningen FERDIG: bonuscellen i `render()` viser
+    `bonusEst + bonusPublished`, `title` sier hvilken kilde tallet har,
+    kolonnen heter «Bonus». Polling-tilstandsmaskinen ikke rørt.
+    **250/250**, lint 0. NB: rendringen er utenfor testharnessen
+    (`test/app-client.test.js` kjører skriptet i en vm der DOM-elementene er
+    `null`), så den må verifiseres manuelt under neste kampvindu.
+  - Gjenstår: røyktest med tomme nøkler.
 
 - **Sjekkpunkt C: polling GRØNT, ett funn på bonuskolonnen.** (økt 17,
   2026-08-21 ~22:10, observert av Marius via Claude in Chrome på prod under
