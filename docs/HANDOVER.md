@@ -5,26 +5,47 @@
 > Versjonshistorikk og detaljer ligger i CHANGELOG.md, ROADMAP.md og git —
 > denne filen holder kun nåtilstand, aktive økter og lærdommer.
 
-**Sist oppdatert:** 2026-08-21 (økt 17, Opus 5: B-1 utført på `fix/lag-anbefalinger`; sesongstart-verifisering aktiv)
+**Sist oppdatert:** 2026-08-21 (økt 17, Opus 5: B-1…B-3 utført på `fix/lag-anbefalinger`, røyktestet, ikke pushet; sesongstart-verifisering aktiv)
 
 ## Status akkurat nå
 
-- **B-1…B-3 riktige anbefalinger på /lag: UNDER UTFØRELSE på branch
-  `fix/lag-anbefalinger`** (økt 17, 2026-08-21, Opus 5). Planen
-  `docs/plan-lag-anbefalinger.md` følges punkt for punkt.
-  - **Baseline-avvik funnet og avklart:** planen sa `npm test` = 228 på fersk
-    branch, faktisk **231/231 grønt** (lint exit 0). Årsak: commit `0e507a4`
-    (prod-brief-fixturen) la til 2 tester etter at 228-tallet ble skrevet, og
-    HANDOVER-linjene 43/243 spriker med 1 i den historiske bokføringen
-    (228 vs 229 ved P3-4). Diffen mot `fix/sanitize-brief` var **kun docs**.
-    Marius' valg 21. aug: kjør videre med 231 som baseline, **mål 241**.
-  - B-1 ferdig: `captainSuggestions` faller tilbake på `ep_next` når alle
-    form-scorer er 0, merker `criterion`, og gir `[]` når også ep_next-scorene
-    er 0. Ny ren helper `nextOpponents(fixtures, fromGw)`. TDD: 4 + 2 tester
-    rødt observert først (4 fail, så import-feil), deretter **237/237** og
-    lint exit 0.
-  - Gjenstår: B-2 (AI-prompt + api.js-kontekst), B-3 (rundetekst + view),
-    røyktest med tomme nøkler, handover. Ingen push, ingen merge.
+- **B-1…B-3 riktige anbefalinger på /lag: UTFØRT på branch
+  `fix/lag-anbefalinger` — IKKE merget, IKKE pushet.** (økt 17,
+  2026-08-21, Opus 5. Planen `docs/plan-lag-anbefalinger.md` fulgt; ett
+  avvik lagt fram og avklart, se under.)
+  - Commits: `6ede6eb` (B-1: ep_next-fallback + tomtilstand + helperen
+    `nextOpponents`), `8d1ed23` (B-2: runde/deadline/kaptein/motstandere i
+    rådgiver-prompten + anti-spekulasjon om gratis bytter), `883909b`
+    (B-3: «Anbefalinger for Runde N» + kriterie-/tomtilstand i viewet),
+    og siste commit på branchen (røyktestbevis + denne oppdateringen).
+  - Rørt: `src/services/analysis.js`, `src/services/prompts.js`,
+    `src/routes/api.js`, `src/routes/team.js`, `views/team.ejs`, tester og
+    docs. IKKE rørt: `public/app.js`, `notify.js`, `brief.js`,
+    `gameUpdating`/banner i `fplClient.js` — alt sjekkpunkt C/D observerer
+    står urørt.
+  - **Baseline-avvik (avklart):** planen anslo `npm test` = 228; faktisk
+    målt **231/231 grønt**. Årsak: commit `0e507a4` la til 2 tester etter
+    at anslaget ble skrevet, pluss 1 i historisk bokføring (HANDOVER-linjene
+    om P3-4 sier 228, linja om `0e507a4` sier 229). Diffen mot
+    `fix/sanitize-brief` var kun docs. Marius' valg: kjør videre med 231.
+  - **Bevis, TDD-rødt observert før grønt hver gang:** B-1 → 235 tester,
+    231 pass, **4 fail**; helper → import-feil (ingen `nextOpponents`);
+    B-2 → 240 tester, 237 pass, **3 fail**; B-3 → 242 tester, 240 pass,
+    **2 fail**. Sluttilstand `npm test` **242/242**, `npm run lint` exit 0.
+    (242, ikke planens 241: `nextOpponents` fikk 2 tester der planen
+    regnet 1 — hjemme/borte + tomt lag, og dobbeltrunde.)
+  - **Røyktest port 3010 med tomme nøkler** (scratchpad-`.env`):
+    `/health` = `{"status":"ok","features":{"ai":false,"aiModel":null,`
+    `"discord":false,"teamId":true,"leagues":0}}`, alle 11 ruter 200,
+    ukjent sti 404, **0 AI-kall**. /lag viste «Anbefalinger for Runde 2»
+    nøyaktig én gang, ingen «undefined» i HTML-en, og kapteinsboksen kjørte
+    i **form-modus** (Calafiori form 5.0 øverst) — ep_next-fallbacken er
+    korrekt inaktiv nå som GW1-kampene er spilt. Fallbacken er derfor kun
+    verifisert av testene, ikke observert i prod-data.
+  - **Neste steg — krever klarsignal fra Marius:** 1 AI-kall («Spør AI om
+    råd» lokalt) for ende-til-ende-verifisering ETTER sjekkpunkt D, så
+    release v1.2.2 og merge i rekkefølgen `fix/sanitize-brief` →
+    `fix/lag-anbefalinger` → `main`.
 
 - **B-1…B-3 riktige anbefalinger på /lag: plan GODKJENT, klar for Opus 5.**
   (økt 16, 2026-08-21, Fable i plan mode.) Funnene kom fra sjekkpunkt B
@@ -211,12 +232,10 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 
 ## Åpne punkter
 
-- **Neste steg: Opus 5 utfører B-1…B-3** med prompten i
-  `docs/neste-okt-prompt-lag-anbefalinger-utforelse.md` (plan godkjent, se
-  Status). Trygt under sjekkpunkt C/D: rører kun analysis.js/prompts.js/
-  api.js/team.js/team.ejs + tester/docs — ikke live-polling, notify, brief
-  eller banner. Branch `fix/lag-anbefalinger`, ingen push.
-  AI-verifiseringskallet (1 stk) tas først etter sjekkpunkt D.
+- **B-1…B-3 er ferdig kodet** (branch `fix/lag-anbefalinger`, se Status).
+  Gjenstår: 1 AI-kall for ende-til-ende-verifisering etter sjekkpunkt D, så
+  release v1.2.2 og merge `fix/sanitize-brief` → `fix/lag-anbefalinger` →
+  `main` — alt på klarsignal fra Marius.
 - **P3-4 er ferdig kodet** (branch `fix/sanitize-brief`, se Status).
   Gjenstår: merge etter sjekkpunkt D på klarsignal fra Marius — samme
   klarsignal som push av `main` + tag `v1.2.1`.

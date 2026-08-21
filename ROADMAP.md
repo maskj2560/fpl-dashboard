@@ -188,7 +188,8 @@ rekkefølgen `fix/sanitize-brief` → `fix/lag-anbefalinger` → `main`._
       og instrueres mot spekulasjon om gratis bytter (TDD, 3 nye tester)
 - [x] B-3: «Anbefalinger for Runde N» + kriterie-/tomtilstand i kapteinsboksen
       (TDD, 2 nye tester)
-- [ ] Røyktest lokalt med tomme nøkler + handover
+- [x] Røyktest lokalt med tomme nøkler (11 ruter 200, 0 AI-kall) + handover
+- [ ] Etter sjekkpunkt D: 1 AI-kall for ende-til-ende-verifisering, så release v1.2.2
 
 ## Senere / idéer (ikke planlagt)
 
