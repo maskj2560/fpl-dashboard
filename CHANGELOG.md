@@ -9,6 +9,14 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Fixed
 
+- **Kapteinsforslagene på /lag er ikke lenger vilkårlige ved sesongstart.**
+  Før første kamp er formen 0.0 for alle, og lista viste da pick-rekkefølgen
+  din som om den var en rangering (tre tilfeldige spillere, alle med
+  «Form 0.0»). Nå rangeres det på FPLs forventede poeng (`ep_next`) når ingen
+  i troppen har form ennå, med begrunnelsen «Forventet poeng (FPL)» i stedet
+  for den villedende formlinja. Har ingen i troppen forventede poeng heller —
+  for eksempel om alle er skadet — vises tomtilstand framfor en topp 3 uten
+  dekning. Så snart minst én spiller har reell form, rangeres det som før.
 - AI-briefens etterkontroll kutter ikke lenger setninger midt i norske
   forkortelser («kl.», «f.eks.») eller klokkeslett («21.00») — færre
   feilfjernede setninger, og uriktige deadline-påstander med forkortelse i

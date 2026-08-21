@@ -100,8 +100,11 @@ dobbeltrunde = flere innslag, og lag uten kamp = mangler i mappen).
 
 ## TDD (rødt observert før grønt — `node:test`, ingen nettverk, ingen ekte timere)
 
-Baseline først: `npm test` på fersk branch skal gi **228** (P3-4-nivået).
-Avvik → stopp og rapporter. 10 nye tester, **228 → 238**:
+Baseline først: `npm test` på fersk branch. Planen anslo **228** (P3-4-nivået);
+faktisk målt i utførelsesøkten 21. aug: **231/231 grønt** — avviket er de 2
+testene commit `0e507a4` la til etter at anslaget ble skrevet, pluss 1 i
+historisk bokføring i HANDOVER. Marius godkjente 231 som baseline.
+10 nye tester, **231 → 241**:
 
 `test/analysis.test.js` (+5; `player()`-fixturen mangler `ep_next` — settes per
 test via overrides, koden skal tåle at feltet mangler):
@@ -159,7 +162,7 @@ Eksisterende tester (223, 487 m.fl.) skal bestå uendret — de har form > 0.
 
 ## Rekkefølge for utførelsen (Opus 5)
 
-1. `npm test` baseline (forvent 228) + `npm run lint`.
+1. `npm test` baseline (målt: 231) + `npm run lint`.
 2. B-1: tester 1–4 rødt → implementer → grønt.
 3. Helper: test 5 rødt → implementer `nextOpponents` → grønt. Commit B-1.
 4. B-2: tester 6–8 rødt → `buildAdvicePrompt` + api.js → grønt. Commit.

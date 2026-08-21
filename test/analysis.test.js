@@ -11,6 +11,7 @@ import {
   formatPrice,
   averageFdr,
   teamFdrMap,
+  nextOpponents,
   playProbability,
   captainSuggestions,
   transferOutCandidates,
@@ -571,4 +572,98 @@ test('teamFdrMap gir samme snitt som averageFdr for hvert lag', () => {
 test('teamFdrMap utelater lag uten kamper i vinduet', () => {
   const map = teamFdrMap([{ event: 9, team_h: 1, team_a: 2, team_h_difficulty: 2, team_a_difficulty: 4 }], 5, 3);
   assert.equal(map.size, 0);
+});
+
+// ---- B-1: kapteinsforslag ved sesongstart (all form 0.0) -------------------
+
+test('captainSuggestions faller tilbake på ep_next når ingen har form', () => {
+  const fixtures = [
+    { event: 2, team_h: 1, team_a: 2, team_h_difficulty: 3, team_a_difficulty: 3 },
+  ];
+  const squad = [
+    player({ id: 1, web_name: 'Back', team: 1, ep_next: '1.7' }),
+    player({ id: 2, web_name: 'Spiss', team: 2, ep_next: '4.0' }),
+    player({ id: 3, web_name: 'Midt', team: 1, ep_next: '2.5' }),
+  ];
+  const top = captainSuggestions(squad, fixtures, 2, 3);
+  assert.deepEqual(
+    top.map((t) => t.player.id),
+    [2, 3, 1],
+    'rangert på ep_next, ikke pick-rekkefølge',
+  );
+  assert.ok(
+    top.every((t) => t.criterion === 'ep_next'),
+    'kriteriet merkes så viewet kan forklare det',
+  );
+  const reasons = top[0].reasons.join(' | ');
+  assert.match(reasons, /Forventet poeng \(FPL\) 4\.0/);
+  assert.doesNotMatch(reasons, /Form/, 'ingen villedende «Form 0.0» i fallback');
+});
+
+test('ep_next-fallback vekter fixture-lettehet og spilletid som vanlig', () => {
+  const fixtures = [
+    { event: 2, team_h: 1, team_a: 2, team_h_difficulty: 2, team_a_difficulty: 5 },
+  ];
+  const squad = [
+    player({ id: 3, web_name: 'Skadet', team: 1, ep_next: '9.0', status: 'i', chance_of_playing_next_round: 0 }),
+    player({ id: 2, web_name: 'ToffKamp', team: 2, ep_next: '3.0' }),
+    player({ id: 1, web_name: 'LettKamp', team: 1, ep_next: '3.0' }),
+  ];
+  const top = captainSuggestions(squad, fixtures, 2, 3);
+  assert.equal(top[0].player.id, 1, 'lett kamp vinner ved lik ep_next');
+  assert.equal(top[1].player.id, 2);
+  assert.equal(top[2].player.id, 3);
+  assert.equal(top[2].score, 0, 'skadet spiller får score 0 også i fallback');
+});
+
+test('captainSuggestions returnerer tom liste når verken form eller ep_next finnes', () => {
+  const fixtures = [
+    { event: 2, team_h: 1, team_a: 2, team_h_difficulty: 3, team_a_difficulty: 3 },
+  ];
+  const squad = [
+    player({ id: 1, team: 1 }), // ep_next mangler helt
+    player({ id: 2, team: 2, ep_next: '0.0' }),
+  ];
+  assert.deepEqual(captainSuggestions(squad, fixtures, 2, 3), []);
+});
+
+test('captainSuggestions bruker form som før så snart én spiller har form', () => {
+  const fixtures = [
+    { event: 2, team_h: 1, team_a: 2, team_h_difficulty: 3, team_a_difficulty: 3 },
+  ];
+  const squad = [
+    player({ id: 1, web_name: 'IForm', team: 1, form: '5.0', minutes: 90, ep_next: '1.0' }),
+    player({ id: 2, web_name: 'UtenForm', team: 2, ep_next: '9.9' }),
+  ];
+  const top = captainSuggestions(squad, fixtures, 2, 3);
+  assert.equal(top[0].player.id, 1, 'ep_next overstyrer ikke ekte form');
+  assert.ok(top.every((t) => t.criterion === 'form'));
+  assert.match(top[0].reasons.join(' | '), /Form 5\.0/);
+});
+
+// ---- B-2: motstanderkontekst til AI-rådgiveren -----------------------------
+
+test('nextOpponents gir motstander, hjemme/borte og FDR for runden', () => {
+  const fixtures = [
+    { event: 2, team_h: 1, team_a: 2, team_h_difficulty: 2, team_a_difficulty: 4 },
+    { event: 3, team_h: 1, team_a: 3, team_h_difficulty: 5, team_a_difficulty: 1 },
+  ];
+  const map = nextOpponents(fixtures, 2);
+  assert.deepEqual(map.get(1), [{ opponent: 2, home: true, difficulty: 2 }]);
+  assert.deepEqual(map.get(2), [{ opponent: 1, home: false, difficulty: 4 }]);
+  assert.equal(map.has(3), false, 'lag uten kamp i runden mangler i mappet');
+});
+
+test('nextOpponents gir to innslag ved dobbeltrunde', () => {
+  const fixtures = [
+    { event: 2, team_h: 1, team_a: 2, team_h_difficulty: 2, team_a_difficulty: 4 },
+    { event: 2, team_h: 3, team_a: 1, team_h_difficulty: 3, team_a_difficulty: 5 },
+    { event: null, team_h: 1, team_a: 4, team_h_difficulty: 1, team_a_difficulty: 1 },
+  ];
+  const map = nextOpponents(fixtures, 2);
+  assert.deepEqual(map.get(1), [
+    { opponent: 2, home: true, difficulty: 2 },
+    { opponent: 3, home: false, difficulty: 5 },
+  ]);
+  assert.equal(map.has(4), false, 'kamp uten runde teller ikke');
 });

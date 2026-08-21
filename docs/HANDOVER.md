@@ -5,9 +5,26 @@
 > Versjonshistorikk og detaljer ligger i CHANGELOG.md, ROADMAP.md og git —
 > denne filen holder kun nåtilstand, aktive økter og lærdommer.
 
-**Sist oppdatert:** 2026-08-21 (økt 16, Fable: plan for /lag-anbefalingene B-1…B-3 godkjent; sesongstart-verifisering aktiv)
+**Sist oppdatert:** 2026-08-21 (økt 17, Opus 5: B-1 utført på `fix/lag-anbefalinger`; sesongstart-verifisering aktiv)
 
 ## Status akkurat nå
+
+- **B-1…B-3 riktige anbefalinger på /lag: UNDER UTFØRELSE på branch
+  `fix/lag-anbefalinger`** (økt 17, 2026-08-21, Opus 5). Planen
+  `docs/plan-lag-anbefalinger.md` følges punkt for punkt.
+  - **Baseline-avvik funnet og avklart:** planen sa `npm test` = 228 på fersk
+    branch, faktisk **231/231 grønt** (lint exit 0). Årsak: commit `0e507a4`
+    (prod-brief-fixturen) la til 2 tester etter at 228-tallet ble skrevet, og
+    HANDOVER-linjene 43/243 spriker med 1 i den historiske bokføringen
+    (228 vs 229 ved P3-4). Diffen mot `fix/sanitize-brief` var **kun docs**.
+    Marius' valg 21. aug: kjør videre med 231 som baseline, **mål 241**.
+  - B-1 ferdig: `captainSuggestions` faller tilbake på `ep_next` når alle
+    form-scorer er 0, merker `criterion`, og gir `[]` når også ep_next-scorene
+    er 0. Ny ren helper `nextOpponents(fixtures, fromGw)`. TDD: 4 + 2 tester
+    rødt observert først (4 fail, så import-feil), deretter **237/237** og
+    lint exit 0.
+  - Gjenstår: B-2 (AI-prompt + api.js-kontekst), B-3 (rundetekst + view),
+    røyktest med tomme nøkler, handover. Ingen push, ingen merge.
 
 - **B-1…B-3 riktige anbefalinger på /lag: plan GODKJENT, klar for Opus 5.**
   (økt 16, 2026-08-21, Fable i plan mode.) Funnene kom fra sjekkpunkt B
@@ -18,7 +35,8 @@
   med merket kriterium + tomtilstand, rikere AI-prompt (runde, deadline,
   kaptein, motstander/FDR; gratis bytter utelates bevisst — `my-team/` krever
   auth, verifisert 403), «Anbefalinger for Runde N» én gang i viewet.
-  10 nye tester, 228 → 238. Utførelsen koster **1 AI-kall, først ETTER
+  10 nye tester, 228 → 238 (faktisk baseline var 231 → mål 241, se over).
+  Utførelsen koster **1 AI-kall, først ETTER
   sjekkpunkt D**. Utførelsesprompt:
   `docs/neste-okt-prompt-lag-anbefalinger-utforelse.md`.
   **Beslutninger tatt av Marius 21. aug (IKKE re-spør):** ep_next-fallback;
@@ -210,6 +228,11 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 
+- 2026-08-21 (økt 17): kjøreprompt «Oppdrag (Opus 5): utfør planen for riktige
+  anbefalinger på /lag (B-1…B-3)». Handling: baseline målt til 231/231 (planen
+  sa 228) → stoppet og la fram avviket med årsak i stedet for å improvisere.
+  Marius svarte «Kjør videre, mål 241» og ba samtidig om at tallet rettes i
+  plan- og handover-dokumentene. Utførelsen fortsetter etter planen.
 - 2026-08-21 (økt 16, kveld): kjøreprompt «Oppdrag (Fable, plan mode): riktige
   anbefalinger på /lag ved sesongstart (B-1…B-3)» — planlegg, Opus 5 utfører.
   Handling: fakta re-verifisert mot kode + engangs GET-kall (`ep_next` > 0 for

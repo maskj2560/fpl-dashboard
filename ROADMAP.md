@@ -175,6 +175,19 @@ alias-tabellen dekker begge retninger._
 - [x] Lagnavn-alias (`TEAM_ALIASES`) + ordgrense/genitiv-matching (TDD, 5 nye tester)
 - [x] Røyktest lokalt (11 ruter 200, AI/Discord av) + handover
 
+## v1.2.2 — riktige anbefalinger på /lag ved sesongstart (B-1…B-3)
+
+_Plan: `docs/plan-lag-anbefalinger.md`. Branch `fix/lag-anbefalinger` (ut fra
+`fix/sanitize-brief`). Merges først etter sjekkpunkt D, på klarsignal, i
+rekkefølgen `fix/sanitize-brief` → `fix/lag-anbefalinger` → `main`._
+
+- [x] B-1: `captainSuggestions` faller tilbake på `ep_next` når all form er 0,
+      og gir tom liste når også den er 0 (TDD, 4 nye tester)
+- [x] B-1: ren helper `nextOpponents(fixtures, fromGw)` (TDD, 2 nye tester)
+- [ ] B-2: AI-rådgiveren får runde, deadline, kaptein/vise og motstandere
+- [ ] B-3: «Anbefalinger for Runde N» + kriterie-/tomtilstand i kapteinsboksen
+- [ ] Røyktest lokalt med tomme nøkler + handover
+
 ## Senere / idéer (ikke planlagt)
 
 ### v1.2.0-kandidater (samles under sesongstart-verifiseringen, M4)
@@ -203,6 +216,9 @@ dem fikses uten avtale._
   tilbake på `ep_next` (FPLs forventede poeng) eller forrige sesongs
   `points_per_game` når summen av `form` er 0. Gjelder runde 1–2; fra runde 3
   har `form` reelle tall.
+  NB: /lag-varianten (`captainSuggestions` i `analysis.js`) er fikset i
+  v1.2.2 med nettopp ep_next-fallbacken; dette punktet gjelder fortsatt
+  brief-varianten `globalCaptains`, som med vilje ikke ble rørt der.
 - **Prompt-etiketten «Mest aktuelle kapteiner globalt» overselger dataene.**
   Lista er høyt eide spillere med lett kamp, ikke målt kapteinsandel.
   Modellen skrev den om til «de mest brukte kapteinsvalgene globalt» — en
