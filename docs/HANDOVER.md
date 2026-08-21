@@ -5,9 +5,28 @@
 > Versjonshistorikk og detaljer ligger i CHANGELOG.md, ROADMAP.md og git —
 > denne filen holder kun nåtilstand, aktive økter og lærdommer.
 
-**Sist oppdatert:** 2026-08-20 (økt 14, Opus 5: P3-4 utført på branch; sesongstart-verifisering aktiv)
+**Sist oppdatert:** 2026-08-21 (økt 16, Fable: plan for /lag-anbefalingene B-1…B-3 godkjent; sesongstart-verifisering aktiv)
 
 ## Status akkurat nå
+
+- **B-1…B-3 riktige anbefalinger på /lag: plan GODKJENT, klar for Opus 5.**
+  (økt 16, 2026-08-21, Fable i plan mode.) Funnene kom fra sjekkpunkt B
+  (fredag ~20:20): kapteinslista på /lag er pick-rekkefølge når alle har form
+  0.0 (`captainSuggestions` mangler garden naboene har), AI-rådgiveren mangler
+  runde/kaptein/kamper-kontekst, og siden sier «Runde 1» mens anbefalingene
+  gjelder Runde 2. Plan: `docs/plan-lag-anbefalinger.md` — ep_next-fallback
+  med merket kriterium + tomtilstand, rikere AI-prompt (runde, deadline,
+  kaptein, motstander/FDR; gratis bytter utelates bevisst — `my-team/` krever
+  auth, verifisert 403), «Anbefalinger for Runde N» én gang i viewet.
+  10 nye tester, 228 → 238. Utførelsen koster **1 AI-kall, først ETTER
+  sjekkpunkt D**. Utførelsesprompt:
+  `docs/neste-okt-prompt-lag-anbefalinger-utforelse.md`.
+  **Beslutninger tatt av Marius 21. aug (IKKE re-spør):** ep_next-fallback;
+  garde «alle scorer 0»; gratis bytter utelates + anti-spekulasjonsinstruks;
+  rundetekst én gang øverst; release som v1.2.2; branch
+  `fix/lag-anbefalinger` ut fra `fix/sanitize-brief` (denne HANDOVER-linjen
+  er sannheten; merge-rekkefølge etter D: sanitize-brief → lag-anbefalinger
+  → main). `brief.js`/`globalCaptains` røres IKKE (står som ROADMAP-kandidat).
 
 - **P3-4 `sanitizeBriefText`-robusthet: UTFØRT på branch `fix/sanitize-brief`
   — IKKE merget, IKKE pushet.** (økt 14, Opus 5. Planen fulgt uten avvik.)
@@ -94,8 +113,10 @@ Plan: `C:\Users\mariu\.claude\plans\oppdrag-verifiser-sesongstarten-wise-puffin.
 | C | lørdag under kampene | live-polling ≤1 kall/60 s, stopp ved `anyLive=false`, cache-bevis |
 | D | søndag/mandag | kostnadskontroll (`AI-kall:`-linjer), skjermbilder, mobilsjekk, v1.2.x-kandidater, avslutning |
 
-**AI-kall-telleliste (budsjett ~3 utover automatiske):** brukt **0 av ~3**.
-(Uendret etter økt 14: P3-4-utførelsen gjorde **0 AI-kall** — tester bruker
+**AI-kall-telleliste (budsjett ~3 utover automatiske):** brukt **1 av ~3**
+(sjekkpunkt B, fredag 21. aug: Marius klikket «Spør AI om råd» én gang).
+Planlagt: 1 kall til for B-2-verifiseringen ETTER sjekkpunkt D → blir 2 av ~3.
+(P3-4-utførelsen i økt 14 gjorde **0 AI-kall** — tester bruker
 hardkodet tekst, og røyktesten kjørte med tomme nøkler, `/health` `ai:false`.)
 NB: 2 lokale AI-kall skjedde ved et uhell i økt 10s røyktest (se lærdommer) —
 de vises i Anthropic-forbruket, IKKE i Coolify-loggen.
@@ -172,6 +193,12 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 
 ## Åpne punkter
 
+- **Neste steg: Opus 5 utfører B-1…B-3** med prompten i
+  `docs/neste-okt-prompt-lag-anbefalinger-utforelse.md` (plan godkjent, se
+  Status). Trygt under sjekkpunkt C/D: rører kun analysis.js/prompts.js/
+  api.js/team.js/team.ejs + tester/docs — ikke live-polling, notify, brief
+  eller banner. Branch `fix/lag-anbefalinger`, ingen push.
+  AI-verifiseringskallet (1 stk) tas først etter sjekkpunkt D.
 - **P3-4 er ferdig kodet** (branch `fix/sanitize-brief`, se Status).
   Gjenstår: merge etter sjekkpunkt D på klarsignal fra Marius — samme
   klarsignal som push av `main` + tag `v1.2.1`.
@@ -183,6 +210,15 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 
+- 2026-08-21 (økt 16, kveld): kjøreprompt «Oppdrag (Fable, plan mode): riktige
+  anbefalinger på /lag ved sesongstart (B-1…B-3)» — planlegg, Opus 5 utfører.
+  Handling: fakta re-verifisert mot kode + engangs GET-kall (`ep_next` > 0 for
+  502/600 spillere ved sesongstart; `my-team/` gir 403 uten auth; fromGw = 2),
+  seks beslutninger stilt og besvart — Marius valgte anbefalingen på alle seks
+  (se Status). Plan godkjent og lagret som `docs/plan-lag-anbefalinger.md`,
+  utførelsesprompt skrevet, oppdragsprompten arkivert til `docs/arkiv/`, alt
+  committet lokalt på `fix/lag-anbefalinger` (base `fix/sanitize-brief`).
+  Ingen push, **0 AI-kall i planøkten**.
 - 2026-08-20 (økt 14, ~19:50): limte inn Coolify-loggen + «jeg er ikke hjemme
   … kan du sjekke det opp eller kanskje jeg kan sjekke fra github?» Handling:
   **sjekkpunkt A er LUKKET.** `/api/brief.json` hentet fra prod med curl
