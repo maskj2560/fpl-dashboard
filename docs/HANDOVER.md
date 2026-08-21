@@ -5,9 +5,25 @@
 > Versjonshistorikk og detaljer ligger i CHANGELOG.md, ROADMAP.md og git —
 > denne filen holder kun nåtilstand, aktive økter og lærdommer.
 
-**Sist oppdatert:** 2026-08-22 (økt 19, Opus 5: v1.2.3 UTFØRT på `fix/live-bonus` — ikke merget, ikke pushet)
+**Sist oppdatert:** 2026-08-22 (økt 20, Fable: deploy-plan v1.2.1–v1.2.3 GODKJENT — klar for Opus 5)
 
 ## Status akkurat nå
+
+- **Deploy-plan for v1.2.1 + v1.2.2 + v1.2.3 GODKJENT — klar for Opus 5.**
+  (økt 20, 2026-08-22 natt ~02:00, Fable i plan mode.) Plan:
+  `docs/plan-deploy-v122-v123.md` — nummererte porter med bevis-kommando og
+  stopp-kriterium per port; utførelsesprompt:
+  `docs/neste-okt-prompt-deploy-utforelse.md`.
+  - **Marius' beslutninger (IKKE re-spør):** tre pusher (v1.2.1 alene →
+    v1.2.2 → v1.2.3, stopp + klarsignal mellom hver), egen v1.2.2-tag,
+    B-2-AI-kallet tas i prod etter v1.2.2-deployen (Marius klikker),
+    vindu lørdag 22. aug med hard tidsport 11:30 (ellers søndag, 13:00).
+  - Alt bygges, testes og Docker-røyktestes lokalt (3 tagger × image) FØR
+    første push. Push-lisensen i planen er uttømmende.
+  - Varslet i planen: CHANGELOG-konflikt VENTES ved merge 2 (port 2c, med
+    løsningsoppskrift — merge-tree-målingen var før release-commitene), og
+    «seks punkter» i oppdragsprompten er faktisk 7 (5 til v1.2.2 + 2 til
+    v1.2.3; opplistingen der er fasit). **0 AI-kall i planøkten.**
 
 - **v1.2.3 UTFØRT på branch `fix/live-bonus` — IKKE merget, IKKE pushet.**
   (økt 19, 2026-08-22, Opus 5, branchet fra `fix/lag-anbefalinger` @
@@ -319,6 +335,15 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 
+- 2026-08-22 (økt 20, natt ~01:45): kjøreprompt «Oppdrag (Fable, plan mode):
+  trygg deploy av v1.2.2 + v1.2.3 til prod» — planlegg, Opus 5 utfører; krav:
+  «alt skal funke før noe pushes/committes/merges til main». Fire åpne
+  spørsmål besvart av Marius: tre pusher; egen v1.2.2-tag; B-2-kallet i prod
+  etter v1.2.2-deployen; lørdag med tidsport 11:30 (ellers søndag 13:00).
+  Handling: plan godkjent og lagret som `docs/plan-deploy-v122-v123.md`,
+  Opus-prompt i `docs/neste-okt-prompt-deploy-utforelse.md`, ROADMAP og
+  HANDOVER oppdatert, committet lokalt på `fix/live-bonus`. Ingen push,
+  0 AI-kall.
 - 2026-08-22 (økt 19): ga Opus 5 utførelsesoppdraget for v1.2.3 med
   `docs/plan-live-bonus.md` som fasit — «følg planen NØYAKTIG, ikke re-spør,
   ikke re-planlegg», Task 0 er alt gjort av Fable (verifiser, ikke committ på
