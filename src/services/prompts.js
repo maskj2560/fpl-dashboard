@@ -37,18 +37,53 @@ export function buildBriefPrompt(brief) {
   return parts.join('\n');
 }
 
-export function buildAdvicePrompt({ entryName, bank, squadLines, outs }) {
-  return [
-    `Du er FPL-rådgiver. Laget «${entryName}» har ${formatPrice(bank)} £m i banken.`,
+/**
+ * Rådgiver-prompten (/lag → «Spør AI om råd»).
+ *
+ * Runde, deadline og nåværende kaptein er med fordi modellen ellers ikke vet
+ * hvilken runde rådet gjelder — ved sesongstart viser siden runden som pågår,
+ * mens anbefalingene gjelder den neste. Antall gratis bytter er ikke
+ * tilgjengelig uten innlogging (`my-team/` gir 403), så modellen instrueres
+ * eksplisitt om ikke å spekulere i det.
+ */
+export function buildAdvicePrompt({
+  entryName,
+  bank,
+  fromGw,
+  deadlineText,
+  captainName,
+  viceName,
+  squadLines,
+  outs,
+}) {
+  const parts = [`Du er FPL-rådgiver. Laget «${entryName}» har ${formatPrice(bank)} £m i banken.`];
+  if (fromGw != null) {
+    parts.push(
+      deadlineText
+        ? `Rådet gjelder Runde ${fromGw} (deadline ${deadlineText}).`
+        : `Rådet gjelder Runde ${fromGw}.`,
+    );
+  }
+  if (captainName) {
+    parts.push(
+      viceName
+        ? `Nåværende kaptein: ${captainName} (visekaptein: ${viceName}).`
+        : `Nåværende kaptein: ${captainName}.`,
+    );
+  }
+  parts.push(
     '',
-    'Troppen (navn, lag, posisjon, pris, form):',
+    'Troppen (navn, lag, posisjon, pris, form, motstander):',
     ...squadLines.map((l) => `- ${l}`),
     '',
     outs.length ? 'Automatisk flaggede salgskandidater:' : 'Ingen automatisk flaggede salgskandidater.',
     ...outs.map((o) => `- ${o}`),
     '',
-    'Gi på norsk: 1) beste kaptein denne runden med begrunnelse, 2) anbefalt bytte (ut/inn) hvis noe gir mening — ellers si at man bør spare bytte, 3) én ting å følge med på før deadline. Sett spillernavn i **fet**. Maks ~250 ord.',
-  ].join('\n');
+    'Du vet ikke hvor mange gratis bytter laget har. Anta aldri at et bytte er gratis, og bruk aldri antall gratis bytter som argument. Nevn kostnaden på 4 poeng kun som forbehold.',
+    '',
+    'Gi på norsk: 1) beste kaptein denne runden med begrunnelse — si eksplisitt om nåværende kaptein bør beholdes eller byttes, 2) anbefalt bytte (ut/inn) hvis noe gir mening — ellers si at man bør spare bytte, 3) én ting å følge med på før deadline. Sett spillernavn i **fet**. Maks ~250 ord.',
+  );
+  return parts.join('\n');
 }
 
 // Norske forkortelser med punktum som ikke avslutter en setning. Punktumene

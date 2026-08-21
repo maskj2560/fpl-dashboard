@@ -184,7 +184,8 @@ rekkefølgen `fix/sanitize-brief` → `fix/lag-anbefalinger` → `main`._
 - [x] B-1: `captainSuggestions` faller tilbake på `ep_next` når all form er 0,
       og gir tom liste når også den er 0 (TDD, 4 nye tester)
 - [x] B-1: ren helper `nextOpponents(fixtures, fromGw)` (TDD, 2 nye tester)
-- [ ] B-2: AI-rådgiveren får runde, deadline, kaptein/vise og motstandere
+- [x] B-2: AI-rådgiveren får runde, deadline, kaptein/vise og motstandere,
+      og instrueres mot spekulasjon om gratis bytter (TDD, 3 nye tester)
 - [ ] B-3: «Anbefalinger for Runde N» + kriterie-/tomtilstand i kapteinsboksen
 - [ ] Røyktest lokalt med tomme nøkler + handover
 

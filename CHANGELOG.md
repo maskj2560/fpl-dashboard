@@ -7,6 +7,17 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Changed
+
+- **AI-rådgiveren på /lag vet nå hvilken runde rådet gjelder.** Prompten
+  oppgir runde og deadline, hvem som er kaptein og visekaptein i laget ditt,
+  og hvilken motstander hver spiller møter (hjemme/borte og FDR, begge
+  kampene ved dobbeltrunde). Rådgiveren må si eksplisitt om kapteinen bør
+  beholdes eller byttes. Antall gratis bytter er ikke tilgjengelig fra
+  FPL-API-et uten innlogging, så modellen er instruert om aldri å anta at et
+  bytte er gratis — poengkostnaden nevnes kun som forbehold. Ingen nye
+  nettverkskall: all kontekst kommer fra data siden allerede henter.
+
 ### Fixed
 
 - **Kapteinsforslagene på /lag er ikke lenger vilkårlige ved sesongstart.**

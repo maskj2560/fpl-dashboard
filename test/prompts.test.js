@@ -263,3 +263,52 @@ test('den ekte briefen inneholder tilfellene P3-4 ble laget for', () => {
   assert.match(briefTextGw1, /mot Coventry\b/); // alias for FPLs «Coventry City»
   assert.match(briefTextGw1, /Spurs' nye sesong/); // genitiv med apostrof
 });
+
+// ---- B-2: rådgiveren får runde, deadline, kaptein og motstandere -----------
+
+const RAD_ARGS = {
+  entryName: 'Mitt Lag FC',
+  bank: 15,
+  fromGw: 2,
+  deadlineText: 'lørdag 22. august kl. 13:30',
+  captainName: 'Haaland',
+  viceName: 'Salah',
+  squadLines: ['Haaland (MCI, A, 14.2, form 0.0, mot BOU (hjemme, FDR 2))'],
+  outs: ['Spiller X: Skadet'],
+};
+
+test('buildAdvicePrompt oppgir hvilken runde rådet gjelder og hvem som er kaptein', () => {
+  const prompt = buildAdvicePrompt(RAD_ARGS);
+  assert.match(prompt, /Rådet gjelder Runde 2 \(deadline lørdag 22\. august kl\. 13:30\)\./);
+  assert.match(prompt, /Nåværende kaptein: Haaland \(visekaptein: Salah\)\./);
+  assert.match(prompt, /mot BOU \(hjemme, FDR 2\)/);
+});
+
+test('buildAdvicePrompt forbyr spekulasjon om gratis bytter og krever svar om kapteinen', () => {
+  const prompt = buildAdvicePrompt(RAD_ARGS);
+  assert.match(prompt, /gratis bytter/i);
+  assert.match(prompt, /aldri at et bytte er gratis/i);
+  assert.match(prompt, /4 poeng/);
+  assert.match(prompt, /beholdes eller byttes/i);
+});
+
+test('buildAdvicePrompt har stabilt format (snapshot)', () => {
+  assert.equal(
+    buildAdvicePrompt(RAD_ARGS),
+    [
+      'Du er FPL-rådgiver. Laget «Mitt Lag FC» har 1.5 £m i banken.',
+      'Rådet gjelder Runde 2 (deadline lørdag 22. august kl. 13:30).',
+      'Nåværende kaptein: Haaland (visekaptein: Salah).',
+      '',
+      'Troppen (navn, lag, posisjon, pris, form, motstander):',
+      '- Haaland (MCI, A, 14.2, form 0.0, mot BOU (hjemme, FDR 2))',
+      '',
+      'Automatisk flaggede salgskandidater:',
+      '- Spiller X: Skadet',
+      '',
+      'Du vet ikke hvor mange gratis bytter laget har. Anta aldri at et bytte er gratis, og bruk aldri antall gratis bytter som argument. Nevn kostnaden på 4 poeng kun som forbehold.',
+      '',
+      'Gi på norsk: 1) beste kaptein denne runden med begrunnelse — si eksplisitt om nåværende kaptein bør beholdes eller byttes, 2) anbefalt bytte (ut/inn) hvis noe gir mening — ellers si at man bør spare bytte, 3) én ting å følge med på før deadline. Sett spillernavn i **fet**. Maks ~250 ord.',
+    ].join('\n'),
+  );
+});
