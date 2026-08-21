@@ -61,7 +61,8 @@ git log --oneline -1 main fix/lag-anbefalinger fix/live-bonus
 ```
 
 Forventet: rent tre; `main` = `78d438e`-tippen (tag v1.2.1);
-`fix/live-bonus`-tippen = `f55fecb`-serien (jf. HANDOVER).
+`fix/live-bonus`-tippen = docs-commits fra planøkt 20 («docs: deploy-plan …»)
+oppå `f55fecb`-serien (jf. HANDOVER).
 **Stopp:** utrent tre eller uventede tips → rapporter, ikke rydd på egen hånd.
 
 ## Port 1 — prod-baseline FØR alt annet
