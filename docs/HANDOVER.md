@@ -5,32 +5,51 @@
 > Versjonshistorikk og detaljer ligger i CHANGELOG.md, ROADMAP.md og git —
 > denne filen holder kun nåtilstand, aktive økter og lærdommer.
 
-**Sist oppdatert:** 2026-08-22 (økt 19, Opus 5: v1.2.3 under utførelse på `fix/live-bonus`)
+**Sist oppdatert:** 2026-08-22 (økt 19, Opus 5: v1.2.3 UTFØRT på `fix/live-bonus` — ikke merget, ikke pushet)
 
 ## Status akkurat nå
 
-- **v1.2.3 UNDER UTFØRELSE på branch `fix/live-bonus`** (økt 19, 2026-08-22,
-  Opus 5, fra `fix/lag-anbefalinger` @ `c5b9748`). Planen
-  `docs/plan-live-bonus.md` følges punkt for punkt. Baseline verifisert:
-  `npm test` **242/242** på fersk branch, som planen forutsa.
-  - Funn 2 (kampslutt) FERDIG: `matchDone` i `live.js`. TDD-rødt observert
-    (245 tester, 244 pass, **1 fail** — «kampen er ferdigspilt, ingen
-    polling»), deretter **245/245**, `npm run lint` exit 0.
-  - `publishedBonus()` i `analysis.js` FERDIG: rødt observert som
-    `SyntaxError: … does not provide an export named 'publishedBonus'`,
-    deretter 244/244.
-  - Funn 1 (bonus i datalaget) FERDIG: `bonusPub`/`bonusEst` atskilt i
-    `buildLive`, nytt radfelt `bonusPublished`. TDD-rødt observert (250
-    tester, 244 pass, **6 fail** — de fem nye bonustestene + «payloaden har
-    ingen døde felter»), deretter **250/250** som planen siktet mot,
-    `npm run lint` exit 0.
-  - Visningen FERDIG: bonuscellen i `render()` viser
-    `bonusEst + bonusPublished`, `title` sier hvilken kilde tallet har,
-    kolonnen heter «Bonus». Polling-tilstandsmaskinen ikke rørt.
-    **250/250**, lint 0. NB: rendringen er utenfor testharnessen
-    (`test/app-client.test.js` kjører skriptet i en vm der DOM-elementene er
-    `null`), så den må verifiseres manuelt under neste kampvindu.
-  - Gjenstår: røyktest med tomme nøkler.
+- **v1.2.3 UTFØRT på branch `fix/live-bonus` — IKKE merget, IKKE pushet.**
+  (økt 19, 2026-08-22, Opus 5, branchet fra `fix/lag-anbefalinger` @
+  `c5b9748`.) Planen `docs/plan-live-bonus.md` fulgt punkt for punkt, ingen
+  avvik. Begge C-funnene er fikset. **0 AI-kall.**
+  - Commits: `5ce81de` (funn 2: `matchDone` + `publishedBonus`-helperen),
+    `80f52fb` (funn 1: `bonusPub`/`bonusEst` atskilt, radfeltet
+    `bonusPublished`), `8b242e3` (visningen), og siste commit på branchen
+    (denne handover-oppdateringen).
+  - **Baseline verifisert:** `npm test` **242/242** på fersk branch, akkurat
+    som planen forutsa. Sluttilstand **250/250**, `npm run lint` exit 0 —
+    planens mål på 250 truffet nøyaktig.
+  - **TDD, rødt observert før grønt hver gang:** `publishedBonus` →
+    `SyntaxError: … does not provide an export named 'publishedBonus'`, så
+    244/244. Funn 2 → 245 tester, 244 pass, **1 fail** («kampen er
+    ferdigspilt, ingen polling»), så 245/245. Funn 1 → 250 tester, 244 pass,
+    **6 fail** (fem nye bonustester + kontrakttesten «payloaden har ingen
+    døde felter»), så 250/250.
+  - **Røyktest port 3010 med tomme nøkler** (scratchpad-`.env`, teknikken
+    fra driftslærdommene): `/health` =
+    `{"status":"ok","features":{"ai":false,"aiModel":null,"discord":false,`
+    `"teamId":true,"leagues":0}}`, alle ruter 200, ukjent sti 404,
+    serverloggen inneholder kun lyttelinja — **0 AI-kall**.
+  - **Røyktesten traff nøyaktig scenarioet fra begge funnene, mot ekte
+    prod-data ~17 t etter ARS–COV.** Rå FPL-fixture: `finished: false`,
+    `finished_provisional: true`, `minutes: 90` — altså sto feilen fortsatt
+    på i kilden. Vår payload ga likevel `anyLive: false` og
+    `matches[0].finished: true`, og /live-HTML-en sa «Ingen kamper pågår
+    akkurat nå» uten pulseprikk. Med den gamle koden ville siden ha stått på
+    «Kamper pågår» og pollet videre. Ødegaard — samme spiller som i den
+    opprinnelige observasjonen — kom ut som
+    `{"points":11,"bonusEst":0,"bonusPublished":3,"effective":11}`: bonusen
+    vises, og «Effektivt» teller den ikke to ganger. Kolonneoverskriften er
+    «Bonus».
+  - **Utestående:** manuell verifisering av selve rendringen under neste
+    kampvindu (bonuscellen fylles klientside og er utenfor testharnessen —
+    `test/app-client.test.js` kjører skriptet i en vm der DOM-elementene er
+    `null`). Stopp-testen fra sjekkpunkt C kan først bestås etter deploy.
+    Begge står som åpne ROADMAP-punkter.
+  - **Merge-rekkefølge (krever klarsignal fra Marius):**
+    `fix/sanitize-brief` → `fix/lag-anbefalinger` → `main` (v1.2.2), deretter
+    `fix/live-bonus` → `main` (v1.2.3). Aldri deploy torsdag 19–21.
 
 - **Sjekkpunkt C: polling GRØNT, ett funn på bonuskolonnen.** (økt 17,
   2026-08-21 ~22:10, observert av Marius via Claude in Chrome på prod under
@@ -300,6 +319,15 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 
+- 2026-08-22 (økt 19): ga Opus 5 utførelsesoppdraget for v1.2.3 med
+  `docs/plan-live-bonus.md` som fasit — «følg planen NØYAKTIG, ikke re-spør,
+  ikke re-planlegg», Task 0 er alt gjort av Fable (verifiser, ikke committ på
+  nytt), TDD med rødt før grønt (baseline 242 → mål 250), 0 AI-kall, aldri
+  push, ingen merge, aldri deploy torsdag 19–21, ikke rør
+  polling-tilstandsmaskinen i `public/app.js`, og «avviker virkeligheten fra
+  planens antakelser: stopp og legg det fram». Handling: hele planen utført
+  på `fix/live-bonus` i tre kodecommits, 250/250, lint 0, røyktest med tomme
+  nøkler (`ai:false`). Ingen avvik fra planen, ingen push, ingen merge.
 - 2026-08-22 (økt 18, natt/morgen): limte inn stopp-test-rapporten fra
   Claude in Chrome — testen lot seg ikke kjøre, /live sa «Kamper pågår» i
   66+ min etter kampslutt (fire friske sidelaster, frosset innhold).
