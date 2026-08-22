@@ -1,3 +1,5 @@
+> **UTDATERT (økt 22):** bruk `docs/neste-okt-prompt-deploy-utforelse-v2.md` — planen er patchet etter port 0-avviket.
+
 # Oppdrag (Opus 5): utfør deploy-planen v1.2.1 → v1.2.3
 
 Du jobber i `c:\Users\mariu\Documents\Claude Code\FPL`. Dette er en
