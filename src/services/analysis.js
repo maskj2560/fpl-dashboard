@@ -374,6 +374,22 @@ export function hasConfirmedBonus(fixture) {
   );
 }
 
+/**
+ * Bonusen FPL selv har publisert for kampen, som Map<element, poeng>. FPL
+ * publiserer den provisorisk mens kampen pågår og låser den ved
+ * rundeprosesseringen — i begge tilfeller ligger poengene allerede i
+ * spillerens total_points. Tom map når kampen ikke har bonus-statistikk.
+ */
+export function publishedBonus(fixture) {
+  const result = new Map();
+  const stat = fixture.stats?.find((s) => s.identifier === 'bonus');
+  if (!stat) return result;
+  for (const { element, value } of [...(stat.h ?? []), ...(stat.a ?? [])]) {
+    result.set(element, (result.get(element) ?? 0) + value);
+  }
+  return result;
+}
+
 export function estimateBonus(fixture) {
   const result = new Map();
   const bpsStat = fixture.stats?.find((s) => s.identifier === 'bps');

@@ -7,6 +7,23 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Fixed
+
+- **Bonuskolonnen på /live viser nå FPLs publiserte bonus.** FPL publiserer
+  bonus provisorisk allerede mens kampen pågår, og siden hoppet da over
+  bonusen helt for å unngå dobbelttelling — kolonnen sto tom hele kampen.
+  Nå vises den publiserte bonusen under og etter kampen, mens BPS-estimatet
+  beholdes for vinduet før FPL publiserer noe. «Effektivt» er uendret:
+  publisert bonus ligger allerede i poengsummen og legges ikke til på nytt.
+  Kolonnen heter nå «Bonus», og hjelpeteksten sier om tallet er bekreftet av
+  FPL eller estimert fra BPS.
+- **/live regner nå kampen som ferdig ved fløyta.** FPL setter
+  `finished_provisional` med én gang kampen er slutt, men `finished` først
+  ved rundeprosesseringen neste morgen. Siden leste bare `finished`, så
+  statusen sto på «Kamper pågår», kampen viste minuttall i stedet for
+  «Slutt», og hver åpne fane fortsatte å polle hele natten. Nå slår statusen
+  om til «Ingen kamper pågår» ved kampslutt, og pollingen stopper.
+
 ## [1.2.2] - 2026-08-22
 
 ### Changed

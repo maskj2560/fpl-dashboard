@@ -191,12 +191,23 @@ function nextWakeupDelay(live, nowMs, bufferMs) {
     if (totalEl) totalEl.textContent = live.totalLive == null ? '–' : live.totalLive;
     playersBody.innerHTML = live.myPlayers
       .map(function (p) {
+        // Publisert bonus ligger allerede i poengsummen, estimatet gjør ikke —
+        // cellen viser summen, tittelen sier hvor tallet kommer fra.
+        const bonus = p.bonusEst + p.bonusPublished;
+        const title = p.bonusPublished > 0 && p.bonusEst > 0
+          ? p.bonusPublished + ' bekreftet av FPL, ' + p.bonusEst + ' estimert fra BPS'
+          : p.bonusPublished > 0
+            ? 'Bekreftet av FPL (foreløpig til runden er ferdig)'
+            : p.bonusEst > 0
+              ? 'Estimat fra BPS'
+              : '';
         return (
           '<tr' + (p.onBench ? ' class="row-bench"' : '') + '><td><strong>' + escapeHtml(p.name) + '</strong>' +
           (p.isCaptain ? ' <b class="cap">C</b>' : '') + ' <span class="dim">' + escapeHtml(p.team) + '</span></td>' +
           '<td class="num">' + p.minutes + "'</td>" +
           '<td class="num">' + p.points + '</td>' +
-          '<td class="num' + (p.bonusEst > 0 ? ' accent' : '') + '">' + (p.bonusEst > 0 ? '+' + p.bonusEst : '–') + '</td>' +
+          '<td class="num' + (bonus > 0 ? ' accent' : '') + '"' + (title ? ' title="' + title + '"' : '') + '>' +
+          (bonus > 0 ? '+' + bonus : '–') + '</td>' +
           '<td class="num"><strong>' + p.effective + '</strong></td></tr>'
         );
       })

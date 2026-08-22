@@ -179,7 +179,8 @@ alias-tabellen dekker begge retninger._
 
 _Plan: `docs/plan-lag-anbefalinger.md`. Branch `fix/lag-anbefalinger` (ut fra
 `fix/sanitize-brief`). Merges først etter sjekkpunkt D, på klarsignal, i
-rekkefølgen `fix/sanitize-brief` → `fix/lag-anbefalinger` → `main`._
+rekkefølgen `fix/sanitize-brief` → `fix/lag-anbefalinger` → `main`.
+Deploy-plan godkjent 22. aug: `docs/plan-deploy-v122-v123.md`._
 
 - [x] B-1: `captainSuggestions` faller tilbake på `ep_next` når all form er 0,
       og gir tom liste når også den er 0 (TDD, 4 nye tester)
@@ -189,11 +190,14 @@ rekkefølgen `fix/sanitize-brief` → `fix/lag-anbefalinger` → `main`._
 - [x] B-3: «Anbefalinger for Runde N» + kriterie-/tomtilstand i kapteinsboksen
       (TDD, 2 nye tester)
 - [x] Røyktest lokalt med tomme nøkler (11 ruter 200, 0 AI-kall) + handover
-- [ ] Etter sjekkpunkt D: 1 AI-kall for ende-til-ende-verifisering, så release v1.2.2
+- [ ] B-2-verifiseringen: 1 AI-kall i prod etter v1.2.2-deployen (Marius
+      klikker — besluttet 22. aug, se `docs/plan-deploy-v122-v123.md`)
 
 ## v1.2.3 — bonuskolonnen på /live (funn fra sjekkpunkt C)
 
-_Full analyse med rådata: `docs/sjekkpunkt-c-live.md`. Ikke påbegynt._
+_Full analyse med rådata: `docs/sjekkpunkt-c-live.md`. Ferdig kodet på
+branch `fix/live-bonus` (økt 19, 250/250, lint 0). Deploy-plan godkjent
+22. aug: `docs/plan-deploy-v122-v123.md`._
 
 FPL publiserer bonus provisorisk mens kampen pågår, så `hasConfirmedBonus()`
 slår til med én gang og `estimateBonus()` kjører aldri — kolonnen står tom
@@ -201,11 +205,11 @@ hele kampen. Besluttet løsning (Marius 21. aug): vis FPLs publiserte bonus,
 merket som foreløpig, uten å legge den til «Effektivt» (den ligger allerede
 i poengsummen). BPS-estimatet beholdes for vinduet før FPL publiserer.
 
-- [ ] `matchDone` (`finished || finished_provisional`) i `anyLive` og
+- [x] `matchDone` (`finished || finished_provisional`) i `anyLive` og
       `matches`-payloaden — statusen sto på hele natten etter kampslutt (TDD)
-- [ ] `publishedBonus(fixture)` i `analysis.js` (TDD)
-- [ ] `live.js`: skill publisert bonus (`bonusPublished`) fra estimat (`bonusEst`)
-- [ ] `public/app.js` + `views/live.ejs`: vis summen, kolonnen heter «Bonus»
+- [x] `publishedBonus(fixture)` i `analysis.js` (TDD)
+- [x] `live.js`: skill publisert bonus (`bonusPublished`) fra estimat (`bonusEst`)
+- [x] `public/app.js` + `views/live.ejs`: vis summen, kolonnen heter «Bonus»
 - [ ] Manuell verifisering under neste kampvindu (rendringen er utenfor testharnessen)
 
 ## Senere / idéer (ikke planlagt)

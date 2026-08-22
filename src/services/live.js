@@ -8,7 +8,14 @@ import {
   getLeagueStandings,
   FplError,
 } from './fplClient.js';
-import { byId, currentEvent, estimateBonus, hasConfirmedBonus, resolvePicks } from './analysis.js';
+import {
+  byId,
+  currentEvent,
+  estimateBonus,
+  hasConfirmedBonus,
+  publishedBonus,
+  resolvePicks,
+} from './analysis.js';
 import { resolveLeagueIds } from './leagues.js';
 
 function emptyLive() {
@@ -24,6 +31,13 @@ function emptyLive() {
 }
 
 /**
+ * Er kampen ferdigspilt? FPL setter `finished_provisional` ved fløyta, men
+ * `finished` først ved rundeprosesseringen — som regel neste morgen. Leser vi
+ * bare `finished`, står live-statusen på og klienten poller hele natten.
+ */
+const matchDone = (f) => f.finished || f.finished_provisional;
+
+/**
  * Ren sammenstilling av live-payloaden — ingen nettverkskall.
  * `nextKickoff` lar klienten vekke seg selv ved avspark i stedet for å polle
  * utenfor kampvinduer.
@@ -35,20 +49,31 @@ export function buildLive({ bootstrap, gw, fixtures = [], live = null, picks = n
   const elementsById = byId(bootstrap.elements);
   const liveById = new Map((live?.elements ?? []).map((e) => [e.id, e.stats]));
 
-  const anyLive = fixtures.some((f) => f.started && !f.finished);
+  const anyLive = fixtures.some((f) => f.started && !matchDone(f));
   const nextKickoff =
     fixtures
       .filter((f) => !f.started && f.kickoff_time)
       .map((f) => f.kickoff_time)
       .sort()[0] ?? null;
 
-  // Bonusestimat per kamp som pågår, summert per spiller: i en dobbel runde
-  // kan én spiller ha BPS i to kamper samtidig. Er bonusen alt bekreftet for
-  // kampen, ligger den i total_points — da estimerer vi ikke, for da ville
-  // poengene blitt talt to ganger.
+  // Bonus per spiller, summert over rundens kamper — i en dobbel runde kan én
+  // spiller ha bonus i to kamper. To atskilte tall:
+  //
+  //   bonusPub — bonusen FPL selv har publisert. Ligger allerede i
+  //              total_points, så den vises men legges aldri til «Effektivt».
+  //   bonusEst — vårt BPS-estimat for vinduet før FPL publiserer noe. Ligger
+  //              IKKE i total_points, så det legges til «Effektivt».
+  //
+  // Estimatet slås av så snart kampen har publisert bonus eller er
+  // ferdigspilt; ellers ville de samme poengene blitt talt to ganger.
+  const bonusPub = new Map();
   const bonusEst = new Map();
   for (const f of fixtures) {
-    if (!f.started || f.finished || hasConfirmedBonus(f)) continue;
+    if (!f.started) continue;
+    for (const [element, b] of publishedBonus(f)) {
+      bonusPub.set(element, (bonusPub.get(element) ?? 0) + b);
+    }
+    if (matchDone(f) || hasConfirmedBonus(f)) continue;
     for (const [element, b] of estimateBonus(f)) {
       bonusEst.set(element, (bonusEst.get(element) ?? 0) + b);
     }
@@ -69,6 +94,7 @@ export function buildLive({ bootstrap, gw, fixtures = [], live = null, picks = n
         minutes: stats.minutes,
         points: stats.total_points,
         bonusEst: bonus,
+        bonusPublished: bonusPub.get(pick.element) ?? 0,
         effective: (stats.total_points + bonus) * multiplier,
       };
     });
@@ -81,7 +107,7 @@ export function buildLive({ bootstrap, gw, fixtures = [], live = null, picks = n
     homeScore: f.team_h_score ?? null,
     awayScore: f.team_a_score ?? null,
     started: f.started,
-    finished: f.finished,
+    finished: Boolean(matchDone(f)),
     minutes: f.minutes,
   }));
 

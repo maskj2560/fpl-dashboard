@@ -5,9 +5,87 @@
 > Versjonshistorikk og detaljer ligger i CHANGELOG.md, ROADMAP.md og git —
 > denne filen holder kun nåtilstand, aktive økter og lærdommer.
 
-**Sist oppdatert:** 2026-08-22 (økt 18, Fable: v1.2.3-planen UTVIDET med funn 2 fra stopp-testen — finished_provisional; klar for Opus 5)
+**Sist oppdatert:** 2026-08-22 (økt 21, Opus 5: deploy-utførelse STOPPET i port 0 — avvik på main-tippen)
 
 ## Status akkurat nå
+
+- **PORT 0-AVVIKET LØST — deploy-planen patchet (økt 22), klar for ny
+  deploy-økt.** (2026-08-22 natt ~02:30, Fable i plan mode.) Kjøreprompt
+  til Opus 5: `docs/neste-okt-prompt-deploy-utforelse-v2.md` (v1 har fått
+  UTDATERT-banner). Plan: `docs/plan-deploy-v122-v123.md` med «Endret
+  22. aug (økt 22)»-blokk øverst — kun port 0, 2a/2b, 2c, port 10 og
+  fakta-avsnittet er rørt.
+  - **Marius' beslutninger (økt 22 ~02:15, IKKE re-spør):** alternativ A —
+    Opus tagger `c33aef1` som `pre-deploy-main` i port 0 og bruker den som
+    reset-mål i 2a/2b (pushes aldri, slettes i port 10); vinduet står:
+    lørdag 22. aug, hard tidsport 11:30 (ellers søndag 13:00 via port 4).
+  - **Nye målinger (økt 22, read-only):** 3 av de 4 docs-commitene på main
+    (`56e5d16`, `c16cf14`, `9ca665f`) er allerede ancestors av alle tre
+    feature-branchene — kun `c33aef1` (ny fil
+    `docs/prompt-ui-overhaul-plan.md`) er unik for main. `git merge-tree
+    --write-tree main fix/live-bonus` → exit 0, **0 konflikter** — økt
+    21-frykten for HANDOVER-konflikt i 2c er avkreftet. Komplett
+    konfliktliste for 2c: `{ CHANGELOG.md }` (indusert av
+    2b-release-committen; package.json/-lock utelukket).
+  - Ingenting merget/pushet; prod urørt (v1.2.0). **0 AI-kall.**
+
+- **Deploy-plan for v1.2.1 + v1.2.2 + v1.2.3 GODKJENT — klar for Opus 5.**
+  (økt 20, 2026-08-22 natt ~02:00, Fable i plan mode.) Plan:
+  `docs/plan-deploy-v122-v123.md` — nummererte porter med bevis-kommando og
+  stopp-kriterium per port; utførelsesprompt:
+  `docs/neste-okt-prompt-deploy-utforelse.md`.
+  - **Marius' beslutninger (IKKE re-spør):** tre pusher (v1.2.1 alene →
+    v1.2.2 → v1.2.3, stopp + klarsignal mellom hver), egen v1.2.2-tag,
+    B-2-AI-kallet tas i prod etter v1.2.2-deployen (Marius klikker),
+    vindu lørdag 22. aug med hard tidsport 11:30 (ellers søndag, 13:00).
+  - Alt bygges, testes og Docker-røyktestes lokalt (3 tagger × image) FØR
+    første push. Push-lisensen i planen er uttømmende.
+  - Varslet i planen: CHANGELOG-konflikt VENTES ved merge 2 (port 2c, med
+    løsningsoppskrift — merge-tree-målingen var før release-commitene), og
+    «seks punkter» i oppdragsprompten er faktisk 7 (5 til v1.2.2 + 2 til
+    v1.2.3; opplistingen der er fasit). **0 AI-kall i planøkten.**
+
+- **v1.2.3 UTFØRT på branch `fix/live-bonus` — IKKE merget, IKKE pushet.**
+  (økt 19, 2026-08-22, Opus 5, branchet fra `fix/lag-anbefalinger` @
+  `c5b9748`.) Planen `docs/plan-live-bonus.md` fulgt punkt for punkt, ingen
+  avvik. Begge C-funnene er fikset. **0 AI-kall.**
+  - Commits: `5ce81de` (funn 2: `matchDone` + `publishedBonus`-helperen),
+    `80f52fb` (funn 1: `bonusPub`/`bonusEst` atskilt, radfeltet
+    `bonusPublished`), `8b242e3` (visningen), og siste commit på branchen
+    (denne handover-oppdateringen).
+  - **Baseline verifisert:** `npm test` **242/242** på fersk branch, akkurat
+    som planen forutsa. Sluttilstand **250/250**, `npm run lint` exit 0 —
+    planens mål på 250 truffet nøyaktig.
+  - **TDD, rødt observert før grønt hver gang:** `publishedBonus` →
+    `SyntaxError: … does not provide an export named 'publishedBonus'`, så
+    244/244. Funn 2 → 245 tester, 244 pass, **1 fail** («kampen er
+    ferdigspilt, ingen polling»), så 245/245. Funn 1 → 250 tester, 244 pass,
+    **6 fail** (fem nye bonustester + kontrakttesten «payloaden har ingen
+    døde felter»), så 250/250.
+  - **Røyktest port 3010 med tomme nøkler** (scratchpad-`.env`, teknikken
+    fra driftslærdommene): `/health` =
+    `{"status":"ok","features":{"ai":false,"aiModel":null,"discord":false,`
+    `"teamId":true,"leagues":0}}`, alle ruter 200, ukjent sti 404,
+    serverloggen inneholder kun lyttelinja — **0 AI-kall**.
+  - **Røyktesten traff nøyaktig scenarioet fra begge funnene, mot ekte
+    prod-data ~17 t etter ARS–COV.** Rå FPL-fixture: `finished: false`,
+    `finished_provisional: true`, `minutes: 90` — altså sto feilen fortsatt
+    på i kilden. Vår payload ga likevel `anyLive: false` og
+    `matches[0].finished: true`, og /live-HTML-en sa «Ingen kamper pågår
+    akkurat nå» uten pulseprikk. Med den gamle koden ville siden ha stått på
+    «Kamper pågår» og pollet videre. Ødegaard — samme spiller som i den
+    opprinnelige observasjonen — kom ut som
+    `{"points":11,"bonusEst":0,"bonusPublished":3,"effective":11}`: bonusen
+    vises, og «Effektivt» teller den ikke to ganger. Kolonneoverskriften er
+    «Bonus».
+  - **Utestående:** manuell verifisering av selve rendringen under neste
+    kampvindu (bonuscellen fylles klientside og er utenfor testharnessen —
+    `test/app-client.test.js` kjører skriptet i en vm der DOM-elementene er
+    `null`). Stopp-testen fra sjekkpunkt C kan først bestås etter deploy.
+    Begge står som åpne ROADMAP-punkter.
+  - **Merge-rekkefølge (krever klarsignal fra Marius):**
+    `fix/sanitize-brief` → `fix/lag-anbefalinger` → `main` (v1.2.2), deretter
+    `fix/live-bonus` → `main` (v1.2.3). Aldri deploy torsdag 19–21.
 
 - **Sjekkpunkt C: polling GRØNT, ett funn på bonuskolonnen.** (økt 17,
   2026-08-21 ~22:10, observert av Marius via Claude in Chrome på prod under
@@ -262,6 +340,11 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 
 ## Åpne punkter
 
+- **Deploy v1.2.1 → v1.2.3 klar for nytt forsøk** (port 0-avviket løst i
+  økt 22 — se Status). Opus 5 kjører
+  `docs/neste-okt-prompt-deploy-utforelse-v2.md`; lørdagsvinduet krever
+  øktstart ~08–09 (siste push ~10:45, hard port 11:30), ellers tar port 4
+  automatisk søndag 13:00.
 - **B-1…B-3 er ferdig kodet** (branch `fix/lag-anbefalinger`, se Status).
   Gjenstår: 1 AI-kall for ende-til-ende-verifisering etter sjekkpunkt D, så
   release v1.2.2 og merge `fix/sanitize-brief` → `fix/lag-anbefalinger` →
@@ -277,6 +360,55 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 
+- 2026-08-22 (økt 22, natt ~02:15): kjøreprompt «Oppdrag (Fable, plan
+  mode): løs port 0-avviket i deploy-planen» + to svar på
+  plan-spørsmålene: **alternativ A** (`pre-deploy-main`-tag på `c33aef1`
+  som reset-mål i 2a/2b) og **lørdag** (vinduet står, port 4 håndterer
+  NO-GO → søndag). Handling: konfliktflaten målt på nytt (merge-tree main
+  ↔ fix/live-bonus = 0 konflikter; 3 av 4 docs-commits allerede i
+  branchenes historikk — HANDOVER-konflikt-frykten avkreftet, 2c-lista er
+  `{ CHANGELOG.md }`), `docs/plan-deploy-v122-v123.md` patchet (port 0,
+  2a/2b, 2c, port 10 + fakta), `docs/neste-okt-prompt-deploy-utforelse-v2.md`
+  skrevet, UTDATERT-banner på v1, HANDOVER oppdatert. Kun docs-commits
+  lokalt på `fix/live-bonus`, ingen push, 0 AI-kall.
+
+- 2026-08-22 (økt 21, natt ~02:15): «okay lag en prompt til fable om dette.
+  planleggingspromt. fable skriver enn prompt for opus etter planen er
+  godkjent». Handling: `docs/neste-okt-prompt-port0-avvik.md` skrevet —
+  planleggingsoppdrag til Fable for å patche deploy-planen etter port
+  0-avviket. Tre problemer spesifisert: (1) reset-ankeret, med alternativ A
+  `pre-deploy-main`-tag vs. B parkering av docs-commitene, (2) port 2c må
+  måle konfliktflaten på nytt fordi begge sider nå redigerer
+  `docs/HANDOVER.md` — dagens stopp-kriterium ville utløst full stopp, (3)
+  `dbcf253` blir foreldet og må ryddes. Leveransekrav: plan-patch +
+  `docs/neste-okt-prompt-deploy-utforelse-v2.md` til Opus 5. Ingen push.
+
+- 2026-08-22 (økt 21, natt ~02:00): kjøreprompt «Oppdrag (Opus 5): utfør
+  deploy-planen v1.2.1 → v1.2.3» — planen er fasit, ingen re-planlegging,
+  uttømmende push-lisens (port 5/6/7 + docs-commit i port 10), absolutte
+  stopp-punkter etter deploy 1 og 2, 0 AI-kall fra Opus. Handling: **port 0
+  STOPPET på avvik** — lokal `main` står ikke på `78d438e` slik planen
+  forutsetter. Ingenting endret, ingenting pushet; venter på klarsignal
+  (se «Åpne punkter»).
+
+- 2026-08-22 (økt 20, natt ~01:45): kjøreprompt «Oppdrag (Fable, plan mode):
+  trygg deploy av v1.2.2 + v1.2.3 til prod» — planlegg, Opus 5 utfører; krav:
+  «alt skal funke før noe pushes/committes/merges til main». Fire åpne
+  spørsmål besvart av Marius: tre pusher; egen v1.2.2-tag; B-2-kallet i prod
+  etter v1.2.2-deployen; lørdag med tidsport 11:30 (ellers søndag 13:00).
+  Handling: plan godkjent og lagret som `docs/plan-deploy-v122-v123.md`,
+  Opus-prompt i `docs/neste-okt-prompt-deploy-utforelse.md`, ROADMAP og
+  HANDOVER oppdatert, committet lokalt på `fix/live-bonus`. Ingen push,
+  0 AI-kall.
+- 2026-08-22 (økt 19): ga Opus 5 utførelsesoppdraget for v1.2.3 med
+  `docs/plan-live-bonus.md` som fasit — «følg planen NØYAKTIG, ikke re-spør,
+  ikke re-planlegg», Task 0 er alt gjort av Fable (verifiser, ikke committ på
+  nytt), TDD med rødt før grønt (baseline 242 → mål 250), 0 AI-kall, aldri
+  push, ingen merge, aldri deploy torsdag 19–21, ikke rør
+  polling-tilstandsmaskinen i `public/app.js`, og «avviker virkeligheten fra
+  planens antakelser: stopp og legg det fram». Handling: hele planen utført
+  på `fix/live-bonus` i tre kodecommits, 250/250, lint 0, røyktest med tomme
+  nøkler (`ai:false`). Ingen avvik fra planen, ingen push, ingen merge.
 - 2026-08-22 (økt 18, natt/morgen): limte inn stopp-test-rapporten fra
   Claude in Chrome — testen lot seg ikke kjøre, /live sa «Kamper pågår» i
   66+ min etter kampslutt (fire friske sidelaster, frosset innhold).
