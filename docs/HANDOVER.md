@@ -5,7 +5,7 @@
 > Versjonshistorikk og detaljer ligger i CHANGELOG.md, ROADMAP.md og git —
 > denne filen holder kun nåtilstand, aktive økter og lærdommer.
 
-**Sist oppdatert:** 2026-08-23 (økt 23, Opus 5: DEPLOY FERDIG — v1.2.1–v1.2.3 i prod, port 0–10 utført, sjekkpunkt C lukket)
+**Sist oppdatert:** 2026-08-23 (økt 23, Opus 5: deploy ferdig port 0–10, sjekkpunkt C+D lukket, doks-opprydningsprompt skrevet)
 
 ## Status akkurat nå
 
@@ -122,6 +122,20 @@
     resonnerer fra ulike signaler — og rådgiveren har ingen etterkontroll
     slik briefen har. Full analyse i ROADMAP under «Senere / idéer».
     Krever egen brainstorming + plan + release. Ikke påbegynt.
+  - **Sjekkpunkt D målt 23. aug: $0,94/uke, under terskelen, ingen tiltak.**
+    Introprisen bekreftet av fakturaen ($0,985 utregnet mot $1,477 på
+    ordinærpris). Ut-tokens er 78 % av kostnaden. Ny måling i uken etter
+    31. aug — se `docs/sjekkpunkt-d-kostnad.md`. To metodefunn der:
+    per-funksjon-kostnad lar seg ikke måle retroaktivt (100-linjers loggvindu
+    + restart ved hver deploy), og «0 AI-kall fra Opus» var upresist —
+    prod-sveipet over `/brief` og `/nyheter` utløste ~6 betalte kall (~$0,07).
+  - **Beskjed fra Marius 23. aug ~01:30:** vil ha en Fable-prompt som
+    planlegger stor opprydning av `docs/` (30 filer, 6 901 linjer, hvorav 18
+    `neste-okt-prompt-*`) og skriver ROADMAP om til full framoversikt over
+    alt som gjenstår. **Handling:** `docs/neste-okt-prompt-doks-opprydning.md`
+    skrevet med målt inventering, komplett liste over åpne punkter, harde
+    regler og fire beslutninger som skal legges fram for ham. Prompten setter
+    seg selv i scope for opprydningen den bestiller.
 - **PORT 0-AVVIKET LØST — deploy-planen patchet (økt 22), klar for ny
   deploy-økt.** (2026-08-22 natt ~02:30, Fable i plan mode.) Kjøreprompt
   til Opus 5: `docs/neste-okt-prompt-deploy-utforelse-v2.md` (v1 har fått
