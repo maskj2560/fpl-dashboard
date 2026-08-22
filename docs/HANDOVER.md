@@ -9,18 +9,25 @@
 
 ## Status akkurat nå
 
-- **DEPLOY-ØKTEN (økt 21) STOPPET I PORT 0 — venter på Marius.** Avviket:
-  planens «`main` = `78d438e`-tippen (tag v1.2.1)» stemmer ikke lenger.
-  Lokal `main`-tip er `c33aef1`, dvs. **4 docs-only commits oppå tag
-  v1.2.1** (`56e5d16`, `c16cf14`, `9ca665f`, `c33aef1`). Alt annet i port 0
-  er grønt: rent tre, topologien intakt, `main` 10 foran `origin/main`.
-  Ingenting er endret eller pushet. Beslutningen Marius må ta står i
-  «Åpne punkter».
-  **Neste steg er bestemt:** Marius ba om planleggingsoppdrag til Fable —
-  `docs/neste-okt-prompt-port0-avvik.md`. Fable patcher deploy-planen
-  (reset-anker + ny konfliktforventning i port 2c) og skriver deretter
-  `docs/neste-okt-prompt-deploy-utforelse-v2.md` til Opus 5 når planen er
-  godkjent. Port 1-baselinen er allerede grønn og kan gjenbrukes.
+- **PORT 0-AVVIKET LØST — deploy-planen patchet (økt 22), klar for ny
+  deploy-økt.** (2026-08-22 natt ~02:30, Fable i plan mode.) Kjøreprompt
+  til Opus 5: `docs/neste-okt-prompt-deploy-utforelse-v2.md` (v1 har fått
+  UTDATERT-banner). Plan: `docs/plan-deploy-v122-v123.md` med «Endret
+  22. aug (økt 22)»-blokk øverst — kun port 0, 2a/2b, 2c, port 10 og
+  fakta-avsnittet er rørt.
+  - **Marius' beslutninger (økt 22 ~02:15, IKKE re-spør):** alternativ A —
+    Opus tagger `c33aef1` som `pre-deploy-main` i port 0 og bruker den som
+    reset-mål i 2a/2b (pushes aldri, slettes i port 10); vinduet står:
+    lørdag 22. aug, hard tidsport 11:30 (ellers søndag 13:00 via port 4).
+  - **Nye målinger (økt 22, read-only):** 3 av de 4 docs-commitene på main
+    (`56e5d16`, `c16cf14`, `9ca665f`) er allerede ancestors av alle tre
+    feature-branchene — kun `c33aef1` (ny fil
+    `docs/prompt-ui-overhaul-plan.md`) er unik for main. `git merge-tree
+    --write-tree main fix/live-bonus` → exit 0, **0 konflikter** — økt
+    21-frykten for HANDOVER-konflikt i 2c er avkreftet. Komplett
+    konfliktliste for 2c: `{ CHANGELOG.md }` (indusert av
+    2b-release-committen; package.json/-lock utelukket).
+  - Ingenting merget/pushet; prod urørt (v1.2.0). **0 AI-kall.**
 
 - **Deploy-plan for v1.2.1 + v1.2.2 + v1.2.3 GODKJENT — klar for Opus 5.**
   (økt 20, 2026-08-22 natt ~02:00, Fable i plan mode.) Plan:
@@ -333,20 +340,11 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 
 ## Åpne punkter
 
-- **BLOKKERER DEPLOY (økt 21, port 0): main-tippen avviker fra planen.**
-  Planen antar `main` = `78d438e` (tag v1.2.1). Faktisk tip er `c33aef1`,
-  med 4 docs-only commits oppå taggen (handover + 3 plandokumenter for
-  P3-4/UI-overhaling). Målt, read-only: topologien intakt
-  (`sanitize ⊂ lag-anbefalinger ⊂ live-bonus`, alle med `78d438e` som
-  ancestor), og `git merge-tree main fix/lag-anbefalinger` gir **0
-  konflikter** også med docs-commitene. Deploy 1 (port 5) er uansett
-  upåvirket — den pusher eksplisitt SHA `78d438e`.
-  Konsekvensen som trenger et valg: planens escape-luke i port 2a/2b er
-  `git reset --hard v1.2.1`, som ville **kastet de 4 upushede
-  docs-commitene**. Anbefalt løsning (ett ord fra Marius): tagg
-  `c33aef1` som `pre-deploy-main` og bruk den taggen som reset-mål i stedet
-  for `v1.2.1` — resten av planen kjøres uendret, og docs-commitene blir
-  med i v1.2.2-/v1.2.3-releasene (kun dokumentasjon, ingen kodeendring).
+- **Deploy v1.2.1 → v1.2.3 klar for nytt forsøk** (port 0-avviket løst i
+  økt 22 — se Status). Opus 5 kjører
+  `docs/neste-okt-prompt-deploy-utforelse-v2.md`; lørdagsvinduet krever
+  øktstart ~08–09 (siste push ~10:45, hard port 11:30), ellers tar port 4
+  automatisk søndag 13:00.
 - **B-1…B-3 er ferdig kodet** (branch `fix/lag-anbefalinger`, se Status).
   Gjenstår: 1 AI-kall for ende-til-ende-verifisering etter sjekkpunkt D, så
   release v1.2.2 og merge `fix/sanitize-brief` → `fix/lag-anbefalinger` →
@@ -361,6 +359,18 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 - Valgfritt i Cloudflare: Browser Cache TTL → «Respect Existing Headers».
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
+
+- 2026-08-22 (økt 22, natt ~02:15): kjøreprompt «Oppdrag (Fable, plan
+  mode): løs port 0-avviket i deploy-planen» + to svar på
+  plan-spørsmålene: **alternativ A** (`pre-deploy-main`-tag på `c33aef1`
+  som reset-mål i 2a/2b) og **lørdag** (vinduet står, port 4 håndterer
+  NO-GO → søndag). Handling: konfliktflaten målt på nytt (merge-tree main
+  ↔ fix/live-bonus = 0 konflikter; 3 av 4 docs-commits allerede i
+  branchenes historikk — HANDOVER-konflikt-frykten avkreftet, 2c-lista er
+  `{ CHANGELOG.md }`), `docs/plan-deploy-v122-v123.md` patchet (port 0,
+  2a/2b, 2c, port 10 + fakta), `docs/neste-okt-prompt-deploy-utforelse-v2.md`
+  skrevet, UTDATERT-banner på v1, HANDOVER oppdatert. Kun docs-commits
+  lokalt på `fix/live-bonus`, ingen push, 0 AI-kall.
 
 - 2026-08-22 (økt 21, natt ~02:15): «okay lag en prompt til fable om dette.
   planleggingspromt. fable skriver enn prompt for opus etter planen er
