@@ -211,7 +211,12 @@ i poengsummen). BPS-estimatet beholdes for vinduet før FPL publiserer.
 - [x] `publishedBonus(fixture)` i `analysis.js` (TDD)
 - [x] `live.js`: skill publisert bonus (`bonusPublished`) fra estimat (`bonusEst`)
 - [x] `public/app.js` + `views/live.ejs`: vis summen, kolonnen heter «Bonus»
-- [ ] Manuell verifisering under neste kampvindu (rendringen er utenfor testharnessen)
+- [x] Manuell verifisering under neste kampvindu (rendringen er utenfor testharnessen)
+      — **BESTÅTT 22. aug 2026.** Stopp-testen: server slo om 20:25:17, klientens
+      siste henting 20:25:33, «Sist oppdatert» frøs der gjennom 5 min. Bonus:
+      Ødegaard +3 «Bekreftet av FPL», Effektivt 11 (ikke 14); BPS-estimat virket
+      under HUL–MUN; 0 dobbelttellinger av 1621 sampler. Se
+      `docs/sjekkpunkt-c-live.md` → «Resultat fra kampvinduet».
 
 ## Senere / idéer (ikke planlagt)
 

@@ -308,8 +308,70 @@ done
 Statuskoden er én bokstav per kamp i rekkefølge: `S` = slutt, `P` = pågår,
 `-` = ikke startet. Før kampstart lørdag: `S---------`.
 
-### Resultat fra kampvinduet
+### Resultat fra kampvinduet — BESTÅTT (22. august 2026)
 
-_Fylles inn når observasjonen er gjennomført. Port 9 er ikke bestått, og
-ROADMAP-punktene «Manuell verifisering under neste kampvindu» og
-stopp-testen hukes IKKE av, før denne seksjonen har faktiske tall._
+Målt med to uavhengige instrumenter som ikke deler kodevei: serversiden med
+`port9-sampler.sh` (1621 sampler, hvert 30. s, 11:29–01:00) og klientsiden
+med Claude in Chrome (10 avlesninger, kun lesing, aldri reload). Full
+nettleserrapport: `~/Downloads/live-test-bre-tot-2026-08-22.md`.
+
+#### Stopp-testen ved siste kampslutt (BRE–TOT)
+
+| Instrument | Måling |
+| --- | --- |
+| Sampler, siste `anyLive=true` | 20:24:47 |
+| Sampler, første `anyLive=false` | **20:25:17** (status `SSSSSP----` → `SSSSSS----`) |
+| Nettleser, siste henting | **20:25:33** — registrerte «Slutt» og ble den siste |
+| Nettleser, status slo om | observert 20:25:51 (avlesning 5) |
+| Forplantning server → klient | **~16 sekunder** (krav: ~1 minutt) |
+
+De to instrumentene bekrefter hverandre: serveren slo om mellom 20:24:47 og
+20:25:17, og klientens neste planlagte henting kl. 20:25:33 plukket det opp
+og stoppet. Nettleseren hadde pollet med nøyaktig 60 s mellomrom fram til da
+(20:20:33 → 21:33 → 23:33 → 24:33 → 25:33), i tråd med `LIVE_POLL_MS`.
+
+**Polling opphørte:** «Sist oppdatert» sto urørt på 20:25:33 gjennom fem
+oppfølgingsavlesninger (20:27:09, 20:28:19, 20:29:28, 20:30:36, 20:31:44).
+Prikken sluttet å pulsere — `pulse-on` var fjernet fra `span.pulse` og
+`animation-name` var `none`. Ingen av de tre feilsignaturene inntraff.
+
+**FUNN 2 lot seg ikke reprodusere.** Dette er den siste blokkerte
+verifiseringen fra sjekkpunkt C.
+
+#### Stopp-testen bestod dessuten to ganger tidligere samme dag
+
+Sampleren fanget alle overgangene i GW1s lørdagsprogram:
+
+```
+13:31:00  false SS---------  ->  true  SP--------   HUL-MUN avspark
+15:27:35  true  SP--------   ->  false SS--------   HUL-MUN slutt
+16:01:24  false SS--------   ->  true  SSPPP-----   16:00-kampene avspark
+17:54:53  true  SSPPP-----   ->  true  SSPPS-----   NFO-LEE slutt
+17:58:56  true  SSPPS-----   ->  true  SSPSS-----   IPS-SUN slutt
+18:00:57  true  SSPSS-----   ->  false SSSSS-----   EVE-CRY slutt
+18:30:43  false SSSSS-----   ->  true  SSSSSP----   BRE-TOT avspark
+20:25:17  true  SSSSSP----   ->  false SSSSSS----   BRE-TOT slutt
+```
+
+Hver eneste omslag skjedde i samme 30-sekunders sample som fløyta.
+
+#### Bonuskolonnen — BESTÅTT
+
+**Publisert bonus vises, og telles ikke dobbelt.** Ødegaard sto hele dagen på
+`{points:11, bonusEst:0, bonusPublished:3, effective:11}`. I nettleseren:
+Bonus-kolonnen viste **+3** i accentfarge `rgb(0, 229, 140)`, Effektivt viste
+**11** — ikke 14 — og title-attributtet var nøyaktig
+«Bekreftet av FPL (foreløpig til runden er ferdig)».
+
+**BPS-estimatet virker i vinduet før FPL publiserer.** Under HUL–MUN gikk
+Lammens, Shaw og Mbeumo gjennom `pts0/est2/eff2` og `pts1/est1/eff2` til
+`pts1/est2/eff3` — altså poeng pluss estimat, slik estimatet skal telle.
+
+**Ingen dobbelttelling i noen sample.** Sampleren flagget automatisk på
+`effective > points + bonusEst`: **0 treff av 1621**.
+
+Sidenote som forklarer et forventet tomrom: dine spillere i HUL–MUN sto uten
+publisert bonus hele kampen, og det er korrekt — FPLs provisoriske bonus der
+gikk til Ajayi (3), McBurnie (2) og Tzolakis (1), alle Hull-spillere.
+Tom bonuscelle for en spiller utenfor topp 3 er riktig oppførsel; feilen var
+tom celle for en spiller som *hadde* bonus.

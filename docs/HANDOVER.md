@@ -5,14 +5,15 @@
 > Versjonshistorikk og detaljer ligger i CHANGELOG.md, ROADMAP.md og git —
 > denne filen holder kun nåtilstand, aktive økter og lærdommer.
 
-**Sist oppdatert:** 2026-08-22 kl. 11:32 (økt 23, Opus 5: v1.2.1–v1.2.3 i prod og stabile; port 9 kampvindu-observasjon gjenstår)
+**Sist oppdatert:** 2026-08-23 (økt 23, Opus 5: DEPLOY FERDIG — v1.2.1–v1.2.3 i prod, port 0–10 utført, sjekkpunkt C lukket)
 
 ## Status akkurat nå
 
-- **DEPLOY FULLFØRT (økt 23, Opus 5) — v1.2.1, v1.2.2 OG v1.2.3 ER I PROD,
-  alle tre verifisert. Gjenstår port 9 (kampdag-observasjon 13:30).**
-  (2026-08-22 kl. 02:29.) Planen `docs/plan-deploy-v122-v123.md` fulgt
-  port for port.
+- **DEPLOYEN ER FERDIG (økt 23, Opus 5). v1.2.1, v1.2.2 og v1.2.3 er i prod
+  og verifisert, port 0–10 er utført, og sjekkpunkt C er lukket.**
+  (Deploy 2026-08-22 kl. 02:16–02:43, verifisering til 22. aug kl. 20:31.)
+  Planen `docs/plan-deploy-v122-v123.md` fulgt port for port.
+  **0 AI-kall fra Opus i hele økten** — Marius' B-2-klikk er det eneste.
   - **Port 0 grønn:** rent tre; tips som forventet (`main` c33aef1,
     `fix/lag-anbefalinger` c5b9748, `fix/live-bonus` c3020e5).
     `pre-deploy-main` satt på c33aef1 (lokal, pushes aldri).
@@ -91,40 +92,36 @@
     ancestor av `main`, så commiten er ikke tapt). ROADMAP: B-2-punktet
     huket av. Docs committet lokalt, **ikke pushet** — planen sier docs-push
     etter kampslutt (~21:00+), og resten av port 10 krever port 9-resultatet.
-  - **Nattbevis 22. aug kl. 11:28 — prod stabil på v1.2.3 i ~9 timer.**
-    `/health` uendret, 11/11 ruter 200, 404 ok, footer `v1.2.3`.
-  - **STOPP-TESTEN ER I PRAKSIS ALLEREDE BESTÅTT — sterkere enn planens
-    ett-minutts-test.** FPL hadde kl. 11:29 FORTSATT
-    `finished:false, finished_provisional:true, minutes:90` for ARS–COV —
-    **14,5 timer etter fløyta**. Det er nøyaktig FUNN 2-tilstanden, og den
-    gamle koden ville pollet sammenhengende i 14,5 t. Prod på v1.2.3 sto
-    hele veien på `anyLive:false`, `matches[0].finished:true`, servert HTML
-    «Ingen kamper pågår akkurat nå» og **0 forekomster av `pulse-on`** i
-    initiell HTML. Klienten setter da én `setTimeout` til
-    `nextKickoff + 30 s` (= 13:30:30) og gjør null kall før det
-    (`app.js` `schedule()`). Full dokumentasjon i
-    `docs/sjekkpunkt-c-live.md` → «Port 9 — verifisering i prod etter
-    deploy».
-  - **Sampler startet 11:29** (scratchpad `port9-sampler.sh` →
-    `port9-samples.log`, kilde også limt inn i sjekkpunkt-dokumentet).
-    Logger `/api/live.json` hvert 30. s gjennom kampvinduet, markerer
-    overganger og flagger dobbelttelling automatisk
-    (`effective > points + bonusEst`). Dekker serversiden av port 9.
-  - **GJENSTÅR — krever Marius i nettleseren:** lørdagens kamper er 13:30
-    HUL–MUN, 16:00 EVE–CRY/IPS–SUN/NFO–LEE, 18:30 BRE–TOT (siste, slutter
-    ~20:20). (1) Under kamp: bonuskolonnen får `+N` i accentfarge med riktig
-    title-tekst, «Effektivt» teller ikke dobbelt. (2) Ved fløyta ~20:20:
-    status om til «Ingen kamper pågår» innen ~1 min, prikken slutter å
-    pulsere, INGEN nye `live.json`-kall i nettverksfanen på 5 min. Noter
-    klokkeslett + de tre siste kallene. Føres inn under «Resultat fra
-    kampvinduet» i `docs/sjekkpunkt-c-live.md`.
-  - **DERETTER port 10 (siste rest):** huk av ROADMAP-punktene «Manuell
-    verifisering under neste kampvindu» og stopp-testen — KUN med faktiske
-    tall i sjekkpunkt-dokumentet — og push docs-commiten til `main` etter
-    kampslutt (~21:00+). Pushen trigger en harmløs rebuild av samme kode.
-  - **Åpent, ikke-blokkerende:** promptstrukturen til /lag-rådgiveren
-    (se «Senere / idéer» i ROADMAP). Egen brainstorming + plan + release.
-  - **Totalt AI-kall i økten: 0 fra Opus** (Marius' B-2-klikk er det eneste).
+  - **PORT 9 BESTÅTT 22. aug — sjekkpunkt C er endelig lukket.** Målt med to
+    uavhengige instrumenter: sampleren (1621 sampler, hvert 30. s) og Claude
+    in Chrome (10 avlesninger, aldri reload). Stopp-testen ved BRE–TOT:
+    server slo om mellom 20:24:47 og **20:25:17**; klientens neste planlagte
+    henting **20:25:33** fanget «Slutt» og ble den siste. Forplantning
+    **~16 s** mot kravet på ~1 min. «Sist oppdatert» frøs på 20:25:33 gjennom
+    fem oppfølgingsavlesninger, `pulse-on` var fjernet, `animation-name: none`.
+    Stopp-testen bestod dessuten ved HUL–MUN (15:27:35) og EVE–CRY (18:00:57)
+    — hvert omslag i samme 30 s-sample som fløyta. **FUNN 2 lot seg ikke
+    reprodusere.**
+  - **Bonuskolonnen bestått:** Ødegaard viste **+3** i accentfarge med
+    title «Bekreftet av FPL (foreløpig til runden er ferdig)» og Effektivt
+    **11**, ikke 14. BPS-estimatet virket i vinduet før publisering
+    (MUN-trioen `pts1/est2/eff3` under HUL–MUN). **0 dobbelttellinger av
+    1621 sampler** (automatisk flagg på `effective > points + bonusEst`).
+    Full dokumentasjon: `docs/sjekkpunkt-c-live.md` → «Resultat fra
+    kampvinduet». Nettleserrapporten ligger i
+    `~/Downloads/live-test-bre-tot-2026-08-22.md`.
+  - **PORT 10 FULLFØRT:** `pre-deploy-main` slettet, ROADMAP-punktet
+    «Manuell verifisering under neste kampvindu» huket av med tall,
+    sjekkpunkt-dokumentet fylt ut, docs pushet til `main` (23. aug natt,
+    ingen kamper — neste avspark søndag 15:00). Sampleren stoppet.
+  - **DEPLOY-PLANEN ER DERMED FERDIG UTFØRT, port 0–10.** Port 8 (rollback)
+    ble aldri utløst.
+  - **ENESTE ÅPNE PUNKT — promptstrukturen på /lag-rådgiveren.** v1.2.2
+    fikset UI-rangeringen til `ep_next` når ingen har form, men AI-prompten
+    får fortsatt kun `form` (`api.js:86-88`), så siden og rådgiveren
+    resonnerer fra ulike signaler — og rådgiveren har ingen etterkontroll
+    slik briefen har. Full analyse i ROADMAP under «Senere / idéer».
+    Krever egen brainstorming + plan + release. Ikke påbegynt.
 - **PORT 0-AVVIKET LØST — deploy-planen patchet (økt 22), klar for ny
   deploy-økt.** (2026-08-22 natt ~02:30, Fable i plan mode.) Kjøreprompt
   til Opus 5: `docs/neste-okt-prompt-deploy-utforelse-v2.md` (v1 har fått
