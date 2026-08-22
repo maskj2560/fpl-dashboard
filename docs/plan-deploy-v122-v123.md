@@ -3,6 +3,17 @@
 > Godkjent av Marius 22. august 2026 (~02:00).
 > Utføres av Opus 5 i egen økt. Dette er en deploy-plan — ingen ny kode.
 
+> **Endret 22. aug (økt 22) — port 0-avviket løst.** Deploy-økten (økt 21)
+> stoppet i port 0: main-tippen var ikke `78d438e`, men `c33aef1` — 4
+> docs-only commits oppå tag v1.2.1. Patchen rører KUN: fakta-avsnittet
+> (nye økt 21/22-målinger), **port 0** (ny forventet tilstand + tagging av
+> `pre-deploy-main`), **2a/2b** (reset-mål `v1.2.1` → `pre-deploy-main`),
+> **2c** (ny konfliktmåling + konfliktliste i stopp-kriteriet) og
+> **port 10** (tag-opprydding + dbcf253-notat). Porter 1 og 3–9 er
+> uendret. Beslutning (Marius, økt 22 ~02:15): alternativ A —
+> `pre-deploy-main`-tag som reset-anker; vinduet står fast (lørdag 22. aug,
+> port 11:30, ellers søndag 13:00).
+
 ## Kontekst
 
 Prod (https://fpl.marsk.no) kjører v1.2.0. Lokalt ligger tre ferdig kodede,
@@ -28,7 +39,8 @@ pushes/merges til `main`** (auto-deploy til prod).
 
 **Verifiserte fakta fra økt 19 — Opus skal IKKE gjenverifisere:** topologien
 (`sanitize` ⊂ `lag-anbefalinger` ⊂ `live-bonus`), `main` = 10 commits foran
-`origin/main` med tag `v1.2.1` på tippen (`78d438e`), `git merge-tree` 0
+`origin/main` (tip `c33aef1` — se økt 21/22-fakta under; «tag v1.2.1 på
+tippen» var foreldet), `git merge-tree` 0
 konflikter (målt FØR release-commitene — se port 2c), 250/250 + lint 0 på
 `fix/live-bonus`, røyktest grønn med tomme nøkler, Docker 29.6.2 kjører,
 GW2-deadline `2026-08-28T17:30:00Z` (auto-brief-vinduet åpner torsdag 27. aug
@@ -38,6 +50,18 @@ GW2-deadline `2026-08-28T17:30:00Z` (auto-brief-vinduet åpner torsdag 27. aug
 manglende `.env` i try/catch (containeren har ingen `.env` — Dockerfile
 COPY-er kun package-filer/src/views/public), og rutelista er 11 GET-ruter
 (se port 1).
+
+**Verifiserte fakta fra økt 21/22 — Opus skal IKKE gjenverifisere:**
+main-tip = `c33aef1` med 4 docs-only commits oppå tag v1.2.1: `56e5d16`,
+`c16cf14`, `9ca665f`, `c33aef1` (983 innsettinger, 0 kodeendringer). 3 av
+de 4 (`56e5d16`, `c16cf14`, `9ca665f`) er allerede ancestors av alle tre
+feature-branchene — kun `c33aef1` er unik for main, og den legger bare til
+den nye fila `docs/prompt-ui-overhaul-plan.md`. Målt i økt 22, MED driften:
+`git merge-tree --write-tree main fix/live-bonus` → exit 0, **0
+konflikter**; `git diff --name-only fix/lag-anbefalinger fix/live-bonus`
+inneholder ikke package.json/-lock. Port 1-baselinen fra økt 21 var grønn
+(lagret som `port1-baseline.txt` i scratchpad) — porten kjøres likevel på
+nytt, ferskt bevis er billig.
 
 ## Rammer
 
@@ -53,17 +77,33 @@ COPY-er kun package-filer/src/views/public), og rutelista er 11 GET-ruter
 - Conventional commits. CHANGELOG/ROADMAP/HANDOVER i samme commit som
   endringen de beskriver.
 
-## Port 0 — forutsetninger (lokalt, ingen endring)
+## Port 0 — forutsetninger (lokalt) + reset-anker
 
 ```
 git status                      # rent tre
 git log --oneline -1 main fix/lag-anbefalinger fix/live-bonus
 ```
 
-Forventet: rent tre; `main` = `78d438e`-tippen (tag v1.2.1);
-`fix/live-bonus`-tippen = docs-commits fra planøkt 20 («docs: deploy-plan …»)
-oppå `f55fecb`-serien (jf. HANDOVER).
-**Stopp:** utrent tre eller uventede tips → rapporter, ikke rydd på egen hånd.
+Forventet: rent tre; `main`-tip = `c33aef1` (4 docs-commits oppå tag
+v1.2.1 — FORVENTET, jf. økt 21/22-fakta i Kontekst);
+`fix/lag-anbefalinger`-tip = `c5b9748`; `fix/live-bonus`-tip =
+docs-commitene fra økt 22 (plan-patch, v2-prompt, handover — jf.
+HANDOVER-loggen).
+
+Deretter settes reset-ankeret (beslutning A, Marius økt 22):
+
+```
+git tag pre-deploy-main c33aef1   # lokal stillas-tagg — pushes ALDRI
+```
+
+Taggen er escape-luka for port 2a/2b: `git reset --hard pre-deploy-main`
+gjenoppretter nøyaktig dagens main-tilstand uten å kaste de 4 upushede
+docs-commitene (slik det gamle reset-målet `v1.2.1` ville gjort — de er
+kun gjenopprettbare via reflog). Taggen inngår IKKE i push-lisensen og
+slettes i port 10. Docs-commitene følger med inn i v1.2.2-/v1.2.3-
+releasene — ren dokumentasjon, ingen CHANGELOG-punkter.
+**Stopp:** utrent tre eller andre tips enn forventet → rapporter, ikke
+rydd på egen hånd.
 
 ## Port 1 — prod-baseline FØR alt annet
 
@@ -102,7 +142,8 @@ npm test && npm run lint
 
 Forventet: **242/242**, lint exit 0 (main 218 + branch-settene = 242; branchen
 er bygget fra main-med-cache-backoff, så ingenting mangler).
-**Stopp:** konflikt eller rødt → `git reset --hard v1.2.1`, rapporter.
+**Stopp:** konflikt eller rødt → `git reset --hard pre-deploy-main`,
+rapporter.
 
 ### 2b. Release v1.2.2 på `main`
 
@@ -129,7 +170,8 @@ git add -A && git commit -m "chore: release v1.2.2"
 git tag -a v1.2.2 -m "v1.2.2"
 ```
 
-**Stopp:** `npm ci` feiler eller rødt → reset til v1.2.1, rapporter.
+**Stopp:** `npm ci` feiler eller rødt → `git reset --hard pre-deploy-main`,
+rapporter.
 
 ### 2c. Merge `fix/live-bonus` → `main` — VARSLET konflikt i CHANGELOG
 
@@ -141,6 +183,17 @@ inneholde KUN de 2 live-punktene (bonus + fløyta) under `### Fixed`;
 `package.json`/lock gir IKKE konflikt (branchen rørte dem aldri — main-siden
 vinner automatisk med 1.2.2).
 
+**Konfliktflaten er målt på nytt i økt 22, MED docs-driften:**
+`git merge-tree --write-tree main fix/live-bonus` → 0 konflikter.
+`docs/HANDOVER.md` kolliderer IKKE (økt 21-frykten avkreftet): 3 av de 4
+docs-commitene ligger allerede i branchens historikk, og main-sidens eneste
+unike endring utover release-commitene er den NYE fila
+`docs/prompt-ui-overhaul-plan.md`. Den eksakte 2c-flaten inkluderer
+2b-release-committen og kan ikke måles før den finnes — men siden driften
+gir 0 konflikter, kan kun 2b-committens filer kollidere: CHANGELOG.md
+(varslet over, med oppskrift); package.json/-lock er utelukket som
+beskrevet. **Komplett konfliktliste for 2c: { CHANGELOG.md }.**
+
 ```
 git merge --no-ff fix/live-bonus
 # løs CHANGELOG som beskrevet, git add CHANGELOG.md, git commit (merge-commit)
@@ -148,8 +201,9 @@ npm test && npm run lint
 ```
 
 Forventet: **250/250**, lint 0.
-**Stopp:** konflikt i NOEN annen fil enn CHANGELOG.md → `git merge --abort`,
-`git reset --hard v1.2.2`, rapporter.
+**Stopp:** konflikt i en fil som IKKE står på konfliktlista over (dvs. alt
+annet enn CHANGELOG.md) → `git merge --abort`, `git reset --hard v1.2.2`,
+rapporter.
 
 ### 2d. Release v1.2.3 på `main`
 
@@ -295,6 +349,11 @@ Faller observasjonen (ikke deployen) utenfor lørdag: søndagskampene
 - `ROADMAP.md`: huk av deploy-punktene; «Manuell verifisering under neste
   kampvindu» og stopp-testen hukes av KUN når port 9 faktisk er bestått.
 - `docs/sjekkpunkt-c-live.md`: stopp-test-resultatet.
+- `git tag -d pre-deploy-main` — stillas-taggen fra port 0 har utspilt
+  rollen sin når v1.2.3 er verifisert i prod.
+- NB: den utdaterte «BLOKKERER DEPLOY»-/«STOPPET I PORT 0»-teksten fra
+  `dbcf253` er allerede ryddet av økt 22 (HANDOVER omskrevet da planen ble
+  patchet) — port 10 gjør kun den vanlige post-deploy-oppdateringen.
 - Commit (`docs: …`) + push til main **etter kampslutt** (~21:00+) eller
   neste formiddag — pushen trigger en harmløs rebuild av samme kode.
 
