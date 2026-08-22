@@ -7,6 +7,43 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Changed
+
+- **AI-rådgiveren på /lag vet nå hvilken runde rådet gjelder.** Prompten
+  oppgir runde og deadline, hvem som er kaptein og visekaptein i laget ditt,
+  og hvilken motstander hver spiller møter (hjemme/borte og FDR, begge
+  kampene ved dobbeltrunde). Rådgiveren må si eksplisitt om kapteinen bør
+  beholdes eller byttes. Antall gratis bytter er ikke tilgjengelig fra
+  FPL-API-et uten innlogging, så modellen er instruert om aldri å anta at et
+  bytte er gratis — poengkostnaden nevnes kun som forbehold. Ingen nye
+  nettverkskall: all kontekst kommer fra data siden allerede henter.
+
+### Fixed
+
+- **/lag sier nå hvilken runde anbefalingene gjelder.** Siden viste «Runde 1»
+  i undertittelen mens kaptein- og byttekandidatene hele tiden gjaldt neste
+  runde. Anbefalingsseksjonen har fått overskriften «Anbefalinger for Runde
+  N». Kapteinsboksen forklarer dessuten når rangeringen bygger på forventede
+  poeng i stedet for form, og viser en tomtilstand i stedet for en tom liste
+  når ingen i troppen er spilleklare.
+- **Kapteinsforslagene på /lag er ikke lenger vilkårlige ved sesongstart.**
+  Før første kamp er formen 0.0 for alle, og lista viste da pick-rekkefølgen
+  din som om den var en rangering (tre tilfeldige spillere, alle med
+  «Form 0.0»). Nå rangeres det på FPLs forventede poeng (`ep_next`) når ingen
+  i troppen har form ennå, med begrunnelsen «Forventet poeng (FPL)» i stedet
+  for den villedende formlinja. Har ingen i troppen forventede poeng heller —
+  for eksempel om alle er skadet — vises tomtilstand framfor en topp 3 uten
+  dekning. Så snart minst én spiller har reell form, rangeres det som før.
+- AI-briefens etterkontroll kutter ikke lenger setninger midt i norske
+  forkortelser («kl.», «f.eks.») eller klokkeslett («21.00») — færre
+  feilfjernede setninger, og uriktige deadline-påstander med forkortelse i
+  setningen fanges nå.
+- AI-briefens etterkontroll gjenkjenner nå lagnavn-varianter («Tottenham»
+  for FPLs «Spurs», «Manchester United» for «Man Utd», «Coventry» for
+  «Coventry City» osv.) med ordgrenser og genitiv, så uriktige
+  deadline-påstander fanges selv når modellen skriver et annet navn enn
+  FPL-dataene — uten at lagnavn treffer inni andre ord.
+
 ## [1.2.1] - 2026-08-20
 
 ### Fixed

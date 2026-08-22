@@ -205,6 +205,27 @@ export function teamFdrMap(fixtures, fromGw, count = 3) {
   return new Map([...sums].map(([teamId, [sum, n]]) => [teamId, sum / n]));
 }
 
+/**
+ * Motstandere i runde `fromGw` per lag: Map<teamId, [{ opponent, home, difficulty }]>.
+ * Dobbeltrunde gir flere innslag i samme liste; lag uten kamp mangler i mappet
+ * (samme konvensjon som teamFdrMap). Brukes til å gi AI-rådgiveren kampkontekst
+ * uten nye nettverkskall.
+ */
+export function nextOpponents(fixtures, fromGw) {
+  const byTeam = new Map();
+  const add = (teamId, entry) => {
+    const list = byTeam.get(teamId);
+    if (list) list.push(entry);
+    else byTeam.set(teamId, [entry]);
+  };
+  for (const f of fixtures) {
+    if (f.event !== fromGw) continue;
+    add(f.team_h, { opponent: f.team_a, home: true, difficulty: f.team_h_difficulty });
+    add(f.team_a, { opponent: f.team_h, home: false, difficulty: f.team_a_difficulty });
+  }
+  return byTeam;
+}
+
 /** Sannsynlighet (0–1) for at spilleren får spilletid neste runde. */
 export function playProbability(p) {
   if (p.chance_of_playing_next_round != null) return p.chance_of_playing_next_round / 100;
@@ -218,25 +239,60 @@ export function playProbability(p) {
 /**
  * Kapteinsforslag: score = form × fixture-lettehet (6 − snitt-FDR) × spilletidssannsynlighet.
  * Keepere utelates. Returnerer topp `limit` med begrunnelser.
+ *
+ * Ved sesongstart er form 0.0 for alle — da ble score 0 hele veien, og den
+ * stabile sorteringen leverte pick-rekkefølgen forkledd som en rangering.
+ * Er samtlige form-scorer 0, rangeres det derfor på FPLs `ep_next` i stedet
+ * (`criterion: 'ep_next'`). Er også den 0 for alle — f.eks. en tropp der ingen
+ * er spilleklare — returneres tom liste framfor en vilkårlig topp 3.
  */
 export function captainSuggestions(squad, fixtures, fromGw, limit = 3) {
   const fdrByTeam = teamFdrMap(fixtures, fromGw, 1);
-  return squad
+  const candidates = squad
     .filter((p) => p.element_type !== 1)
     .map((p) => {
       const avgFdr = fdrByTeam.get(p.team) ?? null;
-      const ease = 6 - (avgFdr ?? 3.5);
-      const probability = playProbability(p);
-      const score = (parseFloat(p.form) || 0) * ease * probability;
-      const reasons = [
-        `Form ${p.form}`,
-        avgFdr == null ? 'Ingen kamp funnet' : `FDR ${avgFdr.toFixed(1)} neste kamp`,
-        probability < 1 ? `Spilletid ${(probability * 100).toFixed(0)} %` : 'Full spilletid ventet',
-      ];
-      return { player: p, score, avgFdr, probability, reasons };
-    })
-    .sort((a, b) => b.score - a.score)
-    .slice(0, limit);
+      return {
+        player: p,
+        avgFdr,
+        ease: 6 - (avgFdr ?? 3.5),
+        probability: playProbability(p),
+      };
+    });
+
+  const scoreAll = (criterion) =>
+    candidates.map((c) => {
+      const value =
+        criterion === 'form' ? parseFloat(c.player.form) || 0 : parseFloat(c.player.ep_next) || 0;
+      const label =
+        criterion === 'form'
+          ? `Form ${c.player.form}`
+          : `Forventet poeng (FPL) ${value.toFixed(1)}`;
+      return {
+        player: c.player,
+        score: value * c.ease * c.probability,
+        avgFdr: c.avgFdr,
+        probability: c.probability,
+        criterion,
+        reasons: [
+          label,
+          c.avgFdr == null ? 'Ingen kamp funnet' : `FDR ${c.avgFdr.toFixed(1)} neste kamp`,
+          c.probability < 1
+            ? `Spilletid ${(c.probability * 100).toFixed(0)} %`
+            : 'Full spilletid ventet',
+        ],
+      };
+    });
+
+  // Garden sjekkes over ALLE kandidater før slice, ellers ville en tilfeldig
+  // topp 3 med score 0 skjult at datagrunnlaget mangler.
+  let scored = scoreAll('form');
+  if (scored.every((s) => s.score === 0)) {
+    scored = scoreAll('ep_next');
+    if (scored.every((s) => s.score === 0)) return [];
+  }
+
+  return scored.sort((a, b) => b.score - a.score).slice(0, limit);
 }
 
 /** Spillere i troppen som bør vurderes solgt, med begrunnelser. */

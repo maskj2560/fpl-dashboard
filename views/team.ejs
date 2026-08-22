@@ -67,17 +67,25 @@
 <% } %>
 
 <% if (recommendations) { %>
+  <h2 class="sub-head">Anbefalinger for Runde <%= fromGw %></h2>
   <div class="grid">
     <section class="card">
       <h2>Kapteinsvalg</h2>
-      <ol class="rec-list">
-        <% for (const c of recommendations.captains) { %>
-          <li>
-            <strong><%= c.player.web_name %></strong> <span class="dim"><%= teamsById.get(c.player.team)?.short_name %></span>
-            <ul class="reasons"><% for (const r of c.reasons) { %><li><%= r %></li><% } %></ul>
-          </li>
+      <% if (recommendations.captains.length === 0) { %>
+        <p class="empty">Ingen aktuelle kapteiner — ingen i troppen er spilleklare.</p>
+      <% } else { %>
+        <% if (recommendations.captains[0].criterion === 'ep_next') { %>
+          <p class="hint">Ingen formdata ennå — rangert på FPLs forventede poeng.</p>
         <% } %>
-      </ol>
+        <ol class="rec-list">
+          <% for (const c of recommendations.captains) { %>
+            <li>
+              <strong><%= c.player.web_name %></strong> <span class="dim"><%= teamsById.get(c.player.team)?.short_name %></span>
+              <ul class="reasons"><% for (const r of c.reasons) { %><li><%= r %></li><% } %></ul>
+            </li>
+          <% } %>
+        </ol>
+      <% } %>
     </section>
     <section class="card">
       <h2>Vurder å selge</h2>

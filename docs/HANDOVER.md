@@ -5,12 +5,122 @@
 > Versjonshistorikk og detaljer ligger i CHANGELOG.md, ROADMAP.md og git —
 > denne filen holder kun nåtilstand, aktive økter og lærdommer.
 
-**Sist oppdatert:** 2026-08-20 (økt 13, Fable: P3-4-plan godkjent; sesongstart-verifisering aktiv)
+**Sist oppdatert:** 2026-08-22 (økt 18, Fable: v1.2.3-planen UTVIDET med funn 2 fra stopp-testen — finished_provisional; klar for Opus 5)
 
 ## Status akkurat nå
 
-- **P3-4 `sanitizeBriefText`-robusthet: plan GODKJENT, klar for Opus 5.**
-  (økt 13, Fable i plan mode.) Plan: `docs/plan-sanitize-brief.md` —
+- **Sjekkpunkt C: polling GRØNT, ett funn på bonuskolonnen.** (økt 17,
+  2026-08-21 ~22:10, observert av Marius via Claude in Chrome på prod under
+  Arsenal–Coventry.) Full analyse med rådata: `docs/sjekkpunkt-c-live.md`.
+  - Polling: tre kall til `/api/live.json`, nøyaktig 60 s mellom hvert, ingen
+    duplikater. Cachen tar støyten (5 raske curl → identisk payload, ~90 ms,
+    `cf-cache-status: DYNAMIC`). Statustekst, pulseprikk og kampstillinger
+    riktige, ingen konsollfeil. **Pollingintervall og fetch-logikk skal ikke
+    røres.**
+  - Gjenstår av C: stopp-testen når `anyLive` blir false etter siste
+    kampslutt (forventning: null nye `live.json`-kall).
+  - **Funn:** bonuskolonnen står tom hele kampen. Rotårsak verifisert mot
+    FPL-API-et: FPL publiserer bonus provisorisk MENS kampen pågår, så
+    `hasConfirmedBonus()` (`analysis.js:371`) slår til og `live.js:51`
+    hopper over kampen — `estimateBonus()` kjører aldri. Bonusen ligger
+    allerede i `total_points` (FPLs egen `explain` for Ødegaard: bonus +3 av
+    11 poeng), så vakten mot dobbelttelling er riktig; det er kolonnen som er
+    død. Løsning besluttet, se ROADMAP v1.2.3. **Ikke implementert** — Marius
+    stoppet utførelsen og ba om at funnene ble skrevet ned først.
+    **Plan GODKJENT av Marius (økt 18): `docs/plan-live-bonus.md`** —
+    branch `fix/live-bonus` (fra `fix/lag-anbefalinger`), 0 AI-kall.
+    UTVIDET 22. aug etter stopp-testen: FPL setter `finished` først ved
+    rundeprosesseringen (`finished_provisional` settes ved fløyta), så
+    /live sa «Kamper pågår» og pollet hele natten. Begge C-funnene fikses
+    i samme plan: 8 nye tester, 242 → 250. Utførelsesprompt:
+    `docs/neste-okt-prompt-live-bonus-utforelse.md`. Stopp-testen kan
+    først bestås etter deploy — åpent punkt under sjekkpunkt D.
+  - Avklart uten funn: Tzolis 5→4 poeng (vi leser `total_points` rått hvert
+    kall, ingen akkumulering — FPL reviderte selv) og van Ewijk 51'/0 poeng
+    (appearance +1, goals_conceded −1 = 0; korrekt).
+
+- **B-1…B-3 riktige anbefalinger på /lag: UTFØRT på branch
+  `fix/lag-anbefalinger` — IKKE merget, IKKE pushet.** (økt 17,
+  2026-08-21, Opus 5. Planen `docs/plan-lag-anbefalinger.md` fulgt; ett
+  avvik lagt fram og avklart, se under.)
+  - Commits: `6ede6eb` (B-1: ep_next-fallback + tomtilstand + helperen
+    `nextOpponents`), `8d1ed23` (B-2: runde/deadline/kaptein/motstandere i
+    rådgiver-prompten + anti-spekulasjon om gratis bytter), `883909b`
+    (B-3: «Anbefalinger for Runde N» + kriterie-/tomtilstand i viewet),
+    og siste commit på branchen (røyktestbevis + denne oppdateringen).
+  - Rørt: `src/services/analysis.js`, `src/services/prompts.js`,
+    `src/routes/api.js`, `src/routes/team.js`, `views/team.ejs`, tester og
+    docs. IKKE rørt: `public/app.js`, `notify.js`, `brief.js`,
+    `gameUpdating`/banner i `fplClient.js` — alt sjekkpunkt C/D observerer
+    står urørt.
+  - **Baseline-avvik (avklart):** planen anslo `npm test` = 228; faktisk
+    målt **231/231 grønt**. Årsak: commit `0e507a4` la til 2 tester etter
+    at anslaget ble skrevet, pluss 1 i historisk bokføring (HANDOVER-linjene
+    om P3-4 sier 228, linja om `0e507a4` sier 229). Diffen mot
+    `fix/sanitize-brief` var kun docs. Marius' valg: kjør videre med 231.
+  - **Bevis, TDD-rødt observert før grønt hver gang:** B-1 → 235 tester,
+    231 pass, **4 fail**; helper → import-feil (ingen `nextOpponents`);
+    B-2 → 240 tester, 237 pass, **3 fail**; B-3 → 242 tester, 240 pass,
+    **2 fail**. Sluttilstand `npm test` **242/242**, `npm run lint` exit 0.
+    (242, ikke planens 241: `nextOpponents` fikk 2 tester der planen
+    regnet 1 — hjemme/borte + tomt lag, og dobbeltrunde.)
+  - **Røyktest port 3010 med tomme nøkler** (scratchpad-`.env`):
+    `/health` = `{"status":"ok","features":{"ai":false,"aiModel":null,`
+    `"discord":false,"teamId":true,"leagues":0}}`, alle 11 ruter 200,
+    ukjent sti 404, **0 AI-kall**. /lag viste «Anbefalinger for Runde 2»
+    nøyaktig én gang, ingen «undefined» i HTML-en, og kapteinsboksen kjørte
+    i **form-modus** (Calafiori form 5.0 øverst) — ep_next-fallbacken er
+    korrekt inaktiv nå som GW1-kampene er spilt. Fallbacken er derfor kun
+    verifisert av testene, ikke observert i prod-data.
+  - **Neste steg — krever klarsignal fra Marius:** 1 AI-kall («Spør AI om
+    råd» lokalt) for ende-til-ende-verifisering ETTER sjekkpunkt D, så
+    release v1.2.2 og merge i rekkefølgen `fix/sanitize-brief` →
+    `fix/lag-anbefalinger` → `main`.
+
+- **B-1…B-3 riktige anbefalinger på /lag: plan GODKJENT, klar for Opus 5.**
+  (økt 16, 2026-08-21, Fable i plan mode.) Funnene kom fra sjekkpunkt B
+  (fredag ~20:20): kapteinslista på /lag er pick-rekkefølge når alle har form
+  0.0 (`captainSuggestions` mangler garden naboene har), AI-rådgiveren mangler
+  runde/kaptein/kamper-kontekst, og siden sier «Runde 1» mens anbefalingene
+  gjelder Runde 2. Plan: `docs/plan-lag-anbefalinger.md` — ep_next-fallback
+  med merket kriterium + tomtilstand, rikere AI-prompt (runde, deadline,
+  kaptein, motstander/FDR; gratis bytter utelates bevisst — `my-team/` krever
+  auth, verifisert 403), «Anbefalinger for Runde N» én gang i viewet.
+  10 nye tester, 228 → 238 (faktisk baseline var 231 → mål 241, se over).
+  Utførelsen koster **1 AI-kall, først ETTER
+  sjekkpunkt D**. Utførelsesprompt:
+  `docs/neste-okt-prompt-lag-anbefalinger-utforelse.md`.
+  **Beslutninger tatt av Marius 21. aug (IKKE re-spør):** ep_next-fallback;
+  garde «alle scorer 0»; gratis bytter utelates + anti-spekulasjonsinstruks;
+  rundetekst én gang øverst; release som v1.2.2; branch
+  `fix/lag-anbefalinger` ut fra `fix/sanitize-brief` (denne HANDOVER-linjen
+  er sannheten; merge-rekkefølge etter D: sanitize-brief → lag-anbefalinger
+  → main). `brief.js`/`globalCaptains` røres IKKE (står som ROADMAP-kandidat).
+
+- **P3-4 `sanitizeBriefText`-robusthet: UTFØRT på branch `fix/sanitize-brief`
+  — IKKE merget, IKKE pushet.** (økt 14, Opus 5. Planen fulgt uten avvik.)
+  - Commits: `28ab239` (forkortelses-/klokkeslett-maskering i
+    setningssplittingen + 5 tester + CHANGELOG), `de2616d` (`TEAM_ALIASES` +
+    ordgrense/genitiv-matching + 5 tester + CHANGELOG/ROADMAP),
+    og siste commit på branchen (handover + røyktestbevis, denne).
+  - Kun `src/services/prompts.js`, `test/prompts.test.js` og docs er rørt.
+    Ingen oppførsel som sjekkpunkt A–D observerer er endret (ingen nettverk,
+    ingen timere, ingen AI-prompt-endring).
+  - Bevis: TDD-rødt observert først begge tasks — Task 1: 223 tester,
+    219 pass, **4 fail** (nøyaktig de fire splitting-testene); Task 2:
+    228 tester, 226 pass, **2 fail** (de to alias-testene). Deretter
+    `npm test` **228/228** og `npm run lint` exit 0 etter hver commit.
+    Utgangspunkt på `main` var 218/218.
+  - Røyktest port 3010 med tomme nøkler (scratchpad-`.env`):
+    `/health` = `{"status":"ok","features":{"ai":false,"aiModel":null,`
+    `"discord":false,"teamId":true,"leagues":0}}` (`leagues:0` fordi
+    scratchpad-env-en ikke setter `LEAGUE_IDS` — `/liga` svarte likevel 200),
+    alle 11 ruter 200, ukjent sti 404, **0 AI-kall** i serverloggen.
+  - **Neste steg — krever klarsignal fra Marius:** merge til `main` etter
+    sjekkpunkt D (søndag/mandag), evt. som v1.2.2. Push av `main` +
+    tag `v1.2.1` gjenstår fortsatt separat (se punktet under).
+- **P3-4-planen (godkjent i økt 13, Fable i plan mode):**
+  `docs/plan-sanitize-brief.md` —
   to delfunksjoner med TDD (forkortelses-maskering i setningssplittingen,
   lagnavn-alias + ordgrense/genitiv-matching), 10 nye tester, 218 → 228.
   Utførelsesprompt til Opus 5: `docs/neste-okt-prompt-sanitize-brief-utforelse.md`.
@@ -72,7 +182,11 @@ Plan: `C:\Users\mariu\.claude\plans\oppdrag-verifiser-sesongstarten-wise-puffin.
 | C | lørdag under kampene | live-polling ≤1 kall/60 s, stopp ved `anyLive=false`, cache-bevis |
 | D | søndag/mandag | kostnadskontroll (`AI-kall:`-linjer), skjermbilder, mobilsjekk, v1.2.x-kandidater, avslutning |
 
-**AI-kall-telleliste (budsjett ~3 utover automatiske):** brukt **0 av ~3**.
+**AI-kall-telleliste (budsjett ~3 utover automatiske):** brukt **1 av ~3**
+(sjekkpunkt B, fredag 21. aug: Marius klikket «Spør AI om råd» én gang).
+Planlagt: 1 kall til for B-2-verifiseringen ETTER sjekkpunkt D → blir 2 av ~3.
+(P3-4-utførelsen i økt 14 gjorde **0 AI-kall** — tester bruker
+hardkodet tekst, og røyktesten kjørte med tomme nøkler, `/health` `ai:false`.)
 NB: 2 lokale AI-kall skjedde ved et uhell i økt 10s røyktest (se lærdommer) —
 de vises i Anthropic-forbruket, IKKE i Coolify-loggen.
 
@@ -148,10 +262,13 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 
 ## Åpne punkter
 
-- **Neste steg: Opus 5 utfører P3-4** med prompten i
-  `docs/neste-okt-prompt-sanitize-brief-utforelse.md` (planen er godkjent,
-  se Status). Trygg under sjekkpunkt A–D: ren tekstfunksjon, ingen AI-kall,
-  branch `fix/sanitize-brief`, ingen push.
+- **B-1…B-3 er ferdig kodet** (branch `fix/lag-anbefalinger`, se Status).
+  Gjenstår: 1 AI-kall for ende-til-ende-verifisering etter sjekkpunkt D, så
+  release v1.2.2 og merge `fix/sanitize-brief` → `fix/lag-anbefalinger` →
+  `main` — alt på klarsignal fra Marius.
+- **P3-4 er ferdig kodet** (branch `fix/sanitize-brief`, se Status).
+  Gjenstår: merge etter sjekkpunkt D på klarsignal fra Marius — samme
+  klarsignal som push av `main` + tag `v1.2.1`.
 - M5: skjermbilder til README + mobilbekreftelse (krever Marius).
 - v1.2.x-kandidater i ROADMAP (P1-5b + P3-1…P3-5): fikses kun etter avtale.
   P3-2 har kjøreklar prompt (se Status). P3-3/P3-5 krever avklaring med
@@ -160,6 +277,94 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
 
+- 2026-08-22 (økt 18, natt/morgen): limte inn stopp-test-rapporten fra
+  Claude in Chrome — testen lot seg ikke kjøre, /live sa «Kamper pågår» i
+  66+ min etter kampslutt (fire friske sidelaster, frosset innhold).
+  Handling: rotårsak verifisert mot FPL-API-et (finished_provisional vs
+  finished), cache-hypotesen avkreftet. Marius valgte «Utvid v1.2.3-planen»
+  — plan, prompt, ROADMAP og sjekkpunkt-C-dokumentet oppdatert og
+  committet. dataAlder bevisst utsatt (P3-2-rest). Ingen kode endret.
+- 2026-08-21 (økt 17, kveld): limte inn sjekkpunkt C-observasjonene fra
+  Claude in Chrome, avbrøt påbegynt implementering med «jeg ønsker bare at du
+  oppdaterer all denne informasjonen i fil eller noe». Handling: alt skrevet
+  til `docs/sjekkpunkt-c-live.md` + ROADMAP/HANDOVER, committet `30a8dab`.
+  Ingen kode endret.
+- 2026-08-21 (økt 18): «les gjennom hele chatten og lag en solid plan …
+  du skal planlegge. opus skal gjennomføre» (byttet til Fable). Handling:
+  plan for v1.2.3 skrevet og godkjent (`docs/plan-live-bonus.md`),
+  utførelsesprompt levert, alt committet lokalt. Ingen push, 0 AI-kall.
+- 2026-08-21 (økt 17): kjøreprompt «Oppdrag (Opus 5): utfør planen for riktige
+  anbefalinger på /lag (B-1…B-3)». Handling: baseline målt til 231/231 (planen
+  sa 228) → stoppet og la fram avviket med årsak i stedet for å improvisere.
+  Marius svarte «Kjør videre, mål 241» og ba samtidig om at tallet rettes i
+  plan- og handover-dokumentene. Utførelsen fortsetter etter planen.
+- 2026-08-21 (økt 16, kveld): kjøreprompt «Oppdrag (Fable, plan mode): riktige
+  anbefalinger på /lag ved sesongstart (B-1…B-3)» — planlegg, Opus 5 utfører.
+  Handling: fakta re-verifisert mot kode + engangs GET-kall (`ep_next` > 0 for
+  502/600 spillere ved sesongstart; `my-team/` gir 403 uten auth; fromGw = 2),
+  seks beslutninger stilt og besvart — Marius valgte anbefalingen på alle seks
+  (se Status). Plan godkjent og lagret som `docs/plan-lag-anbefalinger.md`,
+  utførelsesprompt skrevet, oppdragsprompten arkivert til `docs/arkiv/`, alt
+  committet lokalt på `fix/lag-anbefalinger` (base `fix/sanitize-brief`).
+  Ingen push, **0 AI-kall i planøkten**.
+- 2026-08-20 (økt 14, ~19:50): limte inn Coolify-loggen + «jeg er ikke hjemme
+  … kan du sjekke det opp eller kanskje jeg kan sjekke fra github?» Handling:
+  **sjekkpunkt A er LUKKET.** `/api/brief.json` hentet fra prod med curl
+  (offentlig URL, ruten kaller kun `assembleBrief` → 0 AI-kall).
+  GitHub kan ikke brukes til dette — det er live prod-data, og repoet er
+  dessuten ikke pushet siden v1.2.0.
+  Fasit mot briefen: `fixturesBeforeDeadline: []` ✅, `captains` = Raya 36,3 /
+  Gabriel 29,6 / Calafiori 32,6, alle form 0.0 ✅, `injuries` = 1 (Bruno G.).
+  Avvik funnet: briefen påsto «alle stiller friske» (feil), og skrev
+  Calafiori 32,3 % mot dataenes 32,6 % — begge ført i ROADMAP.
+  Loggen viste INGEN «AI-brief: fjernet …»-linje: gammel `sanitizeBriefText`
+  kuttet ingenting, så fixturen er ubeskåret modelltekst.
+  AI-kall torsdag: 3 × news-summary + 2 × ai-brief-gw1 (ett fra et
+  /brief-besøk, ett fra auto-briefen > 1 t senere — forventet).
+  Fikset underveis: «Unknown»-skadetypen, branch `fix/news-unknown`
+  (`d88b913`, ut fra `main`), 218 → 219 tester, rødt observert først.
+
+- 2026-08-20 (økt 14, ~19:35): limte inn hele Discord-meldingen fra
+  auto-briefen + «hva gjøres videre?». Handling: sjekkpunkt A påbegynt.
+  Briefen kom presis 19:30 — auto-brief-scheduleren virker i prod.
+  Teksten er lagret uendret som `test/fixtures/brief-gw1.js` med to
+  regresjonstester (229 → 231, grønt, lint 0, commit `0e507a4`).
+  Bekreftet fra ekte tekst: P3-3-tidsfaktaene følges («samtlige kamper
+  spilles etter at deadline har passert»), norske uttrykk brukes («holdt
+  nullen», «runde»), og ny `sanitizeBriefText` lar teksten stå uendret.
+  Nytt funn ført i ROADMAP: kapteinslista er vilkårlig ved sesongstart
+  (form 0.0 → score 0 for alle). GJENSTÅR for Marius: Coolify-logg og
+  `/api/brief.json` — se «Sjekkpunkt A».
+
+- 2026-08-20 (økt 14, ~16:00): «kan du sørge for at discord webhooken sender
+  en @everyone når den sender brief?» Handling: gjort på EGEN branch
+  `feat/discord-everyone` (ut fra `main`, commit `75e1f96`) — holdes atskilt
+  fra P3-4 så de kan merges uavhengig. `@everyone` legges på i
+  `postToDiscord`, ikke i brief-teksten, så kanalen pinges nøyaktig én gang
+  selv når briefen deles i flere meldinger. `allowed_mentions.parse` er satt
+  til `['everyone']`, som samtidig slår av bruker-/rollementions fra
+  AI-teksten. TDD: 228 → 231 tester, 3 rødt observert først, deretter
+  231/231 + lint 0. Ikke pushet — kveldens brief (~19:30) går som før, uten
+  ping. Får effekt først ved deploy etter sjekkpunkt D.
+- 2026-08-20 (økt 14, etter P3-4): «går det fint om jeg nå venter til 1930
+  med den briefen (i dag er torsdag). også fikser vi videre derfra. steg A».
+  Handling: bekreftet — auto-briefen postes ~19:30 torsdag (24 t før
+  GW1-deadline fredag 19:30), sjekkpunkt A gjøres ~19:45. Ingenting fra
+  P3-4-økten påvirker den: branchen er ikke pushet, prod kjører v1.2.0 med
+  den GAMLE `sanitizeBriefText`. Kveldens brief er derfor en gratis ekte test
+  av dagens versjon — teksten bør tas vare på som fixture til P3-4/P3-5.
+  Push-forbudet torsdag 19–21 er uansett ikke i veien (ingenting skal pushes).
+- 2026-08-20 (økt 14): kjøreprompt «Oppdrag (Opus 5): utfør
+  sanitize-brief-planen (P3-4)» — les HANDOVER (ikke forstyrr den aktive
+  sesongstart-verifiseringen A–D), CLAUDE.md og `docs/plan-sanitize-brief.md`;
+  følg planen nøyaktig task for task, ingen re-planlegging, ingen subagenter;
+  branch `fix/sanitize-brief`, aldri push, ikke merge før sjekkpunkt D +
+  klarsignal; ikke rør `main`s upushede commits/tag `v1.2.1`; ingen AI-kall;
+  TDD med rødt observert først; røyktest med tomme nøkler på PORT=3010 der
+  `/health` sjekkes først; bevis (kommando + output) for hver verifisering;
+  loggføring; tiltale Marius. Handling: utført som beskrevet — tre commits
+  (`28ab239`, `de2616d` + denne docs-commiten), 218 → 228 tester, lint 0,
+  røyktest OK, 0 AI-kall, ingen push, ingen merge. Ingen avvik fra planen.
 - 2026-08-20 (økt 13): kjøreprompt «Oppdrag (Fable, plan mode): robust
   sanitizeBriefText (P3-4)» — planlegg i plan mode, Opus 5 utfører; harde
   regler: branch `fix/sanitize-brief`, aldri push, ikke merge før sjekkpunkt

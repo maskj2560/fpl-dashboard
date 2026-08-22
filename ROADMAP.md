@@ -163,12 +163,87 @@ _Plan: `docs/plan-cache-backoff.md`._
 - [x] 30 s backoff per nøkkel etter mislykket revalidering (TDD, 6 nye tester)
 - [x] Røyktest lokalt (11 ruter 200, AI/Discord av) + handover
 
+## sanitizeBriefText-robusthet (P3-4) — på branch `fix/sanitize-brief`, ikke merget
+
+_Plan: `docs/plan-sanitize-brief.md`. Merges først etter sjekkpunkt D, på
+klarsignal. NB: det gamle kandidat-punktet sa «matches mot FPLs kortnavn
+(‘Spurs’)» — presist er det `teams.name`, som selv er kortform for noen
+klubber («Spurs», «Man Utd») og lang form for andre («Coventry City»);
+alias-tabellen dekker begge retninger._
+
+- [x] Setningssplitting tåler norske forkortelser og klokkeslett (TDD, 5 nye tester)
+- [x] Lagnavn-alias (`TEAM_ALIASES`) + ordgrense/genitiv-matching (TDD, 5 nye tester)
+- [x] Røyktest lokalt (11 ruter 200, AI/Discord av) + handover
+
+## v1.2.2 — riktige anbefalinger på /lag ved sesongstart (B-1…B-3)
+
+_Plan: `docs/plan-lag-anbefalinger.md`. Branch `fix/lag-anbefalinger` (ut fra
+`fix/sanitize-brief`). Merges først etter sjekkpunkt D, på klarsignal, i
+rekkefølgen `fix/sanitize-brief` → `fix/lag-anbefalinger` → `main`._
+
+- [x] B-1: `captainSuggestions` faller tilbake på `ep_next` når all form er 0,
+      og gir tom liste når også den er 0 (TDD, 4 nye tester)
+- [x] B-1: ren helper `nextOpponents(fixtures, fromGw)` (TDD, 2 nye tester)
+- [x] B-2: AI-rådgiveren får runde, deadline, kaptein/vise og motstandere,
+      og instrueres mot spekulasjon om gratis bytter (TDD, 3 nye tester)
+- [x] B-3: «Anbefalinger for Runde N» + kriterie-/tomtilstand i kapteinsboksen
+      (TDD, 2 nye tester)
+- [x] Røyktest lokalt med tomme nøkler (11 ruter 200, 0 AI-kall) + handover
+- [ ] Etter sjekkpunkt D: 1 AI-kall for ende-til-ende-verifisering, så release v1.2.2
+
+## v1.2.3 — bonuskolonnen på /live (funn fra sjekkpunkt C)
+
+_Full analyse med rådata: `docs/sjekkpunkt-c-live.md`. Ikke påbegynt._
+
+FPL publiserer bonus provisorisk mens kampen pågår, så `hasConfirmedBonus()`
+slår til med én gang og `estimateBonus()` kjører aldri — kolonnen står tom
+hele kampen. Besluttet løsning (Marius 21. aug): vis FPLs publiserte bonus,
+merket som foreløpig, uten å legge den til «Effektivt» (den ligger allerede
+i poengsummen). BPS-estimatet beholdes for vinduet før FPL publiserer.
+
+- [ ] `matchDone` (`finished || finished_provisional`) i `anyLive` og
+      `matches`-payloaden — statusen sto på hele natten etter kampslutt (TDD)
+- [ ] `publishedBonus(fixture)` i `analysis.js` (TDD)
+- [ ] `live.js`: skill publisert bonus (`bonusPublished`) fra estimat (`bonusEst`)
+- [ ] `public/app.js` + `views/live.ejs`: vis summen, kolonnen heter «Bonus»
+- [ ] Manuell verifisering under neste kampvindu (rendringen er utenfor testharnessen)
+
 ## Senere / idéer (ikke planlagt)
 
 ### v1.2.0-kandidater (samles under sesongstart-verifiseringen, M4)
 
 _Ikke-kritiske funn fra verifiseringen 20.–24. august legges her. Ingen av
 dem fikses uten avtale._
+
+- **AI-briefen kan motsi datagrunnlaget uten at noe fanger det** (funn fra
+  sjekkpunkt A, verifisert mot prod-`/api/brief.json`). To avvik i GW1-briefen:
+  modellen skrev «Ingen nevneverdig skadenytt … Alle stiller i utgangspunktet
+  friske» selv om `injuries` inneholdt Bruno G. (ARS, 8,2 %, «Uavklart – 75 %
+  sjanse for spilletid»), og den oppga Calafiori til 32,3 % der dataene sier
+  32,6 %. `sanitizeBriefText` kontrollerer bare deadline-påstander, så ingen av
+  delene ble fanget. Mulig utvidelse (P3-5-familien): en tallkontroll som
+  sammenligner prosenter i teksten mot brief-JSON-en, og en regel om at
+  «ingen skadenytt» ikke kan stå når `injuries` er ikke-tom. NB: 8,2 % er lavt
+  eid, så «ikke nevneverdig» er en forsvarlig tolkning — det er «alle stiller
+  friske» som er direkte galt.
+- **Kapteinslista er vilkårlig ved sesongstart** (funn fra sjekkpunkt A, ekte
+  GW1-brief 20. august). `globalCaptains()` i `brief.js` rangerer på
+  `form * (6 - avgFdr)`. Før første kamp er `form` 0.0 for samtlige spillere,
+  så alle får score 0 og den stabile sorteringen faller tilbake på
+  `elements`-rekkefølgen — i praksis FPLs element-ID, der Arsenal ligger
+  først. Prod-briefen foreslo derfor Raya, Calafiori og Gabriel, altså
+  keeper + to Arsenal-forsvarere, som «kapteinsvalg». Mulig fiks: fall
+  tilbake på `ep_next` (FPLs forventede poeng) eller forrige sesongs
+  `points_per_game` når summen av `form` er 0. Gjelder runde 1–2; fra runde 3
+  har `form` reelle tall.
+  NB: /lag-varianten (`captainSuggestions` i `analysis.js`) er fikset i
+  v1.2.2 med nettopp ep_next-fallbacken; dette punktet gjelder fortsatt
+  brief-varianten `globalCaptains`, som med vilje ikke ble rørt der.
+- **Prompt-etiketten «Mest aktuelle kapteiner globalt» overselger dataene.**
+  Lista er høyt eide spillere med lett kamp, ikke målt kapteinsandel.
+  Modellen skrev den om til «de mest brukte kapteinsvalgene globalt» — en
+  påstand dataene ikke dekker. Etiketten i `buildBriefPrompt` bør si hva
+  lista faktisk er. Henger sammen med punktet over.
 
 Fra kvalitetspasset v1.1.3 (P3-funn — reelle, men større redesign; bevisst
 ikke gjort midt i sesongstart-verifiseringen):
@@ -186,10 +261,6 @@ ikke gjort midt i sesongstart-verifiseringen):
   rundturen (5–20 s). Cache.js-mønsteret ville servert cachet tekst med én
   gang og regenerert i bakgrunnen. NB: endrer semantikken «AI-kall skjer ved
   sidebesøk» som verifiseringen bygger på — må avklares først.
-- **`sanitizeBriefText` robusthet** (`prompts.js`): setningssplittingen deler
-  på forkortelsespunktum («kl.», «f.eks.»), og lagnavn matches kun mot FPLs
-  kortnavn («Spurs») selv om modellen kan skrive «Tottenham». Vurder alias-map
-  + splitting som kjenner forkortelsene.
 - **`filterSummaryPoints` dybde** (`news.js`): genitiv («Haalands») bommer på
   substring-matchen, så korrekte punkter droppes. Robustheten ligger ett nivå
   opp: be modellen sitere kildeindeks per punkt og verifiser indeksen.

@@ -179,3 +179,33 @@ test('brief.ejs escaper AI-tekst men beholder **fet**', async () => {
   assert.ok(html.includes('<strong>Salah</strong>'), 'fet markering forsvant');
   assert.ok(!html.includes('<script>alert(1)'), 'AI-tekst ble ikke escapet');
 });
+
+// ---- B-3: hvilken runde anbefalingene gjelder, og hva de bygger på --------
+
+test('team.ejs navngir runden anbefalingene gjelder og forklarer ep_next-fallbacken', async () => {
+  const html = await renderView('team', {
+    ...fx.team,
+    recommendations: {
+      ...fx.team.recommendations,
+      captains: [
+        {
+          player: fx.team.recommendations.captains[0].player,
+          criterion: 'ep_next',
+          reasons: ['Forventet poeng (FPL) 4.0', 'FDR 2.0 neste kamp', 'Full spilletid ventet'],
+        },
+      ],
+    },
+  });
+  assert.ok(html.includes('Anbefalinger for Runde 2'), 'runde-overskriften mangler');
+  assert.ok(html.includes('Ingen formdata ennå'), 'kriterielinja mangler');
+  assert.ok(html.includes('Forventet poeng (FPL) 4.0'), 'begrunnelsen mangler');
+});
+
+test('team.ejs viser tomtilstand når ingen kapteinskandidater er spilleklare', async () => {
+  const html = await renderView('team', {
+    ...fx.team,
+    recommendations: { ...fx.team.recommendations, captains: [] },
+  });
+  assert.ok(html.includes('Ingen aktuelle kapteiner'), 'tomtilstanden mangler');
+  assert.ok(!html.includes('Ingen formdata ennå'), 'kriterielinja skal ikke vises uten kandidater');
+});

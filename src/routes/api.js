@@ -8,10 +8,12 @@ import {
   currentEvent,
   formatPrice,
   nextEvent,
+  nextOpponents,
   POSITIONS_SHORT,
   resolvePicks,
   transferOutCandidates,
 } from '../services/analysis.js';
+import { formatDateTime } from '../services/format.js';
 import * as ai from '../services/ai.js';
 import { buildAdvicePrompt } from '../services/prompts.js';
 
@@ -52,6 +54,23 @@ router.post('/ai-rad', async (req, res, next) => {
     const squad = resolvePicks(picks.picks, elementsById).map((s) => s.player);
     const fromGw = nextEvent(bootstrap.events)?.id ?? gw;
 
+    // Kontekst modellen ellers gjetter på: hvilken runde rådet gjelder, når
+    // deadline er, hvem som allerede har bindet, og hvem troppen møter.
+    // Alt hentes fra data vi uansett har lastet — ingen nye nettverkskall.
+    const deadline = bootstrap.events.find((e) => e.id === fromGw)?.deadline_time;
+    const nameOf = (pick) => elementsById.get(pick?.element)?.web_name ?? null;
+    const opponentsByTeam = nextOpponents(fixtures, fromGw);
+    const opponentText = (teamId) => {
+      const matches = opponentsByTeam.get(teamId);
+      if (!matches?.length) return 'ingen kamp';
+      return matches
+        .map(
+          (m) =>
+            `mot ${teamsById.get(m.opponent)?.short_name ?? '?'} (${m.home ? 'hjemme' : 'borte'}, FDR ${m.difficulty})`,
+        )
+        .join(' og ');
+    };
+
     const result = await ai.generate({
       cacheKey: `ai-rad-${config.fplTeamId}-gw${fromGw}`,
       minIntervalMs: 60 * 60_000,
@@ -59,7 +78,14 @@ router.post('/ai-rad', async (req, res, next) => {
       prompt: buildAdvicePrompt({
         entryName: entry.name,
         bank: picks.entry_history.bank,
-        squadLines: squad.map((p) => `${p.web_name} (${teamsById.get(p.team)?.short_name}, ${POSITIONS_SHORT[p.element_type]}, ${formatPrice(p.now_cost)}, form ${p.form})`),
+        fromGw,
+        deadlineText: deadline ? formatDateTime(deadline) : null,
+        captainName: nameOf(picks.picks.find((p) => p.is_captain)),
+        viceName: nameOf(picks.picks.find((p) => p.is_vice_captain)),
+        squadLines: squad.map(
+          (p) =>
+            `${p.web_name} (${teamsById.get(p.team)?.short_name}, ${POSITIONS_SHORT[p.element_type]}, ${formatPrice(p.now_cost)}, form ${p.form}, ${opponentText(p.team)})`,
+        ),
         outs: transferOutCandidates(squad, fixtures, fromGw).map((o) => `${o.player.web_name}: ${o.reasons.join('; ')}`),
       }),
       maxTokens: 4000,

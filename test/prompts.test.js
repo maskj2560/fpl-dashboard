@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { buildBriefPrompt, buildAdvicePrompt, sanitizeBriefText } from '../src/services/prompts.js';
+import { briefTextGw1, briefGw1 } from './fixtures/brief-gw1.js';
 
 test('buildBriefPrompt tar med deadline, skader og kapteiner', () => {
   const prompt = buildBriefPrompt({
@@ -140,4 +141,174 @@ test('sanitizeBriefText beholder råd der «før deadline» er et tidspunkt', ()
   const text = 'Sjekk pressemeldinger og lagoppstillinger rett før deadline.';
 
   assert.equal(sanitizeBriefText(text, briefMedTidsfakta), text);
+});
+
+// ---- P3-4: setningssplitting som tåler forkortelser ---------------------
+// `line.match(/[^.!?]+[.!?]*/g)` delte på ethvert punktum — også i «kl.» og
+// «21.00» — så halve setninger ble vurdert hver for seg. Da kan halvparten
+// mangle lagnavnet eller negasjonen som gjør helheten korrekt.
+
+const briefUtenTidligeKamper = {
+  ...briefMedTidsfakta,
+  fixturesByDay: [{
+    day: 'fredag 21. august',
+    matches: [{ home: 'Liverpool', away: 'Bournemouth', kickoff: '21:00', beforeDeadline: false }],
+  }],
+  fixturesBeforeDeadline: [],
+};
+
+test('sanitizeBriefText: tom tekst og manglende brief er uendret', () => {
+  assert.equal(sanitizeBriefText('', briefMedTidsfakta), '');
+  assert.equal(sanitizeBriefText('Alt spilles før deadline.', undefined), 'Alt spilles før deadline.');
+});
+
+test('sanitizeBriefText splitter ikke på «kl.» — korrekt sammensatt setning beholdes', () => {
+  const text = '**Arsenal**–Chelsea (kl. 18:00) spilles før deadline, mens Liverpool–Bournemouth går etter deadline.';
+
+  assert.equal(sanitizeBriefText(text, briefMedTidsfakta), text);
+});
+
+test('sanitizeBriefText: negasjon overlever «f.eks.» i samme setning', () => {
+  const text = 'Ingen av kampene, f.eks. Liverpool–Bournemouth, starter før deadline.';
+
+  assert.equal(sanitizeBriefText(text, briefUtenTidligeKamper), text);
+});
+
+test('sanitizeBriefText splitter ikke på klokkeslett med punktum', () => {
+  const text = 'Liverpool spiller først 21.00 — det er etter deadline, mens Arsenal–Chelsea (18.00) går før deadline.';
+
+  assert.equal(sanitizeBriefText(text, briefMedTidsfakta), text);
+});
+
+test('sanitizeBriefText fjerner uriktig påstand selv med forkortelse i setningen', () => {
+  const text = 'Kampen starter kl. 21:00 før deadline.';
+
+  assert.equal(sanitizeBriefText(text, briefUtenTidligeKamper), '');
+});
+
+// ---- P3-4: lagnavn-alias og ordgrenser ----------------------------------
+// FPLs `teams.name` er selv kortform for flere klubber («Spurs», «Man Utd»),
+// mens modellen gjerne skriver «Tottenham»/«Manchester United». Uten alias
+// slapp uriktige påstander gjennom. Ordgrensen hindrer samtidig treff inni
+// ord, og genitiv-støtten bevarer treffene substring-matchingen ga oss.
+
+const briefMedSpurs = {
+  fixturesByDay: [{
+    day: 'fredag 21. august',
+    matches: [
+      { home: 'Spurs', away: 'Newcastle', kickoff: '21:00', beforeDeadline: false },
+      { home: 'Man Utd', away: 'Everton', kickoff: '20:00', beforeDeadline: false },
+      { home: 'Arsenal', away: 'Chelsea', kickoff: '18:00', beforeDeadline: true },
+    ],
+  }],
+};
+
+test('sanitizeBriefText fjerner uriktig påstand når modellen skriver «Tottenham» og dataene «Spurs»', () => {
+  const text = 'Tottenham spiller sin kamp før deadline.';
+
+  assert.equal(sanitizeBriefText(text, briefMedSpurs), '');
+});
+
+test('sanitizeBriefText fjerner uriktig påstand med «Manchester United» for «Man Utd»', () => {
+  const text = 'Manchester United spiller før deadline.';
+
+  assert.equal(sanitizeBriefText(text, briefMedSpurs), '');
+});
+
+test('sanitizeBriefText beholder korrekt påstand skrevet med kallenavn', () => {
+  const briefMedSpursFoer = {
+    fixturesByDay: [{
+      day: 'fredag 21. august',
+      matches: [
+        { home: 'Spurs', away: 'Newcastle', kickoff: '18:00', beforeDeadline: true },
+        { home: 'Liverpool', away: 'Bournemouth', kickoff: '21:00', beforeDeadline: false },
+      ],
+    }],
+  };
+  const text = '**Tottenham** spiller før deadline, så velg kaptein tidlig.';
+
+  assert.equal(sanitizeBriefText(text, briefMedSpursFoer), text);
+});
+
+test('sanitizeBriefText matcher ikke lagnavn inni ord (ordgrense)', () => {
+  const briefMedForest = {
+    fixturesByDay: [{
+      day: 'fredag 21. august',
+      matches: [
+        { home: "Nott'm Forest", away: 'Sunderland', kickoff: '21:00', beforeDeadline: false },
+        { home: 'Arsenal', away: 'Chelsea', kickoff: '18:00', beforeDeadline: true },
+      ],
+    }],
+  };
+  const text = 'Forestill deg: flere kamper starter før deadline.';
+
+  assert.equal(sanitizeBriefText(text, briefMedForest), text);
+});
+
+test('sanitizeBriefText matcher genitiv («Liverpools») også etter ordgrense-endringen', () => {
+  const text = 'Liverpools kamp spilles før deadline.';
+
+  assert.equal(sanitizeBriefText(text, briefMedTidsfakta), '');
+});
+
+// ---- Regresjon mot ekte prod-brief (GW1, 2026-08-20) -----------------------
+
+test('ekte AI-brief fra prod går uendret gjennom etterkontrollen', () => {
+  assert.equal(sanitizeBriefText(briefTextGw1, briefGw1), briefTextGw1);
+});
+
+test('den ekte briefen inneholder tilfellene P3-4 ble laget for', () => {
+  // Feiler denne, har fixturen mistet det som gjorde den verdt å ta vare på.
+  assert.match(briefTextGw1, /kl\. 19:30/); // punktum midt i setning
+  assert.match(briefTextGw1, /mot Coventry\b/); // alias for FPLs «Coventry City»
+  assert.match(briefTextGw1, /Spurs' nye sesong/); // genitiv med apostrof
+});
+
+// ---- B-2: rådgiveren får runde, deadline, kaptein og motstandere -----------
+
+const RAD_ARGS = {
+  entryName: 'Mitt Lag FC',
+  bank: 15,
+  fromGw: 2,
+  deadlineText: 'lørdag 22. august kl. 13:30',
+  captainName: 'Haaland',
+  viceName: 'Salah',
+  squadLines: ['Haaland (MCI, A, 14.2, form 0.0, mot BOU (hjemme, FDR 2))'],
+  outs: ['Spiller X: Skadet'],
+};
+
+test('buildAdvicePrompt oppgir hvilken runde rådet gjelder og hvem som er kaptein', () => {
+  const prompt = buildAdvicePrompt(RAD_ARGS);
+  assert.match(prompt, /Rådet gjelder Runde 2 \(deadline lørdag 22\. august kl\. 13:30\)\./);
+  assert.match(prompt, /Nåværende kaptein: Haaland \(visekaptein: Salah\)\./);
+  assert.match(prompt, /mot BOU \(hjemme, FDR 2\)/);
+});
+
+test('buildAdvicePrompt forbyr spekulasjon om gratis bytter og krever svar om kapteinen', () => {
+  const prompt = buildAdvicePrompt(RAD_ARGS);
+  assert.match(prompt, /gratis bytter/i);
+  assert.match(prompt, /aldri at et bytte er gratis/i);
+  assert.match(prompt, /4 poeng/);
+  assert.match(prompt, /beholdes eller byttes/i);
+});
+
+test('buildAdvicePrompt har stabilt format (snapshot)', () => {
+  assert.equal(
+    buildAdvicePrompt(RAD_ARGS),
+    [
+      'Du er FPL-rådgiver. Laget «Mitt Lag FC» har 1.5 £m i banken.',
+      'Rådet gjelder Runde 2 (deadline lørdag 22. august kl. 13:30).',
+      'Nåværende kaptein: Haaland (visekaptein: Salah).',
+      '',
+      'Troppen (navn, lag, posisjon, pris, form, motstander):',
+      '- Haaland (MCI, A, 14.2, form 0.0, mot BOU (hjemme, FDR 2))',
+      '',
+      'Automatisk flaggede salgskandidater:',
+      '- Spiller X: Skadet',
+      '',
+      'Du vet ikke hvor mange gratis bytter laget har. Anta aldri at et bytte er gratis, og bruk aldri antall gratis bytter som argument. Nevn kostnaden på 4 poeng kun som forbehold.',
+      '',
+      'Gi på norsk: 1) beste kaptein denne runden med begrunnelse — si eksplisitt om nåværende kaptein bør beholdes eller byttes, 2) anbefalt bytte (ut/inn) hvis noe gir mening — ellers si at man bør spare bytte, 3) én ting å følge med på før deadline. Sett spillernavn i **fet**. Maks ~250 ord.',
+    ].join('\n'),
+  );
 });

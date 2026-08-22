@@ -77,6 +77,7 @@ router.get('/', async (req, res, next) => {
       title: 'Mitt lag',
       entry,
       gw,
+      fromGw,
       squadView,
       recommendations,
       graph: rankGraph(history.current),
