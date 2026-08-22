@@ -110,27 +110,30 @@ arkiv eller git.
 
 - [x] **Steg 1:** `docs: ryddeplan for docs-mappen` — denne fila.
       Stopp: test/lint grønt.
-- [ ] **Steg 2:** `docs: arkiver utforte planer` —
+- [x] **Steg 2:** `docs: arkiver utforte planer` —
       `git mv docs/plan-{hva-hvis-transfers,cache-backoff,sanitize-brief,lag-anbefalinger,live-bonus,deploy-v122-v123}.md docs/arkiv/`,
       `git mv docs/superpowers/plans/*.md docs/arkiv/`, fjern tom
       `docs/superpowers/`, rett stien i `sjekkpunkt-c-live.md:224`.
       Stopp: `git status` viser kun renames + én endret fil.
-- [ ] **Steg 3:** `docs: slett konsumerte okt-prompter` — `git rm` de 19
+- [x] **Steg 3:** `docs: slett konsumerte okt-prompter` — `git rm` de 19
       promptene, rett innledningen i `sjekkpunkt-d-kostnad.md`.
       Stopp: `docs/*.md` = nøyaktig 7 filer.
-- [ ] **Steg 4:** `docs: ROADMAP omskrevet - prioritert ko forst, historikk bak`.
+- [x] **Steg 4:** `docs: ROADMAP omskrevet - prioritert ko forst, historikk bak`.
       Stopp: 8 køpunkter til stede; `grep "docs/plan-" ROADMAP.md` treffer
       kun `docs/arkiv/`-stier.
-- [ ] **Steg 5:** `docs: HANDOVER slanket til 200 linjer, historikk arkivert` —
+- [x] **Steg 5:** `docs: HANDOVER slanket til 200 linjer, historikk arkivert` —
       omskrevet HANDOVER + ny `docs/arkiv/HANDOVER-historikk.md` (avsluttede
       status-blokker, sjekkpunkt-tabellen, versjonshistorikken, gammel logg —
       verbatim). Stopp: `wc -l docs/HANDOVER.md` ≤ 200.
-- [ ] **Steg 6:** `docs: VIDERE og CLAUDE.md oppdatert etter opprydningen` —
+- [x] **Steg 6:** `docs: VIDERE og CLAUDE.md oppdatert etter opprydningen` —
       VIDERE på v1.2.3 + køen i klarspråk; CLAUDE.md «Handover»-avsnittet får
       linjetak + arkiv-rotering.
-- [ ] **Steg 7:** `git push origin main` — kun utenfor kampvinduer (kamper
-      søndag 15:00/17:30, mandag 21:00). Verifiser prod etterpå med `/` og
-      `/health` — ALDRI `/brief`/`/nyheter` (AI-kall).
+- [x] **Steg 7:** `git push origin main` — utført natt til søndag 23. aug
+      ~01:50 (ingen kamper; første avspark 15:00). Prod verifisert med `/`
+      og `/health` — ALDRI `/brief`/`/nyheter` (AI-kall).
+      Ekstra i denne committen: to referanse-fikser fanget av grep-sjekken
+      (`prompt-ui-overhaul-plan.md:12` og `sjekkpunkt-c-live.md:215` pekte
+      fortsatt på gamle plan-stier).
 
 ## Verifisering (oppsummert)
 

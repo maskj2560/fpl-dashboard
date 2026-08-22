@@ -212,7 +212,7 @@ utsatt (Marius 22. aug).
 
 `matchDone(f) = f.finished || f.finished_provisional` brukes i `anyLive`,
 i `matches`-payloadens `finished`-felt og i bonusestimat-garden. Fikses i
-SAMME plan og branch som bonusfunnet (`docs/plan-live-bonus.md`,
+SAMME plan og branch som bonusfunnet (`docs/arkiv/plan-live-bonus.md`,
 `fix/live-bonus`) — samme fil og løkke, egen branch ville gitt konflikt.
 
 Stopp-testen kan først bestås etter at fiksen er deployet — står som åpent

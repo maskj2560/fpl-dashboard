@@ -9,7 +9,7 @@ prosjektdokumenter. Ingen linje produksjonskode skal endres i denne økten.
 2. `CLAUDE.md` — gjelder foran alt annet, også foran denne prompten
 3. `ROADMAP.md` — særlig «Senere / idéer» og v1.1.0-seksjonen (forrige
    UI-makeover, «Matchday»)
-4. `docs/plan-cache-backoff.md` og `docs/plan-sanitize-brief.md` — **malen**.
+4. `docs/arkiv/plan-cache-backoff.md` og `docs/arkiv/plan-sanitize-brief.md` — **malen**.
    Planen din skal ha samme form: «Verifiserte fakta», task-for-task med
    eksakte kodesnutter, forventede testtall, verifiseringstabell.
 
