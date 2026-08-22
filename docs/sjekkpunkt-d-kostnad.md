@@ -54,11 +54,98 @@ node aikost.js 3 < aikall.txt
 Kilden ligger i scratchpad som `aikost.js`; hele skriptet er limt inn nederst
 i denne fila slik at det kan gjenskapes.
 
-## Resultat
+## Resultat — målt 23. august 2026
 
-_Fylles inn når loggutdraget foreligger. Sjekkpunkt D er ikke lukket før
-denne seksjonen har faktiske tall, og ROADMAP-punktet «Kostnadskontroll
-etter 2–3 dager i drift» hukes ikke av før da._
+Datagrunnlag: Anthropic-konsollens Usage- og Cost-visning (org-nivå), samt
+Coolify-loggen. **Ikke** den planlagte per-funksjon-oppdelingen — se
+metodefeilen under.
+
+### Fakturert
+
+| Måling | Verdi |
+| --- | --- |
+| Total kostnad, siste 7 døgn | **0,94 USD** |
+| Tokens inn (17.–23. aug) | 108 948 |
+| Tokens ut (17.–23. aug) | 76 689 |
+| Web-søk / kodekjøring | 0 USD — ingen servertjenester i bruk |
+| Modell | `claude-sonnet-5` alene |
+
+**Introduksjonsprisen er bekreftet av fakturaen, ikke bare av
+dokumentasjonen.** Egen utregning på konsollens tokentall:
+$2/$10 gir **$0,985**, $3/$15 gir **$1,477**. Fakturert er $0,94 — og de to
+visningene dekker litt ulike døgn (Cost: 16.–22., Usage: 17.–23.). Det er
+intro-prisen som treffer; ordinærprisen er 57 % unna.
+
+### Vurdering mot planens terskler
+
+**Under $1/uke → planens verdict er «ingen tiltak».** Men marginen er tynn,
+og to ting flytter den:
+
+1. **Etter 31. august koster nøyaktig samme bruk $1,48/uke** — altså rett
+   inn i $1–4-båndet der planen sier «se hvilken funksjon som drar».
+2. **Ut-tokens står for 77,9 % av kostnaden.** Prompten er allerede kort;
+   det er svarlengden som betaler regningen. Den reelle knappen er derfor
+   instruksjonene om lengde i prompten, ikke modellbytte.
+
+Til sammenligning: samme forbruk på `claude-haiku-4-5` ville kostet
+**$0,49/uke**, altså omtrent halvparten. Ikke nødvendig nå.
+
+### Metodefeil: per-funksjon-oppdeling lar seg ikke gjøre i etterkant
+
+Planen forutsatte at `AI-kall:`-linjene i Coolify-loggen kunne summeres per
+funksjon. Det går ikke retroaktivt: loggvinduet er på 100 linjer per
+container, og containeren startes på nytt ved hver deploy — 22. august alene
+ble det fire deployer. Det som overlevde er to linjer:
+
+```
+AI-kall: news-summary  modell=claude-sonnet-5 inn=1481 ut=773 tokens
+AI-kall: ai-brief-gw2  modell=claude-sonnet-5 inn=1192 ut=885 tokens
+```
+
+De beviser at loggformatet virker og at begge funksjonene fyrer i prod, men
+ikke fordelingen. **Skal fordelingen måles, må loggen samles løpende** — for
+eksempel ved å hente `AI-kall:`-linjene fra Coolify før hver deploy.
+
+### Hva de 185 637 tokenene sannsynligvis er
+
+Med snittet fra de to linjene (~1 337 inn / ~829 ut per kall) tilsvarer
+ukens tokentall **82–93 kall**. Fordelingen per døgn peker på at mye av det
+ikke er organisk prod-trafikk:
+
+- **19. aug: $0,41 — 44 % av hele uken.** To døgn før GW1-deadline, altså før
+  siden hadde reell trafikk. Stemmer med den lokale pre-flight-testingen av
+  alle fire AI-funksjonene mot ekte API (dokumentert i HANDOVER, v1.0.1).
+- 20. aug: $0,22 — auto-brief-vinduet for GW1 åpnet denne kvelden.
+- 21. aug: $0,12 — laveste døgn.
+- 22. aug: $0,19 — deploy-dagen.
+
+**Forbehold:** konsollen måler hele organisasjonen og inkluderer Console-bruk,
+ikke bare dashbordet. Tallene over er derfor et tak for dashbordets kostnad,
+ikke et presist mål.
+
+### Korreksjon: «0 AI-kall fra Opus» var upresist
+
+Opus utførte aldri et bevisst AI-kall og klikket aldri «Spør AI om råd». Men
+`GET /brief` kaller `generateAiBrief()` ved hvert besøk (`routes/brief.js:9`),
+og `/nyheter` genererer tilsvarende — og begge rutene inngikk i planens
+prod-rutesveip i port 1, 5, 6 og 7. Med 1-timesintervallet på briefen og
+30-minutters på nyhetene utløste sveipene anslagsvis **6 betalte kall,
+~$0,07**.
+
+`/api/brief.json` er derimot ren data (`assembleBrief()` uten AI), og port
+3-røyktesten kjørte uten nøkler med `ai:false` — der var det faktisk null.
+
+**Dette er en motsetning i planen selv:** den forbød AI-kall og foreskrev
+samtidig sveip over AI-genererende ruter. En framtidig deploy-plan bør enten
+utelate `/brief` og `/nyheter` fra prod-sveipet, eller budsjettere for dem.
+
+### Konklusjon
+
+Ingen tiltak nå — $0,94/uke er under terskelen, og ingen enkeltfunksjon er
+åpenbart løpsk. **Måles på nytt i uken etter 31. august**, når ordinærprisen
+slår inn og GW2–GW3 gir et bilde av organisk trafikk uten
+utviklings-støy. Blir det da over $4/uke, er `AI_MODEL=claude-haiku-4-5` én
+env-endring unna; mellom $1 og $4 er kortere svar den billigere knappen.
 
 ## Restpunkter i Del 6
 

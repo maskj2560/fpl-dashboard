@@ -84,9 +84,11 @@ committet (og pushet hvis remote finnes).
 - [x] Auto-briefen verifisert mot ekte Discord-webhook (inkl. anti-spam-guard)
 - [x] `ANTHROPIC_API_KEY` + `DISCORD_WEBHOOK_URL` + `FPL_TEAM_ID` i Coolify
 - [ ] Naturlig auto-brief torsdag 20. aug ~19:30 verifisert
-- [ ] Kostnadskontroll etter 2–3 dager i drift — **påbegynt 23. aug**, metode og
-      priser klare i `docs/sjekkpunkt-d-kostnad.md`; venter på `AI-kall:`-linjene
-      fra Coolify-loggen
+- [x] Kostnadskontroll etter 2–3 dager i drift — **målt 23. aug: $0,94/uke,
+      under planens $1-terskel, ingen tiltak.** Ut-tokens står for 78 % av
+      kostnaden; introprisen på sonnet-5 er bekreftet av fakturaen. Samme bruk
+      koster $1,48/uke etter 31. aug, så målingen gjentas i uken etter — se
+      `docs/sjekkpunkt-d-kostnad.md`.
 
 ## v1.1.0 — UI-makeover «Matchday» (Milepæl 2 + 3)
 
