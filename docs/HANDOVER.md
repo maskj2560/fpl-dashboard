@@ -5,9 +5,17 @@
 > Versjonshistorikk og detaljer ligger i CHANGELOG.md, ROADMAP.md og git —
 > denne filen holder kun nåtilstand, aktive økter og lærdommer.
 
-**Sist oppdatert:** 2026-08-22 (økt 20, Fable: deploy-plan v1.2.1–v1.2.3 GODKJENT — klar for Opus 5)
+**Sist oppdatert:** 2026-08-22 (økt 21, Opus 5: deploy-utførelse STOPPET i port 0 — avvik på main-tippen)
 
 ## Status akkurat nå
+
+- **DEPLOY-ØKTEN (økt 21) STOPPET I PORT 0 — venter på Marius.** Avviket:
+  planens «`main` = `78d438e`-tippen (tag v1.2.1)» stemmer ikke lenger.
+  Lokal `main`-tip er `c33aef1`, dvs. **4 docs-only commits oppå tag
+  v1.2.1** (`56e5d16`, `c16cf14`, `9ca665f`, `c33aef1`). Alt annet i port 0
+  er grønt: rent tre, topologien intakt, `main` 10 foran `origin/main`.
+  Ingenting er endret eller pushet. Beslutningen Marius må ta står i
+  «Åpne punkter».
 
 - **Deploy-plan for v1.2.1 + v1.2.2 + v1.2.3 GODKJENT — klar for Opus 5.**
   (økt 20, 2026-08-22 natt ~02:00, Fable i plan mode.) Plan:
@@ -320,6 +328,20 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 
 ## Åpne punkter
 
+- **BLOKKERER DEPLOY (økt 21, port 0): main-tippen avviker fra planen.**
+  Planen antar `main` = `78d438e` (tag v1.2.1). Faktisk tip er `c33aef1`,
+  med 4 docs-only commits oppå taggen (handover + 3 plandokumenter for
+  P3-4/UI-overhaling). Målt, read-only: topologien intakt
+  (`sanitize ⊂ lag-anbefalinger ⊂ live-bonus`, alle med `78d438e` som
+  ancestor), og `git merge-tree main fix/lag-anbefalinger` gir **0
+  konflikter** også med docs-commitene. Deploy 1 (port 5) er uansett
+  upåvirket — den pusher eksplisitt SHA `78d438e`.
+  Konsekvensen som trenger et valg: planens escape-luke i port 2a/2b er
+  `git reset --hard v1.2.1`, som ville **kastet de 4 upushede
+  docs-commitene**. Anbefalt løsning (ett ord fra Marius): tagg
+  `c33aef1` som `pre-deploy-main` og bruk den taggen som reset-mål i stedet
+  for `v1.2.1` — resten av planen kjøres uendret, og docs-commitene blir
+  med i v1.2.2-/v1.2.3-releasene (kun dokumentasjon, ingen kodeendring).
 - **B-1…B-3 er ferdig kodet** (branch `fix/lag-anbefalinger`, se Status).
   Gjenstår: 1 AI-kall for ende-til-ende-verifisering etter sjekkpunkt D, så
   release v1.2.2 og merge `fix/sanitize-brief` → `fix/lag-anbefalinger` →
@@ -334,6 +356,14 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 - Valgfritt i Cloudflare: Browser Cache TTL → «Respect Existing Headers».
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
+
+- 2026-08-22 (økt 21, natt ~02:00): kjøreprompt «Oppdrag (Opus 5): utfør
+  deploy-planen v1.2.1 → v1.2.3» — planen er fasit, ingen re-planlegging,
+  uttømmende push-lisens (port 5/6/7 + docs-commit i port 10), absolutte
+  stopp-punkter etter deploy 1 og 2, 0 AI-kall fra Opus. Handling: **port 0
+  STOPPET på avvik** — lokal `main` står ikke på `78d438e` slik planen
+  forutsetter. Ingenting endret, ingenting pushet; venter på klarsignal
+  (se «Åpne punkter»).
 
 - 2026-08-22 (økt 20, natt ~01:45): kjøreprompt «Oppdrag (Fable, plan mode):
   trygg deploy av v1.2.2 + v1.2.3 til prod» — planlegg, Opus 5 utfører; krav:
