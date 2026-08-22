@@ -7,6 +7,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.2.3] - 2026-08-22
+
 ### Fixed
 
 - **Bonuskolonnen på /live viser nå FPLs publiserte bonus.** FPL publiserer
