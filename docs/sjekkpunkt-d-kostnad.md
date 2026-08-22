@@ -1,6 +1,7 @@
 # Sjekkpunkt D — kostnadskontroll og restpunkter
 
-Sjekkpunkt D er Del 5 + Del 6 i `docs/neste-okt-prompt-sesongstart.md`.
+Sjekkpunkt D er Del 5 (kostnadskontroll) + Del 6 (restpunkter) i
+sesongstart-verifiseringen, M4.
 Startet 23. august 2026, tre dager etter at AI-funksjonene gikk i prod med
 v1.2.0 (20. aug) — innenfor planens «søndag/mandag, etter 2–3 dager».
 
