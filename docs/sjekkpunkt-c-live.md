@@ -217,3 +217,99 @@ SAMME plan og branch som bonusfunnet (`docs/plan-live-bonus.md`,
 
 Stopp-testen kan først bestås etter at fiksen er deployet — står som åpent
 punkt under sjekkpunkt D-oppfølgingen.
+
+## Port 9 — verifisering i prod etter deploy (22. august 2026)
+
+v1.2.3 ble deployet 22. aug kl. 02:43 (se `docs/HANDOVER.md`, økt 23).
+Denne seksjonen er fasit for port 9 i `docs/plan-deploy-v122-v123.md`.
+
+### Delbevis 1: stopp-testen holder gjennom HELE det stale vinduet — GRØNT
+
+Dette er sterkere bevis enn planens ett-minutts-test, fordi det er nettopp
+her skaden lå: FUNN 2 var at «hver åpne fane fortsatte å polle hele natten».
+
+ARS–COV ble ferdigspilt fredag ~22:50. FPL sto fortsatt på
+`finished: false, finished_provisional: true, minutes: 90` da dette ble
+målt lørdag **kl. 11:29 — 14,5 timer etter fløyta**. Runden var altså ennå
+ikke prosessert, så den gamle koden ville ha stått på «Kamper pågår» og
+pollet sammenhengende i 14,5 timer.
+
+Prod på v1.2.3 gjennom samme vindu (målt 02:43, 02:47 og 11:28):
+
+| Sjekk | Verdi |
+| --- | --- |
+| `/api/live.json` → `anyLive` | `false` |
+| `matches[0].finished` (ARS–COV) | `true` — utledet av `finished_provisional` |
+| Servert /live-HTML | «Ingen kamper pågår akkurat nå» |
+| `pulse-on` i initiell HTML | 0 forekomster — prikken pulserer ikke |
+| Innbakt `nextKickoff` | `2026-08-22T11:30:00Z` (= 13:30 Oslo) |
+
+Klientlogikken som følger av dette, `public/app.js` `schedule()`: med
+`anyLive: false` ryddes 60 s-intervallet og det settes ÉN `setTimeout` til
+`nextKickoff + 30 s`. En fane åpnet i dette vinduet gjør altså null kall før
+13:30:30. Prod holdt seg grønn på alle 11 ruter gjennom hele perioden.
+
+### Delbevis 2: bonuskolonnen bærer publisert bonus — GRØNT
+
+Fra prod-payloaden (`myPlayers`, ikke `rows`): feltet `bonusPublished`
+finnes på **15/15** rader. Ødegaard, samme spiller som i den opprinnelige
+observasjonen:
+
+```
+{"name":"Ødegaard","points":11,"bonusEst":0,"bonusPublished":3,"effective":11}
+```
+
+Bonusen vises (3), og «Effektivt» er 11 — ikke 14. Ingen dobbelttelling.
+
+### Gjenstår: observasjon under kampene (13:30–~20:25 lørdag)
+
+Lørdagens GW1-kamper: 13:30 HUL–MUN, 16:00 EVE–CRY / IPS–SUN / NFO–LEE,
+18:30 BRE–TOT (siste, slutter ~20:20).
+
+Serversiden logges automatisk av samplerern under. Klientsiden må observeres
+i nettleseren av Marius:
+
+1. **Under kamp:** bonuskolonnen «Bonus» får verdier (`+N` i accentfarge),
+   title-teksten sier «Bekreftet av FPL …» eller «Estimat fra BPS», og
+   «Effektivt» teller ikke publisert bonus dobbelt.
+2. **Stopp-testen ved fløyta ~20:20:** statusen slår om til «Ingen kamper
+   pågår akkurat nå» innen ~1 min, kampene merkes «Slutt», prikken slutter
+   å pulsere, og nettverksfanen viser INGEN nye `live.json`-kall i minst
+   5 minutter etterpå.
+3. **Noteres:** klokkeslett, de tre siste `live.json`-kallene, og første
+   observerte fravær av kall.
+
+### Sampleren (serversiden av port 9)
+
+Kjøres gjennom kampvinduet; logger hvert 30. sekund og markerer overganger.
+Flagger dobbelttelling automatisk (`effective > points + bonusEst`).
+
+```bash
+OUT="${1:-port9-samples.log}"; PREV=""
+while :; do
+  J=$(curl -s --max-time 30 https://fpl.marsk.no/api/live.json)
+  LINE=$(printf '%s' "$J" | node -e '
+    let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{
+      const d=JSON.parse(s);
+      const st=d.matches.map(m=>m.finished?"S":(m.started?"P":"-")).join("");
+      const p=d.myPlayers.filter(x=>x.bonusPublished>0||x.bonusEst>0)
+        .map(x=>`${x.name}:pts${x.points}/est${x.bonusEst}/pub${x.bonusPublished}/eff${x.effective}`).join(" ");
+      const bad=d.myPlayers.filter(x=>x.effective>x.points+x.bonusEst)
+        .map(x=>`${x.name}(eff${x.effective})`).join(" ");
+      console.log(`anyLive=${d.anyLive} status=${st} bonus[${p}]${bad?" DOBBELTTELLING! "+bad:""}`);
+    });')
+  echo "$(date +%H:%M:%S) $LINE" | tee -a "$OUT"
+  CUR=$(printf '%s' "$LINE" | sed 's/ bonus.*//')
+  [ -n "$PREV" ] && [ "$CUR" != "$PREV" ] && echo "$(date +%H:%M:%S) >>> OVERGANG: $PREV -> $CUR" | tee -a "$OUT"
+  PREV="$CUR"; sleep 30
+done
+```
+
+Statuskoden er én bokstav per kamp i rekkefølge: `S` = slutt, `P` = pågår,
+`-` = ikke startet. Før kampstart lørdag: `S---------`.
+
+### Resultat fra kampvinduet
+
+_Fylles inn når observasjonen er gjennomført. Port 9 er ikke bestått, og
+ROADMAP-punktene «Manuell verifisering under neste kampvindu» og
+stopp-testen hukes IKKE av, før denne seksjonen har faktiske tall._

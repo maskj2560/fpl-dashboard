@@ -5,7 +5,7 @@
 > Versjonshistorikk og detaljer ligger i CHANGELOG.md, ROADMAP.md og git —
 > denne filen holder kun nåtilstand, aktive økter og lærdommer.
 
-**Sist oppdatert:** 2026-08-22 (økt 23, Opus 5: DEPLOY FULLFØRT — v1.2.1 + v1.2.2 + v1.2.3 i prod; gjenstår port 9 kampdag-observasjon)
+**Sist oppdatert:** 2026-08-22 kl. 11:32 (økt 23, Opus 5: v1.2.1–v1.2.3 i prod og stabile; port 9 kampvindu-observasjon gjenstår)
 
 ## Status akkurat nå
 
@@ -91,14 +91,37 @@
     ancestor av `main`, så commiten er ikke tapt). ROADMAP: B-2-punktet
     huket av. Docs committet lokalt, **ikke pushet** — planen sier docs-push
     etter kampslutt (~21:00+), og resten av port 10 krever port 9-resultatet.
-  - **GJENSTÅR — krever Marius:** **port 9, kampdag-observasjon fra 13:30
-    i dag (lørdag 22. aug)** på https://fpl.marsk.no/live: (1) bonuskolonnen
-    får verdier under kampene, «Effektivt» teller ikke publisert bonus
-    dobbelt; (2) stopp-testen etter siste kampslutt ~20:20 — status slår om
-    til «Ingen kamper pågår» innen ~1 min, prikken slutter å pulsere, og
-    INGEN nye `live.json`-kall i minst 5 min. Noteres i
-    `docs/sjekkpunkt-c-live.md`. Deretter fullføres port 10 (ROADMAP-avhuking
-    + docs-push).
+  - **Nattbevis 22. aug kl. 11:28 — prod stabil på v1.2.3 i ~9 timer.**
+    `/health` uendret, 11/11 ruter 200, 404 ok, footer `v1.2.3`.
+  - **STOPP-TESTEN ER I PRAKSIS ALLEREDE BESTÅTT — sterkere enn planens
+    ett-minutts-test.** FPL hadde kl. 11:29 FORTSATT
+    `finished:false, finished_provisional:true, minutes:90` for ARS–COV —
+    **14,5 timer etter fløyta**. Det er nøyaktig FUNN 2-tilstanden, og den
+    gamle koden ville pollet sammenhengende i 14,5 t. Prod på v1.2.3 sto
+    hele veien på `anyLive:false`, `matches[0].finished:true`, servert HTML
+    «Ingen kamper pågår akkurat nå» og **0 forekomster av `pulse-on`** i
+    initiell HTML. Klienten setter da én `setTimeout` til
+    `nextKickoff + 30 s` (= 13:30:30) og gjør null kall før det
+    (`app.js` `schedule()`). Full dokumentasjon i
+    `docs/sjekkpunkt-c-live.md` → «Port 9 — verifisering i prod etter
+    deploy».
+  - **Sampler startet 11:29** (scratchpad `port9-sampler.sh` →
+    `port9-samples.log`, kilde også limt inn i sjekkpunkt-dokumentet).
+    Logger `/api/live.json` hvert 30. s gjennom kampvinduet, markerer
+    overganger og flagger dobbelttelling automatisk
+    (`effective > points + bonusEst`). Dekker serversiden av port 9.
+  - **GJENSTÅR — krever Marius i nettleseren:** lørdagens kamper er 13:30
+    HUL–MUN, 16:00 EVE–CRY/IPS–SUN/NFO–LEE, 18:30 BRE–TOT (siste, slutter
+    ~20:20). (1) Under kamp: bonuskolonnen får `+N` i accentfarge med riktig
+    title-tekst, «Effektivt» teller ikke dobbelt. (2) Ved fløyta ~20:20:
+    status om til «Ingen kamper pågår» innen ~1 min, prikken slutter å
+    pulsere, INGEN nye `live.json`-kall i nettverksfanen på 5 min. Noter
+    klokkeslett + de tre siste kallene. Føres inn under «Resultat fra
+    kampvinduet» i `docs/sjekkpunkt-c-live.md`.
+  - **DERETTER port 10 (siste rest):** huk av ROADMAP-punktene «Manuell
+    verifisering under neste kampvindu» og stopp-testen — KUN med faktiske
+    tall i sjekkpunkt-dokumentet — og push docs-commiten til `main` etter
+    kampslutt (~21:00+). Pushen trigger en harmløs rebuild av samme kode.
   - **Åpent, ikke-blokkerende:** promptstrukturen til /lag-rådgiveren
     (se «Senere / idéer» i ROADMAP). Egen brainstorming + plan + release.
   - **Totalt AI-kall i økten: 0 fra Opus** (Marius' B-2-klikk er det eneste).
