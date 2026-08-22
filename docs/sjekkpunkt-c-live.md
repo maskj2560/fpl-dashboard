@@ -221,7 +221,7 @@ punkt under sjekkpunkt D-oppfølgingen.
 ## Port 9 — verifisering i prod etter deploy (22. august 2026)
 
 v1.2.3 ble deployet 22. aug kl. 02:43 (se `docs/HANDOVER.md`, økt 23).
-Denne seksjonen er fasit for port 9 i `docs/plan-deploy-v122-v123.md`.
+Denne seksjonen er fasit for port 9 i `docs/arkiv/plan-deploy-v122-v123.md`.
 
 ### Delbevis 1: stopp-testen holder gjennom HELE det stale vinduet — GRØNT
 
