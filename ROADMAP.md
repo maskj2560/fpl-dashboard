@@ -84,7 +84,9 @@ committet (og pushet hvis remote finnes).
 - [x] Auto-briefen verifisert mot ekte Discord-webhook (inkl. anti-spam-guard)
 - [x] `ANTHROPIC_API_KEY` + `DISCORD_WEBHOOK_URL` + `FPL_TEAM_ID` i Coolify
 - [ ] Naturlig auto-brief torsdag 20. aug ~19:30 verifisert
-- [ ] Kostnadskontroll etter 2–3 dager i drift
+- [ ] Kostnadskontroll etter 2–3 dager i drift — **påbegynt 23. aug**, metode og
+      priser klare i `docs/sjekkpunkt-d-kostnad.md`; venter på `AI-kall:`-linjene
+      fra Coolify-loggen
 
 ## v1.1.0 — UI-makeover «Matchday» (Milepæl 2 + 3)
 
