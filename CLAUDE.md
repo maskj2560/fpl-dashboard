@@ -117,8 +117,12 @@ aldri et krav.
 ## Handover (VIKTIG — les først i ny økt)
 
 `docs/HANDOVER.md` er den levende overleveringsfilen. Den oppdateres ved hver
-milepæl og ved arbeidsstans, og inneholder: nøyaktig status, neste steg,
-åpne beslutninger og kjente feil. **Start alltid en ny økt med å lese den.**
+milepæl og ved arbeidsstans, og inneholder: nøyaktig status, åpne punkter,
+driftslærdommer og brukerens beslutninger. **Start alltid en ny økt med å
+lese den + køen øverst i ROADMAP.md.** Fila har et tak på **200 linjer**:
+sprenges det, roteres eldste logg/status til
+`docs/arkiv/HANDOVER-historikk.md`. Utførte planer og annen historikk bor i
+`docs/arkiv/` — konsumerte økt-prompter slettes (git bevarer dem).
 Nærmer økten seg brukerens usage-grense (~95 %): stopp, oppdater
 `docs/HANDOVER.md` grundig, commit alt.
 
