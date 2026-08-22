@@ -7,6 +7,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.2.2] - 2026-08-22
+
 ### Changed
 
 - **AI-rådgiveren på /lag vet nå hvilken runde rådet gjelder.** Prompten
