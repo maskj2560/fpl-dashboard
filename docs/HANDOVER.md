@@ -16,6 +16,11 @@
   er grønt: rent tre, topologien intakt, `main` 10 foran `origin/main`.
   Ingenting er endret eller pushet. Beslutningen Marius må ta står i
   «Åpne punkter».
+  **Neste steg er bestemt:** Marius ba om planleggingsoppdrag til Fable —
+  `docs/neste-okt-prompt-port0-avvik.md`. Fable patcher deploy-planen
+  (reset-anker + ny konfliktforventning i port 2c) og skriver deretter
+  `docs/neste-okt-prompt-deploy-utforelse-v2.md` til Opus 5 når planen er
+  godkjent. Port 1-baselinen er allerede grønn og kan gjenbrukes.
 
 - **Deploy-plan for v1.2.1 + v1.2.2 + v1.2.3 GODKJENT — klar for Opus 5.**
   (økt 20, 2026-08-22 natt ~02:00, Fable i plan mode.) Plan:
@@ -356,6 +361,17 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 - Valgfritt i Cloudflare: Browser Cache TTL → «Respect Existing Headers».
 
 ## Logg over brukerbeskjeder (alle økter — føres løpende)
+
+- 2026-08-22 (økt 21, natt ~02:15): «okay lag en prompt til fable om dette.
+  planleggingspromt. fable skriver enn prompt for opus etter planen er
+  godkjent». Handling: `docs/neste-okt-prompt-port0-avvik.md` skrevet —
+  planleggingsoppdrag til Fable for å patche deploy-planen etter port
+  0-avviket. Tre problemer spesifisert: (1) reset-ankeret, med alternativ A
+  `pre-deploy-main`-tag vs. B parkering av docs-commitene, (2) port 2c må
+  måle konfliktflaten på nytt fordi begge sider nå redigerer
+  `docs/HANDOVER.md` — dagens stopp-kriterium ville utløst full stopp, (3)
+  `dbcf253` blir foreldet og må ryddes. Leveransekrav: plan-patch +
+  `docs/neste-okt-prompt-deploy-utforelse-v2.md` til Opus 5. Ingen push.
 
 - 2026-08-22 (økt 21, natt ~02:00): kjøreprompt «Oppdrag (Opus 5): utfør
   deploy-planen v1.2.1 → v1.2.3» — planen er fasit, ingen re-planlegging,
