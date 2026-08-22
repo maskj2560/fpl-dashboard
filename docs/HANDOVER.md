@@ -5,10 +5,103 @@
 > Versjonshistorikk og detaljer ligger i CHANGELOG.md, ROADMAP.md og git —
 > denne filen holder kun nåtilstand, aktive økter og lærdommer.
 
-**Sist oppdatert:** 2026-08-22 (økt 21, Opus 5: deploy-utførelse STOPPET i port 0 — avvik på main-tippen)
+**Sist oppdatert:** 2026-08-22 (økt 23, Opus 5: DEPLOY FULLFØRT — v1.2.1 + v1.2.2 + v1.2.3 i prod; gjenstår port 9 kampdag-observasjon)
 
 ## Status akkurat nå
 
+- **DEPLOY FULLFØRT (økt 23, Opus 5) — v1.2.1, v1.2.2 OG v1.2.3 ER I PROD,
+  alle tre verifisert. Gjenstår port 9 (kampdag-observasjon 13:30).**
+  (2026-08-22 kl. 02:29.) Planen `docs/plan-deploy-v122-v123.md` fulgt
+  port for port.
+  - **Port 0 grønn:** rent tre; tips som forventet (`main` c33aef1,
+    `fix/lag-anbefalinger` c5b9748, `fix/live-bonus` c3020e5).
+    `pre-deploy-main` satt på c33aef1 (lokal, pushes aldri).
+  - **Port 1 grønn (prod-baseline før alt):** v1.2.0, `/health` =
+    `ai:true, discord:true, teamId:true, leagues:1`, 11/11 ruter 200,
+    404 ok. Bevis: scratchpad `port1-baseline-okt23.txt`.
+  - **Port 2 grønn:** 2a merge `fix/lag-anbefalinger` → 0 konflikter,
+    **242/242** + lint 0. 2b release v1.2.2 (`npm version`, CHANGELOG
+    5 punkter, `npm ci` exit 0, 242/242) → `ef30162` + tag v1.2.2.
+    2c merge `fix/live-bonus` → **250/250** + lint 0 → `4ac88ef`.
+    2d release v1.2.3 (`npm ci` exit 0, 250/250) → `c5354e7` + tag v1.2.3.
+  - **AVVIK i 2c (håndtert, ikke stopp):** planen varslet CHANGELOG-konflikt.
+    Git merget i stedet **rent, men semantisk feil** — de 2 live-punktene
+    havnet inni `[1.2.2]`-seksjonen i stedet for `[Unreleased]`. Rettet
+    manuelt til planens foreskrevne måltilstand (`[Unreleased]` = kun de 2
+    live-punktene; `[1.2.2]` = 5 punkter) og lagt inn i merge-committen via
+    `--amend` (begge foreldre intakt). **Lærdom: en ren merge er ikke bevis
+    på en riktig merge — CHANGELOG-plasseringen må inspiseres, ikke antas.**
+  - **Port 3 grønn:** Docker-bygg + røyktest av alle tre tagger
+    (v1.2.1/v1.2.2/v1.2.3), hver: build exit 0, `/health` =
+    `ai:false, discord:false, teamId:true, leagues:0`, 11/11 ruter 200,
+    404 ok, serverlogg kun lyttelinja (**0 AI-kall**), riktig versjon i image.
+  - **To målefeil i port 3, begge i testharnesket — ikke i appen:**
+    (1) curl mot `localhost` ga `000` fordi Docker-proxyen godtar TCP før
+    Node lytter → «Empty reply from server» (exit 52), og `--retry` dekker
+    ikke tomt svar. Løst med `--retry-all-errors`. (2) `/health` viste
+    `leagues:1` ved et senere kall; det er dokumentert oppførsel
+    (`leagues.js` løser lagets private ligaer i bakgrunnen, første svar
+    etter kaldstart gir config-tallet 0). Planens `leagues:0` er riktig.
+  - **Port 4 GO:** port 0–3 grønne, kl. 02:25 mot tidsport 11:30 (9 t
+    margin). **Ingen ekte kamp pågår** — verifisert mot FPL-API-et:
+    ARS–COV `started=true, minutes=90, finished_provisional=true,
+    finished=false`, 0 ekte live-kamper. Prods `anyLive:true` ER v1.2.0-
+    bugen som v1.2.3 fikser.
+  - **Port 5 grønn — v1.2.1 DEPLOYET:** `git push origin
+    78d438e:refs/heads/main v1.2.1` → `feb0c7f..78d438e` (fast-forward,
+    6 commits) + tag. Footer flippet v1.2.0 → **v1.2.1** kl. 02:28:22
+    (~1 min). `/health` identisk med baseline, 11/11 ruter 200, 404 ok.
+    Bevis: scratchpad `port5-verifisering.txt`.
+  - **Port 6 grønn — v1.2.2 DEPLOYET:** klarsignal fra Marius 2026-08-22
+    kl. 02:31 («okay push v1.2.2»). Førkontroll: 0 ekte live-kamper,
+    fast-forward bekreftet, kl. 02:32 mot tidsport 11:30. `git push origin
+    v1.2.2^{commit}:refs/heads/main v1.2.2` → `78d438e..ef30162` + tag.
+    Footer flippet **v1.2.2** kl. 02:33:05 (~30 s). `/health` identisk med
+    baseline, 11/11 ruter 200, 404 ok. v1.2.2-synlig endring bekreftet:
+    /lag viser «Anbefalinger for Runde 2» nøyaktig 1 gang, 0 «undefined».
+    Bevis: scratchpad `port6-verifisering.txt`.
+  - **B-2-AI-kallet UTFØRT av Marius i prod 2026-08-22 kl. 02:36**
+    (budsjettkall 2 av ~3). Prod-verifiseringen av /lag-rådgiveren BESTOD:
+    norsk råd i tre deler, nevner runde, deadline, kaptein/visekaptein og
+    FDR-kontekst; fixture-dataene var korrekte (City–CRY borte FDR 3 ER
+    GW2-kampen).
+  - **NYTT FUNN fra samme kall (Marius, kl. 02:37): «den er enda litt rar …
+    prompten bør struktureres på en mye bedre måte uten at den kan gi uklare
+    eller dårlige begrunnelser».** Modellen skrev «Haaland … formscore 0.0
+    (kun én runde spilt)» — Haaland har `minutes 0, total_points 0` og har
+    ikke spilt. Årsak: `api.js:86-88` sender kun form som prestasjonssignal.
+    Full analyse lagt i ROADMAP under «Senere / idéer». **Blokkerer IKKE
+    port 7:** v1.2.3 rører kun live.js/app.js/analysis.js/live.ejs, ikke
+    prompts.js eller /lag-ruten. Fikses som egen release etter deployen —
+    planens regel «aldri fiks inni deployen».
+  - **Port 7 grønn — v1.2.3 DEPLOYET:** klarsignal fra Marius kl. 02:41
+    («kjør port 7»). Førkontroll: `main` = `c5354e7` = v1.2.3, ff bekreftet,
+    0 ekte live-kamper. `git push origin main v1.2.3` → `ef30162..c5354e7`
+    + tag. Footer flippet **v1.2.3** kl. 02:43:38. `/health` identisk med
+    baseline, 11/11 ruter 200, 404 ok.
+    **v1.2.3-fiksene bevist i prod:** `anyLive: false` (sto på `true` rett
+    før deployen — selve bugen), /live viser «Ingen kamper pågår akkurat
+    nå», og `matches[0].finished: true` for ARS–COV selv om FPL fortsatt
+    har `finished:false, finished_provisional:true`. `bonusPublished` finnes
+    på **15/15** rader i `myPlayers`; Ødegaard =
+    `{points:11, bonusEst:0, bonusPublished:3, effective:11}` — bonusen
+    vises og telles ikke dobbelt. Bevis: scratchpad `port7-verifisering.txt`.
+    NB: radene i payloaden heter `myPlayers`, ikke `rows`.
+  - **Port 10 delvis utført:** `pre-deploy-main` slettet (c33aef1 er uansett
+    ancestor av `main`, så commiten er ikke tapt). ROADMAP: B-2-punktet
+    huket av. Docs committet lokalt, **ikke pushet** — planen sier docs-push
+    etter kampslutt (~21:00+), og resten av port 10 krever port 9-resultatet.
+  - **GJENSTÅR — krever Marius:** **port 9, kampdag-observasjon fra 13:30
+    i dag (lørdag 22. aug)** på https://fpl.marsk.no/live: (1) bonuskolonnen
+    får verdier under kampene, «Effektivt» teller ikke publisert bonus
+    dobbelt; (2) stopp-testen etter siste kampslutt ~20:20 — status slår om
+    til «Ingen kamper pågår» innen ~1 min, prikken slutter å pulsere, og
+    INGEN nye `live.json`-kall i minst 5 min. Noteres i
+    `docs/sjekkpunkt-c-live.md`. Deretter fullføres port 10 (ROADMAP-avhuking
+    + docs-push).
+  - **Åpent, ikke-blokkerende:** promptstrukturen til /lag-rådgiveren
+    (se «Senere / idéer» i ROADMAP). Egen brainstorming + plan + release.
+  - **Totalt AI-kall i økten: 0 fra Opus** (Marius' B-2-klikk er det eneste).
 - **PORT 0-AVVIKET LØST — deploy-planen patchet (økt 22), klar for ny
   deploy-økt.** (2026-08-22 natt ~02:30, Fable i plan mode.) Kjøreprompt
   til Opus 5: `docs/neste-okt-prompt-deploy-utforelse-v2.md` (v1 har fått

@@ -190,8 +190,9 @@ Deploy-plan godkjent 22. aug: `docs/plan-deploy-v122-v123.md`._
 - [x] B-3: «Anbefalinger for Runde N» + kriterie-/tomtilstand i kapteinsboksen
       (TDD, 2 nye tester)
 - [x] Røyktest lokalt med tomme nøkler (11 ruter 200, 0 AI-kall) + handover
-- [ ] B-2-verifiseringen: 1 AI-kall i prod etter v1.2.2-deployen (Marius
-      klikker — besluttet 22. aug, se `docs/plan-deploy-v122-v123.md`)
+- [x] B-2-verifiseringen: 1 AI-kall i prod etter v1.2.2-deployen (Marius
+      klikker). **Utført i prod 2026-08-22 kl. 02:36 — bestått.** Funn på
+      promptkvaliteten logget under «Senere / idéer».
 
 ## v1.2.3 — bonuskolonnen på /live (funn fra sjekkpunkt C)
 
@@ -218,6 +219,21 @@ i poengsummen). BPS-estimatet beholdes for vinduet før FPL publiserer.
 
 _Ikke-kritiske funn fra verifiseringen 20.–24. august legges her. Ingen av
 dem fikses uten avtale._
+
+- **AI-rådgiveren på /lag begrunner med `form` alene og dikter opp kontekst**
+  (funn fra Marius' B-2-kall i prod 2026-08-22 kl. 02:36, v1.2.2). Modellen
+  skrev «Haaland … formscore 0.0 (kun én runde spilt)» — Haaland har
+  `minutes 0, total_points 0` og har ikke spilt i det hele tatt; GW1 var
+  inneværende med 1 av 10 kamper startet. Årsak i `api.js:86-88`: squad-linja
+  sender kun navn, lag, posisjon, pris, **form** og motstander. Verken
+  `minutes`, `total_points`, `ep_next`, `status`/skadeflagg eller hvor mange
+  runder som faktisk er spilt følger med, så modellen kan ikke skille «ingen
+  data» fra «dårlig form» og fyller hullet med gjetning.
+  **Utilsiktet sideeffekt av v1.2.2:** UI-et rangerer nå kapteinskandidater på
+  `ep_next` når ingen har form (det var hele fiksen), mens AI-prompten fortsatt
+  kun får `form` — siden og rådgiveren resonnerer altså fra ulike signaler.
+  Rådgiveren har heller ingen etterkontroll tilsvarende `sanitizeBriefText`.
+  Fikses ikke inni deployen (planens regel). Egen plan + egen release.
 
 - **AI-briefen kan motsi datagrunnlaget uten at noe fanger det** (funn fra
   sjekkpunkt A, verifisert mot prod-`/api/brief.json`). To avvik i GW1-briefen:
