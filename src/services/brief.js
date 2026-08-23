@@ -48,17 +48,38 @@ export function groupFixturesByDay(fixtures, teamsById, deadline = null) {
   return days;
 }
 
-/** Globale kapteinsvalg: høyt eid + form + lett fixture. */
+/**
+ * Globale kapteinsvalg: høyt eid + form + lett fixture. Ved sesongstart er
+ * all form 0 — da ble score 0 hele veien og element-ID-rekkefølgen vant.
+ * Som captainSuggestions (v1.2.2): er samtlige form-scorer 0, rangeres det
+ * på FPLs ep_next; er også den 0 for alle, returneres tom liste. Før
+ * sesongens aller første kamp har ingen spilt — da slippes minutes-kravet,
+ * ellers ville lista vært tom akkurat når briefen trengs til GW1.
+ */
 function globalCaptains(elements, fixtures, fromGw, limit = 3) {
   const fdrByTeam = teamFdrMap(fixtures, fromGw, 1);
-  return elements
-    .filter((p) => (parseFloat(p.selected_by_percent) || 0) >= 15 && p.minutes > 0)
+  const allZeroMinutes = elements.every((p) => !p.minutes);
+  const candidates = elements
+    .filter((p) => (parseFloat(p.selected_by_percent) || 0) >= 15 && (allZeroMinutes || p.minutes > 0))
     .map((p) => {
       const avgFdr = fdrByTeam.get(p.team) ?? null;
-      return { p, score: (parseFloat(p.form) || 0) * (6 - (avgFdr ?? 3.5)), avgFdr };
-    })
-    .sort((a, b) => b.score - a.score)
-    .slice(0, limit);
+      return { p, avgFdr, ease: 6 - (avgFdr ?? 3.5) };
+    });
+  const scoreAll = (criterion) =>
+    candidates.map((c) => ({
+      ...c,
+      criterion,
+      score: (parseFloat(criterion === 'form' ? c.p.form : c.p.ep_next) || 0) * c.ease,
+    }));
+  let scored = scoreAll('form');
+  if (scored.every((s) => s.score === 0)) {
+    scored = scoreAll('ep_next');
+    if (scored.every((s) => s.score === 0)) return { list: [], criterion: null };
+  }
+  return {
+    list: scored.sort((a, b) => b.score - a.score).slice(0, limit),
+    criterion: scored[0].criterion,
+  };
 }
 
 export function buildBrief({ bootstrap, fixtures, myTeam = null }) {
@@ -74,6 +95,7 @@ export function buildBrief({ bootstrap, fixtures, myTeam = null }) {
       gameweek: null,
       injuries: [],
       captains: [],
+      captainsCriterion: null,
       fixturesByDay: [],
       fixturesBeforeDeadline: [],
       mine: null,
@@ -94,10 +116,12 @@ export function buildBrief({ bootstrap, fixtures, myTeam = null }) {
       status: p.status,
     }));
 
-  const captains = globalCaptains(elements, fixtures, fromGw).map(({ p, avgFdr }) => ({
+  const globals = globalCaptains(elements, fixtures, fromGw);
+  const captains = globals.list.map(({ p, avgFdr }) => ({
     name: p.web_name,
     team: teamsById.get(p.team)?.short_name ?? '?',
     form: p.form,
+    epNext: p.ep_next,
     ownership: p.selected_by_percent,
     avgFdr,
   }));
@@ -132,6 +156,7 @@ export function buildBrief({ bootstrap, fixtures, myTeam = null }) {
     },
     injuries,
     captains,
+    captainsCriterion: globals.criterion,
     fixturesByDay,
     fixturesBeforeDeadline,
     mine,

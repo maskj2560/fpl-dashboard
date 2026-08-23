@@ -7,6 +7,28 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.2.5] - 2026-08-24
+
+### Fixed
+
+- Kapteinslista i rundebriefen er ikke lenger vilkårlig ved sesongstart:
+  er all form 0, rangeres det på forventet poeng (FPL) som på /lag, og
+  minutter-kravet slippes før sesongens første kamp. Briefen oppgir nå
+  også hvilket kriterium som rangerte.
+- AI-briefen kan ikke lenger friskmelde troppen når skadelista har
+  innhold — slike setninger fjernes i etterkontrollen (GW1-funnet «alle
+  stiller friske» tross Bruno G. på skadelista).
+- Etterkontrollen feller setninger med forvrengte prosenttall: et
+  prosenttall som ikke finnes i brief-dataene, men ligger ≤1,0 fra en
+  fasitverdi, fjerner setningen (GW1-funnet 32,3 % mot dataenes 32,6 %).
+
+### Changed
+
+- Brief-prompten kaller kapteinslista det den er (høyt eide spillere med
+  gunstig kamp — ikke målt kapteinsandel), navngir rangeringskriteriet, og
+  har fått en REGLER-seksjon etter mønster fra rådgiveren (v1.2.4).
+  Overskriften på /brief heter nå «Kapteinskandidater globalt».
+
 ## [1.2.4] - 2026-08-24
 
 ### Fixed

@@ -68,11 +68,11 @@ før du går videre.
 
 ## Task 0 — Oppstart
 
-- [ ] Les `docs/HANDOVER.md` + `CLAUDE.md` (skal allerede være gjort).
-- [ ] `git checkout main` + verifiser rent tre og at baseline er grønn:
+- [x] Les `docs/HANDOVER.md` + `CLAUDE.md` (skal allerede være gjort).
+- [x] `git checkout main` + verifiser rent tre og at baseline er grønn:
       `npm test` (forventet 256/256) og `npm run lint` (exit 0).
-      Observert: ______
-- [ ] `git checkout -b fix/brief-kvalitet`
+      Observert: rent tre på main (git status --porcelain tomt), npm test → tests 256 / pass 256 / fail 0, npm run lint → exit 0.
+- [x] `git checkout -b fix/brief-kvalitet` — «Switched to a new branch»
 
 ---
 
@@ -180,10 +180,13 @@ assert etter `assert.deepEqual(brief.captains, []);`:
   assert.equal(brief.captainsCriterion, null);
 ```
 
-- [ ] Tester skrevet. `npm test` — **forventet rødt: 261 tester, 5 feiler**
+- [x] Tester skrevet. `npm test` — **forventet rødt: 261 tester, 5 feiler**
       (fallback-, tom-, slipp- og kriterium-testene + den utvidede
       sesongslutt-testen; «minutes-kravet gjelder»-testen er et vern og er
-      grønn allerede). Observert: ______
+      grønn allerede). Observert: **261 tester, 255 pass, 6 fail.** Avvik
+      forklart: «minutes-kravet gjelder»-testen asserter også
+      `captainsCriterion`, som ikke fantes ennå — den feiler derfor også i
+      rødfasen. Ingen andre uventede feil.
 
 ### 1b. Implementasjon (src/services/brief.js)
 
@@ -246,14 +249,14 @@ I `buildBrief`:
 3. I return-objektet: legg til `captainsCriterion: globals.criterion,`
    etter `captains,`.
 
-- [ ] `npm test` — **forventet grønt: 261/261.** `npm run lint` exit 0.
-      Observert: ______
-- [ ] CHANGELOG `[Unreleased]` → ny `### Fixed`-seksjon med punkt:
+- [x] `npm test` — **forventet grønt: 261/261.** `npm run lint` exit 0.
+      Observert: **tests 261 / pass 261 / fail 0**, `npm run lint` exit 0.
+- [x] CHANGELOG `[Unreleased]` → ny `### Fixed`-seksjon med punkt:
       «Kapteinslista i rundebriefen er ikke lenger vilkårlig ved
       sesongstart: er all form 0, rangeres det på forventet poeng (FPL) som
       på /lag, og minutter-kravet slippes før sesongens første kamp.
       Briefen oppgir nå også hvilket kriterium som rangerte.»
-- [ ] Commit: `fix(brief): ep_next-fallback og sesongstart-slipp i globalCaptains`
+- [x] Commit: `fix(brief): ep_next-fallback og sesongstart-slipp i globalCaptains` — `568b5f1`
 
 ---
 
@@ -308,8 +311,8 @@ test('buildBriefPrompt sier at skadelista er fasit — og sier fra når den er t
 });
 ```
 
-- [ ] Tester skrevet. `npm test` — **forventet rødt: 265 tester, 4 feiler.**
-      Observert: ______
+- [x] Tester skrevet. `npm test` — **forventet rødt: 265 tester, 4 feiler.**
+      Observert: **265 tester, 261 pass, 4 fail** — nøyaktig de fire nye.
 
 ### 2b. Implementasjon
 
@@ -370,16 +373,17 @@ kun skadenytt-linjene, kapteinsetiketten/-linjene og REGLER-blokken er nye.
 **`views/brief.ejs` linje 43:** `<h2>Kapteinsvalg globalt</h2>` →
 `<h2>Kapteinskandidater globalt</h2>`
 
-- [ ] `npm test` — **forventet grønt: 265/265** (de gamle
+- [x] `npm test` — **forventet grønt: 265/265** (de gamle
       buildBriefPrompt-testene består: «Utled aldri tidsforhold selv»,
       «holdt nullen» og «aldri "gameweek"» finnes fortsatt).
-      `npm run lint` exit 0. Observert: ______
-- [ ] CHANGELOG `[Unreleased]` → `### Changed`-punkt: «Brief-prompten
+      `npm run lint` exit 0. Observert: **tests 265 / pass 265 / fail 0**,
+      `npm run lint` exit 0.
+- [x] CHANGELOG `[Unreleased]` → `### Changed`-punkt: «Brief-prompten
       kaller kapteinslista det den er (høyt eide spillere med gunstig kamp
       — ikke målt kapteinsandel), navngir rangeringskriteriet, og har fått
       en REGLER-seksjon etter mønster fra rådgiveren (v1.2.4). Overskriften
       på /brief heter nå «Kapteinskandidater globalt».»
-- [ ] Commit: `fix(brief): ærlig kapteinsetikett og REGLER i brief-prompten`
+- [x] Commit: `fix(brief): ærlig kapteinsetikett og REGLER i brief-prompten`
 
 ---
 
@@ -428,9 +432,9 @@ test('sanitizeBriefText beholder skadeomtale som ikke friskmelder', () => {
 });
 ```
 
-- [ ] Tester skrevet. `npm test` — **forventet rødt: 268 tester, 1 feiler**
+- [x] Tester skrevet. `npm test` — **forventet rødt: 268 tester, 1 feiler**
       (fjern-testen; de to behold-testene er vern og er grønne fra start).
-      Observert: ______
+      Observert: **268 tester, 267 pass, 1 fail** — nøyaktig fjern-testen.
 
 ### 3b. Implementasjon (src/services/prompts.js)
 
@@ -497,13 +501,13 @@ eksisterende sanitize-tester skal fortsatt bestå uendret (inkludert «ekte
 AI-brief fra prod går uendret gjennom etterkontrollen» — `briefGw1` har
 ingen `injuries`, så friskmeldingskontrollen er inaktiv der).
 
-- [ ] `npm test` — **forventet grønt: 268/268.** `npm run lint` exit 0.
-      Observert: ______
-- [ ] CHANGELOG `[Unreleased]` `### Fixed`-punkt: «AI-briefen kan ikke
+- [x] `npm test` — **forventet grønt: 268/268.** `npm run lint` exit 0.
+      Observert: **tests 268 / pass 268 / fail 0**, `npm run lint` exit 0.
+- [x] CHANGELOG `[Unreleased]` `### Fixed`-punkt: «AI-briefen kan ikke
       lenger friskmelde troppen når skadelista har innhold — slike
       setninger fjernes i etterkontrollen (GW1-funnet «alle stiller
       friske» tross Bruno G. på skadelista).»
-- [ ] Commit: `fix(brief): sanitize fjerner friskmelding som motsier skadelista`
+- [x] Commit: `fix(brief): sanitize fjerner friskmelding som motsier skadelista`
 
 ---
 
@@ -512,7 +516,7 @@ ingen `injuries`, så friskmeldingskontrollen er inaktiv der).
 **Filer:** `src/services/prompts.js`, `test/fixtures/brief-gw1.js`,
 `test/prompts.test.js`
 
-### 4a. Fixtur-variant først (test/fixtures/brief-gw1.js — legg til nederst)
+### 4a. Fixtur-variant først [x] (test/fixtures/brief-gw1.js — legg til nederst)
 
 ```js
 // Samme brief med dataene GW1-briefen faktisk hadde: skadelista inneholdt
@@ -582,9 +586,9 @@ Den EKSISTERENDE testen «ekte AI-brief fra prod går uendret gjennom
 etterkontrollen» skal fortsatt bestå uendret — `briefGw1` har verken
 `injuries` eller `captains`, så begge de nye kontrollene er inaktive der.
 
-- [ ] Tester skrevet. `npm test` — **forventet rødt: 272 tester, 2 feiler**
+- [x] Tester skrevet. `npm test` — **forventet rødt: 272 tester, 2 feiler**
       (nær-miss-testen og fulldata-regresjonen; de to behold-testene er
-      vern). Observert: ______
+      vern). Observert: **272 tester, 270 pass, 2 fail** — nøyaktig de to.
 
 ### 4c. Implementasjon (src/services/prompts.js)
 
@@ -628,41 +632,66 @@ Og i linje-løkka, sammen med de andre aktiveringene:
     if (prosentAktiv && line.includes('%')) sjekker.push(keepProsent);
 ```
 
-- [ ] `npm test` — **forventet grønt: 272/272.** `npm run lint` exit 0.
-      Observert: ______
-- [ ] CHANGELOG `[Unreleased]` `### Fixed`-punkt: «Etterkontrollen feller
+- [x] `npm test` — **forventet grønt: 272/272.** `npm run lint` exit 0.
+      Observert: **tests 272 / pass 272 / fail 0**, `npm run lint` exit 0.
+- [x] CHANGELOG `[Unreleased]` `### Fixed`-punkt: «Etterkontrollen feller
       setninger med forvrengte prosenttall: et prosenttall som ikke finnes
       i brief-dataene, men ligger ≤1,0 fra en fasitverdi, fjerner setningen
       (GW1-funnet 32,3 % mot dataenes 32,6 %).»
-- [ ] Commit: `fix(brief): sanitize feller forvrengte prosenttall (nær-miss ±1,0)`
+- [x] Commit: `fix(brief): sanitize feller forvrengte prosenttall (nær-miss ±1,0)`
 
 ---
 
 ## Task 5 — Lokal verifisering + E2E (AI-kall 1 av 2)
 
-- [ ] `npm test` → **272/272**, `npm run lint` → exit 0. Observert: ______
+- [x] `npm test` → **272/272**, `npm run lint` → exit 0. Observert:
+      **tests 272 / pass 272 / fail 0**, lint exit 0.
 - [ ] **Røyktest uten nøkler (0 AI-kall):** scratchpad-.env-teknikken fra
       HANDOVER («Driftslærdommer»): lag en .env i scratchpad med
       `ANTHROPIC_API_KEY=` og `DISCORD_WEBHOOK_URL=` TOMME, start serveren
       på ledig port med `--env-file` mot den. Verifiser `/health` → 200 med
       `ai:false, discord:false` FØR noe annet. Deretter: alle ruter → 200
       (inkl. `/brief` og `/nyheter` — gratis uten nøkkel), ukjent sti → 404.
-      Observert: ______
+      Observert: port 3011, `/health` → 200
+      `{"ai":false,"aiModel":null,"discord":false,"teamId":true,"leagues":0}`.
+      Sveip: `/` `/spillere` `/lag` `/overganger` `/liga` `/brief` `/live`
+      `/nyheter` `/health` `/api/brief.json` `/api/live.json` → alle 200;
+      `/finnes-ikke` → 404. `/brief` viste «Kapteinskandidater globalt».
 - [ ] **E2E med ekte nøkkel (AI-kall 1 av 2):** scratchpad-.env med ekte
       `ANTHROPIC_API_KEY` men TOM `DISCORD_WEBHOOK_URL` (deadline 28. aug
       nærmer seg — auto-briefens vindu må ikke treffe dev-serveren).
       Verifiser `/health` → `ai:true, discord:false` FØR `/brief` åpnes.
       Deretter ÉN visning av `/brief`. Sjekkliste mot svaret:
-      - [ ] Ingen formulering à la «mest brukte/valgte kapteinsvalg».
-      - [ ] Alle prosenter i teksten finnes eksakt i `/api/brief.json`
-            (gratis å hente — bruk den som fasit).
-      - [ ] Er skadelista ikke-tom: ingen friskmelding i teksten.
-      - [ ] Server-loggen: har sanitize felt setninger
-            (`console.warn`-linja)? I så fall — var de faktisk gale?
-            En felt KORREKT setning er et funn som skal rapporteres.
-      - [ ] Kapteinsseksjonen virker rimelig (ikke ID-rekkefølge).
-      Observert (lim inn relevante linjer): ______
-- [ ] `/nyheter` er IKKE besøkt med ekte nøkkel. `/brief` er besøkt
+      - [x] Ingen formulering à la «mest brukte/valgte kapteinsvalg».
+            Teksten: «Blant høyt eide spillere med gunstig kamp peker
+            **Guéhi** … seg ut» — den ærlige rammen, ikke omskrivingen.
+      - [x] Alle prosenter i teksten finnes eksakt i `/api/brief.json`
+            (gratis å hente — bruk den som fasit). Teksten: 15.3, 7.6,
+            17.5, 16.0, 41.9 og 75 (x2). Fasit: eierandeler 15.3/7.6
+            (skader), 17.5/16.0/41.9 (kapteiner), 75 % i begge
+            skadenyhetene. Ingen avvik, ingen påfunnede tall.
+      - [x] Er skadelista ikke-tom: ingen friskmelding i teksten.
+            Skadelista hadde 2 navn (Pedro Porro, Anderson) og begge
+            står i teksten. Ingen friskmelding.
+      - [x] Server-loggen: har sanitize felt setninger
+            (`console.warn`-linja)? **Nei — ingen `console.warn` i loggen,
+            0 setninger fjernet.** Hele loggen: «FPL-dashboard lytter på
+            http://localhost:3012» + «AI-kall: ai-brief-gw2
+            modell=claude-sonnet-5 inn=1680 ut=977 tokens».
+      - [x] Kapteinsseksjonen virker rimelig (ikke ID-rekkefølge). Guéhi
+            (form 10.0), Ndiaye (9.0), Szoboszlai (8.0) — alle FDR 3, så
+            rangeringen er ren formrekkefølge. `captainsCriterion` =
+            `form` (GW1 er spilt). Tallene i «Mine grep» ble også
+            stikkprøvd mot `mine`-delen av `/api/brief.json`: Ødegaard
+            form 11.0/FDR 4.0, Gvardiol 9.0/3.0, Calafiori 9.0/4.0,
+            Mbeumo og Wirtz form 2.0, Haaland og Isak form 2.0,
+            innkjøpsnavnene (Trafford, Kelleher, De Cuyper, Mendy, Gakpo,
+            Barry, Georginio) står alle i kandidatlistene — alt korrekt.
+      Observert: `/health` FØR `/brief`: `{"ai":true,"aiModel":
+      "claude-sonnet-5","discord":false,"teamId":true,"leagues":0}`.
+      `GET /brief` → 200, ett AI-kall (`ai-brief-gw2`, 1680 inn / 977 ut).
+- [x] `/nyheter` er IKKE besøkt med ekte nøkkel (kun på den nøkkelløse
+      serveren, `ai:false`). `/brief` er besøkt
       nøyaktig én gang med ekte nøkkel. (Gjentatte visninger innen én time
       er cachet, men budsjettet teller visninger — hold deg til én.)
 - [ ] Rapporter status til Marius og STOPP. Task 6 kun på klarsignal.
@@ -671,16 +700,17 @@ Og i linje-løkka, sammen med de andre aktiveringene:
 
 ## Task 6 — Release v1.2.5 (KUN på eksplisitt klarsignal fra Marius)
 
-- [ ] Sjekk tidsvindu: ikke torsdag 19:00–21:00, ingen kamper i gang
-      (GW2 spilles ~29.–31. aug — sjekk kampprogrammet før push).
-- [ ] `npm version patch --no-git-tag-version` → 1.2.5 (eller manuell bump
-      i package.json/package-lock.json).
-- [ ] CHANGELOG: flytt `[Unreleased]`-punktene til `## [1.2.5] - <dato>`.
-- [ ] ROADMAP: hak av kø-punkt 5 / flytt v1.2.5 til utført-historikken
-      (samme mønster som v1.2.4-raden).
-- [ ] `docs/VIDERE.md`: «Nytt siden sist»-avsnitt om v1.2.5, «Neste
-      oppgave» → v1.3.0 UI-overhaling (planøkt).
-- [ ] `docs/HANDOVER.md`: status + logg oppdatert (≤200 linjer).
+- [x] Sjekk tidsvindu: mandag 24. aug 01:38, 0 kamper i gang (FPL
+      `fixtures/`: ingen `started && !finished_provisional`), neste
+      avspark 24. aug 19:00 UTC. Trygt.
+- [x] `npm version patch --no-git-tag-version` → 1.2.5 (package.json og
+      package-lock.json bekreftet).
+- [x] CHANGELOG: flyttet til `## [1.2.5] - 2026-08-24`.
+- [x] ROADMAP: kø-punkt 5 fjernet, 6→5 og 7→6 renummerert,
+      versjonsplan-raden strøket, v1.2.5-blokk i utført-historikken.
+- [x] `docs/VIDERE.md`: «Nytt siden sist» om v1.2.5, «Neste oppgave» →
+      v1.3.0 UI-overhaling (planøkt).
+- [x] `docs/HANDOVER.md`: status + logg oppdatert (183 linjer).
 - [ ] Commit `chore(release): v1.2.5` på branchen, merge til `main`
       (`--no-ff` som før), verifiser **272/272 + lint 0 på main**, tag
       `v1.2.5`.

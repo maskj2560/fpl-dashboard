@@ -57,3 +57,20 @@ export const briefGw1 = {
     },
   ],
 };
+
+// Samme brief med dataene GW1-briefen faktisk hadde: skadelista inneholdt
+// Bruno G., og Calafiori var eid 32,6 % — briefen skrev 32,3 %. Brukes av
+// v1.2.5-regresjonene: med data til stede skal friskmeldingen og den
+// forvrengte prosenten fjernes, mens resten står. `briefGw1` over holdes
+// bevisst UTEN injuries/captains så den gamle «uendret gjennom»-testen
+// fortsatt dokumenterer P3-4-tilfellene.
+export const briefGw1MedData = {
+  ...briefGw1,
+  injuries: [{ name: 'Bruno G.', team: 'NEW', ownership: '25.4', news: 'Lårskade — 75 % spillesjanse', status: 'd' }],
+  captains: [
+    { name: 'Raya', team: 'ARS', form: '0.0', epNext: '4.5', ownership: '36.3', avgFdr: 2 },
+    { name: 'Calafiori', team: 'ARS', form: '0.0', epNext: '4.2', ownership: '32.6', avgFdr: 2 },
+    { name: 'Gabriel', team: 'ARS', form: '0.0', epNext: '4.4', ownership: '29.6', avgFdr: 2 },
+  ],
+  captainsCriterion: 'ep_next',
+};

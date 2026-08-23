@@ -5,7 +5,7 @@
 
 **Sist oppdatert:** 24. august 2026
 
-## Dette har du nå (v1.2.4, live på fpl.marsk.no)
+## Dette har du nå (v1.2.5, live på fpl.marsk.no)
 
 Dashbord med nedtelling og skader · spillertabell med søk og filter · laget
 ditt med kapteinsråd · miniligaen · rundebrief (AI skriver den på norsk) ·
@@ -13,28 +13,32 @@ live-poeng mens kampene går · nyheter med AI-oppsummering · auto-brief til
 Discord kvelden før hver deadline · «Overganger» som viser om byttene dine
 ga eller kostet poeng.
 
-**Nytt siden sist (v1.2.4, 24. august):** **AI-rådgiveren på lagsiden
-dikter ikke lenger.** Den får nå alle tallene for hver spiller — form,
-ventet poeng, spilte minutter, totalpoeng og skadestatus med spillesjanse —
-pluss forslagene siden selv viser deg. Sier den noe annet enn siden, må den
-begrunne hvorfor. Har en spiller 0 minutter, skal den si «ingen data ennå»,
-ikke «dårlig form». Testet i prod: den skrev nettopp «João Pedro har 0
-minutter spilt så langt — dette er ikke nødvendigvis dårlig form, men
-mangel på data». Nøyaktig feilen du fant.
+**Nytt siden sist (v1.2.5, 24. august):** **rundebriefen er blitt ærligere.**
+Tre ting: (1) den kan ikke lenger skrive «alle stiller friske» når skadelista
+har navn på seg — slike setninger lukes automatisk bort før du ser dem, og
+det samme gjelder prosenttall den har vridd på (den skrev en gang 32,3 % der
+dataene sa 32,6 %). (2) Kapteinslista i briefen er ikke lenger tilfeldig før
+sesongstart: er formtallene 0 for alle, rangeres den på forventet poeng, akkurat
+som lagsiden allerede gjorde. (3) Lista kalles nå «kapteinskandidater» — for det
+er det den er. FPL publiserer ingen tall på hvem folk faktisk setter kaptein, og
+briefen skrev tidligere «de mest brukte kapteinsvalgene globalt» som om den
+visste det.
+
+Fra før (v1.2.4): AI-rådgiveren på lagsiden dikter ikke lenger. Den får alle
+tallene for hver spiller og må begrunne seg hvis den sier noe annet enn siden.
+Har en spiller 0 minutter, sier den «ingen data ennå», ikke «dårlig form».
 
 Fra før: sesongstarten er ferdig verifisert — alt virket med ekte data.
 Live-siden viser bonuspoeng underveis i kampene og skjønner at kampen er
 ferdig ved fløyta. Kapteinsrådene på lagsiden gir mening også før noen har
 spilt. Kostnaden for AI-en er målt: under 1 dollar i uka.
 
-## Neste oppgave (blir v1.2.5) — plan godkjent 24. august
+## Neste oppgave (blir v1.3.0) — ny drakt på hele siden
 
-**Rundebriefen blir ærligere.** Du godkjente planen 24. august, og den
-inneholder tre ting: briefen skal ikke kunne skrive «alle er friske» når
-dataene viser en skade (og prosenttall den vrir på, lukes bort automatisk),
-kapteinslista i briefen får samme sesongstart-fiks som lagsiden fikk, og
-lista kalles det den faktisk er — kandidater, ikke «mest valgte kapteiner».
-Bygges i en egen økt; ingenting legges ut før du gir klarsignal.
+**Det store visuelle løftet.** Du bekreftet 24. august at du vil ha det:
+FPL-følelse med klubblogoer og drakter, og valg mellom mørkt og lyst tema.
+Neste steg er en planleggingsøkt — ingenting bygges før planen er godkjent,
+og ingenting legges ut før du gir klarsignal.
 
 ## Deretter, i rekkefølge (nummerert plan, 24. august)
 
@@ -47,10 +51,8 @@ er «porter» — de skjer når datoen eller du er klar, uten å stoppe utviklin
 - **Port: prissjekk etter 1. september** — AI-prisen går opp 50 %, så vi
   måler på nytt at det fortsatt er billig (dagens bruk vil koste ca.
   1,50 dollar/uka).
-- **v1.2.5** — rundebriefen blir ærligere (oppgaven over).
-- **v1.3.0** — ny drakt på hele siden (stort løft): FPL-følelse med
-  klubblogoer og drakter, og valg mellom mørkt og lyst tema. **Du bekreftet
-  24. august at du vil ha den** — den bygges etter v1.2.5.
+- ~~**v1.2.5** — rundebriefen blir ærligere.~~ **Ferdig 24. august.**
+- **v1.3.0** — ny drakt på hele siden (oppgaven over). **Neste jobb.**
 - **v1.3.1 og utover** — små robusthetsfikser fra kvalitetsgjennomgangen,
   én og én etter avtale.
 

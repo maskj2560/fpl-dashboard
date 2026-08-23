@@ -20,12 +20,12 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | **P2** | Marius: README-skjermbilder + mobil-QA | 4 | Marius |
 | **P3** | Etter GW2: transfers-skjema mot ekte data | 3 | GW2 spilt (~29.–31. aug) |
 | **P4** | Kostnadsmåling uken etter 1. sep | 1 | dato |
-| **v1.2.5** | Brief-kvalitetstrioen | 5 | ingenting — neste utviklingsjobb |
-| **v1.3.0** | UI-overhaling | 6 | v1.2.5 |
-| **v1.3.1+** | Robusthetskandidatene, én og én etter avtale | 7 | avtale per punkt |
+| ~~**v1.2.5**~~ | ~~Brief-kvalitetstrioen~~ | **utført 24. aug** | — |
+| **v1.3.0** | UI-overhaling | 5 | ingenting — neste utviklingsjobb |
+| **v1.3.1+** | Robusthetskandidatene, én og én etter avtale | 6 | avtale per punkt |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
-Kalenderlogikk: utviklingssporet (v1.2.5 → v1.3.0) går uavbrutt;
+Kalenderlogikk: utviklingssporet (v1.3.0 → v1.3.1+) går uavbrutt;
 portene fyres når dato/Marius tillater, uten å blokkere sporet.
 
 ## Kø — hva gjøres videre, i rekkefølge
@@ -74,49 +74,20 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
 - **Blokkert av:** Marius (nettleser + telefon).
 - **Størrelse:** liten.
 
-### 5. Brief-kvalitetstrioen (v1.2.5, én release)
-
-Tre sammenhengende funn fra sjekkpunkt A — samme filfamilie
-(`brief.js`/`prompts.js`), samme testmønster, bør tas samlet:
-
-- **AI-briefen kan motsi datagrunnlaget uten at noe fanger det.**
-  GW1-briefen skrev «alle stiller friske» mens `injuries` inneholdt
-  Bruno G., og oppga Calafiori til 32,3 % mot dataenes 32,6 %.
-  `sanitizeBriefText` kontrollerer kun deadline-påstander. Mulig utvidelse
-  (P3-5-familien): tallkontroll av prosenter i teksten mot brief-JSON-en,
-  og regel om at «ingen skadenytt» ikke kan stå når `injuries` er ikke-tom.
-- **Kapteinslista i briefen er vilkårlig ved sesongstart.**
-  `globalCaptains` (`src/services/brief.js:52`) rangerer på
-  `form * (6 - avgFdr)`; før første kamp er alt 0 og element-ID-rekkefølgen
-  vinner (GW1-briefen foreslo keeper + to Arsenal-forsvarere). Fiks: samme
-  `ep_next`-fallback som `captainSuggestions` (`src/services/analysis.js:249`)
-  fikk i v1.2.2. Gjelder runde 1–2.
-- **Prompt-etiketten «Mest aktuelle kapteiner globalt» overselger dataene.**
-  Lista er høyt eide spillere med lett kamp, ikke målt kapteinsandel —
-  modellen skrev den om til «de mest brukte kapteinsvalgene globalt».
-  Etiketten i `buildBriefPrompt` (`src/services/prompts.js:4`) bør si hva
-  lista faktisk er.
-
-- **Eier detaljene:** `docs/plan-v125-brief-kvalitet.md` (godkjent
-  2026-08-24). Alle beslutninger er tatt av Marius — planen utføres av
-  Opus 5 i egen økt, release kun på klarsignal.
-- **Blokkert av:** ingenting — v1.2.4 er ute, dette er neste utviklingsjobb.
-- **Størrelse:** medium.
-
-### 6. UI-overhaling (v1.3.0)
+### 5. UI-overhaling (v1.3.0)
 
 - **Hva:** FPL-gjenkjennelse (klubblogoer/drakter), clean og lett å bruke,
   mørk/lys/auto-tema. Planleggingsprompten er skrevet, men aldri kjørt —
   ingen plan finnes ennå.
 - **Eier detaljene:** `docs/prompt-ui-overhaul-plan.md` (planleggingsprompt
   med verifiserte fakta og alle åpne spørsmål).
-- **Blokkert av:** v1.2.5 (køen foran). Marius bekreftet 24. aug at den
+- **Blokkert av:** ingenting — v1.2.5 er ute. Marius bekreftet 24. aug at den
   fortsatt er ønsket. Kostnad avklares i planøkten (klubbgrafikk-kilde/
   lisens, lys palett med kontrastkrav, etappeinndeling).
 - **Størrelse:** stor — egen planøkt, flere utførelsesøkter i etapper,
   QA-runder hos Marius.
 
-### 7. Robusthetskandidater (v1.3.1+, avtales én og én, uprioritert innbyrdes)
+### 6. Robusthetskandidater (v1.3.1+, avtales én og én, uprioritert innbyrdes)
 
 Reelle funn fra kvalitetspasset v1.1.3 (P3) og verifiseringen — ingen
 fikses uten avtale:
@@ -163,7 +134,7 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 
 ---
 
-## Utført (v0.1.0 → v1.2.4)
+## Utført (v0.1.0 → v1.2.5)
 
 ### v0.1.0 — Deploybart skjelett (MVP)
 
@@ -404,3 +375,32 @@ kun fikk `form`, så siden og rådgiveren resonnerte fra ulike signaler.
       ennå, ikke svakt)» og begrunnet avviket fra sidens formrangering med
       ventet poeng. Stikkprøve mot FPL-bootstrap: alle siterte tall korrekte.
 - [x] Release v1.2.4 + prod-retest
+
+### v1.2.5 — Brief-kvalitetstrioen
+
+_Plan: `docs/plan-v125-brief-kvalitet.md`._
+
+Tre funn fra sjekkpunkt A, samme filfamilie, tatt som én release. GW1-briefen
+skrev «Alle stiller i utgangspunktet friske» mens `injuries` inneholdt Bruno G.,
+oppga Calafiori til 32,3 % mot dataenes 32,6 %, foreslo keeper + to
+Arsenal-forsvarere i ren element-ID-rekkefølge, og skrev om etiketten til «de
+mest brukte kapteinsvalgene globalt» — en kapteinsandel FPL ikke publiserer.
+
+- [x] `globalCaptains` speiler `captainSuggestions`: all form 0 → `ep_next`,
+      også 0 → tom liste. Minutes-kravet slippes når samtlige elements har
+      0 minutter (sesongstart). Brief-objektet får `captainsCriterion`
+- [x] Ærlig kapteinsetikett i `buildBriefPrompt` med navngitt kriterium, og
+      REGLER-seksjon etter mønster fra rådgiveren (v1.2.4): aldri påfunnede
+      tall, eksakte prosenter, skadelista er fasit, forbud mot «mest
+      valgte/brukte kapteiner». View-overskrift «Kapteinskandidater globalt»
+- [x] `sanitizeBriefText` omstrukturert fra én kontroll til tre som velges
+      per linje — deadline (uendret logikk), friskmelding, prosent
+- [x] Prosentkontroll med nær-miss ±1,0 mot fasit fra
+      injuries/captains/mine; gal prosent fjerner setningen (aldri korriger)
+- [x] TDD: 256/256 → **272/272, lint 0**. Ny regresjonsfixtur
+      `briefGw1MedData` — den ekte GW1-briefen med dataene den faktisk hadde
+- [x] Røyktest (tomme nøkler): 11 ruter 200, ukjent sti 404
+- [x] Lokal E2E med ekte nøkkel 24. aug: ingen «mest brukte kapteiner», alle
+      prosenter eksakt i `/api/brief.json`, ingen friskmelding tross to navn
+      på skadelista, og **0 setninger felt av sanitize** (ingen `console.warn`)
+- [x] Release v1.2.5 + prod-retest

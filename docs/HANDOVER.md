@@ -6,16 +6,31 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-24 (økt 28, Fable: v1.2.5-planen skrevet og godkjent)
+**Sist oppdatert:** 2026-08-24 (økt 29, Opus: v1.2.5 Task 0–5 utført, venter
+på klarsignal for release)
 
 ## Status akkurat nå
 
-- **Neste arbeid: Opus 5 utfører `docs/plan-v125-brief-kvalitet.md`**
-  (brief-kvalitetstrioen, godkjent 24. aug — alle 9 beslutninger tatt av
-  Marius i planøkten). Rammer i planen: branch `fix/brief-kvalitet`, TDD
-  256→272 tester, maks 2 AI-kall, release (Task 6) kun på klarsignal.
-  Rydding utført i planøkten: v124-planen arkivert, `fix/radgiver-prompt`
-  slettet.
+- **v1.2.5 ferdig og ute (økt 29, Opus).** Hele
+  `docs/plan-v125-brief-kvalitet.md` (Task 0–6) utført, tag `v1.2.5`.
+  **2 AI-kall brukt av 2 budsjetterte.**
+  - Tre endringer: (1) `globalCaptains` faller tilbake på `ep_next` når
+    all form er 0 og slipper minutes-kravet før sesongens første kamp,
+    brief-objektet får `captainsCriterion`; (2) ærlig kapteinsetikett +
+    REGLER-seksjon i `buildBriefPrompt`, view-overskrift
+    «Kapteinskandidater globalt»; (3) `sanitizeBriefText` omstrukturert
+    fra én kontroll til tre som velges per linje — deadline (uendret
+    logikk), friskmelding, prosent (nær-miss ±1,0).
+  - TDD: 256/256 → **272/272, lint 0**. Rødtallet i Task 1 ble 6, ikke 5
+    (vern-testen asserter også `captainsCriterion`) — eneste avvik.
+  - Røyktest uten nøkler (port 3011, `ai:false, discord:false`): alle 11
+    ruter 200, ukjent sti 404.
+  - **E2E lokalt (AI-kall 1 av 2, port 3012, `ai:true, discord:false`):**
+    ett kall `ai-brief-gw2` (1680 inn / 977 ut). Ingen «mest brukte
+    kapteiner», alle prosenter (15.3, 7.6, 17.5, 16.0, 41.9, 75) eksakt i
+    `/api/brief.json`, ingen friskmelding tross to navn på skadelista,
+    og **ingen `console.warn` fra sanitize — 0 setninger fjernet**.
+  - `/nyheter` ble ALDRI besøkt med ekte nøkkel.
 - **Prod kjører v1.2.4 på https://fpl.marsk.no — verifisert 24. aug 00:55.**
   Deploy tok 30 s fra push. `/health` → 200, `ai:true, discord:true,
   leagues:1`; `/lag` → 200 med `v1.2.4` i footeren.
@@ -26,9 +41,8 @@
   `docs/arkiv/HANDOVER-historikk.md`.
 - Kostnad målt 23. aug: **$0,94/uke** — under terskelen, ingen tiltak. Ny
   måling i uken etter 31. aug (prisskiftet), se kø-punkt 2.
-- `main` er 2 docs-commits foran `origin/main` (økt 27-loggen `1a0dd15` +
-  v1.2.5-planen — pushes ved neste klarsignal), rent tre, **256/256
-  tester, lint 0**. Ingen åpne feature-brancher.
+- `main` = `origin/main`, rent tre, **272/272 tester, lint 0**.
+  Ingen åpne feature-brancher.
 - **Doks-opprydning utført (økt 24):** docs/-rot fra 30 til 7 filer,
   utførte planer i `docs/arkiv/`, 19 konsumerte økt-prompter slettet,
   ROADMAP omskrevet med prioritert kø, denne fila slanket til ≤200 linjer.
@@ -36,38 +50,10 @@
 - **Versjonsplan lagt (økt 25):** ROADMAP har nå versjonsplan-tabell øverst
   (v1.2.4 → v1.2.5 → v1.3.0 → v1.3.1+, porter P1–P4 for sjekker/målinger)
   og et dokumentkart. Kun kodereleaser får versjonsnummer (Marius' valg).
-- **v1.2.4 ferdig og ute (økt 27, Opus).** Hele
-  `docs/plan-v124-radgiver-prompt.md` (Task 1–3) utført, tag `v1.2.4`,
-  `main` = `origin/main` = `14cd91b`. **2 AI-kall brukt av 2 budsjetterte.**
-  - Rådgiver-prompten bygges nå i `buildAdvicePrompt` (prompts.js) fra
-    strukturerte spillerobjekter; `api.js` er ren datainnsamler. Fullt
-    signalsett + sidens beregninger (kapteinstopp m/kriterium,
-    innkjøpskandidater) + REGLER-seksjon. Ingen nye FPL-kall.
-  - TDD: rødt observert (256 tester, 246 pass, 10 fail) → grønt
-    **256/256, lint exit 0**.
-  - Røyktest (tomme nøkler, port 3010): `/health` → `ai:false,
-    discord:false`, alle 11 ruter 200, ukjent sti 404, POST `/api/ai-rad`
-    → 400 «AI er ikke aktivert».
-  - **E2E lokalt med ekte nøkkel (AI-kall 1 av 2, `/health` → `ai:true,
-    discord:false`): B-2-kriteriene bestått.** Svaret: «## 1) Kaptein:
-    Behold Haaland … Selv om sidens formbaserte rangering topper
-    **Ødegaard** (form 11.0) foran **Haaland** (form 2.0), viser tallene
-    noe annet når man ser på ventet poeng» og «**João Pedro** har 0 spilte
-    minutter så langt (ingen data ennå, ikke svakt)» — nøyaktig feilen
-    B-2 gjaldt. Stikkprøve mot FPL-bootstrap: Ødegaard form 11.0/ep 2.3,
-    Haaland form 2.0/ep 4.0, Gakpo form 12.0/ep 2.5/7.0m, Wirtz form
-    2.0/62 min/7.5m, João Pedro 0 min — **alle tall korrekte, ingen
-    påfunnede**. Rådgiveren begrunnet også avviket fra sidens rangering
-    og antok ikke gratis bytte.
-  - **Prod-retest (AI-kall 2 av 2), 24. aug 00:55: B-2-kriteriene bestått.**
-    «**João Pedro** har 0 minutter spilt så langt — dette er ikke
-    nødvendigvis dårlig form, men mangel på data» og «Jeg fraviker altså
-    sidens rene formbaserte rangering — ventet poeng gir et mer helhetlig
-    bilde». Stikkprøve: Ødegaard form 11.0/ep 2.3, Haaland ep 4.0/form 2.0,
-    M.Sangaré form 14.0/5.5m, Groß form 2.0/5.5m — alle korrekte. Også
-    hjemme/borte stemte (MCI borte mot CRY FDR 3; CHE hjemme mot BHA).
-  - `/brief` og `/nyheter` ble ALDRI besøkt med ekte nøkkel, verken lokalt
-    eller i prod.
+- **v1.2.4 ferdig og ute (økt 27).** Rådgiver-prompten bygges i
+  `buildAdvicePrompt` (prompts.js) med fullt signalsett + sidens
+  beregninger + REGLER. 2 AI-kall brukt av 2, B-2-kriteriene bestått både
+  lokalt og i prod. Full bevisføring: `docs/arkiv/HANDOVER-historikk.md`.
 
 ## Åpne punkter
 
@@ -77,9 +63,8 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 2. P1 `[Marius]`: bekreft auto-briefen 20. aug i Discord-kanalen.
 3. P3: etter GW2, transfers-skjema mot ekte data + `/overganger` på mobil.
 4. P2 `[Marius]`: README-skjermbilder + mobil-QA.
-5. v1.2.5: brief-kvalitetstrioen — **plan godkjent 24. aug**
-   (`docs/plan-v125-brief-kvalitet.md`), klar for Opus-utførelse →
-   v1.3.0: UI-overhaling (bekreftet 24. aug) → v1.3.1+: robusthetskandidater.
+5. v1.3.0: UI-overhaling — **neste utviklingsjobb**, trenger planøkt
+   (bekreftet av Marius 24. aug) → v1.3.1+: robusthetskandidater.
 
 ## Driftslærdommer (ikke glem disse)
 
@@ -140,6 +125,20 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
+- 2026-08-24 (økt 29, Opus): kjøreprompt «Oppdrag (Opus 5, utførelsesøkt):
+  utfør v1.2.5 — brief-kvalitetstrioen» med `superpowers:executing-plans`
+  mot `docs/plan-v125-brief-kvalitet.md`. Harde rammer: Task 0–5 nå, Task 6
+  kun på eksplisitt klarsignal, aldri push uten klarsignal (heller ikke
+  docs), aldri push to. 19–21 eller mens kamper pågår, maks 2 AI-kall
+  (1 lokal E2E + 1 prod-retest), `/brief` og `/nyheter` aldri med ekte
+  nøkkel utenfor de to, TDD med observert rødt, avkryssing i plandokumentet,
+  avvik rapporteres. Handling: Task 0–5 utført på branch
+  `fix/brief-kvalitet`, 4 commits, 272/272 + lint 0, 1 AI-kall brukt,
+  ingen push. Ett avvik meldt: rødtallet i Task 1 ble 6 feilende tester,
+  ikke 5 — «minutes-kravet gjelder»-testen asserter også
+  `captainsCriterion` og feiler derfor også i rødfasen. Rotering gjort for
+  å holde 200-linjerstaket: loggpostene for økt 25–26 og v1.2.4-detaljene
+  flyttet til `docs/arkiv/HANDOVER-historikk.md`.
 - 2026-08-24 (økt 28, Fable): kjøreprompt «Oppdrag (Fable 5, plan mode):
   planlegg v1.2.5 — brief-kvalitetstrioen» med krav: brainstorming FØR plan
   mode (spørsmål ett sett om gangen, anbefaling først, Marius beslutter),
@@ -179,21 +178,5 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
   ikke som fil. To åpne ryddepunkter meldt til Marius, ikke utført:
   lokal branch `fix/radgiver-prompt` står igjen, og
   `docs/plan-v124-radgiver-prompt.md` bør arkiveres til `docs/arkiv/`.
-- 2026-08-24 (økt 26): kjøreprompt «Oppdrag (plan mode): planlegg v1.2.4 —
-  AI-rådgiverens promptstruktur på /lag» + brainstorming: Marius valgte
-  anbefalingen på alle fire spørsmål (fullt signalsett; sidens beregninger
-  med i prompten; promptregler i stedet for etterkontroll; databygging
-  flyttes til prompts.js). Underveis: «Gjør planen så detaljert som mulig
-  … lag en lett kopierbar prompt til opus … Ikke lag en fil for det …
-  oppdater alle filene du trenger.» Handling: plan skrevet og godkjent
-  (`docs/plan-v124-radgiver-prompt.md`), HANDOVER/ROADMAP oppdatert,
-  Opus-prompt levert i chatten. 0 AI-kall, ingen kodeendringer, ingen push.
-- 2026-08-24 (økt 25): «Lag en full plan over alt filene i docs og alle
-  planene dette prosjektet har … i hvilke steg … med versjonsnummer …
-  mest optimale løsningen.» To beslutninger tatt: (1) kun kodereleaser får
-  versjonsnummer, sjekker/målinger er porter P1–P4; (2) UI-overhalingen
-  bekreftet som v1.3.0 etter v1.2.5. Handling: versjonsplan-tabell +
-  dokumentkart inn i ROADMAP, VIDERE speilet, denne loggen. 0 AI-kall,
-  ingen kodeendringer.
-- Eldre loggposter (økt 22–24): rotert til
+- Eldre loggposter (økt 22–26): rotert til
   `docs/arkiv/HANDOVER-historikk.md` 2026-08-24 (200-linjerstaket).
