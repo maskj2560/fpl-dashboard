@@ -573,9 +573,9 @@ kun etter eksplisitt «kjør release»/tilsvarende fra Marius (kan skje i samme
 
 ### Task 3: Release v1.2.4 (KUN etter klarsignal fra Marius)
 
-- [ ] **Steg 1: Sjekk tidsvindu** — ikke torsdag 19–21, ingen kamper pågår
+- [x] **Steg 1: Sjekk tidsvindu** — ikke torsdag 19–21, ingen kamper pågår
   (GW2 ~29.–31. aug; sjekk kampstart på `/` eller fixtures før push).
-- [ ] **Steg 2: Bump + CHANGELOG på branchen**
+- [x] **Steg 2: Bump + CHANGELOG på branchen**
 
 ```powershell
 npm version 1.2.4 --no-git-tag-version

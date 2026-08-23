@@ -7,6 +7,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.2.4] - 2026-08-24
+
 ### Fixed
 
 - **AI-rådgiveren på /lag dikter ikke lenger begrunnelser.** Prompten
