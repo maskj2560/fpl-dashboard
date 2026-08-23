@@ -6,7 +6,7 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-23 (økt 24, Fable: doks-opprydning + ROADMAP-revisjon)
+**Sist oppdatert:** 2026-08-24 (økt 25, Fable: versjonsplan + dokumentkart i ROADMAP)
 
 ## Status akkurat nå
 
@@ -23,7 +23,10 @@
   utførte planer i `docs/arkiv/`, 19 konsumerte økt-prompter slettet,
   ROADMAP omskrevet med prioritert kø, denne fila slanket til ≤200 linjer.
   Plan: `docs/plan-doks-opprydning.md`.
-- **Neste arbeid: ROADMAP kø-punkt 1** — AI-rådgiverens promptstruktur på
+- **Versjonsplan lagt (økt 25):** ROADMAP har nå versjonsplan-tabell øverst
+  (v1.2.4 → v1.2.5 → v1.3.0 → v1.3.1+, porter P1–P4 for sjekker/målinger)
+  og et dokumentkart. Kun kodereleaser får versjonsnummer (Marius' valg).
+- **Neste arbeid: v1.2.4 (kø-punkt 1)** — AI-rådgiverens promptstruktur på
   /lag (`api.js:85-88` sender kun form; modellen dikter). Krever egen
   brainstorming + plan + release. Ikke påbegynt.
 
@@ -31,12 +34,13 @@
 
 Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 
-1. Promptstruktur /lag (plan mangler) — neste utviklingsjobb.
-2. Kostnadsmåling uken etter 31. aug (metode i `docs/sjekkpunkt-d-kostnad.md`).
-3. `[Marius]` bekreft auto-briefen 20. aug i Discord-kanalen.
-4. Etter GW2: transfers-skjema mot ekte data + `/overganger` på mobil.
-5. `[Marius]` README-skjermbilder + mobil-QA.
-6. Brief-kvalitetstrioen → 7. UI-overhaling v1.3.0 → 8. robusthetskandidater.
+1. v1.2.4: promptstruktur /lag (plan mangler) — neste utviklingsjobb.
+2. P4: kostnadsmåling uken etter 31. aug (metode i `docs/sjekkpunkt-d-kostnad.md`).
+3. P1 `[Marius]`: bekreft auto-briefen 20. aug i Discord-kanalen.
+4. P3: etter GW2, transfers-skjema mot ekte data + `/overganger` på mobil.
+5. P2 `[Marius]`: README-skjermbilder + mobil-QA.
+6. v1.2.5: brief-kvalitetstrioen → v1.3.0: UI-overhaling (bekreftet 24. aug)
+   → v1.3.1+: robusthetskandidater.
 
 ## Driftslærdommer (ikke glem disse)
 
@@ -97,6 +101,13 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
+- 2026-08-24 (økt 25): «Lag en full plan over alt filene i docs og alle
+  planene dette prosjektet har … i hvilke steg … med versjonsnummer …
+  mest optimale løsningen.» To beslutninger tatt: (1) kun kodereleaser får
+  versjonsnummer, sjekker/målinger er porter P1–P4; (2) UI-overhalingen
+  bekreftet som v1.3.0 etter v1.2.5. Handling: versjonsplan-tabell +
+  dokumentkart inn i ROADMAP, VIDERE speilet, denne loggen. 0 AI-kall,
+  ingen kodeendringer.
 - 2026-08-23 (økt 24, natt ~01:40): kjøreprompt «Oppdrag (Fable, plan mode):
   rydd dokumentasjonen og skriv veikartet ferdig» + fire beslutninger
   besvart (Marius valgte anbefalingen på alle fire): (1) slett konsumerte
