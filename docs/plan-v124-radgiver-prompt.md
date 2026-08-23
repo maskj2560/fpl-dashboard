@@ -588,7 +588,7 @@ npm version 1.2.4 --no-git-tag-version
     (samme mønster som v1.2.3).
   - Commit: `chore(release): v1.2.4`.
 
-- [ ] **Steg 3: Merge, tag, push**
+- [x] **Steg 3: Merge, tag, push**
 
 ```powershell
 git checkout main
@@ -598,12 +598,12 @@ git tag -a v1.2.4 -m "AI-radgiveren far fullt datagrunnlag og strukturert prompt
 git push origin main --follow-tags
 ```
 
-- [ ] **Steg 4: Prod-verifisering** — Coolify auto-deployer. Sjekk
+- [x] **Steg 4: Prod-verifisering** — Coolify auto-deployer. Sjekk
   `https://fpl.marsk.no/health` (200, `ai:true`) og at `/lag` laster. Så
   **prod-retest av B-2 (AI-kall 2 av 2):** Marius klikker «Spør AI om råd»
   på /lag (eller økten POST-er `/api/ai-rad` i prod) og svaret vurderes mot
   kriteriene fra Task 2 steg 2. **Ikke sveip `/brief`/`/nyheter` i prod.**
-- [ ] **Steg 5: HANDOVER-oppdatering** (prod verifisert, AI-kall-telling: 2)
+- [x] **Steg 5: HANDOVER-oppdatering** (prod verifisert, AI-kall-telling: 2)
   + commit + push av docs (utenfor kampvindu).
 
 ## Bevisst utelatt (ikke gjør dette)

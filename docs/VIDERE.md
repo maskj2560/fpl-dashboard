@@ -5,7 +5,7 @@
 
 **Sist oppdatert:** 24. august 2026
 
-## Dette har du nå (v1.2.3, live på fpl.marsk.no)
+## Dette har du nå (v1.2.4, live på fpl.marsk.no)
 
 Dashbord med nedtelling og skader · spillertabell med søk og filter · laget
 ditt med kapteinsråd · miniligaen · rundebrief (AI skriver den på norsk) ·
@@ -13,34 +13,39 @@ live-poeng mens kampene går · nyheter med AI-oppsummering · auto-brief til
 Discord kvelden før hver deadline · «Overganger» som viser om byttene dine
 ga eller kostet poeng.
 
-**Nytt siden sist:** sesongstarten er ferdig verifisert — alt virket med
-ekte data. Live-siden viser nå bonuspoeng underveis i kampene, og den
-skjønner at kampen er ferdig ved fløyta (før sto den og «pågikk» hele
-natten). Kapteinsrådene på lagsiden gir mening også før noen har spilt.
-Kostnaden for AI-en er målt: under 1 dollar i uka.
+**Nytt siden sist (v1.2.4, 24. august):** **AI-rådgiveren på lagsiden
+dikter ikke lenger.** Den får nå alle tallene for hver spiller — form,
+ventet poeng, spilte minutter, totalpoeng og skadestatus med spillesjanse —
+pluss forslagene siden selv viser deg. Sier den noe annet enn siden, må den
+begrunne hvorfor. Har en spiller 0 minutter, skal den si «ingen data ennå»,
+ikke «dårlig form». Testet i prod: den skrev nettopp «João Pedro har 0
+minutter spilt så langt — dette er ikke nødvendigvis dårlig form, men
+mangel på data». Nøyaktig feilen du fant.
 
-## Neste oppgave (blir v1.2.4)
+Fra før: sesongstarten er ferdig verifisert — alt virket med ekte data.
+Live-siden viser bonuspoeng underveis i kampene og skjønner at kampen er
+ferdig ved fløyta. Kapteinsrådene på lagsiden gir mening også før noen har
+spilt. Kostnaden for AI-en er målt: under 1 dollar i uka.
 
-**AI-rådgiveren på lagsiden skal slutte å dikte.** I dag får den for lite
-informasjon om spillerne dine, så den finner på begrunnelser (den påsto at
-Haaland hadde «spilt én runde med formscore 0» — han hadde ikke spilt i det
-hele tatt). Etter fiksen får den de faktiske tallene, og svarene kontrolleres
-før de vises. Planlegges i en egen økt — du godkjenner planen før noe bygges.
+## Neste oppgave (blir v1.2.5)
+
+**Rundebriefen blir ærligere.** Den skal ikke kunne skrive «alle er friske»
+når dataene viser en skade, og kapteinslista i briefen får samme
+sesongstart-fiks som lagsiden fikk. Planlegges i en egen økt — du godkjenner
+planen før noe bygges.
 
 ## Deretter, i rekkefølge (nummerert plan, 24. august)
 
 Bare oppdateringer med kodeendring får versjonsnummer. Sjekker og målinger
 er «porter» — de skjer når datoen eller du er klar, uten å stoppe utviklingen.
 
-- **v1.2.4** — AI-rådgiveren slutter å dikte (oppgaven over).
+- ~~**v1.2.4** — AI-rådgiveren slutter å dikte.~~ **Ferdig 24. august.**
 - **Port: sjekke «Overganger» med ekte tall** når du har gjort ditt første
   bytte (etter runde 2, ca. 29.–31. august).
 - **Port: prissjekk etter 1. september** — AI-prisen går opp 50 %, så vi
   måler på nytt at det fortsatt er billig (dagens bruk vil koste ca.
   1,50 dollar/uka).
-- **v1.2.5** — rundebriefen blir ærligere: den skal ikke kunne si «alle er
-  friske» når dataene viser en skade, og kapteinslista i briefen får samme
-  sesongstart-fiks som lagsiden fikk.
+- **v1.2.5** — rundebriefen blir ærligere (oppgaven over).
 - **v1.3.0** — ny drakt på hele siden (stort løft): FPL-følelse med
   klubblogoer og drakter, og valg mellom mørkt og lyst tema. **Du bekreftet
   24. august at du vil ha den** — den bygges etter v1.2.5.

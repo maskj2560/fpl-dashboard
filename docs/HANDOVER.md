@@ -6,11 +6,14 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-24 (økt 27, Opus: v1.2.4 Task 1+2 utført på branch, venter klarsignal for release)
+**Sist oppdatert:** 2026-08-24 (økt 27, Opus: v1.2.4 released og verifisert i prod)
 
 ## Status akkurat nå
 
-- **Prod kjører v1.2.3 på https://fpl.marsk.no — verifisert.** Deploy-planen
+- **Prod kjører v1.2.4 på https://fpl.marsk.no — verifisert 24. aug 00:55.**
+  Deploy tok 30 s fra push. `/health` → 200, `ai:true, discord:true,
+  leagues:1`; `/lag` → 200 med `v1.2.4` i footeren.
+- Eldre: v1.2.3-deployen (22.–23. aug). Deploy-planen
   (port 0–10) ble ferdig utført 22.–23. aug; sjekkpunkt B, C og D er lukket,
   A har ett restpunkt (auto-brief-verifisering, kø-punkt 3). Bevis og
   detaljer: `docs/sjekkpunkt-c-live.md`, `docs/sjekkpunkt-d-kostnad.md` og
@@ -26,9 +29,9 @@
 - **Versjonsplan lagt (økt 25):** ROADMAP har nå versjonsplan-tabell øverst
   (v1.2.4 → v1.2.5 → v1.3.0 → v1.3.1+, porter P1–P4 for sjekker/målinger)
   og et dokumentkart. Kun kodereleaser får versjonsnummer (Marius' valg).
-- **v1.2.4 kodet ferdig på branch `fix/radgiver-prompt` (økt 27, Opus).**
-  Task 1 + Task 2 i `docs/plan-v124-radgiver-prompt.md` utført; **Task 3
-  (release) venter på klarsignal fra Marius.** 2 commits, INGEN push.
+- **v1.2.4 ferdig og ute (økt 27, Opus).** Hele
+  `docs/plan-v124-radgiver-prompt.md` (Task 1–3) utført, tag `v1.2.4`,
+  `main` = `origin/main` = `14cd91b`. **2 AI-kall brukt av 2 budsjetterte.**
   - Rådgiver-prompten bygges nå i `buildAdvicePrompt` (prompts.js) fra
     strukturerte spillerobjekter; `api.js` er ren datainnsamler. Fullt
     signalsett + sidens beregninger (kapteinstopp m/kriterium,
@@ -49,21 +52,26 @@
     2.0/62 min/7.5m, João Pedro 0 min — **alle tall korrekte, ingen
     påfunnede**. Rådgiveren begrunnet også avviket fra sidens rangering
     og antok ikke gratis bytte.
-  - `/brief` og `/nyheter` ble ALDRI besøkt med ekte nøkkel.
+  - **Prod-retest (AI-kall 2 av 2), 24. aug 00:55: B-2-kriteriene bestått.**
+    «**João Pedro** har 0 minutter spilt så langt — dette er ikke
+    nødvendigvis dårlig form, men mangel på data» og «Jeg fraviker altså
+    sidens rene formbaserte rangering — ventet poeng gir et mer helhetlig
+    bilde». Stikkprøve: Ødegaard form 11.0/ep 2.3, Haaland ep 4.0/form 2.0,
+    M.Sangaré form 14.0/5.5m, Groß form 2.0/5.5m — alle korrekte. Også
+    hjemme/borte stemte (MCI borte mot CRY FDR 3; CHE hjemme mot BHA).
+  - `/brief` og `/nyheter` ble ALDRI besøkt med ekte nøkkel, verken lokalt
+    eller i prod.
 
 ## Åpne punkter
 
 Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 
-1. v1.2.4: promptstruktur /lag — **kodet og verifisert lokalt på branch;
-   kun Task 3 (bump, tag, merge, push, prod-retest) gjenstår, KUN på
-   klarsignal fra Marius.** Ikke torsdag 19–21, ikke under GW2 (~29.–31. aug).
-2. P4: kostnadsmåling uken etter 31. aug (metode i `docs/sjekkpunkt-d-kostnad.md`).
-3. P1 `[Marius]`: bekreft auto-briefen 20. aug i Discord-kanalen.
-4. P3: etter GW2, transfers-skjema mot ekte data + `/overganger` på mobil.
-5. P2 `[Marius]`: README-skjermbilder + mobil-QA.
-6. v1.2.5: brief-kvalitetstrioen → v1.3.0: UI-overhaling (bekreftet 24. aug)
-   → v1.3.1+: robusthetskandidater.
+1. P4: kostnadsmåling uken etter 31. aug (metode i `docs/sjekkpunkt-d-kostnad.md`).
+2. P1 `[Marius]`: bekreft auto-briefen 20. aug i Discord-kanalen.
+3. P3: etter GW2, transfers-skjema mot ekte data + `/overganger` på mobil.
+4. P2 `[Marius]`: README-skjermbilder + mobil-QA.
+5. v1.2.5: brief-kvalitetstrioen (neste utviklingsjobb, plan mangler) →
+   v1.3.0: UI-overhaling (bekreftet 24. aug) → v1.3.1+: robusthetskandidater.
 
 ## Driftslærdommer (ikke glem disse)
 
@@ -133,6 +141,11 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
   commits på `fix/radgiver-prompt`), 1 AI-kall brukt, ingen push. Ett
   metodetillegg utover planen: tallene i AI-svaret ble stikkprøvd mot
   FPLs `bootstrap-static/` i tillegg til /lag-siden (gratis, ingen AI).
+  Deretter klarsignal: **«kjør release»** (mandag 24. aug ~00:50). Handling:
+  Task 3 utført — bump 1.2.4, CHANGELOG/ROADMAP/VIDERE, merge til `main`
+  (256/256 + lint 0 på main), tag `v1.2.4`, push, Coolify-deploy på 30 s,
+  prod-retest bestått. Tidsvindu sjekket før push: mandag 00:45, 0 kamper
+  i gang, GW2-deadline 28. aug. Totalt 2 AI-kall i økten.
 - 2026-08-24 (økt 26): kjøreprompt «Oppdrag (plan mode): planlegg v1.2.4 —
   AI-rådgiverens promptstruktur på /lag» + brainstorming: Marius valgte
   anbefalingen på alle fire spørsmål (fullt signalsett; sidens beregninger
