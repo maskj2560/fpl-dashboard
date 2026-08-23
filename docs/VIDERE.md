@@ -3,7 +3,7 @@
 > Enkel oversikt for Marius — oppdateres når noe blir ferdig eller planlagt.
 > (Tekniske detaljer bor i ROADMAP.md; dette er kortversjonen.)
 
-**Sist oppdatert:** 23. august 2026
+**Sist oppdatert:** 24. august 2026
 
 ## Dette har du nå (v1.2.3, live på fpl.marsk.no)
 
@@ -19,7 +19,7 @@ skjønner at kampen er ferdig ved fløyta (før sto den og «pågikk» hele
 natten). Kapteinsrådene på lagsiden gir mening også før noen har spilt.
 Kostnaden for AI-en er målt: under 1 dollar i uka.
 
-## Neste oppgave
+## Neste oppgave (blir v1.2.4)
 
 **AI-rådgiveren på lagsiden skal slutte å dikte.** I dag får den for lite
 informasjon om spillerne dine, så den finner på begrunnelser (den påsto at
@@ -27,17 +27,25 @@ Haaland hadde «spilt én runde med formscore 0» — han hadde ikke spilt i det
 hele tatt). Etter fiksen får den de faktiske tallene, og svarene kontrolleres
 før de vises. Planlegges i en egen økt — du godkjenner planen før noe bygges.
 
-## Deretter, i rekkefølge
+## Deretter, i rekkefølge (nummerert plan, 24. august)
 
-- **Prissjekk etter 1. september** — AI-prisen går opp 50 %, så vi måler på
-  nytt at det fortsatt er billig (dagens bruk vil koste ca. 1,50 dollar/uka).
-- **Sjekke «Overganger» med ekte tall** når du har gjort ditt første bytte.
-- **Rundebriefen skal bli ærligere** — den skal ikke kunne si «alle er
-  friske» når dataene viser en skade, og kapteinslista i briefen skal få
-  samme sesongstart-fiks som lagsiden fikk.
-- **Ny drakt på hele siden** (stort løft): FPL-følelse med klubblogoer og
-  drakter, og valg mellom mørkt og lyst tema. Du bekrefter først at du
-  fortsatt vil ha den — den står bak feilrettingene i køen.
+Bare oppdateringer med kodeendring får versjonsnummer. Sjekker og målinger
+er «porter» — de skjer når datoen eller du er klar, uten å stoppe utviklingen.
+
+- **v1.2.4** — AI-rådgiveren slutter å dikte (oppgaven over).
+- **Port: sjekke «Overganger» med ekte tall** når du har gjort ditt første
+  bytte (etter runde 2, ca. 29.–31. august).
+- **Port: prissjekk etter 1. september** — AI-prisen går opp 50 %, så vi
+  måler på nytt at det fortsatt er billig (dagens bruk vil koste ca.
+  1,50 dollar/uka).
+- **v1.2.5** — rundebriefen blir ærligere: den skal ikke kunne si «alle er
+  friske» når dataene viser en skade, og kapteinslista i briefen får samme
+  sesongstart-fiks som lagsiden fikk.
+- **v1.3.0** — ny drakt på hele siden (stort løft): FPL-følelse med
+  klubblogoer og drakter, og valg mellom mørkt og lyst tema. **Du bekreftet
+  24. august at du vil ha den** — den bygges etter v1.2.5.
+- **v1.3.1 og utover** — små robusthetsfikser fra kvalitetsgjennomgangen,
+  én og én etter avtale.
 
 ## Ting bare du kan gjøre
 
@@ -51,5 +59,3 @@ før de vises. Planlegges i en egen økt — du godkjenner planen før noe bygge
 - AI som kommenterer overgangsanalysen din («godt bytte, dårlig timing …»)
 - Varsel når spillerprisene endrer seg
 - E-postvarsling som alternativ til Discord
-- Diverse små robusthetsfikser fra kvalitetsgjennomgangen (tas én og én,
-  etter avtale)
