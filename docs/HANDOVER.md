@@ -152,6 +152,16 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
   prod-retest bestått, branch `fix/brief-kvalitet` slettet. Tidsvindu
   sjekket før push: mandag 01:38, 0 kamper i gang, neste avspark 19:00
   UTC samme dag. Totalt 2 AI-kall i økten.
+  Til slutt: «Lag en prompt til fable for planøkten. Husk å ta med alle
+  oppdateringer og sånt og at fable skal oppdatere alle filer som trengs.
+  Full planlegging. Jeg vil ha et sluttprodukt på ui overhaulen.» +
+  «Og husk at den skal lage prompt til opus». Handling: planleggingsprompt
+  for v1.3.0 (UI-overhaling) levert i chatten, ikke som fil. Prompten
+  krever brainstorming før plan mode, visuell mockup som Artifact i BEGGE
+  temaer som sluttprodukt, ett definert sluttresultat uten «kan
+  vurderes», oppdatering av plan/ROADMAP/VIDERE/HANDOVER/CLAUDE.md,
+  sletting av den utdaterte `docs/prompt-ui-overhaul-plan.md`, 0 AI-kall,
+  ingen push — og en kopierbar Opus-prompt til slutt.
 - 2026-08-24 (økt 28, Fable): kjøreprompt «Oppdrag (Fable 5, plan mode):
   planlegg v1.2.5 — brief-kvalitetstrioen» med krav: brainstorming FØR plan
   mode (spørsmål ett sett om gangen, anbefaling først, Marius beslutter),
