@@ -7,6 +7,18 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.2.4] - 2026-08-24
+
+### Fixed
+
+- **AI-rådgiveren på /lag dikter ikke lenger begrunnelser.** Prompten
+  sender nå fullt datagrunnlag per spiller (form, forventet poeng,
+  minutter, totalpoeng, skadestatus med spillesjanse), antall
+  ferdigspilte runder, og sidens egne kaptein- og innkjøpsforslag med
+  rangeringskriterium — strukturert i seksjoner med harde regler:
+  0 minutter = «ingen data ennå», aldri påfunnede tall, aldri flagget
+  spiller som kaptein (B-2-funnet fra prod 22. aug).
+
 ## [1.2.3] - 2026-08-22
 
 ### Fixed

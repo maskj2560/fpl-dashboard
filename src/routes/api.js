@@ -5,12 +5,13 @@ import { assembleLive } from '../services/live.js';
 import { getBootstrap, getFixtures, getPicks, getEntry } from '../services/fplClient.js';
 import {
   byId,
+  captainSuggestions,
   currentEvent,
-  formatPrice,
   nextEvent,
   nextOpponents,
   POSITIONS_SHORT,
   resolvePicks,
+  transferInCandidates,
   transferOutCandidates,
 } from '../services/analysis.js';
 import { formatDateTime } from '../services/format.js';
@@ -54,22 +55,15 @@ router.post('/ai-rad', async (req, res, next) => {
     const squad = resolvePicks(picks.picks, elementsById).map((s) => s.player);
     const fromGw = nextEvent(bootstrap.events)?.id ?? gw;
 
-    // Kontekst modellen ellers gjetter på: hvilken runde rådet gjelder, når
-    // deadline er, hvem som allerede har bindet, og hvem troppen møter.
-    // Alt hentes fra data vi uansett har lastet — ingen nye nettverkskall.
+    // Fullt datagrunnlag + sidens egne beregninger — se buildAdvicePrompt for hvorfor.
     const deadline = bootstrap.events.find((e) => e.id === fromGw)?.deadline_time;
     const nameOf = (pick) => elementsById.get(pick?.element)?.web_name ?? null;
     const opponentsByTeam = nextOpponents(fixtures, fromGw);
-    const opponentText = (teamId) => {
-      const matches = opponentsByTeam.get(teamId);
-      if (!matches?.length) return 'ingen kamp';
-      return matches
-        .map(
-          (m) =>
-            `mot ${teamsById.get(m.opponent)?.short_name ?? '?'} (${m.home ? 'hjemme' : 'borte'}, FDR ${m.difficulty})`,
-        )
-        .join(' og ');
-    };
+    const squadIds = new Set(squad.map((p) => p.id));
+    const bank = picks.entry_history.bank;
+    const outs = transferOutCandidates(squad, fixtures, fromGw);
+    const captains = captainSuggestions(squad, fixtures, fromGw);
+    const shortName = (teamId) => teamsById.get(teamId)?.short_name ?? '?';
 
     const result = await ai.generate({
       cacheKey: `ai-rad-${config.fplTeamId}-gw${fromGw}`,
@@ -77,16 +71,45 @@ router.post('/ai-rad', async (req, res, next) => {
       system: 'Du er en norsk Fantasy Premier League-rådgiver. Vær konkret.',
       prompt: buildAdvicePrompt({
         entryName: entry.name,
-        bank: picks.entry_history.bank,
+        bank,
         fromGw,
         deadlineText: deadline ? formatDateTime(deadline) : null,
         captainName: nameOf(picks.picks.find((p) => p.is_captain)),
         viceName: nameOf(picks.picks.find((p) => p.is_vice_captain)),
-        squadLines: squad.map(
-          (p) =>
-            `${p.web_name} (${teamsById.get(p.team)?.short_name}, ${POSITIONS_SHORT[p.element_type]}, ${formatPrice(p.now_cost)}, form ${p.form}, ${opponentText(p.team)})`,
-        ),
-        outs: transferOutCandidates(squad, fixtures, fromGw).map((o) => `${o.player.web_name}: ${o.reasons.join('; ')}`),
+        roundsPlayed: bootstrap.events.filter((e) => e.finished).length,
+        squad: squad.map((p) => ({
+          name: p.web_name,
+          team: shortName(p.team),
+          pos: POSITIONS_SHORT[p.element_type],
+          price: p.now_cost,
+          form: p.form,
+          epNext: p.ep_next,
+          minutes: p.minutes,
+          totalPoints: p.total_points,
+          status: p.status,
+          news: p.news,
+          chance: p.chance_of_playing_next_round,
+          opponents: (opponentsByTeam.get(p.team) ?? []).map((m) => ({
+            team: shortName(m.opponent),
+            home: m.home,
+            fdr: m.difficulty,
+          })),
+        })),
+        pageCaptains: {
+          criterion: captains[0]?.criterion ?? null,
+          list: captains.map((c) => ({ name: c.player.web_name, reasons: c.reasons })),
+        },
+        transfers: outs.map((o) => ({
+          outName: o.player.web_name,
+          reasons: o.reasons,
+          inn: transferInCandidates(o.player, bootstrap.elements, squadIds, bank, fixtures, fromGw).map((k) => ({
+            name: k.player.web_name,
+            team: shortName(k.player.team),
+            price: k.player.now_cost,
+            form: k.player.form,
+            epNext: k.player.ep_next,
+          })),
+        })),
       }),
       maxTokens: 4000,
     });

@@ -37,14 +37,21 @@ export function buildBriefPrompt(brief) {
   return parts.join('\n');
 }
 
+// Kriterienavn fra captainSuggestions (analysis.js) → norsk etikett.
+const CRITERION_LABELS = { form: 'form', ep_next: 'forventet poeng (FPL)' };
+
 /**
  * Rådgiver-prompten (/lag → «Spør AI om råd»).
  *
- * Runde, deadline og nåværende kaptein er med fordi modellen ellers ikke vet
- * hvilken runde rådet gjelder — ved sesongstart viser siden runden som pågår,
- * mens anbefalingene gjelder den neste. Antall gratis bytter er ikke
- * tilgjengelig uten innlogging (`my-team/` gir 403), så modellen instrueres
- * eksplisitt om ikke å spekulere i det.
+ * Fullt signalsett per spiller (form, ep_next, minutter, totalpoeng,
+ * skadestatus) skiller «ingen data» fra «dårlig form» — uten det diktet
+ * modellen begrunnelser om spillere med 0 minutter (B-2, prod 22. aug 2026).
+ * Sidens egne beregninger (kapteinstopp med kriterium, innkjøpskandidater)
+ * sendes med så rådgiveren og /lag resonnerer fra samme rangering — UI-et
+ * faller tilbake på ep_next når all form er 0. Runde, deadline og nåværende
+ * kaptein er med fordi modellen ellers ikke vet hvilken runde rådet gjelder.
+ * Antall gratis bytter er ikke tilgjengelig uten innlogging (`my-team/` gir
+ * 403), så modellen instrueres eksplisitt om ikke å spekulere i det.
  */
 export function buildAdvicePrompt({
   entryName,
@@ -53,9 +60,28 @@ export function buildAdvicePrompt({
   deadlineText,
   captainName,
   viceName,
-  squadLines,
-  outs,
+  roundsPlayed,
+  squad = [],
+  pageCaptains = null,
+  transfers = [],
 }) {
+  const opponentText = (opponents) =>
+    opponents.length
+      ? opponents.map((o) => `mot ${o.team} (${o.home ? 'hjemme' : 'borte'}, FDR ${o.fdr})`).join(' og ')
+      : 'ingen kamp';
+  const injuryNote = (p) => {
+    if (p.status === 'a' && (p.chance == null || p.chance >= 100)) return '';
+    const cause = p.news?.trim() || 'skadet/usikker';
+    const chance = p.chance != null ? ` (spillesjanse ${p.chance} %)` : '';
+    return ` — SKADET/USIKKER: ${cause}${chance}`;
+  };
+  const playerLine = (p) =>
+    `- ${p.name} (${p.team}, ${p.pos}, ${formatPrice(p.price)}, form ${p.form}, ventet ${p.epNext} p neste runde, ${p.minutes} min, ${p.totalPoints} p totalt, ${opponentText(p.opponents)})${injuryNote(p)}`;
+  const innText = (inn) =>
+    inn.length
+      ? inn.map((k) => `${k.name} (${k.team}, ${formatPrice(k.price)}, form ${k.form}, ventet ${k.epNext} p)`).join(', ')
+      : 'ingen';
+
   const parts = [`Du er FPL-rådgiver. Laget «${entryName}» har ${formatPrice(bank)} £m i banken.`];
   if (fromGw != null) {
     parts.push(
@@ -71,17 +97,31 @@ export function buildAdvicePrompt({
         : `Nåværende kaptein: ${captainName}.`,
     );
   }
+  if (roundsPlayed != null) parts.push(`Ferdigspilte runder denne sesongen: ${roundsPlayed}.`);
+
   parts.push(
     '',
-    'Troppen (navn, lag, posisjon, pris, form, motstander):',
-    ...squadLines.map((l) => `- ${l}`),
+    'DATAGRUNNLAG — troppen (lag, posisjon, pris, form, ventet poeng neste runde (FPL), spilletid, totalpoeng, motstander):',
+    ...squad.map(playerLine),
     '',
-    outs.length ? 'Automatisk flaggede salgskandidater:' : 'Ingen automatisk flaggede salgskandidater.',
-    ...outs.map((o) => `- ${o}`),
+    'SIDENS BEREGNINGER (det brukeren ser på /lag):',
+    pageCaptains?.list?.length
+      ? `Kapteinsforslag, rangert på ${CRITERION_LABELS[pageCaptains.criterion] ?? pageCaptains.criterion}:`
+      : 'Siden har ingen kapteinsforslag ennå (mangler datagrunnlag).',
+    ...(pageCaptains?.list ?? []).map((c) => `- ${c.name}: ${c.reasons.join('; ')}`),
     '',
-    'Du vet ikke hvor mange gratis bytter laget har. Anta aldri at et bytte er gratis, og bruk aldri antall gratis bytter som argument. Nevn kostnaden på 4 poeng kun som forbehold.',
+    transfers.length
+      ? 'Salgskandidater med sidens innkjøpskandidater:'
+      : 'Ingen automatisk flaggede salgskandidater.',
+    ...transfers.map((t) => `- Ut: ${t.outName} (${t.reasons.join('; ')}). Inn-kandidater: ${innText(t.inn)}`),
     '',
-    'Gi på norsk: 1) beste kaptein denne runden med begrunnelse — si eksplisitt om nåværende kaptein bør beholdes eller byttes, 2) anbefalt bytte (ut/inn) hvis noe gir mening — ellers si at man bør spare bytte, 3) én ting å følge med på før deadline. Sett spillernavn i **fet**. Maks ~250 ord.',
+    'REGLER:',
+    '- 0 minutter spilt betyr «ingen data ennå» — omtal det aldri som svak eller dårlig form.',
+    '- Bruk kun tall som står i datagrunnlaget over. Finn aldri på formtall, poeng eller annen statistikk.',
+    '- Anbefal aldri en spiller merket SKADET/USIKKER som kaptein, og nevn spillesjansen når du omtaler en flagget spiller.',
+    '- Du vet ikke hvor mange gratis bytter laget har. Anta aldri at et bytte er gratis, og bruk aldri antall gratis bytter som argument. Nevn kostnaden på 4 poeng kun som forbehold.',
+    '',
+    'OPPGAVE — gi på norsk: 1) beste kaptein denne runden med begrunnelse — si eksplisitt om nåværende kaptein bør beholdes eller byttes, 2) anbefalt bytte (ut/inn) hvis noe gir mening — ellers si at man bør spare bytte, 3) én ting å følge med på før deadline. Avviker rådet ditt fra sidens beregninger, si kort hvorfor. Sett spillernavn i **fet**. Maks ~250 ord.',
   );
   return parts.join('\n');
 }

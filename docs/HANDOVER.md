@@ -6,7 +6,7 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-24 (økt 26, Fable: plan for v1.2.4 rådgiver-prompt godkjent)
+**Sist oppdatert:** 2026-08-24 (økt 27, Opus: v1.2.4 Task 1+2 utført på branch, venter klarsignal for release)
 
 ## Status akkurat nå
 
@@ -26,18 +26,38 @@
 - **Versjonsplan lagt (økt 25):** ROADMAP har nå versjonsplan-tabell øverst
   (v1.2.4 → v1.2.5 → v1.3.0 → v1.3.1+, porter P1–P4 for sjekker/målinger)
   og et dokumentkart. Kun kodereleaser får versjonsnummer (Marius' valg).
-- **Neste arbeid: v1.2.4 (kø-punkt 1) — plan klar og godkjent (økt 26).**
-  AI-rådgiverens promptstruktur på /lag: fullt datagrunnlag per spiller +
-  sidens beregninger + REGLER-seksjon, alt flyttet til `prompts.js`.
-  Plan: `docs/plan-v124-radgiver-prompt.md` (4 beslutninger tatt av Marius,
-  se planens Designbeslutninger). Neste: utførelsesøkt med Opus 5
-  (Task 1–2; Task 3 = release KUN på klarsignal). Ingen kode skrevet ennå.
+- **v1.2.4 kodet ferdig på branch `fix/radgiver-prompt` (økt 27, Opus).**
+  Task 1 + Task 2 i `docs/plan-v124-radgiver-prompt.md` utført; **Task 3
+  (release) venter på klarsignal fra Marius.** 2 commits, INGEN push.
+  - Rådgiver-prompten bygges nå i `buildAdvicePrompt` (prompts.js) fra
+    strukturerte spillerobjekter; `api.js` er ren datainnsamler. Fullt
+    signalsett + sidens beregninger (kapteinstopp m/kriterium,
+    innkjøpskandidater) + REGLER-seksjon. Ingen nye FPL-kall.
+  - TDD: rødt observert (256 tester, 246 pass, 10 fail) → grønt
+    **256/256, lint exit 0**.
+  - Røyktest (tomme nøkler, port 3010): `/health` → `ai:false,
+    discord:false`, alle 11 ruter 200, ukjent sti 404, POST `/api/ai-rad`
+    → 400 «AI er ikke aktivert».
+  - **E2E lokalt med ekte nøkkel (AI-kall 1 av 2, `/health` → `ai:true,
+    discord:false`): B-2-kriteriene bestått.** Svaret: «## 1) Kaptein:
+    Behold Haaland … Selv om sidens formbaserte rangering topper
+    **Ødegaard** (form 11.0) foran **Haaland** (form 2.0), viser tallene
+    noe annet når man ser på ventet poeng» og «**João Pedro** har 0 spilte
+    minutter så langt (ingen data ennå, ikke svakt)» — nøyaktig feilen
+    B-2 gjaldt. Stikkprøve mot FPL-bootstrap: Ødegaard form 11.0/ep 2.3,
+    Haaland form 2.0/ep 4.0, Gakpo form 12.0/ep 2.5/7.0m, Wirtz form
+    2.0/62 min/7.5m, João Pedro 0 min — **alle tall korrekte, ingen
+    påfunnede**. Rådgiveren begrunnet også avviket fra sidens rangering
+    og antok ikke gratis bytte.
+  - `/brief` og `/nyheter` ble ALDRI besøkt med ekte nøkkel.
 
 ## Åpne punkter
 
 Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 
-1. v1.2.4: promptstruktur /lag — plan godkjent 24. aug, utførelsesøkt gjenstår.
+1. v1.2.4: promptstruktur /lag — **kodet og verifisert lokalt på branch;
+   kun Task 3 (bump, tag, merge, push, prod-retest) gjenstår, KUN på
+   klarsignal fra Marius.** Ikke torsdag 19–21, ikke under GW2 (~29.–31. aug).
 2. P4: kostnadsmåling uken etter 31. aug (metode i `docs/sjekkpunkt-d-kostnad.md`).
 3. P1 `[Marius]`: bekreft auto-briefen 20. aug i Discord-kanalen.
 4. P3: etter GW2, transfers-skjema mot ekte data + `/overganger` på mobil.
@@ -104,6 +124,15 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
+- 2026-08-24 (økt 27, Opus): kjøreprompt «Oppdrag (Opus 5, utførelsesøkt):
+  utfør v1.2.4 — AI-rådgiverens promptstruktur på /lag» med harde rammer:
+  Task 1–2 nå, Task 3 kun på klarsignal, aldri push uten klarsignal, maks
+  2 AI-kall (1 lokal E2E + 1 prod-retest), aldri /brief eller /nyheter med
+  ekte nøkkel, TDD med observert rødt, checkbox-sporing i plandokumentet,
+  avvik rapporteres. Handling: Task 1 + Task 2 utført etter planen (2
+  commits på `fix/radgiver-prompt`), 1 AI-kall brukt, ingen push. Ett
+  metodetillegg utover planen: tallene i AI-svaret ble stikkprøvd mot
+  FPLs `bootstrap-static/` i tillegg til /lag-siden (gratis, ingen AI).
 - 2026-08-24 (økt 26): kjøreprompt «Oppdrag (plan mode): planlegg v1.2.4 —
   AI-rådgiverens promptstruktur på /lag» + brainstorming: Marius valgte
   anbefalingen på alle fire spørsmål (fullt signalsett; sidens beregninger

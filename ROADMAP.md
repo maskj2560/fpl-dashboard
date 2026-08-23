@@ -1,4 +1,4 @@
-# Roadmap — FPL-dashboard
+﻿# Roadmap — FPL-dashboard
 
 Køen øverst er den prioriterte rekkefølgen for alt som gjenstår — nytt
 arbeid starter alltid på punkt 1 som ikke er blokkert. Nye idéer legges
@@ -15,44 +15,22 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 
 | Nr | Hva | Kø-punkt | Blokkert av |
 | --- | --- | --- | --- |
-| **v1.2.4** | AI-rådgiverens promptstruktur på /lag | 1 | ingenting — neste utviklingsjobb |
-| **P1** | Marius: bekreft auto-briefen 20. aug i Discord | 3 | Marius (minutter) |
-| **P2** | Marius: README-skjermbilder + mobil-QA | 5 | Marius |
-| **P3** | Etter GW2: transfers-skjema mot ekte data | 4 | GW2 spilt (~29.–31. aug) |
-| **P4** | Kostnadsmåling uken etter 1. sep | 2 | dato |
-| **v1.2.5** | Brief-kvalitetstrioen | 6 | v1.2.4 |
-| **v1.3.0** | UI-overhaling | 7 | v1.2.5 |
-| **v1.3.1+** | Robusthetskandidatene, én og én etter avtale | 8 | avtale per punkt |
+| ~~**v1.2.4**~~ | ~~AI-rådgiverens promptstruktur på /lag~~ | **utført 24. aug** | — |
+| **P1** | Marius: bekreft auto-briefen 20. aug i Discord | 2 | Marius (minutter) |
+| **P2** | Marius: README-skjermbilder + mobil-QA | 4 | Marius |
+| **P3** | Etter GW2: transfers-skjema mot ekte data | 3 | GW2 spilt (~29.–31. aug) |
+| **P4** | Kostnadsmåling uken etter 1. sep | 1 | dato |
+| **v1.2.5** | Brief-kvalitetstrioen | 5 | ingenting — neste utviklingsjobb |
+| **v1.3.0** | UI-overhaling | 6 | v1.2.5 |
+| **v1.3.1+** | Robusthetskandidatene, én og én etter avtale | 7 | avtale per punkt |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
-Kalenderlogikk: utviklingssporet (v1.2.4 → v1.2.5 → v1.3.0) går uavbrutt;
+Kalenderlogikk: utviklingssporet (v1.2.5 → v1.3.0) går uavbrutt;
 portene fyres når dato/Marius tillater, uten å blokkere sporet.
 
 ## Kø — hva gjøres videre, i rekkefølge
 
-### 1. AI-rådgiverens promptstruktur på /lag (v1.2.4)
-
-- **Hva:** rådgiver-prompten (`src/routes/api.js:85-88`) sender kun navn,
-  lag, posisjon, pris, **form** og motstander per spiller. Verken `minutes`,
-  `total_points`, `ep_next`, skadestatus eller antall spilte runder følger
-  med, så modellen kan ikke skille «ingen data» fra «dårlig form» og dikter
-  opp begrunnelser — den skrev «Haaland … formscore 0.0 (kun én runde
-  spilt)» om en spiller med `minutes: 0` (Marius' B-2-kall i prod
-  2026-08-22 kl. 02:36). Utilsiktet sideeffekt av v1.2.2: UI-et rangerer på
-  `ep_next` når ingen har form, mens prompten fortsatt kun får `form` —
-  siden og rådgiveren resonnerer fra ulike signaler. Rådgiveren har heller
-  ingen etterkontroll tilsvarende `sanitizeBriefText`
-  (`src/services/prompts.js:135`).
-- **Hvorfor her:** Marius har pekt på denne som den han vil ha fikset;
-  kjent feil i prod.
-- **Eier detaljene:** `docs/plan-v124-radgiver-prompt.md` (brainstormet og
-  godkjent 24. aug, økt 26). Utføres av Opus 5 i egen økt; egen release
-  (planens regel: aldri fiks inni en deploy).
-- **Blokkert av:** ingenting.
-- **Størrelse:** liten–medium — 1 planøkt + 1 utførelsesøkt, 1–2 AI-kall
-  til ende-til-ende-verifisering.
-
-### 2. (P4) Kostnadskontroll etter prisskiftet
+### 1. (P4) Kostnadskontroll etter prisskiftet
 
 - **Hva:** Sonnet 5 går fra intropris $2/$10 til ordinær $3/$15 per 1M
   tokens 1. september. Målingen 23. aug ga $0,94/uke (under terskelen);
@@ -65,7 +43,7 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
   organisk trafikk uten utviklingsstøy.
 - **Størrelse:** liten.
 
-### 3. (P1) Verifiser auto-briefen 20. august `[Marius]`
+### 2. (P1) Verifiser auto-briefen 20. august `[Marius]`
 
 - **Hva:** eneste gjenstående punkt fra sjekkpunkt A: at den naturlige
   auto-briefen torsdag 20. aug ~19:30 faktisk kom. Coolify-loggen er
@@ -74,7 +52,7 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
 - **Blokkert av:** Marius (sjekker Discord-kanalen).
 - **Størrelse:** minutter.
 
-### 4. (P3) Etter GW2: verifiser transfers-skjemaet mot ekte data
+### 3. (P3) Etter GW2: verifiser transfers-skjemaet mot ekte data
 
 - **Hva:** feltnavnene i `entry/5330646/transfers/` (`element_in`,
   `element_out`, `event`, `time`, `event_transfers_cost`) er antatt og lest
@@ -87,7 +65,7 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
   28. aug 19:30).
 - **Størrelse:** liten.
 
-### 5. (P2) README-skjermbilder + mobil-QA `[Marius]`
+### 4. (P2) README-skjermbilder + mobil-QA `[Marius]`
 
 - **Hva:** Del 6-restene fra sesongstart-verifiseringen: skjermbilder til
   README (dashbord, /spillere, /lag i desktop + 390 px), og mobilvisning på
@@ -96,7 +74,7 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
 - **Blokkert av:** Marius (nettleser + telefon).
 - **Størrelse:** liten.
 
-### 6. Brief-kvalitetstrioen (v1.2.5, én release)
+### 5. Brief-kvalitetstrioen (v1.2.5, én release)
 
 Tre sammenhengende funn fra sjekkpunkt A — samme filfamilie
 (`brief.js`/`prompts.js`), samme testmønster, bør tas samlet:
@@ -120,10 +98,10 @@ Tre sammenhengende funn fra sjekkpunkt A — samme filfamilie
   lista faktisk er.
 
 - **Eier detaljene:** dette punktet; plan mangler.
-- **Blokkert av:** v1.2.4 (punkt 1 — samme AI-kall-disiplin, ryddigst etter tur).
+- **Blokkert av:** ingenting — v1.2.4 er ute, dette er neste utviklingsjobb.
 - **Størrelse:** medium.
 
-### 7. UI-overhaling (v1.3.0)
+### 6. UI-overhaling (v1.3.0)
 
 - **Hva:** FPL-gjenkjennelse (klubblogoer/drakter), clean og lett å bruke,
   mørk/lys/auto-tema. Planleggingsprompten er skrevet, men aldri kjørt —
@@ -136,7 +114,7 @@ Tre sammenhengende funn fra sjekkpunkt A — samme filfamilie
 - **Størrelse:** stor — egen planøkt, flere utførelsesøkter i etapper,
   QA-runder hos Marius.
 
-### 8. Robusthetskandidater (v1.3.1+, avtales én og én, uprioritert innbyrdes)
+### 7. Robusthetskandidater (v1.3.1+, avtales én og én, uprioritert innbyrdes)
 
 Reelle funn fra kvalitetspasset v1.1.3 (P3) og verifiseringen — ingen
 fikses uten avtale:
@@ -183,7 +161,7 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 
 ---
 
-## Utført (v0.1.0 → v1.2.3)
+## Utført (v0.1.0 → v1.2.4)
 
 ### v0.1.0 — Deploybart skjelett (MVP)
 
@@ -399,3 +377,28 @@ i poengsummen). BPS-estimatet beholdes for vinduet før FPL publiserer.
       Ødegaard +3 «Bekreftet av FPL», Effektivt 11 (ikke 14); BPS-estimat virket
       under HUL–MUN; 0 dobbelttellinger av 1621 sampler. Se
       `docs/sjekkpunkt-c-live.md` → «Resultat fra kampvinduet».
+
+### v1.2.4 — AI-rådgiverens promptstruktur på /lag (B-2)
+
+_Plan: `docs/plan-v124-radgiver-prompt.md`._
+
+Rådgiver-prompten sendte kun navn, lag, posisjon, pris, form og motstander,
+så modellen kunne ikke skille «ingen data» (0 minutter) fra «dårlig form» —
+i prod 22. aug skrev den «Haaland … formscore 0.0 (kun én runde spilt)» om en
+spiller med `minutes: 0`. UI-et rangerte samtidig på `ep_next` mens prompten
+kun fikk `form`, så siden og rådgiveren resonnerte fra ulike signaler.
+
+- [x] `buildAdvicePrompt` (`prompts.js`) tar strukturerte spillerobjekter og
+      formaterer selv; `api.js` ble ren datainnsamler (TDD, 6 nye tester)
+- [x] Fullt signalsett per spiller: form, `ep_next`, minutter, totalpoeng,
+      skadestatus med spillesjanse, motstandere — pluss ferdigspilte runder
+- [x] Sidens egne beregninger med i prompten: kapteinstopp med
+      rangeringskriterium og innkjøpskandidater per salgskandidat
+- [x] REGLER-seksjon: 0 min = «ingen data ennå», aldri påfunnede tall, aldri
+      flagget spiller som kaptein, aldri anta gratis bytte
+- [x] Røyktest (tomme nøkler): 11 ruter 200, 404, POST `/api/ai-rad` → 400
+- [x] Lokal E2E med ekte nøkkel — **B-2-kriteriene bestått 24. aug.**
+      Svaret skrev «**João Pedro** har 0 spilte minutter så langt (ingen data
+      ennå, ikke svakt)» og begrunnet avviket fra sidens formrangering med
+      ventet poeng. Stikkprøve mot FPL-bootstrap: alle siterte tall korrekte.
+- [x] Release v1.2.4 + prod-retest

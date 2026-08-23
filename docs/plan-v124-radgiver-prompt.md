@@ -1,4 +1,4 @@
-# v1.2.4 — AI-rådgiverens promptstruktur på /lag — implementeringsplan
+﻿# v1.2.4 — AI-rådgiverens promptstruktur på /lag — implementeringsplan
 
 > Planlagt av Fable 5 i plan mode, 2026-08-24 (økt 26). Brainstormet med
 > Marius — fire beslutninger tatt (se Designbeslutninger). Utføres av Opus 5
@@ -308,14 +308,14 @@ fortsatt ingen nye nettverkskall.)
 - Test: `test/prompts.test.js` (4 eksisterende advice-tester skrives om, 6 nye)
 - Docs: `CHANGELOG.md`, `ROADMAP.md`, `CLAUDE.md`
 
-- [ ] **Steg 1: Branch**
+- [x] **Steg 1: Branch**
 
 ```powershell
 git -C "c:\Users\mariu\Documents\Claude Code\FPL" status
 git checkout -b fix/radgiver-prompt main
 ```
 
-- [ ] **Steg 2: Skriv om `RAD_ARGS` og de 4 advice-testene, legg til 6 nye**
+- [x] **Steg 2: Skriv om `RAD_ARGS` og de 4 advice-testene, legg til 6 nye**
 
 Nytt `RAD_ARGS` (erstatter dagens på linje ~269):
 
@@ -441,7 +441,7 @@ test('buildAdvicePrompt lister innkjøpskandidater med data, og «ingen» når l
 });
 ```
 
-- [ ] **Steg 3: Observer rødt**
+- [x] **Steg 3: Observer rødt**
 
 ```powershell
 npm test
@@ -451,11 +451,11 @@ Forvent: **256 tester, 246 pass, 10 fail** — de 4 omskrevne + 6 nye (gammel
 implementasjon leser `squadLines` som nå er `undefined` → TypeError). Vis
 talllinjene.
 
-- [ ] **Steg 4: Implementer** målimplementasjonen i `prompts.js` og
+- [x] **Steg 4: Implementer** målimplementasjonen i `prompts.js` og
   målendringen i `api.js`. Sjekk at `formatPrice` fjernes fra api.js-importen
   hvis ubrukt.
 
-- [ ] **Steg 5: Observer grønt + lint**
+- [x] **Steg 5: Observer grønt + lint**
 
 ```powershell
 npm test
@@ -465,7 +465,7 @@ npm run lint
 Forvent: **256/256**, lint 0. (De øvrige prompts-testene, inkl.
 sanitize-testene, urørte og grønne.)
 
-- [ ] **Steg 6: Docs i samme commit**
+- [x] **Steg 6: Docs i samme commit**
 
   - `CHANGELOG.md` under `## [Unreleased]`, ny `### Fixed`:
 
@@ -501,7 +501,7 @@ sanitize-testene, urørte og grønne.)
                        sanitizeBriefText (etterkontroll av AI-briefen)
     ```
 
-- [ ] **Steg 7: Commit**
+- [x] **Steg 7: Commit**
 
 ```powershell
 git add src/services/prompts.js src/routes/api.js test/prompts.test.js CHANGELOG.md ROADMAP.md CLAUDE.md
@@ -512,7 +512,7 @@ git commit -m "fix(ai): radgiveren far fullt datagrunnlag og strukturert prompt"
 
 ### Task 2: Røyktest + 1 lokal E2E-verifisering + handover (én commit)
 
-- [ ] **Steg 1: Røyktest med TOMME nøkler** (teknikk fra HANDOVER-lærdommen:
+- [x] **Steg 1: Røyktest med TOMME nøkler** (teknikk fra HANDOVER-lærdommen:
   `loadEnvFile` overskriver ikke variabler `--env-file` alt har satt)
 
 ```powershell
@@ -527,7 +527,7 @@ feilsøk.** Deretter alle 11 ruter → 200 og ukjent sti → 404 (sløyfa fra
 `Invoke-WebRequest -Method POST http://localhost:3010/api/ai-rad` skal gi
 **400** («AI er ikke aktivert»). Stopp serveren.
 
-- [ ] **Steg 2: Lokal E2E med EKTE Anthropic-nøkkel (AI-kall 1 av 2)**
+- [x] **Steg 2: Lokal E2E med EKTE Anthropic-nøkkel (AI-kall 1 av 2)**
 
 Ny env-fil UTEN `ANTHROPIC_API_KEY`-linje (repoets `.env` fyller den via
 `loadEnvFile`), men med TOM `DISCORD_WEBHOOK_URL=`:
@@ -553,7 +553,7 @@ i svaret mot `/lag`-siden eller serverloggens datagrunnlag; (d) omtales en
 serveren. Feiler kriteriene: rapporter til Marius FØR release — ikke
 «fiks» prompten på egen hånd.
 
-- [ ] **Steg 3: HANDOVER + ROADMAP, commit**
+- [x] **Steg 3: HANDOVER + ROADMAP, commit**
 
   - `docs/HANDOVER.md`: «Sist oppdatert», status (branch ferdig lokalt,
     256/256, lint 0, røyktest OK, E2E-vurderingen med sitat av de viktigste
@@ -573,9 +573,9 @@ kun etter eksplisitt «kjør release»/tilsvarende fra Marius (kan skje i samme
 
 ### Task 3: Release v1.2.4 (KUN etter klarsignal fra Marius)
 
-- [ ] **Steg 1: Sjekk tidsvindu** — ikke torsdag 19–21, ingen kamper pågår
+- [x] **Steg 1: Sjekk tidsvindu** — ikke torsdag 19–21, ingen kamper pågår
   (GW2 ~29.–31. aug; sjekk kampstart på `/` eller fixtures før push).
-- [ ] **Steg 2: Bump + CHANGELOG på branchen**
+- [x] **Steg 2: Bump + CHANGELOG på branchen**
 
 ```powershell
 npm version 1.2.4 --no-git-tag-version
