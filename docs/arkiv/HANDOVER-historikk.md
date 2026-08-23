@@ -692,3 +692,57 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
   Coolify på fpl.marsk.no); «ta notat av alt jeg sier» → denne loggen;
   «ROADMAP som løpende todo»; «fiks deploy til Coolify/GitHub først» →
   gjort; Claude in Chrome-prompt for Coolify-oppsett levert.
+
+## Loggposter økt 25–26 (rotert fra HANDOVER 2026-08-24, økt 29)
+
+- 2026-08-24 (økt 26): kjøreprompt «Oppdrag (plan mode): planlegg v1.2.4 —
+  AI-rådgiverens promptstruktur på /lag» + brainstorming: Marius valgte
+  anbefalingen på alle fire spørsmål (fullt signalsett; sidens beregninger
+  med i prompten; promptregler i stedet for etterkontroll; databygging
+  flyttes til prompts.js). Underveis: «Gjør planen så detaljert som mulig
+  … lag en lett kopierbar prompt til opus … Ikke lag en fil for det …
+  oppdater alle filene du trenger.» Handling: plan skrevet og godkjent
+  (`docs/plan-v124-radgiver-prompt.md`), HANDOVER/ROADMAP oppdatert,
+  Opus-prompt levert i chatten. 0 AI-kall, ingen kodeendringer, ingen push.
+- 2026-08-24 (økt 25): «Lag en full plan over alt filene i docs og alle
+  planene dette prosjektet har … i hvilke steg … med versjonsnummer …
+  mest optimale løsningen.» To beslutninger tatt: (1) kun kodereleaser får
+  versjonsnummer, sjekker/målinger er porter P1–P4; (2) UI-overhalingen
+  bekreftet som v1.3.0 etter v1.2.5. Handling: versjonsplan-tabell +
+  dokumentkart inn i ROADMAP, VIDERE speilet, denne loggen. 0 AI-kall,
+  ingen kodeendringer.
+
+## v1.2.4-detaljer (rotert fra HANDOVER 2026-08-24, økt 29)
+
+- **v1.2.4 ferdig og ute (økt 27, Opus).** Hele
+  `docs/plan-v124-radgiver-prompt.md` (Task 1–3) utført, tag `v1.2.4`,
+  `main` = `origin/main` = `14cd91b`. **2 AI-kall brukt av 2 budsjetterte.**
+  - Rådgiver-prompten bygges nå i `buildAdvicePrompt` (prompts.js) fra
+    strukturerte spillerobjekter; `api.js` er ren datainnsamler. Fullt
+    signalsett + sidens beregninger (kapteinstopp m/kriterium,
+    innkjøpskandidater) + REGLER-seksjon. Ingen nye FPL-kall.
+  - TDD: rødt observert (256 tester, 246 pass, 10 fail) → grønt
+    **256/256, lint exit 0**.
+  - Røyktest (tomme nøkler, port 3010): `/health` → `ai:false,
+    discord:false`, alle 11 ruter 200, ukjent sti 404, POST `/api/ai-rad`
+    → 400 «AI er ikke aktivert».
+  - **E2E lokalt med ekte nøkkel (AI-kall 1 av 2, `/health` → `ai:true,
+    discord:false`): B-2-kriteriene bestått.** Svaret: «## 1) Kaptein:
+    Behold Haaland … Selv om sidens formbaserte rangering topper
+    **Ødegaard** (form 11.0) foran **Haaland** (form 2.0), viser tallene
+    noe annet når man ser på ventet poeng» og «**João Pedro** har 0 spilte
+    minutter så langt (ingen data ennå, ikke svakt)» — nøyaktig feilen
+    B-2 gjaldt. Stikkprøve mot FPL-bootstrap: Ødegaard form 11.0/ep 2.3,
+    Haaland form 2.0/ep 4.0, Gakpo form 12.0/ep 2.5/7.0m, Wirtz form
+    2.0/62 min/7.5m, João Pedro 0 min — **alle tall korrekte, ingen
+    påfunnede**. Rådgiveren begrunnet også avviket fra sidens rangering
+    og antok ikke gratis bytte.
+  - **Prod-retest (AI-kall 2 av 2), 24. aug 00:55: B-2-kriteriene bestått.**
+    «**João Pedro** har 0 minutter spilt så langt — dette er ikke
+    nødvendigvis dårlig form, men mangel på data» og «Jeg fraviker altså
+    sidens rene formbaserte rangering — ventet poeng gir et mer helhetlig
+    bilde». Stikkprøve: Ødegaard form 11.0/ep 2.3, Haaland ep 4.0/form 2.0,
+    M.Sangaré form 14.0/5.5m, Groß form 2.0/5.5m — alle korrekte. Også
+    hjemme/borte stemte (MCI borte mot CRY FDR 3; CHE hjemme mot BHA).
+  - `/brief` og `/nyheter` ble ALDRI besøkt med ekte nøkkel, verken lokalt
+    eller i prod.

@@ -644,29 +644,54 @@ Og i linje-løkka, sammen med de andre aktiveringene:
 
 ## Task 5 — Lokal verifisering + E2E (AI-kall 1 av 2)
 
-- [ ] `npm test` → **272/272**, `npm run lint` → exit 0. Observert: ______
+- [x] `npm test` → **272/272**, `npm run lint` → exit 0. Observert:
+      **tests 272 / pass 272 / fail 0**, lint exit 0.
 - [ ] **Røyktest uten nøkler (0 AI-kall):** scratchpad-.env-teknikken fra
       HANDOVER («Driftslærdommer»): lag en .env i scratchpad med
       `ANTHROPIC_API_KEY=` og `DISCORD_WEBHOOK_URL=` TOMME, start serveren
       på ledig port med `--env-file` mot den. Verifiser `/health` → 200 med
       `ai:false, discord:false` FØR noe annet. Deretter: alle ruter → 200
       (inkl. `/brief` og `/nyheter` — gratis uten nøkkel), ukjent sti → 404.
-      Observert: ______
+      Observert: port 3011, `/health` → 200
+      `{"ai":false,"aiModel":null,"discord":false,"teamId":true,"leagues":0}`.
+      Sveip: `/` `/spillere` `/lag` `/overganger` `/liga` `/brief` `/live`
+      `/nyheter` `/health` `/api/brief.json` `/api/live.json` → alle 200;
+      `/finnes-ikke` → 404. `/brief` viste «Kapteinskandidater globalt».
 - [ ] **E2E med ekte nøkkel (AI-kall 1 av 2):** scratchpad-.env med ekte
       `ANTHROPIC_API_KEY` men TOM `DISCORD_WEBHOOK_URL` (deadline 28. aug
       nærmer seg — auto-briefens vindu må ikke treffe dev-serveren).
       Verifiser `/health` → `ai:true, discord:false` FØR `/brief` åpnes.
       Deretter ÉN visning av `/brief`. Sjekkliste mot svaret:
-      - [ ] Ingen formulering à la «mest brukte/valgte kapteinsvalg».
-      - [ ] Alle prosenter i teksten finnes eksakt i `/api/brief.json`
-            (gratis å hente — bruk den som fasit).
-      - [ ] Er skadelista ikke-tom: ingen friskmelding i teksten.
-      - [ ] Server-loggen: har sanitize felt setninger
-            (`console.warn`-linja)? I så fall — var de faktisk gale?
-            En felt KORREKT setning er et funn som skal rapporteres.
-      - [ ] Kapteinsseksjonen virker rimelig (ikke ID-rekkefølge).
-      Observert (lim inn relevante linjer): ______
-- [ ] `/nyheter` er IKKE besøkt med ekte nøkkel. `/brief` er besøkt
+      - [x] Ingen formulering à la «mest brukte/valgte kapteinsvalg».
+            Teksten: «Blant høyt eide spillere med gunstig kamp peker
+            **Guéhi** … seg ut» — den ærlige rammen, ikke omskrivingen.
+      - [x] Alle prosenter i teksten finnes eksakt i `/api/brief.json`
+            (gratis å hente — bruk den som fasit). Teksten: 15.3, 7.6,
+            17.5, 16.0, 41.9 og 75 (x2). Fasit: eierandeler 15.3/7.6
+            (skader), 17.5/16.0/41.9 (kapteiner), 75 % i begge
+            skadenyhetene. Ingen avvik, ingen påfunnede tall.
+      - [x] Er skadelista ikke-tom: ingen friskmelding i teksten.
+            Skadelista hadde 2 navn (Pedro Porro, Anderson) og begge
+            står i teksten. Ingen friskmelding.
+      - [x] Server-loggen: har sanitize felt setninger
+            (`console.warn`-linja)? **Nei — ingen `console.warn` i loggen,
+            0 setninger fjernet.** Hele loggen: «FPL-dashboard lytter på
+            http://localhost:3012» + «AI-kall: ai-brief-gw2
+            modell=claude-sonnet-5 inn=1680 ut=977 tokens».
+      - [x] Kapteinsseksjonen virker rimelig (ikke ID-rekkefølge). Guéhi
+            (form 10.0), Ndiaye (9.0), Szoboszlai (8.0) — alle FDR 3, så
+            rangeringen er ren formrekkefølge. `captainsCriterion` =
+            `form` (GW1 er spilt). Tallene i «Mine grep» ble også
+            stikkprøvd mot `mine`-delen av `/api/brief.json`: Ødegaard
+            form 11.0/FDR 4.0, Gvardiol 9.0/3.0, Calafiori 9.0/4.0,
+            Mbeumo og Wirtz form 2.0, Haaland og Isak form 2.0,
+            innkjøpsnavnene (Trafford, Kelleher, De Cuyper, Mendy, Gakpo,
+            Barry, Georginio) står alle i kandidatlistene — alt korrekt.
+      Observert: `/health` FØR `/brief`: `{"ai":true,"aiModel":
+      "claude-sonnet-5","discord":false,"teamId":true,"leagues":0}`.
+      `GET /brief` → 200, ett AI-kall (`ai-brief-gw2`, 1680 inn / 977 ut).
+- [x] `/nyheter` er IKKE besøkt med ekte nøkkel (kun på den nøkkelløse
+      serveren, `ai:false`). `/brief` er besøkt
       nøyaktig én gang med ekte nøkkel. (Gjentatte visninger innen én time
       er cachet, men budsjettet teller visninger — hold deg til én.)
 - [ ] Rapporter status til Marius og STOPP. Task 6 kun på klarsignal.
