@@ -181,25 +181,5 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
   HANDOVER/VIDERE oppdatert, v124-planen arkivert, `fix/radgiver-prompt`
   slettet, alt committet på main (ingen push), Opus-prompt levert i
   chatten. 0 AI-kall, ingen kodeendringer.
-- 2026-08-24 (økt 27, Opus): kjøreprompt «Oppdrag (Opus 5, utførelsesøkt):
-  utfør v1.2.4 — AI-rådgiverens promptstruktur på /lag» med harde rammer:
-  Task 1–2 nå, Task 3 kun på klarsignal, aldri push uten klarsignal, maks
-  2 AI-kall (1 lokal E2E + 1 prod-retest), aldri /brief eller /nyheter med
-  ekte nøkkel, TDD med observert rødt, checkbox-sporing i plandokumentet,
-  avvik rapporteres. Handling: Task 1 + Task 2 utført etter planen (2
-  commits på `fix/radgiver-prompt`), 1 AI-kall brukt, ingen push. Ett
-  metodetillegg utover planen: tallene i AI-svaret ble stikkprøvd mot
-  FPLs `bootstrap-static/` i tillegg til /lag-siden (gratis, ingen AI).
-  Deretter klarsignal: **«kjør release»** (mandag 24. aug ~00:50). Handling:
-  Task 3 utført — bump 1.2.4, CHANGELOG/ROADMAP/VIDERE, merge til `main`
-  (256/256 + lint 0 på main), tag `v1.2.4`, push, Coolify-deploy på 30 s,
-  prod-retest bestått. Tidsvindu sjekket før push: mandag 00:45, 0 kamper
-  i gang, GW2-deadline 28. aug. Totalt 2 AI-kall i økten.
-  Til slutt: «Lag en kopierbar prompt til fable som skal planlegge neste
-  steg. Husk det med å oppdatere ting. Ikke skriv en fil.» Handling:
-  planleggingsprompt for v1.2.5 (brief-kvalitetstrioen) levert i chatten,
-  ikke som fil. To åpne ryddepunkter meldt til Marius, ikke utført:
-  lokal branch `fix/radgiver-prompt` står igjen, og
-  `docs/plan-v124-radgiver-prompt.md` bør arkiveres til `docs/arkiv/`.
-- Eldre loggposter (økt 22–26): rotert til
+- Eldre loggposter (økt 22–27): rotert til
   `docs/arkiv/HANDOVER-historikk.md` 2026-08-24 (200-linjerstaket).
