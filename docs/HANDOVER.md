@@ -11,30 +11,25 @@ på klarsignal for release)
 
 ## Status akkurat nå
 
-- **VENTER PÅ KLARSIGNAL: v1.2.5 Task 6 (release).** Task 0–5 i
-  `docs/plan-v125-brief-kvalitet.md` er utført på branch
-  `fix/brief-kvalitet` (4 commits, `79c9ed8` øverst). Ingenting pushet.
-  Task 6 = versjonsbump, CHANGELOG/ROADMAP/VIDERE, merge til `main`, tag,
-  push, prod-retest — kjøres KUN når Marius sier fra.
-  - TDD-løpet: 256/256 → **272/272, lint 0**. Rødtallene per task står
-    avkrysset i plandokumentet.
+- **v1.2.5 ferdig og ute (økt 29, Opus).** Hele
+  `docs/plan-v125-brief-kvalitet.md` (Task 0–6) utført, tag `v1.2.5`.
+  **2 AI-kall brukt av 2 budsjetterte.**
   - Tre endringer: (1) `globalCaptains` faller tilbake på `ep_next` når
     all form er 0 og slipper minutes-kravet før sesongens første kamp,
     brief-objektet får `captainsCriterion`; (2) ærlig kapteinsetikett +
     REGLER-seksjon i `buildBriefPrompt`, view-overskrift
     «Kapteinskandidater globalt»; (3) `sanitizeBriefText` omstrukturert
-    til tre kontroller — deadline (uendret), friskmelding, prosent
-    (nær-miss ±1,0).
-  - **AI-budsjett: 1 av 2 kall brukt** (lokal E2E). Kall 2 er reservert
-    prod-retesten i Task 6.
-  - E2E lokalt 24. aug (port 3012, `ai:true, discord:false`): ett kall
-    `ai-brief-gw2` (1680 inn / 977 ut). Alle sjekkpunkter bestått —
-    ingen «mest brukte kapteiner», alle prosenter (15.3, 7.6, 17.5,
-    16.0, 41.9, 75) eksakt i `/api/brief.json`, ingen friskmelding selv
-    om skadelista hadde to navn, og **ingen `console.warn` fra sanitize
-    — 0 setninger fjernet**, altså ingen korrekt setning felt ved uhell.
+    fra én kontroll til tre som velges per linje — deadline (uendret
+    logikk), friskmelding, prosent (nær-miss ±1,0).
+  - TDD: 256/256 → **272/272, lint 0**. Rødtallet i Task 1 ble 6, ikke 5
+    (vern-testen asserter også `captainsCriterion`) — eneste avvik.
   - Røyktest uten nøkler (port 3011, `ai:false, discord:false`): alle 11
     ruter 200, ukjent sti 404.
+  - **E2E lokalt (AI-kall 1 av 2, port 3012, `ai:true, discord:false`):**
+    ett kall `ai-brief-gw2` (1680 inn / 977 ut). Ingen «mest brukte
+    kapteiner», alle prosenter (15.3, 7.6, 17.5, 16.0, 41.9, 75) eksakt i
+    `/api/brief.json`, ingen friskmelding tross to navn på skadelista,
+    og **ingen `console.warn` fra sanitize — 0 setninger fjernet**.
   - `/nyheter` ble ALDRI besøkt med ekte nøkkel.
 - **Prod kjører v1.2.4 på https://fpl.marsk.no — verifisert 24. aug 00:55.**
   Deploy tok 30 s fra push. `/health` → 200, `ai:true, discord:true,
@@ -46,10 +41,8 @@ på klarsignal for release)
   `docs/arkiv/HANDOVER-historikk.md`.
 - Kostnad målt 23. aug: **$0,94/uke** — under terskelen, ingen tiltak. Ny
   måling i uken etter 31. aug (prisskiftet), se kø-punkt 2.
-- `main` er 2 docs-commits foran `origin/main` (økt 27-loggen `1a0dd15` +
-  v1.2.5-planen `2439eab`) og ligger urørt på **256/256, lint 0**.
-  Aktiv branch: `fix/brief-kvalitet` (4 commits over main, 272/272,
-  lint 0). Ingenting er pushet — heller ikke docs.
+- `main` = `origin/main`, rent tre, **272/272 tester, lint 0**.
+  Ingen åpne feature-brancher.
 - **Doks-opprydning utført (økt 24):** docs/-rot fra 30 til 7 filer,
   utførte planer i `docs/arkiv/`, 19 konsumerte økt-prompter slettet,
   ROADMAP omskrevet med prioritert kø, denne fila slanket til ≤200 linjer.
@@ -70,9 +63,8 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 2. P1 `[Marius]`: bekreft auto-briefen 20. aug i Discord-kanalen.
 3. P3: etter GW2, transfers-skjema mot ekte data + `/overganger` på mobil.
 4. P2 `[Marius]`: README-skjermbilder + mobil-QA.
-5. v1.2.5: brief-kvalitetstrioen — **kode ferdig og verifisert lokalt,
-   venter kun på klarsignal for release (Task 6)** →
-   v1.3.0: UI-overhaling (bekreftet 24. aug) → v1.3.1+: robusthetskandidater.
+5. v1.3.0: UI-overhaling — **neste utviklingsjobb**, trenger planøkt
+   (bekreftet av Marius 24. aug) → v1.3.1+: robusthetskandidater.
 
 ## Driftslærdommer (ikke glem disse)
 

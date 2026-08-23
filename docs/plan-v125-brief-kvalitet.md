@@ -700,16 +700,17 @@ Og i linje-løkka, sammen med de andre aktiveringene:
 
 ## Task 6 — Release v1.2.5 (KUN på eksplisitt klarsignal fra Marius)
 
-- [ ] Sjekk tidsvindu: ikke torsdag 19:00–21:00, ingen kamper i gang
-      (GW2 spilles ~29.–31. aug — sjekk kampprogrammet før push).
-- [ ] `npm version patch --no-git-tag-version` → 1.2.5 (eller manuell bump
-      i package.json/package-lock.json).
-- [ ] CHANGELOG: flytt `[Unreleased]`-punktene til `## [1.2.5] - <dato>`.
-- [ ] ROADMAP: hak av kø-punkt 5 / flytt v1.2.5 til utført-historikken
-      (samme mønster som v1.2.4-raden).
-- [ ] `docs/VIDERE.md`: «Nytt siden sist»-avsnitt om v1.2.5, «Neste
-      oppgave» → v1.3.0 UI-overhaling (planøkt).
-- [ ] `docs/HANDOVER.md`: status + logg oppdatert (≤200 linjer).
+- [x] Sjekk tidsvindu: mandag 24. aug 01:38, 0 kamper i gang (FPL
+      `fixtures/`: ingen `started && !finished_provisional`), neste
+      avspark 24. aug 19:00 UTC. Trygt.
+- [x] `npm version patch --no-git-tag-version` → 1.2.5 (package.json og
+      package-lock.json bekreftet).
+- [x] CHANGELOG: flyttet til `## [1.2.5] - 2026-08-24`.
+- [x] ROADMAP: kø-punkt 5 fjernet, 6→5 og 7→6 renummerert,
+      versjonsplan-raden strøket, v1.2.5-blokk i utført-historikken.
+- [x] `docs/VIDERE.md`: «Nytt siden sist» om v1.2.5, «Neste oppgave» →
+      v1.3.0 UI-overhaling (planøkt).
+- [x] `docs/HANDOVER.md`: status + logg oppdatert (183 linjer).
 - [ ] Commit `chore(release): v1.2.5` på branchen, merge til `main`
       (`--no-ff` som før), verifiser **272/272 + lint 0 på main**, tag
       `v1.2.5`.
