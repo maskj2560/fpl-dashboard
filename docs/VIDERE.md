@@ -27,12 +27,14 @@ Live-siden viser bonuspoeng underveis i kampene og skjønner at kampen er
 ferdig ved fløyta. Kapteinsrådene på lagsiden gir mening også før noen har
 spilt. Kostnaden for AI-en er målt: under 1 dollar i uka.
 
-## Neste oppgave (blir v1.2.5)
+## Neste oppgave (blir v1.2.5) — plan godkjent 24. august
 
-**Rundebriefen blir ærligere.** Den skal ikke kunne skrive «alle er friske»
-når dataene viser en skade, og kapteinslista i briefen får samme
-sesongstart-fiks som lagsiden fikk. Planlegges i en egen økt — du godkjenner
-planen før noe bygges.
+**Rundebriefen blir ærligere.** Du godkjente planen 24. august, og den
+inneholder tre ting: briefen skal ikke kunne skrive «alle er friske» når
+dataene viser en skade (og prosenttall den vrir på, lukes bort automatisk),
+kapteinslista i briefen får samme sesongstart-fiks som lagsiden fikk, og
+lista kalles det den faktisk er — kandidater, ikke «mest valgte kapteiner».
+Bygges i en egen økt; ingenting legges ut før du gir klarsignal.
 
 ## Deretter, i rekkefølge (nummerert plan, 24. august)
 

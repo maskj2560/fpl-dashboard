@@ -97,7 +97,9 @@ Tre sammenhengende funn fra sjekkpunkt A — samme filfamilie
   Etiketten i `buildBriefPrompt` (`src/services/prompts.js:4`) bør si hva
   lista faktisk er.
 
-- **Eier detaljene:** dette punktet; plan mangler.
+- **Eier detaljene:** `docs/plan-v125-brief-kvalitet.md` (godkjent
+  2026-08-24). Alle beslutninger er tatt av Marius — planen utføres av
+  Opus 5 i egen økt, release kun på klarsignal.
 - **Blokkert av:** ingenting — v1.2.4 er ute, dette er neste utviklingsjobb.
 - **Størrelse:** medium.
 

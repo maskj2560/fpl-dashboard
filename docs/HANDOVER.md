@@ -6,10 +6,16 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-24 (økt 27, Opus: v1.2.4 released og verifisert i prod)
+**Sist oppdatert:** 2026-08-24 (økt 28, Fable: v1.2.5-planen skrevet og godkjent)
 
 ## Status akkurat nå
 
+- **Neste arbeid: Opus 5 utfører `docs/plan-v125-brief-kvalitet.md`**
+  (brief-kvalitetstrioen, godkjent 24. aug — alle 9 beslutninger tatt av
+  Marius i planøkten). Rammer i planen: branch `fix/brief-kvalitet`, TDD
+  256→272 tester, maks 2 AI-kall, release (Task 6) kun på klarsignal.
+  Rydding utført i planøkten: v124-planen arkivert, `fix/radgiver-prompt`
+  slettet.
 - **Prod kjører v1.2.4 på https://fpl.marsk.no — verifisert 24. aug 00:55.**
   Deploy tok 30 s fra push. `/health` → 200, `ai:true, discord:true,
   leagues:1`; `/lag` → 200 med `v1.2.4` i footeren.
@@ -20,8 +26,9 @@
   `docs/arkiv/HANDOVER-historikk.md`.
 - Kostnad målt 23. aug: **$0,94/uke** — under terskelen, ingen tiltak. Ny
   måling i uken etter 31. aug (prisskiftet), se kø-punkt 2.
-- `main` = `origin/main`, rent tre, **250/250 tester, lint 0**. Ingen åpne
-  feature-brancher.
+- `main` er 2 docs-commits foran `origin/main` (økt 27-loggen `1a0dd15` +
+  v1.2.5-planen — pushes ved neste klarsignal), rent tre, **256/256
+  tester, lint 0**. Ingen åpne feature-brancher.
 - **Doks-opprydning utført (økt 24):** docs/-rot fra 30 til 7 filer,
   utførte planer i `docs/arkiv/`, 19 konsumerte økt-prompter slettet,
   ROADMAP omskrevet med prioritert kø, denne fila slanket til ≤200 linjer.
@@ -70,7 +77,8 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 2. P1 `[Marius]`: bekreft auto-briefen 20. aug i Discord-kanalen.
 3. P3: etter GW2, transfers-skjema mot ekte data + `/overganger` på mobil.
 4. P2 `[Marius]`: README-skjermbilder + mobil-QA.
-5. v1.2.5: brief-kvalitetstrioen (neste utviklingsjobb, plan mangler) →
+5. v1.2.5: brief-kvalitetstrioen — **plan godkjent 24. aug**
+   (`docs/plan-v125-brief-kvalitet.md`), klar for Opus-utførelse →
    v1.3.0: UI-overhaling (bekreftet 24. aug) → v1.3.1+: robusthetskandidater.
 
 ## Driftslærdommer (ikke glem disse)
@@ -132,6 +140,25 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
+- 2026-08-24 (økt 28, Fable): kjøreprompt «Oppdrag (Fable 5, plan mode):
+  planlegg v1.2.5 — brief-kvalitetstrioen» med krav: brainstorming FØR plan
+  mode (spørsmål ett sett om gangen, anbefaling først, Marius beslutter),
+  plan så detaljert som mulig (kopierbar kode, eksakte testnavn/asserts,
+  testtall rødt→grønt, verifiseringstabell) til
+  `docs/plan-v125-brief-kvalitet.md` for Opus 5, TDD, ingen nye
+  avhengigheter, egen branch, aldri push uten klarsignal, release som eget
+  task på klarsignal, aldri push to. 19–21/under kamper, eksplisitt lavt
+  AI-tak, /brief og /nyheter aldri med ekte nøkkel utenfor budsjettet,
+  docs-oppdateringer i samme commit (ROADMAP/HANDOVER/VIDERE), commit
+  lokalt på main UTEN push, ta stilling til to ryddepunkter, Opus-prompt
+  leveres i chatten. Brainstorming: Marius valgte anbefalingen på alle 9
+  spørsmål (begge tiltak for motsigelser; nær-miss ±1,0; fjern setning;
+  speil captainSuggestions; minutes-slipp før sesongstart;
+  captainsCriterion; ærlig etikett + REGLER + view-synk; maks 2 AI-kall;
+  rydding i planøkten). Handling: plan skrevet og godkjent, ROADMAP/
+  HANDOVER/VIDERE oppdatert, v124-planen arkivert, `fix/radgiver-prompt`
+  slettet, alt committet på main (ingen push), Opus-prompt levert i
+  chatten. 0 AI-kall, ingen kodeendringer.
 - 2026-08-24 (økt 27, Opus): kjøreprompt «Oppdrag (Opus 5, utførelsesøkt):
   utfør v1.2.4 — AI-rådgiverens promptstruktur på /lag» med harde rammer:
   Task 1–2 nå, Task 3 kun på klarsignal, aldri push uten klarsignal, maks
@@ -168,21 +195,5 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
   bekreftet som v1.3.0 etter v1.2.5. Handling: versjonsplan-tabell +
   dokumentkart inn i ROADMAP, VIDERE speilet, denne loggen. 0 AI-kall,
   ingen kodeendringer.
-- 2026-08-23 (økt 24, natt ~01:40): kjøreprompt «Oppdrag (Fable, plan mode):
-  rydd dokumentasjonen og skriv veikartet ferdig» + fire beslutninger
-  besvart (Marius valgte anbefalingen på alle fire): (1) slett konsumerte
-  prompter, arkiver utførte planer; (2) målstruktur 7 filer i docs/-rot +
-  arkiv; (3) promptstruktur-fiksen øverst i køen, foran UI-overhalingen;
-  (4) HANDOVER-tak 200 linjer med historikk til arkiv. Handling: hele
-  ryddeplanen utført (`docs/plan-doks-opprydning.md`), ROADMAP omskrevet
-  med prioritert kø, HANDOVER slanket, VIDERE og CLAUDE.md oppdatert.
-  0 AI-kall, ingen kodeendringer.
-- 2026-08-23 (økt 23, natt ~01:30): «vil ha en Fable-prompt som planlegger
-  stor opprydning av docs/ og skriver ROADMAP om til full framoversikt».
-  Handling: `docs/neste-okt-prompt-doks-opprydning.md` skrevet med målt
-  inventering (siden konsumert og slettet av økt 24 — se over).
-- 2026-08-22 (økt 23): deploy-økten — klarsignaler «okay push v1.2.2»
-  (02:31) og «kjør port 7» (02:41); B-2-kallet klikket i prod 02:36 med
-  funnet «prompten bør struktureres på en mye bedre måte» (nå kø-punkt 1).
-  Handling: v1.2.1 → v1.2.3 deployet og verifisert, port 0–10 utført.
-  Full detalj: `docs/arkiv/HANDOVER-historikk.md`.
+- Eldre loggposter (økt 22–24): rotert til
+  `docs/arkiv/HANDOVER-historikk.md` 2026-08-24 (200-linjerstaket).

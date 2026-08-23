@@ -5,6 +5,27 @@
 > sjekkpunkt-tabellen, versjonshistorikken, utdaterte åpne punkter og hele
 > loggen over brukerbeskjeder til og med økt 22. Nyere logg: HANDOVER.md.
 
+## Rotert 2026-08-24 (økt 28): loggposter økt 22–24 (verbatim fra HANDOVER.md)
+
+- 2026-08-23 (økt 24, natt ~01:40): kjøreprompt «Oppdrag (Fable, plan mode):
+  rydd dokumentasjonen og skriv veikartet ferdig» + fire beslutninger
+  besvart (Marius valgte anbefalingen på alle fire): (1) slett konsumerte
+  prompter, arkiver utførte planer; (2) målstruktur 7 filer i docs/-rot +
+  arkiv; (3) promptstruktur-fiksen øverst i køen, foran UI-overhalingen;
+  (4) HANDOVER-tak 200 linjer med historikk til arkiv. Handling: hele
+  ryddeplanen utført (`docs/plan-doks-opprydning.md`), ROADMAP omskrevet
+  med prioritert kø, HANDOVER slanket, VIDERE og CLAUDE.md oppdatert.
+  0 AI-kall, ingen kodeendringer.
+- 2026-08-23 (økt 23, natt ~01:30): «vil ha en Fable-prompt som planlegger
+  stor opprydning av docs/ og skriver ROADMAP om til full framoversikt».
+  Handling: `docs/neste-okt-prompt-doks-opprydning.md` skrevet med målt
+  inventering (siden konsumert og slettet av økt 24 — se over).
+- 2026-08-22 (økt 23): deploy-økten — klarsignaler «okay push v1.2.2»
+  (02:31) og «kjør port 7» (02:41); B-2-kallet klikket i prod 02:36 med
+  funnet «prompten bør struktureres på en mye bedre måte» (nå kø-punkt 1).
+  Handling: v1.2.1 → v1.2.3 deployet og verifisert, port 0–10 utført.
+  Full detalj: seksjonene under.
+
 ## Status ved rotering (per økt 23, 23. august 2026)
 
 - **DEPLOYEN ER FERDIG (økt 23, Opus 5). v1.2.1, v1.2.2 og v1.2.3 er i prod
