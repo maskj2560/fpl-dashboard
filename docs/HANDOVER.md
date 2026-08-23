@@ -146,6 +146,12 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
   (256/256 + lint 0 på main), tag `v1.2.4`, push, Coolify-deploy på 30 s,
   prod-retest bestått. Tidsvindu sjekket før push: mandag 00:45, 0 kamper
   i gang, GW2-deadline 28. aug. Totalt 2 AI-kall i økten.
+  Til slutt: «Lag en kopierbar prompt til fable som skal planlegge neste
+  steg. Husk det med å oppdatere ting. Ikke skriv en fil.» Handling:
+  planleggingsprompt for v1.2.5 (brief-kvalitetstrioen) levert i chatten,
+  ikke som fil. To åpne ryddepunkter meldt til Marius, ikke utført:
+  lokal branch `fix/radgiver-prompt` står igjen, og
+  `docs/plan-v124-radgiver-prompt.md` bør arkiveres til `docs/arkiv/`.
 - 2026-08-24 (økt 26): kjøreprompt «Oppdrag (plan mode): planlegg v1.2.4 —
   AI-rådgiverens promptstruktur på /lag» + brainstorming: Marius valgte
   anbefalingen på alle fire spørsmål (fullt signalsett; sidens beregninger
