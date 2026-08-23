@@ -173,6 +173,19 @@ const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const teamNameRe = (name) =>
   new RegExp(`(?<![\\p{L}\\p{N}])${escapeRe(name)}(?:'?s|')?(?![\\p{L}\\p{N}])`, 'u');
 
+// Samler alle tallverdier (tall + tall inni strenger, komma normalisert til
+// punktum) fra spiller-delene av briefen. Fasit for prosentkontrollen —
+// bevisst IKKE hele brief-objektet: kamptider og datoer («17:30», «21.00»)
+// ville gitt falske nær-treff mot eierandeler.
+function collectBriefNumbers(value, out = new Set()) {
+  if (typeof value === 'number' && Number.isFinite(value)) out.add(value);
+  else if (typeof value === 'string') {
+    for (const m of value.matchAll(/\d+(?:[.,]\d+)?/g)) out.add(parseFloat(m[0].replace(',', '.')));
+  } else if (Array.isArray(value)) value.forEach((v) => collectBriefNumbers(v, out));
+  else if (value && typeof value === 'object') Object.values(value).forEach((v) => collectBriefNumbers(v, out));
+  return out;
+}
+
 // Friskmeldinger: «alle … friske», «ingen … skadenytt/skader». Bevisst uten
 // «skadene» (bestemt form) — «ingen av skadene er alvorlige» påstår at det
 // FINNES skader, og skal stå. Kontrollen er kun aktiv når skadelista har
@@ -182,9 +195,10 @@ const FRISKMELDING_RE =
 
 /**
  * Etterkontroll av AI-briefen: fjerner setninger som motsier datagrunnlaget.
- * To kontroller, hver med sitt aktiveringsvilkår og sin linjefilter:
+ * Tre kontroller, hver med sitt aktiveringsvilkår og sitt linjefilter:
  * deadline-påstander som ikke stemmer med de forhåndsberegnede kampdataene
- * (P1-4), og friskmeldinger av troppen når skadelista har innhold (v1.2.5).
+ * (P1-4), friskmeldinger av troppen når skadelista har innhold, og
+ * prosenttall som er forvrengte gjengivelser av fasiten (begge v1.2.5).
  * Ren funksjon, ingen regenerering — svaret er uansett cachet en time, så det
  * robuste valget er å utelate setningen framfor å be modellen prøve igjen.
  * Setninger splittes med maskering av norske forkortelser og klokkeslett, så
@@ -237,11 +251,27 @@ export function sanitizeBriefText(text, brief) {
   const friskAktiv = (brief?.injuries?.length ?? 0) > 0;
   const keepFrisk = (sentence) => !FRISKMELDING_RE.test(sentence);
 
+  // Prosentkontrollen (v1.2.5): nær-miss ±1,0 feller forvrengninger. Et
+  // prosenttall som ikke står i dataene, men ligger tett på en fasitverdi, er
+  // en forvrengt gjengivelse; tall langt fra alt er en omtrentlighet.
+  const fasit = [...collectBriefNumbers({ injuries: brief?.injuries, captains: brief?.captains, mine: brief?.mine })];
+  const prosentAktiv = fasit.length > 0;
+  const keepProsent = (sentence) => {
+    const plain = unmaskDots(sentence); // maskDots har maskert desimalpunktum
+    for (const m of plain.matchAll(/(\d+(?:[.,]\d+)?)\s*%/g)) {
+      const p = parseFloat(m[1].replace(',', '.'));
+      if (fasit.some((v) => v === p)) continue; // eksakt i dataene — greit
+      if (fasit.some((v) => Math.abs(v - p) <= 1.0)) return false; // forvrengt
+    }
+    return true; // langt fra alt: omtrentlighet, ikke forvrengning
+  };
+
   const dropped = [];
   const lines = text.split('\n').map((line) => {
     const sjekker = [];
     if (deadlineAktiv && /deadline/i.test(line)) sjekker.push(keepDeadline);
     if (friskAktiv && /frisk|skade|fravær/i.test(line)) sjekker.push(keepFrisk);
+    if (prosentAktiv && line.includes('%')) sjekker.push(keepProsent);
     if (sjekker.length === 0) return line;
     const masked = maskDots(line);
     const sentences = masked.match(/[^.!?]+[.!?]*/g) ?? [masked];

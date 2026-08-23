@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { buildBriefPrompt, buildAdvicePrompt, sanitizeBriefText } from '../src/services/prompts.js';
-import { briefTextGw1, briefGw1 } from './fixtures/brief-gw1.js';
+import { briefTextGw1, briefGw1, briefGw1MedData } from './fixtures/brief-gw1.js';
 
 test('buildBriefPrompt tar med deadline, skader og kapteiner', () => {
   const prompt = buildBriefPrompt({
@@ -223,6 +223,45 @@ test('sanitizeBriefText beholder skadeomtale som ikke friskmelder', () => {
   const text = '**Bruno G.** er ute med lårskade. Ingen av skadene er alvorlige.';
 
   assert.equal(sanitizeBriefText(text, briefMedSkade), text);
+});
+
+// ---- v1.2.5: prosentkontroll (nær-miss ±1,0) --------------------------------
+// GW1-briefen skrev Calafiori til 32,3 % — dataene sa 32,6. Et prosenttall i
+// teksten som ikke finnes i fasiten, men ligger ≤1,0 fra en fasitverdi, er en
+// forvrengning → setningen fjernes. Tall langt fra alt (omtrentligheter som
+// «rundt 90 %») står. Fasiten hentes KUN fra injuries/captains/mine — ikke
+// fra kamptider og datoer, som ellers gir falske nær-treff.
+
+test('sanitizeBriefText fjerner setning med forvrengt prosent (nær-miss mot fasit)', () => {
+  const ut = sanitizeBriefText('**Calafiori** er eid av 32,3 % globalt.', briefGw1MedData);
+
+  assert.equal(ut, '');
+});
+
+test('sanitizeBriefText beholder prosent som står eksakt i dataene', () => {
+  const text = '**Raya** (36,3 % eid) er et trygt valg.';
+  assert.equal(sanitizeBriefText(text, briefGw1MedData), text);
+
+  // Heltall mot desimal: 75 % matcher «75» fra skadenyheten numerisk.
+  const heltall = 'Bruno G. har 75 % spillesjanse.';
+  assert.equal(sanitizeBriefText(heltall, briefGw1MedData), heltall);
+});
+
+test('sanitizeBriefText beholder prosent langt fra alle fasitverdier', () => {
+  const text = 'Rundt 90 % av topplagene beholder kapteinen sin.';
+
+  assert.equal(sanitizeBriefText(text, briefGw1MedData), text);
+});
+
+test('den ekte GW1-briefen med fulle data mister friskmeldingen og 32,3-prosenten — resten står', () => {
+  const ut = sanitizeBriefText(briefTextGw1, briefGw1MedData);
+
+  assert.ok(!ut.includes('Alle stiller i utgangspunktet friske'), 'friskmeldingen ble stående');
+  assert.ok(!ut.includes('Ingen nevneverdig skadenytt'), 'skadenytt-friskmeldingen ble stående');
+  assert.ok(!ut.includes('32,3 %'), 'den forvrengte prosenten ble stående');
+  assert.ok(ut.includes('**Raya** (36,3 % eid)'), 'korrekt prosent forsvant');
+  assert.ok(ut.includes('**Gabriel** (29,6 % eid)'), 'korrekt prosent forsvant');
+  assert.ok(ut.includes('Fredag 21. august kl. 19:30'), 'deadline-linja forsvant');
 });
 
 // ---- P3-4: setningssplitting som tåler forkortelser ---------------------

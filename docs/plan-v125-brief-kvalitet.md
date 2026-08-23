@@ -516,7 +516,7 @@ ingen `injuries`, så friskmeldingskontrollen er inaktiv der).
 **Filer:** `src/services/prompts.js`, `test/fixtures/brief-gw1.js`,
 `test/prompts.test.js`
 
-### 4a. Fixtur-variant først (test/fixtures/brief-gw1.js — legg til nederst)
+### 4a. Fixtur-variant først [x] (test/fixtures/brief-gw1.js — legg til nederst)
 
 ```js
 // Samme brief med dataene GW1-briefen faktisk hadde: skadelista inneholdt
@@ -586,9 +586,9 @@ Den EKSISTERENDE testen «ekte AI-brief fra prod går uendret gjennom
 etterkontrollen» skal fortsatt bestå uendret — `briefGw1` har verken
 `injuries` eller `captains`, så begge de nye kontrollene er inaktive der.
 
-- [ ] Tester skrevet. `npm test` — **forventet rødt: 272 tester, 2 feiler**
+- [x] Tester skrevet. `npm test` — **forventet rødt: 272 tester, 2 feiler**
       (nær-miss-testen og fulldata-regresjonen; de to behold-testene er
-      vern). Observert: ______
+      vern). Observert: **272 tester, 270 pass, 2 fail** — nøyaktig de to.
 
 ### 4c. Implementasjon (src/services/prompts.js)
 
@@ -632,13 +632,13 @@ Og i linje-løkka, sammen med de andre aktiveringene:
     if (prosentAktiv && line.includes('%')) sjekker.push(keepProsent);
 ```
 
-- [ ] `npm test` — **forventet grønt: 272/272.** `npm run lint` exit 0.
-      Observert: ______
-- [ ] CHANGELOG `[Unreleased]` `### Fixed`-punkt: «Etterkontrollen feller
+- [x] `npm test` — **forventet grønt: 272/272.** `npm run lint` exit 0.
+      Observert: **tests 272 / pass 272 / fail 0**, `npm run lint` exit 0.
+- [x] CHANGELOG `[Unreleased]` `### Fixed`-punkt: «Etterkontrollen feller
       setninger med forvrengte prosenttall: et prosenttall som ikke finnes
       i brief-dataene, men ligger ≤1,0 fra en fasitverdi, fjerner setningen
       (GW1-funnet 32,3 % mot dataenes 32,6 %).»
-- [ ] Commit: `fix(brief): sanitize feller forvrengte prosenttall (nær-miss ±1,0)`
+- [x] Commit: `fix(brief): sanitize feller forvrengte prosenttall (nær-miss ±1,0)`
 
 ---
 

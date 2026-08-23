@@ -16,6 +16,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - AI-briefen kan ikke lenger friskmelde troppen når skadelista har
   innhold — slike setninger fjernes i etterkontrollen (GW1-funnet «alle
   stiller friske» tross Bruno G. på skadelista).
+- Etterkontrollen feller setninger med forvrengte prosenttall: et
+  prosenttall som ikke finnes i brief-dataene, men ligger ≤1,0 fra en
+  fasitverdi, fjerner setningen (GW1-funnet 32,3 % mot dataenes 32,6 %).
 
 ### Changed
 
