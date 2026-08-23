@@ -31,6 +31,8 @@ src/services/
   brief.js         gameweek-briefen: buildBrief (ren data), assembleBrief
                    (henter fra FPL), generateAiBrief (AI-teksten, delt av
                    /brief og auto-briefen)
+  prompts.js       rene promptbyggere (brief + rådgiver) og
+                   sanitizeBriefText (etterkontroll av AI-briefen)
   live.js          live-visningen: buildLive (ren data), assembleLive (henter)
   transfers.js     «Overganger»-siden: buildTransferAnalysis (ren hva
                    hvis-analyse av egne transfers), assembleTransferAnalysis

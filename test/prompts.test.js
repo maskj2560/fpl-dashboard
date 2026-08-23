@@ -25,13 +25,15 @@ test('buildAdvicePrompt tar med tropp, bank og salgskandidater', () => {
   const prompt = buildAdvicePrompt({
     entryName: 'Mitt Lag FC',
     bank: 15,
-    squadLines: ['Haaland (MCI, A, 14.2, form 8.0)'],
-    outs: ['Spiller X: Skadet'],
+    squad: [{ name: 'Haaland', team: 'MCI', pos: 'A', price: 142, form: '8.0', epNext: '7.5', minutes: 90, totalPoints: 12, status: 'a', news: '', chance: null, opponents: [] }],
+    transfers: [{ outName: 'Spiller X', reasons: ['Skadet'], inn: [] }],
   });
   assert.match(prompt, /Mitt Lag FC/);
   assert.match(prompt, /1\.5/); // bank i £m
   assert.match(prompt, /Haaland/);
   assert.match(prompt, /Spiller X/);
+  assert.match(prompt, /ingen kamp/); // tom opponents-liste
+  assert.match(prompt, /Siden har ingen kapteinsforslag ennå/); // pageCaptains utelatt
 });
 
 // ---- P1-4: tidsfakta og etterkontroll ----------------------------------
@@ -264,7 +266,7 @@ test('den ekte briefen inneholder tilfellene P3-4 ble laget for', () => {
   assert.match(briefTextGw1, /Spurs' nye sesong/); // genitiv med apostrof
 });
 
-// ---- B-2: rådgiveren får runde, deadline, kaptein og motstandere -----------
+// ---- B-2/v1.2.4: rådgiveren får fullt datagrunnlag og strukturert prompt ----
 
 const RAD_ARGS = {
   entryName: 'Mitt Lag FC',
@@ -273,8 +275,13 @@ const RAD_ARGS = {
   deadlineText: 'lørdag 22. august kl. 13:30',
   captainName: 'Haaland',
   viceName: 'Salah',
-  squadLines: ['Haaland (MCI, A, 14.2, form 0.0, mot BOU (hjemme, FDR 2))'],
-  outs: ['Spiller X: Skadet'],
+  roundsPlayed: 1,
+  squad: [
+    { name: 'Haaland', team: 'MCI', pos: 'A', price: 142, form: '8.0', epNext: '7.5', minutes: 90, totalPoints: 12, status: 'a', news: '', chance: null, opponents: [{ team: 'BOU', home: true, fdr: 2 }] },
+    { name: 'Doku', team: 'MCI', pos: 'M', price: 65, form: '0.0', epNext: '2.1', minutes: 0, totalPoints: 0, status: 'i', news: 'Kneskade — ventes tilbake 15. sep', chance: 25, opponents: [{ team: 'BOU', home: true, fdr: 2 }] },
+  ],
+  pageCaptains: { criterion: 'form', list: [{ name: 'Haaland', reasons: ['Form 8.0', 'FDR 2.0 neste kamp', 'Full spilletid ventet'] }] },
+  transfers: [{ outName: 'Doku', reasons: ['Skadet/usikker: Kneskade — ventes tilbake 15. sep'], inn: [{ name: 'Saka', team: 'ARS', price: 87, form: '6.2', epNext: '5.8' }] }],
 };
 
 test('buildAdvicePrompt oppgir hvilken runde rådet gjelder og hvem som er kaptein', () => {
@@ -299,16 +306,68 @@ test('buildAdvicePrompt har stabilt format (snapshot)', () => {
       'Du er FPL-rådgiver. Laget «Mitt Lag FC» har 1.5 £m i banken.',
       'Rådet gjelder Runde 2 (deadline lørdag 22. august kl. 13:30).',
       'Nåværende kaptein: Haaland (visekaptein: Salah).',
+      'Ferdigspilte runder denne sesongen: 1.',
       '',
-      'Troppen (navn, lag, posisjon, pris, form, motstander):',
-      '- Haaland (MCI, A, 14.2, form 0.0, mot BOU (hjemme, FDR 2))',
+      'DATAGRUNNLAG — troppen (lag, posisjon, pris, form, ventet poeng neste runde (FPL), spilletid, totalpoeng, motstander):',
+      '- Haaland (MCI, A, 14.2, form 8.0, ventet 7.5 p neste runde, 90 min, 12 p totalt, mot BOU (hjemme, FDR 2))',
+      '- Doku (MCI, M, 6.5, form 0.0, ventet 2.1 p neste runde, 0 min, 0 p totalt, mot BOU (hjemme, FDR 2)) — SKADET/USIKKER: Kneskade — ventes tilbake 15. sep (spillesjanse 25 %)',
       '',
-      'Automatisk flaggede salgskandidater:',
-      '- Spiller X: Skadet',
+      'SIDENS BEREGNINGER (det brukeren ser på /lag):',
+      'Kapteinsforslag, rangert på form:',
+      '- Haaland: Form 8.0; FDR 2.0 neste kamp; Full spilletid ventet',
       '',
-      'Du vet ikke hvor mange gratis bytter laget har. Anta aldri at et bytte er gratis, og bruk aldri antall gratis bytter som argument. Nevn kostnaden på 4 poeng kun som forbehold.',
+      'Salgskandidater med sidens innkjøpskandidater:',
+      '- Ut: Doku (Skadet/usikker: Kneskade — ventes tilbake 15. sep). Inn-kandidater: Saka (ARS, 8.7, form 6.2, ventet 5.8 p)',
       '',
-      'Gi på norsk: 1) beste kaptein denne runden med begrunnelse — si eksplisitt om nåværende kaptein bør beholdes eller byttes, 2) anbefalt bytte (ut/inn) hvis noe gir mening — ellers si at man bør spare bytte, 3) én ting å følge med på før deadline. Sett spillernavn i **fet**. Maks ~250 ord.',
+      'REGLER:',
+      '- 0 minutter spilt betyr «ingen data ennå» — omtal det aldri som svak eller dårlig form.',
+      '- Bruk kun tall som står i datagrunnlaget over. Finn aldri på formtall, poeng eller annen statistikk.',
+      '- Anbefal aldri en spiller merket SKADET/USIKKER som kaptein, og nevn spillesjansen når du omtaler en flagget spiller.',
+      '- Du vet ikke hvor mange gratis bytter laget har. Anta aldri at et bytte er gratis, og bruk aldri antall gratis bytter som argument. Nevn kostnaden på 4 poeng kun som forbehold.',
+      '',
+      'OPPGAVE — gi på norsk: 1) beste kaptein denne runden med begrunnelse — si eksplisitt om nåværende kaptein bør beholdes eller byttes, 2) anbefalt bytte (ut/inn) hvis noe gir mening — ellers si at man bør spare bytte, 3) én ting å følge med på før deadline. Avviker rådet ditt fra sidens beregninger, si kort hvorfor. Sett spillernavn i **fet**. Maks ~250 ord.',
     ].join('\n'),
   );
+});
+
+// ---- v1.2.4: rådgiveren får fullt datagrunnlag -----------------------------
+
+test('buildAdvicePrompt tar med ep_next, minutter og totalpoeng per spiller', () => {
+  const prompt = buildAdvicePrompt(RAD_ARGS);
+  assert.match(prompt, /ventet 7\.5 p neste runde, 90 min, 12 p totalt/);
+});
+
+test('buildAdvicePrompt merker skadet spiller med årsak og spillesjanse', () => {
+  const prompt = buildAdvicePrompt(RAD_ARGS);
+  assert.match(prompt, /Doku .* — SKADET\/USIKKER: Kneskade — ventes tilbake 15\. sep \(spillesjanse 25 %\)/);
+});
+
+test('buildAdvicePrompt oppgir ferdigspilte runder og ingen-data-regelen', () => {
+  const prompt = buildAdvicePrompt(RAD_ARGS);
+  assert.match(prompt, /Ferdigspilte runder denne sesongen: 1\./);
+  assert.match(prompt, /0 minutter spilt betyr «ingen data ennå»/);
+  assert.match(prompt, /Finn aldri på formtall/);
+});
+
+test('buildAdvicePrompt navngir sidens kriterium — også ep_next-fallbacken', () => {
+  const prompt = buildAdvicePrompt({
+    ...RAD_ARGS,
+    pageCaptains: { criterion: 'ep_next', list: [{ name: 'Haaland', reasons: ['Forventet poeng (FPL) 7.5'] }] },
+  });
+  assert.match(prompt, /Kapteinsforslag, rangert på forventet poeng \(FPL\):/);
+});
+
+test('buildAdvicePrompt sier eksplisitt fra når siden ikke har kapteinsforslag', () => {
+  const prompt = buildAdvicePrompt({ ...RAD_ARGS, pageCaptains: { criterion: null, list: [] } });
+  assert.match(prompt, /Siden har ingen kapteinsforslag ennå \(mangler datagrunnlag\)\./);
+});
+
+test('buildAdvicePrompt lister innkjøpskandidater med data, og «ingen» når lista er tom', () => {
+  const prompt = buildAdvicePrompt(RAD_ARGS);
+  assert.match(prompt, /Inn-kandidater: Saka \(ARS, 8\.7, form 6\.2, ventet 5\.8 p\)/);
+  const uten = buildAdvicePrompt({
+    ...RAD_ARGS,
+    transfers: [{ outName: 'Doku', reasons: ['Skadet'], inn: [] }],
+  });
+  assert.match(uten, /Inn-kandidater: ingen/);
 });

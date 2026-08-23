@@ -32,25 +32,12 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
 
 ### 1. AI-rådgiverens promptstruktur på /lag (v1.2.4)
 
-- **Hva:** rådgiver-prompten (`src/routes/api.js:85-88`) sender kun navn,
-  lag, posisjon, pris, **form** og motstander per spiller. Verken `minutes`,
-  `total_points`, `ep_next`, skadestatus eller antall spilte runder følger
-  med, så modellen kan ikke skille «ingen data» fra «dårlig form» og dikter
-  opp begrunnelser — den skrev «Haaland … formscore 0.0 (kun én runde
-  spilt)» om en spiller med `minutes: 0` (Marius' B-2-kall i prod
-  2026-08-22 kl. 02:36). Utilsiktet sideeffekt av v1.2.2: UI-et rangerer på
-  `ep_next` når ingen har form, mens prompten fortsatt kun får `form` —
-  siden og rådgiveren resonnerer fra ulike signaler. Rådgiveren har heller
-  ingen etterkontroll tilsvarende `sanitizeBriefText`
-  (`src/services/prompts.js:135`).
-- **Hvorfor her:** Marius har pekt på denne som den han vil ha fikset;
-  kjent feil i prod.
-- **Eier detaljene:** `docs/plan-v124-radgiver-prompt.md` (brainstormet og
-  godkjent 24. aug, økt 26). Utføres av Opus 5 i egen økt; egen release
-  (planens regel: aldri fiks inni en deploy).
-- **Blokkert av:** ingenting.
-- **Størrelse:** liten–medium — 1 planøkt + 1 utførelsesøkt, 1–2 AI-kall
-  til ende-til-ende-verifisering.
+_Plan: `docs/plan-v124-radgiver-prompt.md`. På branch
+`fix/radgiver-prompt` — release etter klarsignal fra Marius._
+
+- [x] Fullt datagrunnlag + strukturert prompt + sidens beregninger (TDD, 6 nye tester)
+- [ ] Røyktest lokalt + 1 lokal E2E-verifisering av AI-svaret
+- [ ] Release v1.2.4 (bump, tag, merge, push, prod-retest) — KUN på klarsignal
 
 ### 2. (P4) Kostnadskontroll etter prisskiftet
 
