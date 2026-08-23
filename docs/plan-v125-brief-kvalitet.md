@@ -180,10 +180,13 @@ assert etter `assert.deepEqual(brief.captains, []);`:
   assert.equal(brief.captainsCriterion, null);
 ```
 
-- [ ] Tester skrevet. `npm test` — **forventet rødt: 261 tester, 5 feiler**
+- [x] Tester skrevet. `npm test` — **forventet rødt: 261 tester, 5 feiler**
       (fallback-, tom-, slipp- og kriterium-testene + den utvidede
       sesongslutt-testen; «minutes-kravet gjelder»-testen er et vern og er
-      grønn allerede). Observert: ______
+      grønn allerede). Observert: **261 tester, 255 pass, 6 fail.** Avvik
+      forklart: «minutes-kravet gjelder»-testen asserter også
+      `captainsCriterion`, som ikke fantes ennå — den feiler derfor også i
+      rødfasen. Ingen andre uventede feil.
 
 ### 1b. Implementasjon (src/services/brief.js)
 
@@ -246,14 +249,14 @@ I `buildBrief`:
 3. I return-objektet: legg til `captainsCriterion: globals.criterion,`
    etter `captains,`.
 
-- [ ] `npm test` — **forventet grønt: 261/261.** `npm run lint` exit 0.
-      Observert: ______
-- [ ] CHANGELOG `[Unreleased]` → ny `### Fixed`-seksjon med punkt:
+- [x] `npm test` — **forventet grønt: 261/261.** `npm run lint` exit 0.
+      Observert: **tests 261 / pass 261 / fail 0**, `npm run lint` exit 0.
+- [x] CHANGELOG `[Unreleased]` → ny `### Fixed`-seksjon med punkt:
       «Kapteinslista i rundebriefen er ikke lenger vilkårlig ved
       sesongstart: er all form 0, rangeres det på forventet poeng (FPL) som
       på /lag, og minutter-kravet slippes før sesongens første kamp.
       Briefen oppgir nå også hvilket kriterium som rangerte.»
-- [ ] Commit: `fix(brief): ep_next-fallback og sesongstart-slipp i globalCaptains`
+- [x] Commit: `fix(brief): ep_next-fallback og sesongstart-slipp i globalCaptains` — `568b5f1`
 
 ---
 
@@ -308,8 +311,8 @@ test('buildBriefPrompt sier at skadelista er fasit — og sier fra når den er t
 });
 ```
 
-- [ ] Tester skrevet. `npm test` — **forventet rødt: 265 tester, 4 feiler.**
-      Observert: ______
+- [x] Tester skrevet. `npm test` — **forventet rødt: 265 tester, 4 feiler.**
+      Observert: **265 tester, 261 pass, 4 fail** — nøyaktig de fire nye.
 
 ### 2b. Implementasjon
 
@@ -370,16 +373,17 @@ kun skadenytt-linjene, kapteinsetiketten/-linjene og REGLER-blokken er nye.
 **`views/brief.ejs` linje 43:** `<h2>Kapteinsvalg globalt</h2>` →
 `<h2>Kapteinskandidater globalt</h2>`
 
-- [ ] `npm test` — **forventet grønt: 265/265** (de gamle
+- [x] `npm test` — **forventet grønt: 265/265** (de gamle
       buildBriefPrompt-testene består: «Utled aldri tidsforhold selv»,
       «holdt nullen» og «aldri "gameweek"» finnes fortsatt).
-      `npm run lint` exit 0. Observert: ______
-- [ ] CHANGELOG `[Unreleased]` → `### Changed`-punkt: «Brief-prompten
+      `npm run lint` exit 0. Observert: **tests 265 / pass 265 / fail 0**,
+      `npm run lint` exit 0.
+- [x] CHANGELOG `[Unreleased]` → `### Changed`-punkt: «Brief-prompten
       kaller kapteinslista det den er (høyt eide spillere med gunstig kamp
       — ikke målt kapteinsandel), navngir rangeringskriteriet, og har fått
       en REGLER-seksjon etter mønster fra rådgiveren (v1.2.4). Overskriften
       på /brief heter nå «Kapteinskandidater globalt».»
-- [ ] Commit: `fix(brief): ærlig kapteinsetikett og REGLER i brief-prompten`
+- [x] Commit: `fix(brief): ærlig kapteinsetikett og REGLER i brief-prompten`
 
 ---
 

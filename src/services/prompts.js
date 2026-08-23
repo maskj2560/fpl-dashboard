@@ -7,10 +7,14 @@ export function buildBriefPrompt(brief) {
     `Deadline: ${brief.gameweek?.deadlineFormatted ?? 'ukjent'}.`,
     '',
     'Skadenytt (høyt eide spillere):',
-    ...brief.injuries.map((i) => `- ${i.name} (${i.team}, eid ${i.ownership} %): ${i.news}`),
+    ...(brief.injuries.length
+      ? brief.injuries.map((i) => `- ${i.name} (${i.team}, eid ${i.ownership} %): ${i.news}`)
+      : ['- Ingen høyt eide spillere er flagget.']),
     '',
-    'Mest aktuelle kapteiner globalt:',
-    ...brief.captains.map((c) => `- ${c.name} (${c.team}), form ${c.form}, eid ${c.ownership} %`),
+    // FPL publiserer ingen målt kapteinsandel — lista er høyt eide spillere
+    // med gunstig kamp, og etiketten skal ikke late som noe annet (v1.2.5).
+    `Kapteinskandidater globalt (høyt eide spillere med gunstig kamp, rangert på ${CRITERION_LABELS[brief.captainsCriterion] ?? 'form'} — ikke målt kapteinsandel):`,
+    ...brief.captains.map((c) => `- ${c.name} (${c.team}), form ${c.form}, ventet ${c.epNext ?? '?'} p, eid ${c.ownership} %`),
     '',
     'Kamper:',
     ...brief.fixturesByDay.map((d) => `${d.day}: ${d.matches.map((m) => `${m.home}–${m.away} ${m.kickoff}`).join(', ')}`),
@@ -28,10 +32,15 @@ export function buildBriefPrompt(brief) {
   }
   parts.push(
     '',
+    'REGLER:',
+    '- Bruk kun tall som står i datagrunnlaget over. Finn aldri på tall, og gjengi prosenter og formtall eksakt slik de står — ikke rund av.',
+    '- Skadelista over er fasit. Er den ikke tom: skriv aldri at alle er friske eller at det ikke er noe skadenytt.',
+    '- Kapteinslista er høyt eide spillere med gunstig kamp — ikke målt kapteinsandel. Omtal den aldri som «mest valgte» eller «mest brukte» kapteiner.',
+    '- Utled aldri tidsforhold selv: skal du si noe om hva som skjer før eller etter deadline, bruk kun de forhåndsberegnede tidsfaktaene over.',
+    '',
     'Skriv briefen med disse seksjonene i markdown: «Deadline», «Skadenytt», «Kapteinsvalg», «Kamper å følge med på»' +
       (brief.mine ? ', «Mine grep»' : '') +
       '. Vær konkret og kortfattet, sett spillernavn i **fet**. Maks ~350 ord. Ingen innledning utover seksjonene.' +
-      ' Utled aldri tidsforhold selv: skal du si noe om hva som skjer før eller etter deadline, bruk kun de forhåndsberegnede tidsfaktaene over.' +
       ' Bruk norske fotballuttrykk: skriv «holdt nullen», aldri «clean sheet»; «runde», aldri «gameweek». Ordet «deadline» brukes som det er.',
   );
   return parts.join('\n');

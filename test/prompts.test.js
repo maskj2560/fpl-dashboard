@@ -145,6 +145,49 @@ test('sanitizeBriefText beholder råd der «før deadline» er et tidspunkt', ()
   assert.equal(sanitizeBriefText(text, briefMedTidsfakta), text);
 });
 
+// ---- v1.2.5: ærlig kapteinsetikett + REGLER --------------------------------
+// «Mest aktuelle kapteiner globalt» oversolgte dataene — modellen skrev den
+// om til «de mest brukte kapteinsvalgene globalt» (står i GW1-fixturen).
+// Etiketten sier nå hva lista faktisk er, og REGLER forbyr omskrivingen.
+
+test('buildBriefPrompt bruker ærlig kapteinsetikett og navngir kriteriet', () => {
+  const prompt = buildBriefPrompt({
+    ...briefMedTidsfakta,
+    captains: [{ name: 'Salah', team: 'LIV', form: '8.5', epNext: '7.2', ownership: '45.0', avgFdr: 2 }],
+    captainsCriterion: 'form',
+  });
+
+  assert.match(prompt, /Kapteinskandidater globalt \(høyt eide spillere med gunstig kamp, rangert på form — ikke målt kapteinsandel\):/);
+  assert.match(prompt, /- Salah \(LIV\), form 8\.5, ventet 7\.2 p, eid 45\.0 %/);
+  assert.ok(!prompt.includes('Mest aktuelle kapteiner globalt'), 'gammel etikett henger igjen');
+});
+
+test('buildBriefPrompt navngir ep_next-kriteriet i kapteinsetiketten', () => {
+  const prompt = buildBriefPrompt({ ...briefMedTidsfakta, captainsCriterion: 'ep_next' });
+
+  assert.match(prompt, /rangert på forventet poeng \(FPL\) — ikke målt kapteinsandel/);
+});
+
+test('buildBriefPrompt har REGLER som forbyr påfunnede tall og «mest brukte kapteiner»', () => {
+  const prompt = buildBriefPrompt(briefMedTidsfakta);
+
+  assert.match(prompt, /REGLER:/);
+  assert.match(prompt, /Finn aldri på tall/);
+  assert.match(prompt, /gjengi prosenter og formtall eksakt/);
+  assert.match(prompt, /«mest valgte» eller «mest brukte»/);
+});
+
+test('buildBriefPrompt sier at skadelista er fasit — og sier fra når den er tom', () => {
+  const medSkade = buildBriefPrompt({
+    ...briefMedTidsfakta,
+    injuries: [{ name: 'Bruno G.', team: 'NEW', ownership: '25.1', news: 'Kneskade', status: 'i' }],
+  });
+  assert.match(medSkade, /Skadelista over er fasit/);
+
+  const utenSkade = buildBriefPrompt(briefMedTidsfakta); // injuries: []
+  assert.match(utenSkade, /- Ingen høyt eide spillere er flagget\./);
+});
+
 // ---- P3-4: setningssplitting som tåler forkortelser ---------------------
 // `line.match(/[^.!?]+[.!?]*/g)` delte på ethvert punktum — også i «kl.» og
 // «21.00» — så halve setninger ble vurdert hver for seg. Da kan halvparten

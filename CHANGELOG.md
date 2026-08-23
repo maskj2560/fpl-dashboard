@@ -14,6 +14,13 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   minutter-kravet slippes før sesongens første kamp. Briefen oppgir nå
   også hvilket kriterium som rangerte.
 
+### Changed
+
+- Brief-prompten kaller kapteinslista det den er (høyt eide spillere med
+  gunstig kamp — ikke målt kapteinsandel), navngir rangeringskriteriet, og
+  har fått en REGLER-seksjon etter mønster fra rådgiveren (v1.2.4).
+  Overskriften på /brief heter nå «Kapteinskandidater globalt».
+
 ## [1.2.4] - 2026-08-24
 
 ### Fixed
