@@ -6,6 +6,28 @@ under «Senere / idéer», de sniker ikke i køen. Utført historikk står baker
 En milepæl er ferdig når alt er huket av, `npm test` og `npm run lint` er
 grønne, CHANGELOG er oppdatert og endringene er committet og pushet.
 
+## Versjonsplan — hele løpet på ett brett
+
+Prinsipp (besluttet av Marius 24. aug): **kun releaser med kodeendring får
+versjonsnummer.** Verifiseringer og målinger er «porter» (P1–P4) — de
+utløses av dato eller Marius, går parallelt med utviklingssporet, og et
+funn blir en `fix:`-commit som rir neste ledige patchnummer.
+
+| Nr | Hva | Kø-punkt | Blokkert av |
+| --- | --- | --- | --- |
+| **v1.2.4** | AI-rådgiverens promptstruktur på /lag | 1 | ingenting — neste utviklingsjobb |
+| **P1** | Marius: bekreft auto-briefen 20. aug i Discord | 3 | Marius (minutter) |
+| **P2** | Marius: README-skjermbilder + mobil-QA | 5 | Marius |
+| **P3** | Etter GW2: transfers-skjema mot ekte data | 4 | GW2 spilt (~29.–31. aug) |
+| **P4** | Kostnadsmåling uken etter 1. sep | 2 | dato |
+| **v1.2.5** | Brief-kvalitetstrioen | 6 | v1.2.4 |
+| **v1.3.0** | UI-overhaling | 7 | v1.2.5 |
+| **v1.3.1+** | Robusthetskandidatene, én og én etter avtale | 8 | avtale per punkt |
+| *(uten nr)* | Senere/idéer | — | ikke planlagt |
+
+Kalenderlogikk: utviklingssporet (v1.2.4 → v1.2.5 → v1.3.0) går uavbrutt;
+portene fyres når dato/Marius tillater, uten å blokkere sporet.
+
 ## Kø — hva gjøres videre, i rekkefølge
 
 ### 1. AI-rådgiverens promptstruktur på /lag (v1.2.4)
@@ -29,7 +51,7 @@ grønne, CHANGELOG er oppdatert og endringene er committet og pushet.
 - **Størrelse:** liten–medium — 1 planøkt + 1 utførelsesøkt, 1–2 AI-kall
   til ende-til-ende-verifisering.
 
-### 2. Kostnadskontroll etter prisskiftet
+### 2. (P4) Kostnadskontroll etter prisskiftet
 
 - **Hva:** Sonnet 5 går fra intropris $2/$10 til ordinær $3/$15 per 1M
   tokens 1. september. Målingen 23. aug ga $0,94/uke (under terskelen);
@@ -42,7 +64,7 @@ grønne, CHANGELOG er oppdatert og endringene er committet og pushet.
   organisk trafikk uten utviklingsstøy.
 - **Størrelse:** liten.
 
-### 3. Verifiser auto-briefen 20. august `[Marius]`
+### 3. (P1) Verifiser auto-briefen 20. august `[Marius]`
 
 - **Hva:** eneste gjenstående punkt fra sjekkpunkt A: at den naturlige
   auto-briefen torsdag 20. aug ~19:30 faktisk kom. Coolify-loggen er
@@ -51,7 +73,7 @@ grønne, CHANGELOG er oppdatert og endringene er committet og pushet.
 - **Blokkert av:** Marius (sjekker Discord-kanalen).
 - **Størrelse:** minutter.
 
-### 4. Etter GW2: verifiser transfers-skjemaet mot ekte data
+### 4. (P3) Etter GW2: verifiser transfers-skjemaet mot ekte data
 
 - **Hva:** feltnavnene i `entry/5330646/transfers/` (`element_in`,
   `element_out`, `event`, `time`, `event_transfers_cost`) er antatt og lest
@@ -64,7 +86,7 @@ grønne, CHANGELOG er oppdatert og endringene er committet og pushet.
   28. aug 19:30).
 - **Størrelse:** liten.
 
-### 5. README-skjermbilder + mobil-QA `[Marius]`
+### 5. (P2) README-skjermbilder + mobil-QA `[Marius]`
 
 - **Hva:** Del 6-restene fra sesongstart-verifiseringen: skjermbilder til
   README (dashbord, /spillere, /lag i desktop + 390 px), og mobilvisning på
@@ -73,7 +95,7 @@ grønne, CHANGELOG er oppdatert og endringene er committet og pushet.
 - **Blokkert av:** Marius (nettleser + telefon).
 - **Størrelse:** liten.
 
-### 6. Brief-kvalitetstrioen (én release)
+### 6. Brief-kvalitetstrioen (v1.2.5, én release)
 
 Tre sammenhengende funn fra sjekkpunkt A — samme filfamilie
 (`brief.js`/`prompts.js`), samme testmønster, bør tas samlet:
@@ -97,7 +119,7 @@ Tre sammenhengende funn fra sjekkpunkt A — samme filfamilie
   lista faktisk er.
 
 - **Eier detaljene:** dette punktet; plan mangler.
-- **Blokkert av:** punkt 1 (samme AI-kall-disiplin, ryddigst etter tur).
+- **Blokkert av:** v1.2.4 (punkt 1 — samme AI-kall-disiplin, ryddigst etter tur).
 - **Størrelse:** medium.
 
 ### 7. UI-overhaling (v1.3.0)
@@ -107,13 +129,13 @@ Tre sammenhengende funn fra sjekkpunkt A — samme filfamilie
   ingen plan finnes ennå.
 - **Eier detaljene:** `docs/prompt-ui-overhaul-plan.md` (planleggingsprompt
   med verifiserte fakta og alle åpne spørsmål).
-- **Blokkert av:** Marius bekrefter at den fortsatt er ønsket, + køen
-  foran. Kostnad avklares i planøkten (klubbgrafikk-kilde/lisens, lys
-  palett med kontrastkrav, etappeinndeling).
+- **Blokkert av:** v1.2.5 (køen foran). Marius bekreftet 24. aug at den
+  fortsatt er ønsket. Kostnad avklares i planøkten (klubbgrafikk-kilde/
+  lisens, lys palett med kontrastkrav, etappeinndeling).
 - **Størrelse:** stor — egen planøkt, flere utførelsesøkter i etapper,
   QA-runder hos Marius.
 
-### 8. Robusthetskandidater (avtales én og én, uprioritert innbyrdes)
+### 8. Robusthetskandidater (v1.3.1+, avtales én og én, uprioritert innbyrdes)
 
 Reelle funn fra kvalitetspasset v1.1.3 (P3) og verifiseringen — ingen
 fikses uten avtale:
@@ -133,6 +155,23 @@ fikses uten avtale:
 - **Persistent «brief sendt»-markør** (P1-5b): `lastSentEvent` lever i
   minnet; redeploy innenfor 15-min-vinduet re-poster briefen. Krever
   tilstand som overlever containeren — arkitekturbeslutning.
+
+## Dokumentkart — hvor alt bor
+
+Én eier per fil; alt uten leserverdi for en ny økt ligger i `docs/arkiv/`
+eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved behov.
+
+| Fil | Rolle |
+| --- | --- |
+| `ROADMAP.md` (rot) | fasiten: versjonsplan, kø, dokumentkart, historikk |
+| `docs/HANDOVER.md` | nåtilstand + lærdommer + beslutninger (tak 200 linjer) |
+| `docs/VIDERE.md` | Marius' ikke-tekniske kortversjon |
+| `docs/prompt-ui-overhaul-plan.md` | ukjørt planleggingsprompt for v1.3.0 |
+| `docs/sjekkpunkt-d-kostnad.md` | metode + skript for P4-målingen |
+| `docs/sjekkpunkt-c-live.md` | bevismateriale v1.2.3 |
+| `docs/port9-chrome-prompt.md` | gjenbrukbar nettleser-QA-oppskrift |
+| `docs/plan-doks-opprydning.md` | utført ryddeplan (arkiveres ved neste rydding) |
+| `docs/arkiv/` (11 filer) | utførte planer + historikk — endres ikke |
 
 ## Senere / idéer (ikke planlagt)
 
