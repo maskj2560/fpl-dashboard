@@ -6,8 +6,7 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-24 (økt 29, Opus: v1.2.5 Task 0–5 utført, venter
-på klarsignal for release)
+**Sist oppdatert:** 2026-08-24 (økt 29, Opus: v1.2.5 released og verifisert i prod)
 
 ## Status akkurat nå
 
@@ -30,10 +29,18 @@ på klarsignal for release)
     kapteiner», alle prosenter (15.3, 7.6, 17.5, 16.0, 41.9, 75) eksakt i
     `/api/brief.json`, ingen friskmelding tross to navn på skadelista,
     og **ingen `console.warn` fra sanitize — 0 setninger fjernet**.
-  - `/nyheter` ble ALDRI besøkt med ekte nøkkel.
-- **Prod kjører v1.2.4 på https://fpl.marsk.no — verifisert 24. aug 00:55.**
-  Deploy tok 30 s fra push. `/health` → 200, `ai:true, discord:true,
-  leagues:1`; `/lag` → 200 med `v1.2.4` i footeren.
+  - **Prod-retest (AI-kall 2 av 2), 01:43: bestått.** Ingen «mest
+    brukte kapteiner» («**Szoboszlai** … et trygt globalt valg …
+    **Guéhi** og **Ndiaye** … om du leter etter differensial»), alle
+    prosenter (15.3, 7.6, 41.9, 75) eksakt i `/api/brief.json`, ingen
+    friskmelding tross to navn på skadelista, overskriften
+    «Kapteinskandidater globalt» på siden. Stikkprøve mot fasiten:
+    Ødegaard 11.0/FDR 4.0, Gvardiol 9.0/3.0, Guéhi 10.0/ep 2.8,
+    Szoboszlai 8.0/ep 2.5 — alt korrekt.
+  - `/nyheter` ble ALDRI besøkt med ekte nøkkel, verken lokalt eller i
+    prod.
+- **Prod kjører v1.2.5 på https://fpl.marsk.no — verifisert 24. aug 01:43.**
+  `/health` → 200, `ai:true, discord:true, leagues:1`; footer `v1.2.5`.
 - Eldre: v1.2.3-deployen (22.–23. aug). Deploy-planen
   (port 0–10) ble ferdig utført 22.–23. aug; sjekkpunkt B, C og D er lukket,
   A har ett restpunkt (auto-brief-verifisering, kø-punkt 3). Bevis og
@@ -138,7 +145,13 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
   ikke 5 — «minutes-kravet gjelder»-testen asserter også
   `captainsCriterion` og feiler derfor også i rødfasen. Rotering gjort for
   å holde 200-linjerstaket: loggpostene for økt 25–26 og v1.2.4-detaljene
-  flyttet til `docs/arkiv/HANDOVER-historikk.md`.
+  flyttet til `docs/arkiv/HANDOVER-historikk.md`. Deretter klarsignal:
+  **«kjør release»** (mandag 24. aug ~01:40). Handling: Task 6 utført —
+  bump 1.2.5, CHANGELOG/ROADMAP/VIDERE/HANDOVER, merge til `main`
+  (272/272 + lint 0 på main), tag `v1.2.5`, push, Coolify-deploy,
+  prod-retest bestått, branch `fix/brief-kvalitet` slettet. Tidsvindu
+  sjekket før push: mandag 01:38, 0 kamper i gang, neste avspark 19:00
+  UTC samme dag. Totalt 2 AI-kall i økten.
 - 2026-08-24 (økt 28, Fable): kjøreprompt «Oppdrag (Fable 5, plan mode):
   planlegg v1.2.5 — brief-kvalitetstrioen» med krav: brainstorming FØR plan
   mode (spørsmål ett sett om gangen, anbefaling først, Marius beslutter),

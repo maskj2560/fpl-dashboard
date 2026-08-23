@@ -711,16 +711,33 @@ Og i linje-løkka, sammen med de andre aktiveringene:
 - [x] `docs/VIDERE.md`: «Nytt siden sist» om v1.2.5, «Neste oppgave» →
       v1.3.0 UI-overhaling (planøkt).
 - [x] `docs/HANDOVER.md`: status + logg oppdatert (183 linjer).
-- [ ] Commit `chore(release): v1.2.5` på branchen, merge til `main`
-      (`--no-ff` som før), verifiser **272/272 + lint 0 på main**, tag
-      `v1.2.5`.
-- [ ] Push `main` + tag. Coolify auto-deployer — følg med til `/health`
-      på https://fpl.marsk.no svarer 200 med riktig oppførsel.
-- [ ] **Prod-retest (AI-kall 2 av 2):** ÉN visning av `/brief` i prod.
-      Samme sjekkliste som Task 5-E2E (prosenter mot `/api/brief.json`,
-      ingen friskmelding ved ikke-tom skadeliste, ingen «mest brukte»,
-      footer viser v1.2.5). Observert: ______
-- [ ] Slett lokal branch `fix/brief-kvalitet` etter merge.
+- [x] Commit `chore(release): v1.2.5` (`a24d932`), merge `--no-ff` til
+      `main` (`796d2b0`), **272/272 + lint 0 på main**, CHANGELOG-
+      plasseringen inspisert (`[1.2.5]` rett under `[Unreleased]`),
+      tag `v1.2.5`.
+- [x] Push `main` (`7e15a4c..796d2b0`) + tag `v1.2.5`. Coolify deployet;
+      `/health` → 200 `{"ai":true,"aiModel":"claude-sonnet-5",
+      "discord":true,"teamId":true,"leagues":1}`, footer `v1.2.5`.
+- [x] **Prod-retest (AI-kall 2 av 2), 24. aug 01:43: bestått.**
+      - Ingen «mest brukte/valgte kapteiner». Teksten: «Ellers er
+        **Szoboszlai** (LIV) høyt eid (41.9 %) … et trygt globalt valg.
+        **Guéhi** … og **Ndiaye** … er også verdt å vurdere om du leter
+        etter differensial.»
+      - Prosenter i teksten: 15.3, 7.6, 41.9 og 75 (x2) — alle eksakt i
+        `/api/brief.json`. Ingen påfunnede tall.
+      - Skadelista hadde to navn (Pedro Porro, Anderson); begge omtalt,
+        ingen friskmelding.
+      - View-overskriften på siden: «Kapteinskandidater globalt».
+      - Deadline-påstanden «Alle kamper i runden spilles etter at
+        deadline har passert» stemmer (`fixturesBeforeDeadline` er tom).
+      - Stikkprøve: Ødegaard 11.0/FDR 4.0, Gvardiol 9.0/3.0, Calafiori
+        9.0/4.0, Guéhi 10.0/ep 2.8, Ndiaye 9.0/ep 2.2, Szoboszlai
+        8.0/ep 2.5, «form 1.0–2.0» for de ti salgskandidatene,
+        motstander Nott'm Forest for Szoboszlai — alt korrekt.
+      - Forbehold: Coolify-loggen (sanitize-`console.warn`) er ikke
+        lesbar herfra, så antall felte setninger i prod er ikke målt.
+        Teksten har ingen kuttede eller halve setninger.
+- [x] Slett lokal branch `fix/brief-kvalitet` etter merge.
 
 ---
 
@@ -734,8 +751,8 @@ Og i linje-løkka, sammen med de andre aktiveringene:
 | 4 | Gammel regresjon | test «ekte AI-brief … uendret» | består UENDRET |
 | 5 | Ny regresjon | test «… med fulle data …» | friskmelding + 32,3 % fjernet, resten står |
 | 6 | E2E lokalt | én `/brief`-visning (kall 1/2) | sjekklista i Task 5 |
-| 7 | Prod etter release | én `/brief`-visning (kall 2/2) | sjekklista i Task 6, footer v1.2.5 |
-| 8 | AI-budsjett | opptelling | ≤ 2 betalte kall totalt |
+| 7 | Prod etter release | én `/brief`-visning (kall 2/2) | **bestått 24. aug**, footer v1.2.5 |
+| 8 | AI-budsjett | opptelling | **2 av 2 brukt** (1 lokal E2E + 1 prod) |
 
 ## Kjente begrensninger (dokumentert, ikke feil)
 
