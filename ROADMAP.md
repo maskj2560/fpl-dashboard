@@ -36,7 +36,7 @@ _Plan: `docs/plan-v124-radgiver-prompt.md`. På branch
 `fix/radgiver-prompt` — release etter klarsignal fra Marius._
 
 - [x] Fullt datagrunnlag + strukturert prompt + sidens beregninger (TDD, 6 nye tester)
-- [ ] Røyktest lokalt + 1 lokal E2E-verifisering av AI-svaret
+- [x] Røyktest lokalt + 1 lokal E2E-verifisering av AI-svaret (B-2-kriteriene bestått)
 - [ ] Release v1.2.4 (bump, tag, merge, push, prod-retest) — KUN på klarsignal
 
 ### 2. (P4) Kostnadskontroll etter prisskiftet
