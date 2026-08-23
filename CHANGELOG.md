@@ -7,6 +7,13 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Fixed
+
+- Kapteinslista i rundebriefen er ikke lenger vilkårlig ved sesongstart:
+  er all form 0, rangeres det på forventet poeng (FPL) som på /lag, og
+  minutter-kravet slippes før sesongens første kamp. Briefen oppgir nå
+  også hvilket kriterium som rangerte.
+
 ## [1.2.4] - 2026-08-24
 
 ### Fixed

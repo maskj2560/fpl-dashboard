@@ -68,11 +68,11 @@ før du går videre.
 
 ## Task 0 — Oppstart
 
-- [ ] Les `docs/HANDOVER.md` + `CLAUDE.md` (skal allerede være gjort).
-- [ ] `git checkout main` + verifiser rent tre og at baseline er grønn:
+- [x] Les `docs/HANDOVER.md` + `CLAUDE.md` (skal allerede være gjort).
+- [x] `git checkout main` + verifiser rent tre og at baseline er grønn:
       `npm test` (forventet 256/256) og `npm run lint` (exit 0).
-      Observert: ______
-- [ ] `git checkout -b fix/brief-kvalitet`
+      Observert: rent tre på main (git status --porcelain tomt), npm test → tests 256 / pass 256 / fail 0, npm run lint → exit 0.
+- [x] `git checkout -b fix/brief-kvalitet` — «Switched to a new branch»
 
 ---
 

@@ -110,6 +110,95 @@ test('buildBrief viser avsluttet tilstand når ingen runde er kommende', () => {
   assert.deepEqual(brief.fixturesByDay, [], 'skal ikke falle tilbake på runde 1');
   assert.deepEqual(brief.fixturesBeforeDeadline, []);
   assert.deepEqual(brief.captains, []);
+  assert.equal(brief.captainsCriterion, null);
   assert.deepEqual(brief.injuries, []);
   assert.equal(brief.mine, null);
+});
+
+// ---- v1.2.5: kapteinslista ved sesongstart ---------------------------------
+// globalCaptains rangerte kun på form × fixture-lettehet; før første kamp er
+// all form 0 og element-ID-rekkefølgen vant (GW1-briefen foreslo keeper + to
+// Arsenal-forsvarere i ID-rekkefølge). Nå: samme ep_next-fallback som
+// captainSuggestions (v1.2.2), pluss at minutes-kravet slippes før sesongens
+// aller første kamp — da har ingen spilt, og kravet ville tømt lista.
+
+const kapteinBootstrap = (elements) => ({
+  events: [{ id: 1, name: 'Gameweek 1', deadline_time: '2026-08-21T17:30:00Z', is_next: true }],
+  teams: [
+    { id: 1, short_name: 'ARS', name: 'Arsenal' },
+    { id: 2, short_name: 'CHE', name: 'Chelsea' },
+  ],
+  elements,
+});
+
+// ARS får FDR 2 (lettehet 4), CHE får FDR 4 (lettehet 2).
+const kapteinFixtures = [
+  { event: 1, team_h: 1, team_a: 2, kickoff_time: '2026-08-21T19:00:00Z', team_h_difficulty: 2, team_a_difficulty: 4 },
+];
+
+const spiller = (id, team, overrides = {}) => ({
+  id,
+  web_name: `Spiller${id}`,
+  team,
+  element_type: 3,
+  status: 'a',
+  news: '',
+  selected_by_percent: '30.0',
+  form: '0.0',
+  ep_next: '0.0',
+  minutes: 90,
+  chance_of_playing_next_round: null,
+  ...overrides,
+});
+
+test('buildBrief: kapteinslista faller tilbake på ep_next når all form er 0', () => {
+  const elements = [
+    spiller(1, 2, { ep_next: '5.0' }), // 5.0 × 2 = 10
+    spiller(2, 1, { ep_next: '7.0' }), // 7.0 × 4 = 28 — skal vinne tross høyere ID
+    spiller(3, 1, { ep_next: '1.0' }), // 1.0 × 4 = 4
+  ];
+  const brief = buildBrief({ bootstrap: kapteinBootstrap(elements), fixtures: kapteinFixtures });
+
+  assert.equal(brief.captainsCriterion, 'ep_next');
+  assert.deepEqual(brief.captains.map((c) => c.name), ['Spiller2', 'Spiller1', 'Spiller3']);
+  assert.equal(brief.captains[0].epNext, '7.0');
+});
+
+test('buildBrief: kapteinslista er tom når både form og ep_next er 0 for alle', () => {
+  const elements = [spiller(1, 1), spiller(2, 2)];
+  const brief = buildBrief({ bootstrap: kapteinBootstrap(elements), fixtures: kapteinFixtures });
+
+  assert.deepEqual(brief.captains, []);
+  assert.equal(brief.captainsCriterion, null);
+});
+
+test('buildBrief: minutes-kravet slippes før sesongstart (alle har 0 minutter)', () => {
+  const elements = [
+    spiller(1, 1, { minutes: 0, ep_next: '6.0' }),
+    spiller(2, 2, { minutes: 0, ep_next: '4.0' }),
+  ];
+  const brief = buildBrief({ bootstrap: kapteinBootstrap(elements), fixtures: kapteinFixtures });
+
+  assert.equal(brief.captains.length, 2);
+  assert.equal(brief.captains[0].name, 'Spiller1');
+  assert.equal(brief.captainsCriterion, 'ep_next');
+});
+
+test('buildBrief: minutes-kravet gjelder så snart noen har spilt', () => {
+  const elements = [
+    spiller(1, 1, { form: '3.0' }),
+    spiller(2, 2, { minutes: 0, ep_next: '9.0' }), // høy ep, men ute av lista
+  ];
+  const brief = buildBrief({ bootstrap: kapteinBootstrap(elements), fixtures: kapteinFixtures });
+
+  assert.deepEqual(brief.captains.map((c) => c.name), ['Spiller1']);
+  assert.equal(brief.captainsCriterion, 'form');
+});
+
+test('buildBrief: captainsCriterion er form når form finnes, og epNext følger med', () => {
+  const elements = [spiller(1, 1, { form: '6.5', ep_next: '5.5' })];
+  const brief = buildBrief({ bootstrap: kapteinBootstrap(elements), fixtures: kapteinFixtures });
+
+  assert.equal(brief.captainsCriterion, 'form');
+  assert.equal(brief.captains[0].epNext, '5.5');
 });
