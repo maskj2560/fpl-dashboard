@@ -13,6 +13,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   er all form 0, rangeres det på forventet poeng (FPL) som på /lag, og
   minutter-kravet slippes før sesongens første kamp. Briefen oppgir nå
   også hvilket kriterium som rangerte.
+- AI-briefen kan ikke lenger friskmelde troppen når skadelista har
+  innhold — slike setninger fjernes i etterkontrollen (GW1-funnet «alle
+  stiller friske» tross Bruno G. på skadelista).
 
 ### Changed
 

@@ -188,6 +188,43 @@ test('buildBriefPrompt sier at skadelista er fasit — og sier fra når den er t
   assert.match(utenSkade, /- Ingen høyt eide spillere er flagget\./);
 });
 
+// ---- v1.2.5: friskmeldingskontroll -----------------------------------------
+// GW1-briefen skrev «Alle stiller i utgangspunktet friske» mens skadelista
+// inneholdt Bruno G. Setninger som friskmelder troppen fjernes nå når
+// brief.injuries er ikke-tom. Egen kontroll — deadline-kontrollens
+// negasjonsvern gjelder bevisst ikke her (friskmeldinger ER negasjoner).
+
+const briefMedSkade = {
+  ...briefMedTidsfakta,
+  injuries: [{ name: 'Bruno G.', team: 'NEW', ownership: '25.4', news: 'Lårskade — 75 % spillesjanse', status: 'd' }],
+};
+
+test('sanitizeBriefText fjerner friskmelding når skadelista ikke er tom', () => {
+  const text = [
+    '# Skadenytt',
+    'Ingen nevneverdig skadenytt blant høyt eide spillere. Alle stiller i utgangspunktet friske til sesongstart. Følg med på pressekonferansene.',
+  ].join('\n');
+
+  const ut = sanitizeBriefText(text, briefMedSkade);
+
+  assert.ok(!ut.includes('Ingen nevneverdig skadenytt'), 'friskmelding 1 ble stående');
+  assert.ok(!ut.includes('Alle stiller'), 'friskmelding 2 ble stående');
+  assert.ok(ut.includes('Følg med på pressekonferansene.'), 'nøytral setning forsvant');
+  assert.ok(ut.includes('# Skadenytt'), 'overskriften forsvant');
+});
+
+test('sanitizeBriefText beholder friskmelding når skadelista er tom', () => {
+  const text = 'Ingen skader blant høyt eide spillere — alle stiller friske.';
+
+  assert.equal(sanitizeBriefText(text, briefMedTidsfakta), text); // injuries: []
+});
+
+test('sanitizeBriefText beholder skadeomtale som ikke friskmelder', () => {
+  const text = '**Bruno G.** er ute med lårskade. Ingen av skadene er alvorlige.';
+
+  assert.equal(sanitizeBriefText(text, briefMedSkade), text);
+});
+
 // ---- P3-4: setningssplitting som tåler forkortelser ---------------------
 // `line.match(/[^.!?]+[.!?]*/g)` delte på ethvert punktum — også i «kl.» og
 // «21.00» — så halve setninger ble vurdert hver for seg. Da kan halvparten

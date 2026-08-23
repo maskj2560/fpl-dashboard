@@ -173,57 +173,80 @@ const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const teamNameRe = (name) =>
   new RegExp(`(?<![\\p{L}\\p{N}])${escapeRe(name)}(?:'?s|')?(?![\\p{L}\\p{N}])`, 'u');
 
+// Friskmeldinger: «alle … friske», «ingen … skadenytt/skader». Bevisst uten
+// «skadene» (bestemt form) — «ingen av skadene er alvorlige» påstår at det
+// FINNES skader, og skal stå. Kontrollen er kun aktiv når skadelista har
+// innhold, så tomme runder kan friskmeldes fritt.
+const FRISKMELDING_RE =
+  /(\balle\b[^.!?]*\bfrisk\w*)|(\bingen\b[^.!?]*\b(skadenytt|skader|skadde|fravær|skadeproblemer)\b)/iu;
+
 /**
- * Etterkontroll av AI-briefen: fjerner setninger som påstår noe om «før» eller
- * «etter deadline» som ikke stemmer med de forhåndsberegnede kampdataene.
+ * Etterkontroll av AI-briefen: fjerner setninger som motsier datagrunnlaget.
+ * To kontroller, hver med sitt aktiveringsvilkår og sin linjefilter:
+ * deadline-påstander som ikke stemmer med de forhåndsberegnede kampdataene
+ * (P1-4), og friskmeldinger av troppen når skadelista har innhold (v1.2.5).
  * Ren funksjon, ingen regenerering — svaret er uansett cachet en time, så det
  * robuste valget er å utelate setningen framfor å be modellen prøve igjen.
  * Setninger splittes med maskering av norske forkortelser og klokkeslett, så
  * punktum i «kl.»/«21.00» ikke kutter setningen i to.
  */
 export function sanitizeBriefText(text, brief) {
+  if (!text) return text;
+
+  // Deadline-kontrollen (P1-4 — uendret logikk, nå bak sitt eget vilkår).
   const matches = (brief?.fixturesByDay ?? []).flatMap((d) => d.matches);
-  if (!text || matches.length === 0 || matches.every((m) => m.beforeDeadline == null)) return text;
+  const deadlineAktiv = matches.length > 0 && !matches.every((m) => m.beforeDeadline == null);
+  let keepDeadline = () => true;
+  if (deadlineAktiv) {
+    const before = new Set();
+    const after = new Set();
+    for (const m of matches) {
+      (m.beforeDeadline ? before : after).add(m.home);
+      (m.beforeDeadline ? before : after).add(m.away);
+    }
+    const anyBefore = before.size > 0;
+    const toMatchers = (set) =>
+      [...set].flatMap((name) => [name, ...(TEAM_ALIASES[name] ?? [])]).map(teamNameRe);
+    const beforeMatchers = toMatchers(before);
+    const afterMatchers = toMatchers(after);
+    const names = (sentence, matchers) => matchers.some((re) => re.test(sentence));
+    // Negerte utsagn («ingen kamper starter før deadline») er ikke påstander om
+    // at en bestemt kamp ligger før deadline, og skal ikke kontrolleres her.
+    const NEGATION = /\b(ingen|ikke|verken|aldri)\b/i;
+    // Kontrollen gjelder bare utsagn om når kampene spilles — ikke råd som
+    // «sjekk laget rett før deadline», der «før deadline» er et tidspunkt.
+    const OM_KAMPER = /\b(kamp|kamper|kampene|oppgjør|oppgjøret|runden spilles|spilles|starter|avspark|sparkes i gang)\b/i;
 
-  const before = new Set();
-  const after = new Set();
-  for (const m of matches) {
-    (m.beforeDeadline ? before : after).add(m.home);
-    (m.beforeDeadline ? before : after).add(m.away);
+    keepDeadline = (sentence) => {
+      const claimsBefore = /før\s+deadline/i.test(sentence);
+      const claimsAfter = /etter\s+deadline/i.test(sentence);
+      if (!claimsBefore && !claimsAfter) return true;
+      if (NEGATION.test(sentence)) return true;
+      // Nevner setningen bare lag som spiller på «feil» side av deadline, er den gal.
+      if (claimsBefore && names(sentence, afterMatchers) && !names(sentence, beforeMatchers)) return false;
+      if (claimsAfter && names(sentence, beforeMatchers) && !names(sentence, afterMatchers)) return false;
+      // Uten lagnavn: bare utsagn om selve kampene kan motbevises av dataene.
+      if (claimsBefore && !anyBefore && OM_KAMPER.test(sentence)) return false;
+      return true;
+    };
   }
-  const anyBefore = before.size > 0;
-  const toMatchers = (set) =>
-    [...set].flatMap((name) => [name, ...(TEAM_ALIASES[name] ?? [])]).map(teamNameRe);
-  const beforeMatchers = toMatchers(before);
-  const afterMatchers = toMatchers(after);
-  const names = (sentence, matchers) => matchers.some((re) => re.test(sentence));
-  // Negerte utsagn («ingen kamper starter før deadline») er ikke påstander om
-  // at en bestemt kamp ligger før deadline, og skal ikke kontrolleres her.
-  const NEGATION = /\b(ingen|ikke|verken|aldri)\b/i;
-  // Kontrollen gjelder bare utsagn om når kampene spilles — ikke råd som
-  // «sjekk laget rett før deadline», der «før deadline» er et tidspunkt.
-  const OM_KAMPER = /\b(kamp|kamper|kampene|oppgjør|oppgjøret|runden spilles|spilles|starter|avspark|sparkes i gang)\b/i;
 
-  const keep = (sentence) => {
-    const claimsBefore = /før\s+deadline/i.test(sentence);
-    const claimsAfter = /etter\s+deadline/i.test(sentence);
-    if (!claimsBefore && !claimsAfter) return true;
-    if (NEGATION.test(sentence)) return true;
-    // Nevner setningen bare lag som spiller på «feil» side av deadline, er den gal.
-    if (claimsBefore && names(sentence, afterMatchers) && !names(sentence, beforeMatchers)) return false;
-    if (claimsAfter && names(sentence, beforeMatchers) && !names(sentence, afterMatchers)) return false;
-    // Uten lagnavn: bare utsagn om selve kampene kan motbevises av dataene.
-    if (claimsBefore && !anyBefore && OM_KAMPER.test(sentence)) return false;
-    return true;
-  };
+  // Friskmeldingskontrollen (v1.2.5): modellen skrev «alle stiller friske»
+  // mens skadelista hadde innhold. Deadline-kontrollens negasjonsvern gjelder
+  // bevisst ikke her — en friskmelding ER en negasjon.
+  const friskAktiv = (brief?.injuries?.length ?? 0) > 0;
+  const keepFrisk = (sentence) => !FRISKMELDING_RE.test(sentence);
 
   const dropped = [];
   const lines = text.split('\n').map((line) => {
-    if (!/deadline/i.test(line)) return line;
+    const sjekker = [];
+    if (deadlineAktiv && /deadline/i.test(line)) sjekker.push(keepDeadline);
+    if (friskAktiv && /frisk|skade|fravær/i.test(line)) sjekker.push(keepFrisk);
+    if (sjekker.length === 0) return line;
     const masked = maskDots(line);
     const sentences = masked.match(/[^.!?]+[.!?]*/g) ?? [masked];
     const kept = sentences.filter((s) => {
-      if (keep(s)) return true;
+      if (sjekker.every((k) => k(s))) return true;
       dropped.push(unmaskDots(s).trim());
       return false;
     });
@@ -234,7 +257,7 @@ export function sanitizeBriefText(text, brief) {
   });
 
   if (dropped.length) {
-    console.warn('AI-brief: fjernet %d uriktig(e) deadline-påstand(er):', dropped.length, dropped);
+    console.warn('AI-brief: fjernet %d setning(er) som motsier datagrunnlaget:', dropped.length, dropped);
   }
   return lines.filter((line) => line !== null).join('\n');
 }

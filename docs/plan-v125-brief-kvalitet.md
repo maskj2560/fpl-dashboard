@@ -432,9 +432,9 @@ test('sanitizeBriefText beholder skadeomtale som ikke friskmelder', () => {
 });
 ```
 
-- [ ] Tester skrevet. `npm test` — **forventet rødt: 268 tester, 1 feiler**
+- [x] Tester skrevet. `npm test` — **forventet rødt: 268 tester, 1 feiler**
       (fjern-testen; de to behold-testene er vern og er grønne fra start).
-      Observert: ______
+      Observert: **268 tester, 267 pass, 1 fail** — nøyaktig fjern-testen.
 
 ### 3b. Implementasjon (src/services/prompts.js)
 
@@ -501,13 +501,13 @@ eksisterende sanitize-tester skal fortsatt bestå uendret (inkludert «ekte
 AI-brief fra prod går uendret gjennom etterkontrollen» — `briefGw1` har
 ingen `injuries`, så friskmeldingskontrollen er inaktiv der).
 
-- [ ] `npm test` — **forventet grønt: 268/268.** `npm run lint` exit 0.
-      Observert: ______
-- [ ] CHANGELOG `[Unreleased]` `### Fixed`-punkt: «AI-briefen kan ikke
+- [x] `npm test` — **forventet grønt: 268/268.** `npm run lint` exit 0.
+      Observert: **tests 268 / pass 268 / fail 0**, `npm run lint` exit 0.
+- [x] CHANGELOG `[Unreleased]` `### Fixed`-punkt: «AI-briefen kan ikke
       lenger friskmelde troppen når skadelista har innhold — slike
       setninger fjernes i etterkontrollen (GW1-funnet «alle stiller
       friske» tross Bruno G. på skadelista).»
-- [ ] Commit: `fix(brief): sanitize fjerner friskmelding som motsier skadelista`
+- [x] Commit: `fix(brief): sanitize fjerner friskmelding som motsier skadelista`
 
 ---
 
