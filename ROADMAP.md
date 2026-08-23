@@ -45,8 +45,9 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
   (`src/services/prompts.js:135`).
 - **Hvorfor her:** Marius har pekt på denne som den han vil ha fikset;
   kjent feil i prod.
-- **Eier detaljene:** plan mangler — krever brainstorming + plan + egen
-  release (planens regel: aldri fiks inni en deploy).
+- **Eier detaljene:** `docs/plan-v124-radgiver-prompt.md` (brainstormet og
+  godkjent 24. aug, økt 26). Utføres av Opus 5 i egen økt; egen release
+  (planens regel: aldri fiks inni en deploy).
 - **Blokkert av:** ingenting.
 - **Størrelse:** liten–medium — 1 planøkt + 1 utførelsesøkt, 1–2 AI-kall
   til ende-til-ende-verifisering.

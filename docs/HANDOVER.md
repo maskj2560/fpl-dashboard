@@ -6,7 +6,7 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-24 (økt 25, Fable: versjonsplan + dokumentkart i ROADMAP)
+**Sist oppdatert:** 2026-08-24 (økt 26, Fable: plan for v1.2.4 rådgiver-prompt godkjent)
 
 ## Status akkurat nå
 
@@ -26,15 +26,18 @@
 - **Versjonsplan lagt (økt 25):** ROADMAP har nå versjonsplan-tabell øverst
   (v1.2.4 → v1.2.5 → v1.3.0 → v1.3.1+, porter P1–P4 for sjekker/målinger)
   og et dokumentkart. Kun kodereleaser får versjonsnummer (Marius' valg).
-- **Neste arbeid: v1.2.4 (kø-punkt 1)** — AI-rådgiverens promptstruktur på
-  /lag (`api.js:85-88` sender kun form; modellen dikter). Krever egen
-  brainstorming + plan + release. Ikke påbegynt.
+- **Neste arbeid: v1.2.4 (kø-punkt 1) — plan klar og godkjent (økt 26).**
+  AI-rådgiverens promptstruktur på /lag: fullt datagrunnlag per spiller +
+  sidens beregninger + REGLER-seksjon, alt flyttet til `prompts.js`.
+  Plan: `docs/plan-v124-radgiver-prompt.md` (4 beslutninger tatt av Marius,
+  se planens Designbeslutninger). Neste: utførelsesøkt med Opus 5
+  (Task 1–2; Task 3 = release KUN på klarsignal). Ingen kode skrevet ennå.
 
 ## Åpne punkter
 
 Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 
-1. v1.2.4: promptstruktur /lag (plan mangler) — neste utviklingsjobb.
+1. v1.2.4: promptstruktur /lag — plan godkjent 24. aug, utførelsesøkt gjenstår.
 2. P4: kostnadsmåling uken etter 31. aug (metode i `docs/sjekkpunkt-d-kostnad.md`).
 3. P1 `[Marius]`: bekreft auto-briefen 20. aug i Discord-kanalen.
 4. P3: etter GW2, transfers-skjema mot ekte data + `/overganger` på mobil.
@@ -101,6 +104,15 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
+- 2026-08-24 (økt 26): kjøreprompt «Oppdrag (plan mode): planlegg v1.2.4 —
+  AI-rådgiverens promptstruktur på /lag» + brainstorming: Marius valgte
+  anbefalingen på alle fire spørsmål (fullt signalsett; sidens beregninger
+  med i prompten; promptregler i stedet for etterkontroll; databygging
+  flyttes til prompts.js). Underveis: «Gjør planen så detaljert som mulig
+  … lag en lett kopierbar prompt til opus … Ikke lag en fil for det …
+  oppdater alle filene du trenger.» Handling: plan skrevet og godkjent
+  (`docs/plan-v124-radgiver-prompt.md`), HANDOVER/ROADMAP oppdatert,
+  Opus-prompt levert i chatten. 0 AI-kall, ingen kodeendringer, ingen push.
 - 2026-08-24 (økt 25): «Lag en full plan over alt filene i docs og alle
   planene dette prosjektet har … i hvilke steg … med versjonsnummer …
   mest optimale løsningen.» To beslutninger tatt: (1) kun kodereleaser får
