@@ -15,13 +15,13 @@
   det uverifiserte transfers-pillepunktet). Baseline: 299/299, lint 0.
   Ingen AI-kall — `/brief` og `/nyheter` kun LOKALT med tomme nøkler
   (`/health` → `ai:false, discord:false` bekreftet), aldri i prod.
-  - Task 1.3-0: branch, planfiler, ETAPPE 4-stubben peker videre.
-  - Task 1.3-1 (QA 1+8): **301/301, lint 0**, Playwright 8/8. Topbaren har
-    nå `height: var(--topbar-h)` (57/50 px) i stedet for vertikal padding;
-    pinned-boksen på /spillere mistet sin virkningsløse `position: sticky`,
-    og høydereserven (14rem desktop / 19rem mobil) hindrer at siden kan
-    scrolle boksen opp bak menyen. Avvik fra planteksten er ført inn i
-    planfilas «Observert» for Task 1.3-1 steg 5.
+  Avvik fra planteksten føres inn i planfilas «Observert»-felt.
+  - 1.3-0: branch, planfiler, ETAPPE 4-stubben peker videre.
+  - 1.3-1 (QA 1+8): 301/301, lint 0, Playwright 8/8. `--topbar-h` styrer
+    menyhøyden (57/50 px); pinned-boksen mistet sin virkningsløse sticky
+    og fikk en høydereserve (14rem desktop / 19rem mobil) i stedet.
+  - 1.3-2 (QA 6+7): 302/302, lint 0. `opacity` ut av versjonslinja og
+    benkeradene — `--text-dim` i stedet, låst med `text-dim`/`bg` i PAIRS.
 - **v1.3.2 (etappe 3) RELEASET 24. aug (økt 33):** finpuss per side +
   kontraktstester for markupen `app.js` avhenger av. 299/299, lint 0.
   Detaljene (inkl. de manuelt målte pillekontrastene) er rotert til

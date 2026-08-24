@@ -11,6 +11,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 - Tabellhodet på Spillere legger seg ikke lenger bak toppmenyen på mobil;
   toppmenyens høyde styres nå av `--topbar-h` (57/50 px).
+- Bedre kontrast i lyst tema på versjonslinja i footeren og på benkeradene
+  på lagsiden — de var dempet med gjennomsiktighet og falt under kravet.
 
 ## [1.3.2] - 2026-08-24
 

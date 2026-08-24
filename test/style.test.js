@@ -53,7 +53,7 @@ const ratio = (a, b) => {
 // [forgrunn, bakgrunn, krav] — 4.5 tekst, 3 grafikk. Kun hex-tokens.
 const PAIRS = [
   ['text', 'bg', 4.5], ['text', 'surface', 4.5], ['text', 'surface-2', 4.5], ['text', 'surface-3', 4.5],
-  ['text-dim', 'surface', 4.5], ['text-dim', 'surface-2', 4.5], ['text-dim', 'surface-3', 4.5],
+  ['text-dim', 'bg', 4.5], ['text-dim', 'surface', 4.5], ['text-dim', 'surface-2', 4.5], ['text-dim', 'surface-3', 4.5],
   ['dim-strong', 'surface', 4.5], ['dim-strong', 'surface-3', 4.5],
   ['accent-text', 'bg', 4.5], ['accent-text', 'surface', 4.5], ['accent-text', 'surface-2', 4.5],
   ['accent-ink', 'accent', 4.5],
@@ -102,4 +102,9 @@ test('style.css: pinned-tabellen er en indre scrollboks uten egen sticky', () =>
   assert.ok(!b.includes('position: sticky'), 'sticky på boksen har ~0 reiserom inne i kortet og er død vekt');
   assert.match(b, /max-height: min\(75vh/);
   assert.match(block('.table-scroll--pinned table.data thead th'), /position: sticky/);
+});
+
+test('style.css: ingen opacity-demping på versjonslinja og benkeradene', () => {
+  assert.ok(!block('footer .version').includes('opacity'));
+  assert.ok(!block('.row-bench td').includes('opacity'));
 });

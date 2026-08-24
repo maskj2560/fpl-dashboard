@@ -1224,8 +1224,10 @@ table.sortable th[aria-sort='ascending']::after {
   font-weight: 700;
 }
 
+/* Dempet tekst — ikke opacity: den ville dratt kontrasten under kravet i
+   lyst tema, og kan ikke låses i PAIRS. Klubbmerkene beholder full farge. */
 .row-bench td {
-  opacity: 0.55;
+  color: var(--text-dim);
 }
 
 /* ---------- Live-puls ---------- */
@@ -1367,7 +1369,6 @@ footer .version {
   margin: 0.25rem 0 0;
   font-family: var(--font-mono);
   font-size: var(--fs-sm);
-  opacity: 0.75;
 }
 
 /* ---------- Mobil (≤ 480 px) ---------- */

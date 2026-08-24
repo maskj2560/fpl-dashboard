@@ -196,7 +196,7 @@ test('style.css: pinned-tabellen er en indre scrollboks uten egen sticky', () =>
 **Files:** Modify `public/style.css` (:1356-1361, :1217-1219),
 `test/style.test.js`.
 
-- [ ] **Steg 1 (rød):**
+- [x] **Steg 1 (rød):**
 
 ```js
 test('style.css: ingen opacity-demping på versjonslinja og benkeradene', () => {
@@ -207,13 +207,13 @@ test('style.css: ingen opacity-demping på versjonslinja og benkeradene', () => 
 
       Pluss to nye par i `PAIRS`: `['text-dim', 'bg', 4.5]` (versjonslinja står
       på `--bg`; benkeraden dekkes av eksisterende `['text-dim','surface',4.5]`).
-- [ ] **Steg 2:** `node --test test/style.test.js` → 1 rød. Observert: ______
-- [ ] **Steg 3:** `footer .version`: fjern `opacity: 0.75;` (arver `--text-dim`
+- [x] **Steg 2:** `node --test test/style.test.js` → 1 rød. Observert: 7 tester, 6 pass, 1 fail. NB: planen sier «to nye par i PAIRS», men navngir bare ett — kun ['text-dim', 'bg', 4.5] er lagt til (benkeraden dekkes av det eksisterende text-dim/surface-paret, som planen selv skriver). Det nye paret var grønt fra start.
+- [x] **Steg 3:** `footer .version`: fjern `opacity: 0.75;` (arver `--text-dim`
       fra `footer`). `.row-bench td`: erstatt `opacity: 0.55;` med
       `color: var(--text-dim);`.
-- [ ] **Steg 4:** `node --test test/style.test.js` grønn; `npm test` → 302.
-      Observert: ______
-- [ ] **Steg 5:** CHANGELOG (Fixed: kontrast på versjonslinje/benkerader i lyst
+- [x] **Steg 4:** `node --test test/style.test.js` grønn; `npm test` → 302.
+      Observert: style.test.js 7/7, npm test 302/302 pass 0 fail, lint exit 0
+- [x] **Steg 5:** CHANGELOG (Fixed: kontrast på versjonslinje/benkerader i lyst
       tema), HANDOVER. Commit:
       `fix: kontrast uten opacity på versjonslinja og benkeradene (QA 6+7)`
 
