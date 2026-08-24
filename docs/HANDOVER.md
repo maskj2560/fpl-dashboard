@@ -6,7 +6,7 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-24 (økt 34, Opus: ETAPPE 4 / v1.3.3)
+**Sist oppdatert:** 2026-08-24 (økt 35, Fable: plan for v1.3.4)
 
 ## Status akkurat nå
 
@@ -166,6 +166,14 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
+- 2026-08-24 (økt 35, Fable): Marius sendte kø-punkt 2-oppdraget hit for
+  planlegging og ba om kjøreprompt til Opus som også ferdigstiller HELE
+  v1.3. Plan laget; rotårsaken bekreftet i kode — `ai.js:39-44` blokkerer
+  også FORSIDEN (`routes/index.js:26-30` awaiter `getNews()`), ikke bare
+  /brief og /nyheter. Beslutning: deadlinevindu **6 timer** (anbefalingen
+  valgt) → ~41–45 kall/uke. Handling: ROADMAP-porten «takten bekreftes»
+  lukket, kjøreprompt levert i chatten; utførelsesøkten skriver
+  `docs/plan-v134-ai-swr.md` som Task 0.
 - 2026-08-24 (økt 34, etter releasen): Marius melder at **deler av siden
   bruker ekstremt lang tid på å laste**, mistenker briefene, og ber om at
   de caches en periode og friskes opp jevnlig på serveren. Valgte omfang:
@@ -190,8 +198,5 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
   stoppet. Deretter klarsignal **«Kjør»** (~17:55) → Task 1.3-13:
   tidsvindu og `fixtures/` sjekket, 1.3.3, merge, tag, push 18:00.
   Prod-verifiseringen strandet på 401 — se statusdelen øverst.
-- Loggposten fra økt 33 (v1.3.2-releasen): rotert til
-  `docs/arkiv/HANDOVER-historikk.md` 2026-08-24 (200-linjerstaket).
-- Loggposten fra økt 32 (v1.3.1-releasen + v1.3.2-bygget): rotert til
-  `docs/arkiv/HANDOVER-historikk.md` 2026-08-24 (200-linjerstaket).
-- Loggposter fra økt 22–31: rotert til arkivet 2026-08-24.
+- Loggposter fra økt 22–33: rotert til `docs/arkiv/HANDOVER-historikk.md`
+  2026-08-24 (200-linjerstaket).

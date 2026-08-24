@@ -26,7 +26,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.3.1**~~ | ~~UI-overhaling, etappe 2: klubbgrafikk (merker + drakter, selvhostet)~~ | **utført 24. aug** | — |
 | ~~**v1.3.2**~~ | ~~UI-overhaling, etappe 3: finpuss per side~~ | **utført 24. aug** | — |
 | ~~**v1.3.3**~~ | ~~UI-overhaling, etappe 4: QA-rettelser~~ | **kode utført 24. aug — prod uverifisert, se kø-punkt 1** | — |
-| **v1.3.4** | Ingen ventetid på AI-tekst: SWR + bakgrunnsoppfriskning | 2 | takten bekreftes av Marius |
+| **v1.3.4** | Ingen ventetid på AI-tekst: SWR + bakgrunnsoppfriskning | 2 | — (takt bekreftet 24. aug) |
 | **v1.3.1+** | Robusthetskandidatene, én og én etter avtale | 7 | avtale per punkt |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
@@ -74,13 +74,14 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
   nyhetsoppsummeringen (`/nyheter`) og rådgiveren på `/lag`. Rådgiveren
   utløses av et klikk, så der må kald cache fortsatt vente — knappen kan
   ikke svare med ingenting. Stale cache skal aldri blokkere noe sted.
-- **Takt (anbefaling, Marius kan overstyre før økten):** briefen friskes
-  opp én gang i døgnet PLUSS i timene før deadline — det er da skadenytt
-  og laguttak endrer seg, og 24 timer gammel tekst ville vært feil.
-  Nyhetene hver 6. time. Anslag ~35 kall i uka mot dagens håndfull;
-  måles mot `AI-kall:`-linjene før og etter. Auto-briefen i `notify.js`
-  bruker ALLEREDE samme `cacheKey` som `/brief`, så det kallet varmer
-  cachen gratis — gjenbruk det i stedet for å legge et nytt oppå.
+- **Takt (BEKREFTET av Marius 24. aug, planøkt 35):** briefen friskes opp
+  én gang i døgnet PLUSS hver time i et 6-timersvindu før deadline;
+  nyhetene hver 6. time. Utregnet ~41–45 kall/uke (28 nyheter + ~13 brief
+  + rådgiverklikk + 2 per deploy); måles mot `AI-kall:`-linjene før og
+  etter. Auto-briefen i `notify.js` bruker ALLEREDE samme `cacheKey` som
+  `/brief`, så det kallet varmer cachen gratis — gjenbruk det i stedet
+  for å legge et nytt oppå. Design + kjøreprompt: Fable-planøkt 35 —
+  utførelsesøkten skriver `docs/plan-v134-ai-swr.md` som Task 0.
 - **Mål først, ikke gjett:** økten starter med å tidfeste hver rute
   server-side (AI-kall vs. FPL-kall vs. rendring) og rapportere tallene.
   `/overganger` gjør opptil 38 live-kall og `/liga` henter rival-picks —
