@@ -12,8 +12,8 @@
 
 - **v1.3.2 (etappe 3) RELEASET 24. aug (økt 33, Opus).** Task 1.2-4 kjørt
   på klarsignal: bump 1.3.2, docs, merge `--no-ff` til `main`, tag
-  `v1.3.2`, push, Coolify-deploy. **299/299 tester, lint 0.**
-  Prod-verifisering og det ene AI-kallet: se linjen om prod nedenfor.
+  `v1.3.2`, push, Coolify-deploy. **299/299 tester, lint 0, prod grønn,
+  AI-budsjettet brukt opp (1 av 1).** Detaljene: se prod-linjene nedenfor.
   - Innholdet: kontraktstester som låser markupen `app.js` avhenger av
     (heroens `data-deadline` + fire `data-unit`, 11 kolonnehoder med
     `data-type` og `aria-sort`), `btn-link` tilbake til dashbordet på
@@ -41,20 +41,23 @@
   https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849.
   **20 av 21 tasks ferdige. Kun ETAPPE 4 gjenstår (ingen planlagte
   tasks — innholdet er Marius' QA-funn).**
-- **Prod kjører v1.3.1 på https://fpl.marsk.no — verifisert 24. aug 13:16**
-  (etter docs-rebuilden).
+- **Prod kjører v1.3.2 på https://fpl.marsk.no — verifisert 24. aug 13:22.**
   `/health` → 200, `ai:true, discord:true, leagues:1,`
-  `clubImages {badges:20, shirts:20, keepers:20}`; footer `v1.3.1`;
-  `/img/clubs/t3.png?v=2627` → 200 + `immutable`. Playwright mot prod
-  (uten /brief og /nyheter): 240/240 + klubbskript 14/14.
+  `clubImages {badges:20, shirts:20, keepers:20}`; footer `v1.3.2`;
+  `style.css`/`app.js` `?v=000fa6f3` og `/img/clubs/t3.png?v=2627` → 200 +
+  `immutable`; 9 ruter 200 + 404 (uten /brief og /nyheter). Playwright mot
+  prod: 240/240 + klubbskript 14/14.
+- **AI-budsjettet for UI-overhalingen er brukt opp: 1 av 1.** Den ene
+  visningen av prod-`/brief` (24. aug 13:23) var grønn: cyan hairline +
+  AI-merke, 60 `<strong>` og 0 rå `**`, 9 `.sub-head` og 0 rå `###`,
+  10 `.fixture-row` med klokkeslett, 25 klubbmerker (0 uversjonerte).
+  `/nyheter` ble aldri besøkt med ekte nøkkel.
 - Kostnad målt 23. aug: **$0,94/uke** — under terskelen, ingen tiltak. Ny
   måling i uken etter 31. aug (prisskiftet), se kø-punkt 1.
-- **Git akkurat nå:** `main` = `origin/main` (docs-commiten fra
-  v1.3.1-releasen pushet 24. aug 13:12; Coolify bygde identisk kode på
-  nytt, prod verifisert oppe etterpå: `/health` 200, footer `v1.3.1`).
-  Arbeidstreet står på **`feat/ui-v132-finpuss`** — 3 commits, **kun
-  lokalt, ikke pushet**. Det er der v1.3.2-jobben og denne fila er
-  nyest; `main` sin HANDOVER er fortsatt v1.3.1-versjonen.
+- **Git akkurat nå:** arbeidstreet står på **`main` = `origin/main`**,
+  tag `v1.3.2` (`2eb6c95..d68c810`, merge `--no-ff` av
+  `feat/ui-v132-finpuss` + release-commit). Featurebranchen er slettet
+  lokalt. Ingen åpne brancher.
 - Eldre status (v1.2.3-deploy, doks-opprydning økt 24, versjonsplan økt 25,
   v1.2.4 økt 27): rotert til `docs/arkiv/HANDOVER-historikk.md` 24. aug.
 

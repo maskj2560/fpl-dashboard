@@ -1897,11 +1897,43 @@ etter avsnittet.
 ## Task 1.2-4 — Release v1.3.2 (KUN på klarsignal) + AI-kall 1 av 1
 
 Som 1.0-7 → 1.3.2. Etter deploy og `/health`:
-- [ ] **Én** visning av `https://fpl.marsk.no/brief` (AI-kall 1 av 1).
+
+- [x] Tidsvindu sjekket. Observert: **mandag 24. aug 13:18 og 13:21,
+      0 kamper i gang (GW1 og GW2: ingen `started && !finished_provisional`),
+      neste avspark 28. aug 19:00 UTC.**
+- [x] `npm version patch --no-git-tag-version` → 1.3.2; CHANGELOG
+      `[1.3.2] - 2026-08-24`; ROADMAP, VIDERE og HANDOVER oppdatert
+      (HANDOVER sprengte 200-linjerstaket → loggposten fra økt 32 rotert
+      til `docs/arkiv/HANDOVER-historikk.md`, ny lengde 171 linjer);
+      commit `chore(release): v1.3.2`.
+- [x] Merget til `main` (`--no-ff`), **299/299 + lint 0 på main**,
+      CHANGELOG-plasseringen inspisert (`[1.3.2]` over `[1.3.1]`, under
+      `[Unreleased]`), tag `v1.3.2`, pushet `main` + tag
+      (`2eb6c95..d68c810`).
+- [x] Coolify deployet (~50 s). Observert: **footer `v1.3.2`; `/health` →
+      200 `ai:true, discord:true, leagues:1,`
+      `clubImages {badges:20, shirts:20, keepers:20}`;
+      `style.css?v=000fa6f3` og `app.js?v=000fa6f3` (delt `assetVersion`)
+      → `public, max-age=31536000, immutable`; `/img/clubs/t3.png?v=2627`
+      → 200 + `immutable`; 9 ruter 200 + 404 (uten `/brief` og
+      `/nyheter`); 60 klubb-URL-er på `/`, 0 uversjonerte. Playwright mot
+      prod: OK 240/240 + klubbskript OK 14/14 (0 brutte bilder av
+      60/609/48, 15 drakter + 4 keeperdrakter).**
+- [x] **Én** visning av `https://fpl.marsk.no/brief` (AI-kall 1 av 1).
       Sjekk: AI-kortet har cyan hairline + AI-merke, `**fet**` → `<strong>`,
       overskriftene (`### …`) som `.sub-head`, ingen rå markdown, merker i
-      skade-/kapteinslistene, kamplista med klokkeslett. Observert: ______
-- [ ] `/nyheter` besøkes IKKE med ekte nøkkel. Budsjett: **1 av 1 brukt.**
+      skade-/kapteinslistene, kamplista med klokkeslett. Observert:
+      **200, 15 899 bytes, 14,5 s (fersk generering).
+      `class="card card-wide card-ai"` + `<span class="ai-badge">AI</span>`
+      (`.card-ai { border-left: 3px solid var(--cyan) }`);
+      60 `<strong>` og **0** rå `**`; 9 `.sub-head` (5 fra AI-teksten:
+      Deadline / Skadenytt / Kapteinsvalg / Kamper å følge med på / Mine
+      grep, + 4 datogrupper) og **0** rå `###`; 10 `.fixture-row` med
+      `.fixture-time` (21:00, 13:30, 16:00 …); klubbmerker: Skader 2,
+      Kapteinskandidater 3, Kamper 20 — 25 totalt, **0 uversjonerte**;
+      footer `v1.3.2`.**
+- [x] `/nyheter` besøkes IKKE med ekte nøkkel. Budsjett: **1 av 1 brukt.**
+- [x] Lokal branch `feat/ui-v132-finpuss` slettet.
 
 ---
 
