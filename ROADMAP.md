@@ -22,7 +22,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | **P4** | Kostnadsmåling uken etter 1. sep | 1 | dato |
 | ~~**v1.2.5**~~ | ~~Brief-kvalitetstrioen~~ | **utført 24. aug** | — |
 | ~~**v1.3.0**~~ | ~~UI-overhaling, etappe 1: fundament (tokens i to temaer, temabryter, lilla topbar)~~ | **utført 24. aug** | — |
-| **v1.3.1** | UI-overhaling, etappe 2: klubbgrafikk (merker + drakter, selvhostet) | 5 | v1.3.0 i prod |
+| ~~**v1.3.1**~~ | ~~UI-overhaling, etappe 2: klubbgrafikk (merker + drakter, selvhostet)~~ | **bygget 24. aug, venter på klarsignal for release** | — |
 | **v1.3.2** | UI-overhaling, etappe 3: finpuss per side | 5 | v1.3.1 i prod |
 | **v1.3.3** | UI-overhaling, etappe 4: QA-rettelser | 5 | Marius' QA etter v1.3.2 |
 | **v1.3.1+** | Robusthetskandidatene, én og én etter avtale | 6 | avtale per punkt |
@@ -91,10 +91,13 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
         `test/style.test.js`), inline-tema-script, temabryter, lilla topbar,
         `views/partials/`. 272 → 282 tester. **Utført 24. aug: 282/282,
         lint 0, Playwright 332/332, tag `v1.3.0` i prod.**
-  - [ ] **v1.3.1 Klubbgrafikk** — `scripts/fetch-club-assets.mjs`,
+  - [x] **v1.3.1 Klubbgrafikk** — `scripts/fetch-club-assets.mjs`,
         `public/img/clubs/`, `clubAssets.js`, `IMG_VERSION`, `teamCode` i
         brief/live/transfers, partials club-badge/club-shirt i alle views,
         footer-kreditering, `/health` teller bildene. → 296 tester.
+        **Utført 24. aug (branch `feat/ui-v131-klubbgrafikk`): 296/296,
+        lint 0, Playwright 332/332 + 22/22 klubbsjekker, 0 AI-kall.
+        Venter på klarsignal for release.**
   - [ ] **v1.3.2 Finpuss** — hero, korthoder, kampliste, feilsider, mobil.
         → 299 tester. Deretter 1 AI-kall: prod-visning av `/brief`.
   - [ ] **v1.3.3 QA-rettelser** — funn fra Playwright + Marius' QA.

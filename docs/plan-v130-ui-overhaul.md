@@ -1739,13 +1739,25 @@ tilsvarende for `m.away`.
 
 ## Task 1.1-6 — Røyk, Playwright, docs — STOPP
 
-- [ ] Røyk uten nøkler: `/health` `ai:false, discord:false, clubImages 20/20/20`;
-      11 ruter 200; 404. Observert: ______
-- [ ] Playwright (Vedlegg A): 0 feil, «brutte bilder = 0» på alle sider.
-      Observert: ______
-- [ ] ROADMAP/HANDOVER/VIDERE/CLAUDE.md (arkitekturkart: `views/partials/`,
+- [x] Røyk uten nøkler: `/health` `ai:false, discord:false, clubImages 20/20/20`;
+      11 ruter 200; 404. Observert: `/health` →
+      `ai:false, discord:false, teamId:true, leagues:0,`
+      `clubImages {badges:20, shirts:20, keepers:20}`; åtte HTML-ruter 200
+      (/, /spillere, /lag, /liga, /brief, /overganger, /live, /nyheter),
+      ukjent sti → 404, `/img/clubs/t3.png?v=2627` → 200 +
+      `public, max-age=31536000, immutable`.
+- [x] Playwright (Vedlegg A): 0 feil, «brutte bilder = 0» på alle sider.
+      Observert: **OK 332/332**. I tillegg et eget klubbskript
+      (scratchpad, `qa-clubs.mjs`): **OK 22/22** — alle klubbbilder lastet
+      med `loading` tvunget til `eager` (60 på /, 609 på /spillere, 48 på
+      /lag, 25 på /brief), 0 brutte, 0 uversjonerte, 0 med bredde 0,
+      15 drakter + 4 keeperdrakter på /lag, og Lag-kolonnen sorterer
+      alfabetisk begge veier (første klikk er synkende — `sortBy`-adferd
+      fra før) med ren kortnavnstekst i cellene.
+- [x] ROADMAP/HANDOVER/VIDERE/CLAUDE.md (arkitekturkart: `views/partials/`,
       `clubAssets.js`, `scripts/`) oppdatert. Commit `docs: v1.3.1 klar`.
-      Rapporter, **STOPP.**
+      Rapporter, **STOPP.** Loggpostene fra økt 30–31 rotert til
+      `docs/arkiv/HANDOVER-historikk.md` (HANDOVER: 168 linjer).
 
 ## Task 1.1-7 — Release v1.3.1 (KUN på klarsignal)
 

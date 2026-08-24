@@ -55,9 +55,11 @@ siden er aldri halvferdig:
 1. ~~**v1.3.0 — nye farger og temavalg.**~~ **Ferdig og ute 24. august.**
    FPL-lilla toppmeny, FPLs grønne og cyan som aksenter, og en knapp som
    bytter mellom automatisk/lyst/mørkt og husker valget ditt.
-2. **v1.3.1 — klubbmerker og drakter.** Merker i alle tabeller og lister,
-   drakter på banen på lagsiden (keeperen får keeperdrakt). Bildene
-   ligger på vår egen server; mangler et bilde, vises kortnavnet.
+2. **v1.3.1 — klubbmerker og drakter.** **Bygget ferdig 24. august —
+   venter bare på at du sier fra før den legges ut.** Merker i alle
+   tabeller og lister, drakter på banen på lagsiden (keeperen får
+   keeperdrakt). Bildene ligger på vår egen server; mangler et bilde,
+   vises kortnavnet.
 3. **v1.3.2 — finpuss.** Rundeetiketten i nedtellingen, kampliste med
    klokkeslett i briefen, tydeligere feilsider, mobilpuss. Etterpå én
    AI-visning av briefen i prod for å se at teksten sitter i det nye
@@ -78,7 +80,8 @@ er «porter» — de skjer når datoen eller du er klar, uten å stoppe utviklin
   1,50 dollar/uka).
 - ~~**v1.2.5** — rundebriefen blir ærligere.~~ **Ferdig 24. august.**
 - ~~**v1.3.0** — nye farger og temavalg.~~ **Ferdig 24. august.**
-- **v1.3.1** — klubbmerker og drakter. **Neste jobb.**
+- **v1.3.1** — klubbmerker og drakter. **Bygget 24. august, klar til
+  utlegging når du sier fra.**
 - **v1.3.2** — finpuss på alle sider.
 - **v1.3.3** — rettelser fra din gjennomgang.
 - **v1.3.4 og utover** — små robusthetsfikser fra kvalitetsgjennomgangen,

@@ -5,6 +5,53 @@
 > sjekkpunkt-tabellen, versjonshistorikken, utdaterte åpne punkter og hele
 > loggen over brukerbeskjeder til og med økt 22. Nyere logg: HANDOVER.md.
 
+## Rotert 2026-08-24 (økt 32): loggposter økt 30–31 (verbatim fra HANDOVER.md)
+
+- 2026-08-24 (økt 31, Opus): kjøreprompt «Oppdrag (Opus 5,
+  utførelsesøkt): utfør ETAPPE 1 — v1.3.0 Fundament» med
+  `superpowers:executing-plans` mot `docs/plan-v130-ui-overhaul.md` og
+  mockupen som fasit for utseendet (ved avvik vinner planen). Harde
+  rammer: Task 1.0-0…1.0-6 nå, Task 1.0-7 kun på eksplisitt klarsignal,
+  ingen designbeslutninger (mangler noe → stopp og spør), aldri push uten
+  klarsignal (heller ikke docs), aldri to. 19–21 eller mens kamper pågår,
+  **0 AI-kall** (`/brief` og `/nyheter` kun med tomme nøkler, `/health` →
+  `ai:false` FØRST), TDD med observert rødt ført inn i planfila, ingen nye
+  avhengigheter, Playwright kun i scratchpad, docs i samme commit som
+  endringen, branch `feat/ui-v130-fundament` fra rent og grønt `main`.
+  Handling: alle seks tasks utført, 5 commits, 282/282 + lint 0,
+  Playwright 332/332, 0 AI-kall, ingenting pushet. Underveis ett spørsmål
+  stilt (kontrastkonflikt på `.deadline-passed` inne i heroen) —
+  Marius valgte anbefalingen `--hero-text` (hvit). Deretter klarsignal:
+  **«Kjør»** (mandag 24. aug ~03:10). Handling: Task 1.0-7 utført — bump
+  1.3.0, docs, merge til `main`, tag `v1.3.0`, push, Coolify-deploy,
+  prod-verifisering uten `/brief` og `/nyheter`. Tidsvindu sjekket før
+  push: mandag 03:09, 0 kamper i gang, neste avspark 28. aug 19:00 UTC.
+  Til slutt: «lag en prompt for å starte på etappe 2 til en ny opus chat».
+  Handling: kjøreprompt for ETAPPE 2 (v1.3.1 Klubbgrafikk) levert i chatten,
+  ikke som fil — med testtallene 282 → 283 → 287 → 290 → 296, rødfasene,
+  0 AI-kall, GW2-kampvinduet som pushregel, og lærdommene fra etappe 1
+  (CRLF-normalisering i node-skript, heredoc/apostrof, Playwright-cache,
+  hero-tokens, les asset-hash fra prod-HTML).
+
+- 2026-08-24 (økt 30, Fable): kjøreprompt «Oppdrag (Fable 5): planlegg
+  v1.3.0 — full UI-overhaling. KUN PLANLEGGING» med krav: brainstorming
+  FØR plan mode (ett sett om gangen, anbefaling først, Marius beslutter),
+  verifiser alle fakta selv, klikkbar mockup som Artifact i begge temaer,
+  ett definert sluttprodukt (palett/typografi/spacing/komponenter per side),
+  fire åpne spørsmål avgjort (klubbgrafikk-kilde/lisens, tema/FOUC,
+  FPL-nærhet/kontrast, etapper), plan etter v1.2.5-malen, oppdater
+  ROADMAP/VIDERE/HANDOVER/CLAUDE.md, slett `prompt-ui-overhaul-plan.md`,
+  ikke rør CHANGELOG, 0 AI-kall, aldri push, Opus-prompt i chatten.
+  Underveis: «Klarer du å skrive planfila?» / «Okay da kan du fortsette»
+  (bekreftelse etter avbrudd). Handling: 4 spørsmålssett (15 beslutninger,
+  alle = anbefalingen), 20 fakta verifisert (bl.a. 140 bilde-URL-er med
+  curl, PNG-dimensjoner, 41 kontrastpar), plan skrevet til
+  `docs/plan-v130-ui-overhaul.md`, mockup publisert
+  (https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849),
+  ROADMAP/VIDERE/HANDOVER/CLAUDE.md oppdatert, prompt-fila slettet,
+  loggpost økt 28 + eldre status rotert til arkivet, committet lokalt på
+  `main` uten push, Opus-prompt levert i chatten. 0 AI-kall.
+
 ## Rotert 2026-08-24 (økt 31): v1.2.5-status + loggpost økt 29 (verbatim fra HANDOVER.md)
 
 Status-blokk (sto under «Status akkurat nå»):
