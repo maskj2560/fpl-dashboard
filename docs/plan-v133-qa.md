@@ -133,7 +133,7 @@ de åtte skal overstyres.
 `.table-scroll--pinned` uten `position: sticky`; hjelpefunksjonen `block(sel)`
 i style-testen (gjenbrukes av task 1.3-2/3/9).
 
-- [ ] **Steg 1 (rød):** nye tester i `test/style.test.js` (etter
+- [x] **Steg 1 (rød):** nye tester i `test/style.test.js` (etter
       kontrast-løkka):
 
 ```js
@@ -156,9 +156,9 @@ test('style.css: pinned-tabellen er en indre scrollboks uten egen sticky', () =>
 });
 ```
 
-- [ ] **Steg 2:** `node --test test/style.test.js` → forventet 2 røde
-      (4 gamle grønne). Observert: ______
-- [ ] **Steg 3:** `public/style.css`:
+- [x] **Steg 2:** `node --test test/style.test.js` → forventet 2 røde
+      (4 gamle grønne). Observert: 6 tester, 4 pass, 2 fail (som anslått)
+- [x] **Steg 3:** `public/style.css`:
       - `.topbar` (:209): erstatt `padding: 0.7rem 1.25rem;` med
         `height: var(--topbar-h);` + `padding: 0 1.25rem;`
         (`* { box-sizing: border-box }` finnes (:170), `align-items: center`
@@ -179,14 +179,14 @@ test('style.css: pinned-tabellen er en indre scrollboks uten egen sticky', () =>
   }
 ```
 
-- [ ] **Steg 4:** `node --test test/style.test.js` → 6/6. `npm test` → 301.
-      Observert: ______
-- [ ] **Steg 5:** Playwright-sjekk 1–2 i qa-v133.mjs (Vedlegg B) mot lokal
+- [x] **Steg 4:** `node --test test/style.test.js` → 6/6. `npm test` → 301.
+      Observert: style.test.js 6/6, npm test 301/301 pass 0 fail, lint exit 0
+- [x] **Steg 5:** Playwright-sjekk 1–2 i qa-v133.mjs (Vedlegg B) mot lokal
       server: topbar eksakt 57/50, thead th ≥ topbarens underkant ved maks
       sidescroll på /spillere 390 i BEGGE temaer. Er sticky-sjekken rød:
       øk 19rem i 1rem-steg til grønn og noter verdien.
-      Observert (inkl. endelig rem): ______
-- [ ] **Steg 6:** CHANGELOG `[Unreleased]` → Fixed: «Tabellhodet på /spillere
+      Observert (inkl. endelig rem): qa-t1.mjs (sjekk 1+2, begge temaer × 390/1440): 8/8 OK. TO RETTELSER UTOVER PLANTEKSTEN, begge for at plangrepet skulle virke: (a) mobilreserven lå i medieblokka på linje 307, altså FØR basisregelen på ~577 — lik spesifisitet, så basisregelen vant og reserven hadde null effekt; flyttet til en egen 640px-blokk ETTER pinned-reglene. (b) desktopreserven måtte fra 13rem til 14rem: innholdet under boksen målte 209,4 px mot 13rem = 208 px, så hodet gled 1,4 px for høyt på 1440 (Vedlegg B kjører sjekk 2 i BEGGE bredder). Endelige verdier: 14rem desktop / 19rem mobil. Målt slakk etterpå: thead 71,6 vs topbar 57,0 (1440) og 126,7 vs 50,0 (390), likt i mørkt og lyst.
+- [x] **Steg 6:** CHANGELOG `[Unreleased]` → Fixed: «Tabellhodet på /spillere
       legger seg ikke lenger bak toppmenyen på mobil; toppmenyens høyde styres
       av `--topbar-h` (57/50 px).» HANDOVER-status. Commit:
       `fix: topbar låst til --topbar-h og pinned-tabellen kan ikke gli under (QA 1+8)`

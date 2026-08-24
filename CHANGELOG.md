@@ -7,6 +7,11 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Fixed
+
+- Tabellhodet på Spillere legger seg ikke lenger bak toppmenyen på mobil;
+  toppmenyens høyde styres nå av `--topbar-h` (57/50 px).
+
 ## [1.3.2] - 2026-08-24
 
 ### Changed

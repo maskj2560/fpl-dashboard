@@ -12,34 +12,26 @@
 
 - **ETAPPE 4 (v1.3.3 QA-rettelser) PÅGÅR — økt 34, Opus.** Branch
   `fix/ui-v133-qa`, plan i `docs/plan-v133-qa.md` (13 tasks, 18 QA-funn +
-  det uverifiserte transfers-pillepunktet). Baseline verifisert:
-  **299/299 tester, lint exit 0**, `main` = `origin/main` (15fa8f5).
-  - Task 1.3-0 ferdig: branch opprettet, ETAPPE 4-stubben i
-    `docs/plan-v130-ui-overhaul.md` peker nå på utførelsesplanen.
-  - Ingen AI-kall i etappen (budsjettet er brukt opp): `/brief` og
-    `/nyheter` lastes kun LOKALT med tomme nøkler, aldri i prod.
-- **v1.3.2 (etappe 3) RELEASET 24. aug (økt 33, Opus).** Task 1.2-4 kjørt
-  på klarsignal: bump 1.3.2, docs, merge `--no-ff` til `main`, tag
-  `v1.3.2`, push, Coolify-deploy. **299/299 tester, lint 0, prod grønn,
-  AI-budsjettet brukt opp (1 av 1).** Detaljene: se prod-linjene nedenfor.
-  - Innholdet: kontraktstester som låser markupen `app.js` avhenger av
-    (heroens `data-deadline` + fire `data-unit`, 11 kolonnehoder med
-    `data-type` og `aria-sort`), `btn-link` tilbake til dashbordet på
-    404/error/no-team, tellere i dashbord-korthodene, aktiv chip i
-    Oppstilling-hodet, kamplista i briefen som `.fixture-row` med
-    klokkeslett, Beste/Verste som piller, kreditering på egen linje i
-    footeren.
-  - Heroen var allerede ferdig fra etappe 1 — ingen endring nødvendig.
-  - Pillenes forgrunnsfarger var ikke spesifisert i planen. Målt der de
-    står (kortflaten `--surface`): beste 10,42 mørkt / 5,66 lyst, verste
-    5,39 / 5,27. Kan ikke låses i `PAIRS` — `*-soft` er rgba, ikke hex.
+  det uverifiserte transfers-pillepunktet). Baseline: 299/299, lint 0.
+  Ingen AI-kall — `/brief` og `/nyheter` kun LOKALT med tomme nøkler
+  (`/health` → `ai:false, discord:false` bekreftet), aldri i prod.
+  - Task 1.3-0: branch, planfiler, ETAPPE 4-stubben peker videre.
+  - Task 1.3-1 (QA 1+8): **301/301, lint 0**, Playwright 8/8. Topbaren har
+    nå `height: var(--topbar-h)` (57/50 px) i stedet for vertikal padding;
+    pinned-boksen på /spillere mistet sin virkningsløse `position: sticky`,
+    og høydereserven (14rem desktop / 19rem mobil) hindrer at siden kan
+    scrolle boksen opp bak menyen. Avvik fra planteksten er ført inn i
+    planfilas «Observert» for Task 1.3-1 steg 5.
+- **v1.3.2 (etappe 3) RELEASET 24. aug (økt 33):** finpuss per side +
+  kontraktstester for markupen `app.js` avhenger av. 299/299, lint 0.
+  Detaljene (inkl. de manuelt målte pillekontrastene) er rotert til
+  `docs/arkiv/HANDOVER-historikk.md`.
 - **v1.3.1 (etappe 2) ute siden 24. aug:** klubbmerker i alle tabeller og
   lister, drakter på banen, `clubAssets.js` + `IMG_VERSION`,
   `npm run fetch-clubs` og 60 bildefiler. Detaljene er rotert til
   `docs/arkiv/HANDOVER-historikk.md`.
-- **v1.3.0 (etappe 1) ute siden 24. aug:** tokenpalett i to temaer med
-  kontrast låst av `test/style.test.js`, inline-tema-script, temabryter,
-  lilla topbar, `views/partials/`. Detaljene fra økt 31 er rotert til
+- **v1.3.0 (etappe 1) ute siden 24. aug:** tokenpalett i to temaer,
+  inline-tema-script, temabryter, lilla topbar. Detaljene er rotert til
   `docs/arkiv/HANDOVER-historikk.md`.
 - **Plan for UI-overhalingen:** `docs/plan-v130-ui-overhaul.md` (~1900
   linjer, godkjent 24. aug) — fire etapper v1.3.0–v1.3.3 med kode og
@@ -82,6 +74,11 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 
 ## Driftslærdommer (ikke glem disse)
 
+- **En CSS-overstyring må stå ETTER regelen den overstyrer:** en
+  medieblokk lenger oppe i fila har lik spesifisitet og taper cascaden.
+  `.table-scroll--pinned`-reserven lå i ≤640-blokka på linje 307, mens
+  basisregelen står på ~577 — reserven hadde null effekt (målt: boksen ble
+  502 px, ikke 406 px). Oppdaget i økt 34.
 - **Sjekk `git status -sb`, ikke anta at `main` = `origin/main`:** ved
   starten av økt 30 lå `main` 2 docs-commits foran origin (loggføring fra
   økt 29) selv om prompten sa «main = origin/main».

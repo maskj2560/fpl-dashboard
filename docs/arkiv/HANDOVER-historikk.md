@@ -1004,3 +1004,28 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
   Handling: status rapportert (299/299, lint 0, versjon 1.3.1, rent tre,
   4 commits foran `main`), deretter klarsignal **«Kjør»** (mandag
   24. aug ~13:18). Task 1.2-4 utført — se statusdelen øverst.
+
+## Rotert 2026-08-24 (økt 34): v1.3.0-statusbulleten (verbatim fra HANDOVER.md)
+
+- **v1.3.0 (etappe 1) ute siden 24. aug:** tokenpalett i to temaer med
+  kontrast låst av `test/style.test.js`, inline-tema-script, temabryter,
+  lilla topbar, `views/partials/`. Detaljene fra økt 31 er rotert til
+  `docs/arkiv/HANDOVER-historikk.md`.
+
+## Rotert 2026-08-24 (økt 34): v1.3.2-statusblokka (verbatim fra HANDOVER.md)
+
+- **v1.3.2 (etappe 3) RELEASET 24. aug (økt 33, Opus).** Task 1.2-4 kjørt
+  på klarsignal: bump 1.3.2, docs, merge `--no-ff` til `main`, tag
+  `v1.3.2`, push, Coolify-deploy. **299/299 tester, lint 0, prod grønn,
+  AI-budsjettet brukt opp (1 av 1).** Detaljene: se prod-linjene nedenfor.
+  - Innholdet: kontraktstester som låser markupen `app.js` avhenger av
+    (heroens `data-deadline` + fire `data-unit`, 11 kolonnehoder med
+    `data-type` og `aria-sort`), `btn-link` tilbake til dashbordet på
+    404/error/no-team, tellere i dashbord-korthodene, aktiv chip i
+    Oppstilling-hodet, kamplista i briefen som `.fixture-row` med
+    klokkeslett, Beste/Verste som piller, kreditering på egen linje i
+    footeren.
+  - Heroen var allerede ferdig fra etappe 1 — ingen endring nødvendig.
+  - Pillenes forgrunnsfarger var ikke spesifisert i planen. Målt der de
+    står (kortflaten `--surface`): beste 10,42 mørkt / 5,66 lyst, verste
+    5,39 / 5,27. Kan ikke låses i `PAIRS` — `*-soft` er rgba, ikke hex.

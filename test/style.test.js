@@ -83,3 +83,23 @@ for (const [name, tokens] of [['mørkt', dark], ['lyst', light]]) {
     assert.deepEqual(feil, []);
   });
 }
+
+// Ankeret er linjestart: samme selektor kan finnes innrykket i en
+// medieblokk lenger oppe i fila, og da vil et rent indexOf treffe den.
+const block = (sel) => {
+  const start = css.indexOf(`\n${sel} {`);
+  assert.notEqual(start, -1, `fant ikke blokken «${sel} {»`);
+  return css.slice(start + 1, css.indexOf('\n}', start + 1));
+};
+
+test('style.css: topbaren låses til --topbar-h', () => {
+  assert.match(block('.topbar'), /height: var\(--topbar-h\)/);
+  assert.ok(!block('.topbar').includes('padding: 0.7rem'), 'vertikal padding skal ikke styre høyden');
+});
+
+test('style.css: pinned-tabellen er en indre scrollboks uten egen sticky', () => {
+  const b = block('.table-scroll--pinned');
+  assert.ok(!b.includes('position: sticky'), 'sticky på boksen har ~0 reiserom inne i kortet og er død vekt');
+  assert.match(b, /max-height: min\(75vh/);
+  assert.match(block('.table-scroll--pinned table.data thead th'), /position: sticky/);
+});

@@ -210,7 +210,8 @@ a:hover {
   display: flex;
   align-items: center;
   gap: var(--space-5);
-  padding: 0.7rem 1.25rem;
+  height: var(--topbar-h);
+  padding: 0 1.25rem;
   background: var(--topbar-bg);
   color: var(--topbar-text);
   position: sticky;
@@ -310,7 +311,7 @@ a:hover {
 
   .topbar {
     gap: var(--space-3);
-    padding: 0.55rem 0.9rem;
+    padding: 0 0.9rem;
   }
 
   /* Kantfade som hint om at menyen kan dras sidelengs. Faden vises bare på
@@ -570,15 +571,13 @@ footer {
   background-color: var(--scrollbar-thumb-hover);
 }
 
-/* Varianten for lange tabeller (/spillere, 500+ rader): hele scrollboksen
-   festes under toppmenyen, og tabellhodet festes til toppen av boksen.
-   Høyden må levne plass til footeren, ellers skyves boksen opp under menyen
-   når man scroller helt til bunns. */
+/* Varianten for lange tabeller (/spillere, 500+ rader): tabellhodet festes
+   til toppen av scrollboksen. Boksen selv er IKKE sticky — den har ~0
+   reiserom inne i kortet. I stedet holdes høyden lav nok til at siden aldri
+   kan scrolle boksen opp bak toppmenyen (se mobilreserven lenger oppe). */
 .table-scroll--pinned {
-  position: sticky;
-  top: var(--topbar-h);
   overflow: auto;
-  max-height: min(75vh, calc(100dvh - var(--topbar-h) - 13rem));
+  max-height: min(75vh, calc(100dvh - var(--topbar-h) - 14rem));
 }
 
 .table-scroll--pinned table.data thead th {
@@ -586,6 +585,17 @@ footer {
   top: 0;
   background: var(--surface);
   z-index: 1;
+}
+
+/* Reserven må være større enn alt innhold UNDER boksen (footer + marger),
+   ellers kan siden scrolle boksen opp bak topbaren — footeren brekker til
+   flere linjer på mobil og trenger mer. max() beskytter lave
+   landskapsvinduer mot en kollapset boks. Blokka MÅ stå etter regelen over:
+   lik spesifisitet, så rekkefølgen avgjør. */
+@media (max-width: 640px) {
+  .table-scroll--pinned {
+    max-height: max(14rem, calc(100dvh - var(--topbar-h) - 19rem));
+  }
 }
 
 table.data {
