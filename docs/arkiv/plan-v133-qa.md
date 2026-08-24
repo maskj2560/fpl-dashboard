@@ -818,9 +818,13 @@ test('transfers.ejs merker beste og verste bytte som piller', async () => {
 - [ ] **Steg 9:** Playwright mot prod: `node qa-prod.mjs` (240 sjekker — den
       utelater AI-sidene) + `node qa-clubs-prod.mjs` (14) + qa-v133.mjs mot
       prod med `PAGES` uten `/brief`/`/nyheter`. Observert: IKKE KJØRT — forutsetter at steg 8 er grønt. Skriptene er verifisert AI-frie (qa-prod.mjs, qa-clubs-prod.mjs og qa-v133.mjs besøker verken /brief eller /nyheter og klikker aldri #ai-advice-btn), så de kan kjøres rett fram når prod er oppe.
-- [ ] **Steg 10:** `git branch -d fix/ui-v133-qa`. HANDOVER: release-status,
+- [x] **Steg 10:** `git branch -d fix/ui-v133-qa`. HANDOVER: release-status,
       observerte prod-tall, loggpost for klarsignalet. Commit + push (dekket
       av klarsignalet). Rapportér.
+      Observert: branch slettet (var 4bd4f1c, merget). HANDOVER har
+      releasestatus, prod-blokkeringen, ny driftslærdom og loggpost for
+      klarsignalet; ROADMAP har P0 øverst i køen. Commit + push: 4d05c27.
+      Prod-tallene mangler fordi steg 8 er blokkert.
 
 ## Vedlegg B — qa-v133.mjs (scratchpad, aldri i repoet)
 

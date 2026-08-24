@@ -30,17 +30,15 @@
     se på Coolify-deployloggen. Buildet er utelukket som årsak lokalt:
     `package.json`/`package-lock.json` er i synk på 1.3.3, og Dockerfile
     kopierer kun `src/`, `views/`, `public/` — ingenting av det etappen
-    endret ligger utenfor de mappene.
+    endret ligger utenfor de mappene. Docs-pushen 18:22 trigget en NY
+    deploy — fortsatt 401 gjennom 18:29. To deployforsøk, samme utfall.
 - **v1.3.2 (etappe 3) RELEASET 24. aug (økt 33):** finpuss per side +
   kontraktstester for markupen `app.js` avhenger av. 299/299, lint 0.
   Detaljene (inkl. de manuelt målte pillekontrastene) er rotert til
   `docs/arkiv/HANDOVER-historikk.md`.
-- **v1.3.1 (etappe 2) ute siden 24. aug:** klubbmerker i alle tabeller og
-  lister, drakter på banen, `clubAssets.js` + `IMG_VERSION`,
-  `npm run fetch-clubs` og 60 bildefiler. Detaljene er rotert til
-  `docs/arkiv/HANDOVER-historikk.md`.
-- **v1.3.0 (etappe 1) ute siden 24. aug:** tokenpalett i to temaer,
-  inline-tema-script, temabryter, lilla topbar. Detaljene er rotert til
+- **v1.3.1 og v1.3.0 (etappe 2 og 1) ute siden 24. aug:** klubbgrafikk
+  (`clubAssets.js`, `IMG_VERSION`, `npm run fetch-clubs`, 60 bildefiler)
+  og tokenpaletten i to temaer med temabryter. Detaljene er rotert til
   `docs/arkiv/HANDOVER-historikk.md`.
 - **Plan for UI-overhalingen:** `docs/arkiv/plan-v130-ui-overhaul.md` (etappe 1–3,
   godkjent 24. aug) + `docs/arkiv/plan-v133-qa.md` (etappe 4). Mockup:
