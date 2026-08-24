@@ -14,6 +14,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Formasjonen (for eksempel 3-4-3) vises i hodet på Oppstilling-kortet.
 - Live-siden viser antall i korthodene («Mine spillere», «Kamper» og hver
   liga), som på dashbordet — og tallene oppdateres med live-dataene.
+- Spillere-siden sier fra når filtrene ikke gir treff, med en knapp for å
+  nullstille dem.
 
 ### Fixed
 

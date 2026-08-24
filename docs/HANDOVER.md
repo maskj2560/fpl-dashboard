@@ -35,6 +35,8 @@
     `live-count-matches` + antall rader per liga), oppdatert av Modul 3.
   - 1.3-7 (QA 12): 314/314. `rankGraph` returnerer `single`, og team.ejs
     tegner en `<circle>` når grafen bare har ett punkt.
+  - 1.3-8 (QA 13): 315/315, Playwright 8/8. Tomtilstand med nullstill-knapp
+    på /spillere (`players-empty`), styrt av Modul 2.
 - **v1.3.2 (etappe 3) RELEASET 24. aug (økt 33):** finpuss per side +
   kontraktstester for markupen `app.js` avhenger av. 299/299, lint 0.
   Detaljene (inkl. de manuelt målte pillekontrastene) er rotert til

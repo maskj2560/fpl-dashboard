@@ -340,3 +340,9 @@ test('team.ejs tegner en synlig markør når grafen bare har ett punkt', async (
   const html = await renderView('team', { ...fx.team, graph: { points: '0,70', area: null, single: true, min: 5, max: 5, first: 5, last: 5 } });
   assert.match(html, /<circle cx="0" cy="70" r="5" fill="var\(--accent\)"/);
 });
+
+test('players.ejs har en skjult tomtilstand for null filtertreff', async () => {
+  const html = await renderView('players', fx.players);
+  assert.match(html, /id="players-empty" hidden>Ingen spillere matcher filtrene\./);
+  assert.match(html, /id="players-empty-reset"[^>]*>Nullstill filtrene</);
+});

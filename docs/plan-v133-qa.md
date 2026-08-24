@@ -513,7 +513,7 @@ test('team.ejs tegner en synlig markør når grafen bare har ett punkt', async (
 **Files:** Modify `views/players.ejs` (:78, etter `</div>`), `public/app.js`
 (Modul 2), `public/style.css` (`.btn-link` ved behov), `test/views.test.js`.
 
-- [ ] **Steg 1 (rød):**
+- [x] **Steg 1 (rød):**
 
 ```js
 test('players.ejs har en skjult tomtilstand for null filtertreff', async () => {
@@ -523,8 +523,8 @@ test('players.ejs har en skjult tomtilstand for null filtertreff', async () => {
 });
 ```
 
-- [ ] **Steg 2:** rød. Observert: ______
-- [ ] **Steg 3:** `players.ejs` — inne i kortet, rett etter `</div>`
+- [x] **Steg 2:** rød. Observert: views.test.js: 65 tester, 64 pass, 1 fail
+- [x] **Steg 3:** `players.ejs` — inne i kortet, rett etter `</div>`
       (table-scroll, :78):
 
 ```ejs
@@ -539,11 +539,11 @@ test('players.ejs har en skjult tomtilstand for null filtertreff', async () => {
       Etter reset-lytteren: `if (emptyReset) emptyReset.addEventListener('click', () => reset.click());`.
       `style.css`: sjekk `.btn-link`-blokken (:1291) — mangler den
       `cursor: pointer;`, legg det til (den brukes nå også på en `<button>`).
-- [ ] **Steg 4:** `npm test` → 315, lint 0. Observert: ______
-- [ ] **Steg 5:** Playwright-sjekk 8 (Vedlegg B): filtrer til 0 treff →
+- [x] **Steg 4:** `npm test` → 315, lint 0. Observert: npm test 315/315 pass 0 fail, lint exit 0. NB: .btn-link hadde allerede cursor: pointer — ingen CSS-endring nødvendig.
+- [x] **Steg 5:** Playwright-sjekk 8 (Vedlegg B): filtrer til 0 treff →
       tomtilstand synlig, «Viser 0 av», klikk nullstill → rader tilbake.
-      Observert: ______
-- [ ] **Steg 6:** CHANGELOG (Added: tomtilstand med nullstill-knapp på
+      Observert: qa-t8.mjs (begge temaer × 390/1440): 8/8 OK. Viser 0 av 609 spillere, 0 synlige rader, tomtilstand synlig; etter nullstill 609 rader tilbake og tomtilstanden skjult igjen.
+- [x] **Steg 6:** CHANGELOG (Added: tomtilstand med nullstill-knapp på
       /spillere), HANDOVER. Commit: `feat: tomtilstand på /spillere ved null filtertreff (QA 13)`
 
 ### Task 1.3-9: Funn 16 + 17 — kantfade på mobilmenyen og tabellene

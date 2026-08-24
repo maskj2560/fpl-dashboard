@@ -168,6 +168,8 @@ function clubBadgeHtml(shortName, code, version, size) {
   const price = document.getElementById('filter-price');
   const reset = document.getElementById('filter-reset');
   const count = document.getElementById('filter-count');
+  const empty = document.getElementById('players-empty');
+  const emptyReset = document.getElementById('players-empty-reset');
 
   function applyFilters() {
     const q = search.value.trim().toLowerCase();
@@ -187,6 +189,7 @@ function clubBadgeHtml(shortName, code, version, size) {
       if (ok) shown++;
     }
     count.textContent = 'Viser ' + shown + ' av ' + total + ' spillere';
+    if (empty) empty.hidden = shown !== 0;
   }
 
   search.addEventListener('input', applyFilters);
@@ -200,6 +203,7 @@ function clubBadgeHtml(shortName, code, version, size) {
     price.value = '';
     applyFilters();
   });
+  if (emptyReset) emptyReset.addEventListener('click', () => reset.click());
 
   applyFilters();
 })();
