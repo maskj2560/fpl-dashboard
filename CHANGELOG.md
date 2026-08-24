@@ -7,6 +7,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.3.2] - 2026-08-24
+
 ### Changed
 
 - Finpuss på alle sider etter mockupen: hero med rundeetikett, tellere i

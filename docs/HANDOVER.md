@@ -6,26 +6,27 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-24 (økt 32, Opus: v1.3.2 bygget, venter klarsignal;
-main pushet)
+**Sist oppdatert:** 2026-08-24 (økt 33, Opus: v1.3.2 released)
 
 ## Status akkurat nå
 
-- **v1.3.2 ETAPPE 3 BYGGET FERDIG, IKKE RELEASET (økt 32, Opus, 24. aug).**
-  Task 1.2-0…1.2-3 utført på branch `feat/ui-v132-finpuss` (3 commits,
-  ikke pushet). **299/299 tester, lint 0, 0 AI-kall.** Task 1.2-4
-  (release + det ene budsjetterte AI-kallet) venter på klarsignal.
-  - Kontraktstester som låser markupen `app.js` avhenger av (heroens
-    `data-deadline` + fire `data-unit`, 11 kolonnehoder med `data-type`
-    og `aria-sort`), `btn-link` tilbake til dashbordet på 404/error/
-    no-team, tellere i dashbord-korthodene, aktiv chip i Oppstilling-
-    hodet, kamplista i briefen som `.fixture-row` med klokkeslett,
-    Beste/Verste som piller, kreditering på egen linje i footeren.
+- **v1.3.2 (etappe 3) RELEASET 24. aug (økt 33, Opus).** Task 1.2-4 kjørt
+  på klarsignal: bump 1.3.2, docs, merge `--no-ff` til `main`, tag
+  `v1.3.2`, push, Coolify-deploy. **299/299 tester, lint 0.**
+  Prod-verifisering og det ene AI-kallet: se linjen om prod nedenfor.
+  - Innholdet: kontraktstester som låser markupen `app.js` avhenger av
+    (heroens `data-deadline` + fire `data-unit`, 11 kolonnehoder med
+    `data-type` og `aria-sort`), `btn-link` tilbake til dashbordet på
+    404/error/no-team, tellere i dashbord-korthodene, aktiv chip i
+    Oppstilling-hodet, kamplista i briefen som `.fixture-row` med
+    klokkeslett, Beste/Verste som piller, kreditering på egen linje i
+    footeren.
   - Heroen var allerede ferdig fra etappe 1 — ingen endring nødvendig.
   - Pillenes forgrunnsfarger var ikke spesifisert i planen. Målt der de
     står (kortflaten `--surface`): beste 10,42 mørkt / 5,66 lyst, verste
     5,39 / 5,27. Kan ikke låses i `PAIRS` — `*-soft` er rgba, ikke hex.
-  - Røyk uten nøkler: 11 ruter 200 + 404. Playwright 332/332 + 22/22.
+  - **Neste: ETAPPE 4 (v1.3.3 QA-rettelser) — blokkert av Marius' funn
+    som nummerert P0/P1/P2-liste. Ingen planlagte tasks.**
 - **v1.3.1 (etappe 2) ute siden 24. aug:** klubbmerker i alle tabeller og
   lister, drakter på banen, `clubAssets.js` + `IMG_VERSION`,
   `npm run fetch-clubs` og 60 bildefiler. Detaljene er rotert til
@@ -38,7 +39,8 @@ main pushet)
   linjer, godkjent 24. aug) — fire etapper v1.3.0–v1.3.3 med kode og
   testtall (272 → 282 → 296 → 299). Mockup:
   https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849.
-  **Neste: Task 1.2-4 — release av v1.3.2 (+ det ene AI-kallet).**
+  **20 av 21 tasks ferdige. Kun ETAPPE 4 gjenstår (ingen planlagte
+  tasks — innholdet er Marius' QA-funn).**
 - **Prod kjører v1.3.1 på https://fpl.marsk.no — verifisert 24. aug 13:16**
   (etter docs-rebuilden).
   `/health` → 200, `ai:true, discord:true, leagues:1,`
@@ -64,9 +66,10 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 2. P1 `[Marius]`: bekreft auto-briefen 20. aug i Discord-kanalen.
 3. P3: etter GW2, transfers-skjema mot ekte data + `/overganger` på mobil.
 4. P2 `[Marius]`: README-skjermbilder + mobil-QA.
-5. v1.3.2: **bygget og grønt — venter på klarsignal for release**
-   (Task 1.2-4, inkl. det ene budsjetterte AI-kallet: én visning av
-   `/brief` i prod). Deretter v1.3.3, så robusthetskandidatene.
+5. v1.3.3 (ETAPPE 4): **venter på Marius' QA-funn** som nummerert
+   P0/P1/P2-liste i chatten. Ingen planlagte tasks. Deretter
+   robusthetskandidatene. Gammel åpen boks som er Marius' (Task 1.0-5):
+   «Visuell sjekk mot mockupen i begge temaer».
 
 ## Driftslærdommer (ikke glem disse)
 
@@ -148,41 +151,20 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
-- 2026-08-24 (økt 32, Opus): kjøreprompt «Oppdrag (Opus 5,
-  utførelsesøkt): utfør ETAPPE 2 — v1.3.1 Klubbgrafikk» med
-  `superpowers:executing-plans` mot `docs/plan-v130-ui-overhaul.md` og
-  mockupen som fasit (ved avvik vinner planen). Harde rammer: Task
-  1.1-0…1.1-6 nå, 1.1-7 kun på klarsignal, ingen designbeslutninger,
-  aldri push uten klarsignal (heller ikke docs), sjekk `fixtures/?event=N`
-  og aldri to. 19–21, **0 AI-kall** (`/health` → `ai:false` FØRST),
-  `npm run fetch-clubs` eneste tillatte nettverkskall, TDD med observert
-  rødt i planfila (282 → 283 → 287 → 290 → 296), ingen nye avhengigheter,
-  Playwright kun i scratchpad, docs i samme commit, branch
-  `feat/ui-v131-klubbgrafikk` fra rent og grønt `main`.
-  Handling: alle sju tasks (1.1-0…1.1-6) utført, 5 commits, **296/296 +
-  lint 0**, Playwright 332/332 + 22/22 klubbsjekker, 60 bildefiler
-  (561 KB) committet, 0 AI-kall, ingenting pushet. Ett avvik rapportert:
-  planens regex for «uversjonert bilde-URL» flagget korrekte URL-er og ble
-  rettet (markupen står som planlagt). Rødfasene 1.1-1 og 1.1-2 ga færre
-  tester enn planen anslo fordi ESM-linkfeil tar hele testfila — årsak
-  dokumentert i planfila. Deretter klarsignal: **«Kjør»** (mandag 24. aug
-  ~03:45). Handling: Task 1.1-7 utført — bump 1.3.1, docs, merge til
-  `main`, tag `v1.3.1`, push, Coolify-deploy, prod-verifisering uten
-  `/brief` og `/nyheter` (240/240 + 14/14 i Playwright). Tidsvindu før
-  push: mandag 03:44, 0 kamper i gang, neste avspark 24. aug 19:00 UTC.
-  Til slutt nytt **«Kjør»** (~04:05), tolket som klarsignal for ETAPPE 3.
-  Handling: Task 1.2-0…1.2-3 utført på `feat/ui-v132-finpuss`, 3 commits,
-  299/299 + lint 0, Playwright 332/332 + 22/22, 0 AI-kall, ingenting
-  pushet. Deretter spørsmål om status på overhalingen (svart: 20 av 21
-  tasks ferdig, kun Task 1.2-4 igjen + etappe 4 som avhenger av Marius’
-  QA-funn). Til slutt: **«DU kan pushe til main. Deretter lag en fin
-  overtagelse til neste agent med en kopierbar prompt. Ikke lag en fil
-  for den prompten alene.»** Handling: kampvindu sjekket (mandag 13:12,
-  0 kamper i gang, neste avspark 24. aug 19:00 UTC), `main` pushet
-  (`8ec5410..2eb6c95`), Coolify-rebuild verifisert (prod oppe, v1.3.1),
-  HANDOVER skrevet som overlevering på branchen, prompt levert i chatten
-  (ikke som fil). `feat/ui-v132-finpuss` bevisst IKKE pushet — en push
-  til `main` av den ville vært release, som krever eget klarsignal.
+- 2026-08-24 (økt 33, Opus): kjøreprompt «fullfør ETAPPE 3 — release
+  v1.3.2 — og forbered ETAPPE 4». Rammer: Task 1.2-4 kun på eksplisitt
+  klarsignal, ingen designbeslutninger, aldri push uten klarsignal
+  (heller ikke docs), `fixtures/?event=N` før enhver push, aldri torsdag
+  19–21, **nøyaktig ett AI-kall igjen** (én visning av prod-`/brief`
+  ETTER deploy), `/nyheter` aldri med ekte nøkkel, rutesveip uten
+  `/brief` og `/nyheter`, ingen nye avhengigheter, Playwright kun i
+  scratchpad, docs i samme commit, kryss av i planfila med observerte
+  tall. ETAPPE 4 startes ikke før Marius leverer P0/P1/P2-lista.
+  Handling: status rapportert (299/299, lint 0, versjon 1.3.1, rent tre,
+  4 commits foran `main`), deretter klarsignal **«Kjør»** (mandag
+  24. aug ~13:18). Task 1.2-4 utført — se statusdelen øverst.
+- Loggposten fra økt 32 (v1.3.1-releasen + v1.3.2-bygget): rotert til
+  `docs/arkiv/HANDOVER-historikk.md` 2026-08-24 (200-linjerstaket).
 - Loggposter fra økt 30–31: rotert til
   `docs/arkiv/HANDOVER-historikk.md` 2026-08-24 (200-linjerstaket).
 - Eldre loggposter (økt 22–28): rotert til
