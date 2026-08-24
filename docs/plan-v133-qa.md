@@ -727,10 +727,10 @@ test('team.ejs lar ikke anbefalingskortene strekkes forbi innholdet', async () =
 
 **Files:** Modify `test/views.test.js`, ev. `test/fixtures/views.js`.
 
-- [ ] **Steg 1:** inspiser transfers-fixturen (`test/fixtures/views.js:239`):
+- [x] **Steg 1:** inspiser transfers-fixturen (`test/fixtures/views.js:239`):
       `bestIndex: 0` finnes — sørg for at også `worstIndex` peker på en spilt
       rad (sett den om den er `null` i hovedfixturen med rader).
-- [ ] **Steg 2 (rød):**
+- [x] **Steg 2 (rød):**
 
 ```js
 test('transfers.ejs merker beste og verste bytte som piller', async () => {
@@ -740,16 +740,16 @@ test('transfers.ejs merker beste og verste bytte som piller', async () => {
 });
 ```
 
-- [ ] **Steg 3:** kjør → forventet GRØNN med én gang hvis fixturen alt har
+- [x] **Steg 3:** kjør → forventet GRØNN med én gang hvis fixturen alt har
       begge indeksene (markupen finnes i `transfers.ejs:47-48`); rød kun hvis
       fixturen manglet `worstIndex`. Uansett: testen låser markupen.
       CSS-fargene er verifisert token-baserte (`style.css:662-669`:
       `--accent-soft`/`--accent-text` og `--accent-2-soft`/`--negative`) og
       kontrasten ble målt manuelt i v1.3.2 (HANDOVER: 10,42/5,66 og 5,39/5,27)
       — ingen CSS-endring.
-      Observert (rød/grønn + tall): ______
-- [ ] **Steg 4:** `npm test` → 322, lint 0. Observert: ______
-- [ ] **Steg 5:** HANDOVER: uverifisert-punktet lukket (test, ikke drift).
+      Observert (rød/grønn + tall): GRØNN med én gang: fixturen har bestIndex 0 og worstIndex 1, begge på spilte rader. views.test.js 69/69.
+- [x] **Steg 4:** `npm test` → 322, lint 0. Observert: npm test 322/322 pass 0 fail, lint exit 0 — måltallet i planen truffet nøyaktig
+- [x] **Steg 5:** HANDOVER: uverifisert-punktet lukket (test, ikke drift).
       ROADMAP: ingen endring (P3-punktet om ekte data står). Commit:
       `test: lås beste/verste-pillene på /overganger`
 

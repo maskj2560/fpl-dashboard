@@ -363,3 +363,9 @@ test('team.ejs lar ikke anbefalingskortene strekkes forbi innholdet', async () =
   const html = await renderView('team', fx.team);
   assert.match(html, /class="grid grid--start"/);
 });
+
+test('transfers.ejs merker beste og verste bytte som piller', async () => {
+  const html = await renderView('transfers', fx.transfers);
+  assert.match(html, /status status-best">Beste</);
+  assert.match(html, /status status-worst">Verste</);
+});

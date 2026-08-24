@@ -42,6 +42,10 @@
     nytt i neste frame (fikser racen mot `scrollIntoView`).
   - 1.3-10 (QA 11+15+18): 321/321. `card-ai` + `.ai-badge` på AI-rådgiveren,
     404 har kun knappelenken, `.grid--start` på anbefalingsgridet.
+  - 1.3-11: **322/322** — måltallet i planen. Beste/verste-pillene på
+    /overganger er nå låst av en test (grønn med én gang; fixturen hadde
+    allerede begge indeksene). Det uverifiserte punktet er dermed lukket
+    som markup-kontrakt — P3-punktet om ekte data etter GW2 står fortsatt.
 - **v1.3.2 (etappe 3) RELEASET 24. aug (økt 33):** finpuss per side +
   kontraktstester for markupen `app.js` avhenger av. 299/299, lint 0.
   Detaljene (inkl. de manuelt målte pillekontrastene) er rotert til
