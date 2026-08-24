@@ -18,7 +18,8 @@
   (tregest: `/spillere` 282 ms, ren rendering av 496 KB HTML).
   `/overganger` var 3 ms fordi laget ennå ikke har transfers — de inntil
   38 live-kallene er altså ikke målt under last (hører til P3).
-  Delfunksjoner: (1) `ai.js` SWR + `getCached` ✅ 330/330.
+  Delfunksjoner: (1) `ai.js` SWR + `getCached` ✅ 330/330, (2) `/brief`
+  leser cachen (`getCachedAiBrief`) ✅ 333/333.
 
 - **ETAPPE 4 / v1.3.3: kode og git er FERDIG, men PROD SVARER 401.**
   Økt 34, Opus. Klarsignal «Kjør» mandag 24. aug ~17:55. `main` =

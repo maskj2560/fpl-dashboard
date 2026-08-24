@@ -7,6 +7,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Fixed
+
+- `/brief` vises med en gang: siden leser AI-teksten fra cachen i stedet for
+  å generere den mens du venter. Er teksten ikke laget ennå, vises
+  data-briefen som før.
+
 ### Changed
 
 - `ai.js` kan servere en utgått AI-tekst med en gang og fornye den i

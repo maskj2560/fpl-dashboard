@@ -1,6 +1,12 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { groupFixturesByDay, buildBrief } from '../src/services/brief.js';
+import {
+  groupFixturesByDay,
+  buildBrief,
+  briefCacheKey,
+  getCachedAiBrief,
+} from '../src/services/brief.js';
+import * as ai from '../src/services/ai.js';
 
 const teamsById = new Map([
   [1, { id: 1, short_name: 'ARS', name: 'Arsenal' }],
@@ -214,4 +220,71 @@ test('buildBrief legger teamCode på skader, kapteiner og kamper (klubbgrafikk)'
   const m = brief.fixturesByDay[0].matches[0];
   assert.equal(m.homeCode, 3);
   assert.equal(m.awayCode, 8);
+});
+
+// --- v1.3.4: /brief leser cachen, den genererer aldri selv ------------------
+
+test('briefCacheKey er den samme nøkkelen for /brief og auto-briefen', () => {
+  assert.equal(briefCacheKey({ gameweek: { id: 3 } }), 'ai-brief-gw3');
+  assert.equal(briefCacheKey({}), 'ai-brief-gw0', 'ingen runde: nøkkelen faller til gw0');
+});
+
+test('getCachedAiBrief gir null når ingenting er generert ennå', async () => {
+  ai._reset();
+  let calls = 0;
+  ai._setClient({
+    messages: {
+      create: async () => {
+        calls++;
+        return { model: 'fake', usage: {}, content: [{ type: 'text', text: 'noe' }] };
+      },
+    },
+  });
+  try {
+    assert.equal(await getCachedAiBrief({ gameweek: { id: 9 } }), null);
+    assert.equal(calls, 0, 'en sidevisning skal aldri utløse et AI-kall');
+  } finally {
+    ai._setClient(null);
+    ai._reset();
+  }
+});
+
+test('getCachedAiBrief serverer cachet tekst uansett alder, etterkontrollert', async () => {
+  const brief = {
+    gameweek: { id: 4 },
+    fixturesByDay: [
+      { day: 'lør', matches: [{ home: 'Arsenal', away: 'Chelsea', beforeDeadline: false }] },
+    ],
+  };
+  let clock = 1_000_000;
+  ai._reset();
+  ai._setNow(() => clock);
+  const quietLog = console.log;
+  const quietWarn = console.warn;
+  console.log = () => {};
+  console.warn = () => {};
+  ai._setClient({
+    messages: {
+      create: async () => ({
+        model: 'fake',
+        usage: {},
+        content: [{ type: 'text', text: 'Arsenal spiller før deadline.\nEllers er alt som normalt.' }],
+      }),
+    },
+  });
+  try {
+    // Varmer cachen slik oppfriskeren gjør, uten hele prompt-byggingen.
+    await ai.generate({ cacheKey: briefCacheKey(brief), minIntervalMs: 60 * 60_000, system: 's', prompt: 'p' });
+    clock += 48 * 60 * 60_000; // to døgn senere: for gammel for generate()
+
+    const entry = await getCachedAiBrief(brief);
+    assert.ok(entry, 'gammel tekst skal fortsatt serveres');
+    assert.equal(entry.text, 'Ellers er alt som normalt.', 'sanitizeBriefText er kjørt');
+  } finally {
+    ai._setClient(null);
+    ai._setNow(null);
+    ai._reset();
+    console.log = quietLog;
+    console.warn = quietWarn;
+  }
 });

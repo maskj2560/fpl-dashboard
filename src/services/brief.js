@@ -200,10 +200,26 @@ export async function assembleBrief() {
  * fra hverandre. Returnerer null når AI er av, kallet feilet eller svaret var
  * tomt — data-briefen er alltid fallback.
  */
+export function briefCacheKey(brief) {
+  return `ai-brief-gw${brief.gameweek?.id ?? 0}`;
+}
+
+/**
+ * AI-briefen slik en sidevisning skal lese den: det som ligger i cachen,
+ * uansett alder — aldri et nytt kall. Er cachen kald, returneres null og
+ * viewet viser data-briefen. Teksten friskes opp av `refresh.js` og av
+ * auto-briefen, som deler nøkkel via briefCacheKey.
+ */
+export function getCachedAiBrief(brief) {
+  const entry = ai.getCached(briefCacheKey(brief));
+  if (!entry?.text) return null;
+  return { ...entry, text: sanitizeBriefText(entry.text, brief) };
+}
+
 export async function generateAiBrief(brief) {
   if (!ai.isEnabled()) return null;
   const result = await ai.generate({
-    cacheKey: `ai-brief-gw${brief.gameweek?.id ?? 0}`,
+    cacheKey: briefCacheKey(brief),
     minIntervalMs: 60 * 60_000,
     system: 'Du er en norsk Fantasy Premier League-ekspert. Skriv presist og handlingsorientert.',
     prompt: buildBriefPrompt(brief),
