@@ -177,6 +177,11 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
+- 2026-08-25 (økt 36, etter incidenten): Marius fikk prod opp igjen —
+  401-en var «HTTP Basic Authentication» slått på i Coolify, IKKE en
+  manglende Traefik-rute. Ba om planleggingsprompt til Fable som oppdaterer
+  HELE resten av v1.3 og som avslutter med en kopierbar kjøreprompt til Opus.
+  Handling: prompt levert i chatten (planlegging, ingen kode/commit).
 - 2026-08-25 (økt 36, Opus): kjøreprompt «utfør kø-punkt 2 (v1.3.4) og
   ferdigstill hele v1.3». Rammer: utfør, ikke re-planlegg; 0 ekte AI-kall
   (tomme nøkler lokalt); prod-/brief og /nyheter lastes aldri før v1.3.4 er
