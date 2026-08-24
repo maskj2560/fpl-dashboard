@@ -87,9 +87,11 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
   kode, testnavn og forventede testtall) + mockupen
   https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849.
 - **Etapper (hver grønn, merges alene, prod alltid et helt UI):**
-  - [ ] **v1.3.0 Fundament** — tokenpalett i begge temaer (kontrast låst av
+  - [x] **v1.3.0 Fundament** — tokenpalett i begge temaer (kontrast låst av
         `test/style.test.js`), inline-tema-script, temabryter, lilla topbar,
-        `views/partials/`. 272 → 282 tester.
+        `views/partials/`. 272 → 282 tester. **Kode ferdig 24. aug på
+        `feat/ui-v130-fundament` (282/282, lint 0, Playwright 332/332) —
+        venter klarsignal for release.**
   - [ ] **v1.3.1 Klubbgrafikk** — `scripts/fetch-club-assets.mjs`,
         `public/img/clubs/`, `clubAssets.js`, `IMG_VERSION`, `teamCode` i
         brief/live/transfers, partials club-badge/club-shirt i alle views,

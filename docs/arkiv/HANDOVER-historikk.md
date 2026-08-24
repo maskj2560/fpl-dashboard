@@ -5,6 +5,73 @@
 > sjekkpunkt-tabellen, versjonshistorikken, utdaterte åpne punkter og hele
 > loggen over brukerbeskjeder til og med økt 22. Nyere logg: HANDOVER.md.
 
+## Rotert 2026-08-24 (økt 31): v1.2.5-status + loggpost økt 29 (verbatim fra HANDOVER.md)
+
+Status-blokk (sto under «Status akkurat nå»):
+
+- **v1.2.5 ferdig og ute (økt 29, Opus).** Hele
+  `docs/plan-v125-brief-kvalitet.md` (Task 0–6) utført, tag `v1.2.5`.
+  **2 AI-kall brukt av 2 budsjetterte.**
+  - Tre endringer: (1) `globalCaptains` faller tilbake på `ep_next` når
+    all form er 0 og slipper minutes-kravet før sesongens første kamp,
+    brief-objektet får `captainsCriterion`; (2) ærlig kapteinsetikett +
+    REGLER-seksjon i `buildBriefPrompt`, view-overskrift
+    «Kapteinskandidater globalt»; (3) `sanitizeBriefText` omstrukturert
+    fra én kontroll til tre som velges per linje — deadline (uendret
+    logikk), friskmelding, prosent (nær-miss ±1,0).
+  - TDD: 256/256 → **272/272, lint 0**. Rødtallet i Task 1 ble 6, ikke 5
+    (vern-testen asserter også `captainsCriterion`) — eneste avvik.
+  - Røyktest uten nøkler (port 3011, `ai:false, discord:false`): alle 11
+    ruter 200, ukjent sti 404.
+  - **E2E lokalt (AI-kall 1 av 2, port 3012, `ai:true, discord:false`):**
+    ett kall `ai-brief-gw2` (1680 inn / 977 ut). Ingen «mest brukte
+    kapteiner», alle prosenter (15.3, 7.6, 17.5, 16.0, 41.9, 75) eksakt i
+    `/api/brief.json`, ingen friskmelding tross to navn på skadelista,
+    og **ingen `console.warn` fra sanitize — 0 setninger fjernet**.
+  - **Prod-retest (AI-kall 2 av 2), 01:43: bestått.** Ingen «mest
+    brukte kapteiner» («**Szoboszlai** … et trygt globalt valg …
+    **Guéhi** og **Ndiaye** … om du leter etter differensial»), alle
+    prosenter (15.3, 7.6, 41.9, 75) eksakt i `/api/brief.json`, ingen
+    friskmelding tross to navn på skadelista, overskriften
+    «Kapteinskandidater globalt» på siden. Stikkprøve mot fasiten:
+    Ødegaard 11.0/FDR 4.0, Gvardiol 9.0/3.0, Guéhi 10.0/ep 2.8,
+    Szoboszlai 8.0/ep 2.5 — alt korrekt.
+  - `/nyheter` ble ALDRI besøkt med ekte nøkkel, verken lokalt eller i
+    prod.
+
+Loggpost (sto under «Logg over brukerbeskjeder»):
+
+- 2026-08-24 (økt 29, Opus): kjøreprompt «Oppdrag (Opus 5, utførelsesøkt):
+  utfør v1.2.5 — brief-kvalitetstrioen» med `superpowers:executing-plans`
+  mot `docs/plan-v125-brief-kvalitet.md`. Harde rammer: Task 0–5 nå, Task 6
+  kun på eksplisitt klarsignal, aldri push uten klarsignal (heller ikke
+  docs), aldri push to. 19–21 eller mens kamper pågår, maks 2 AI-kall
+  (1 lokal E2E + 1 prod-retest), `/brief` og `/nyheter` aldri med ekte
+  nøkkel utenfor de to, TDD med observert rødt, avkryssing i plandokumentet,
+  avvik rapporteres. Handling: Task 0–5 utført på branch
+  `fix/brief-kvalitet`, 4 commits, 272/272 + lint 0, 1 AI-kall brukt,
+  ingen push. Ett avvik meldt: rødtallet i Task 1 ble 6 feilende tester,
+  ikke 5 — «minutes-kravet gjelder»-testen asserter også
+  `captainsCriterion` og feiler derfor også i rødfasen. Rotering gjort for
+  å holde 200-linjerstaket: loggpostene for økt 25–26 og v1.2.4-detaljene
+  flyttet til `docs/arkiv/HANDOVER-historikk.md`. Deretter klarsignal:
+  **«kjør release»** (mandag 24. aug ~01:40). Handling: Task 6 utført —
+  bump 1.2.5, CHANGELOG/ROADMAP/VIDERE/HANDOVER, merge til `main`
+  (272/272 + lint 0 på main), tag `v1.2.5`, push, Coolify-deploy,
+  prod-retest bestått, branch `fix/brief-kvalitet` slettet. Tidsvindu
+  sjekket før push: mandag 01:38, 0 kamper i gang, neste avspark 19:00
+  UTC samme dag. Totalt 2 AI-kall i økten.
+  Til slutt: «Lag en prompt til fable for planøkten. Husk å ta med alle
+  oppdateringer og sånt og at fable skal oppdatere alle filer som trengs.
+  Full planlegging. Jeg vil ha et sluttprodukt på ui overhaulen.» +
+  «Og husk at den skal lage prompt til opus». Handling: planleggingsprompt
+  for v1.3.0 (UI-overhaling) levert i chatten, ikke som fil. Prompten
+  krever brainstorming før plan mode, visuell mockup som Artifact i BEGGE
+  temaer som sluttprodukt, ett definert sluttresultat uten «kan
+  vurderes», oppdatering av plan/ROADMAP/VIDERE/HANDOVER/CLAUDE.md,
+  sletting av den utdaterte `docs/prompt-ui-overhaul-plan.md`, 0 AI-kall,
+  ingen push — og en kopierbar Opus-prompt til slutt.
+
 ## Rotert 2026-08-24 (økt 30): status-blokker + loggpost økt 28 (verbatim fra HANDOVER.md)
 
 Status-blokker (sto under «Status akkurat nå»):

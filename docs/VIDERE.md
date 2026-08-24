@@ -41,6 +41,10 @@ https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849
 høyre bytter mellom automatisk, lyst og mørkt tema, og «390 px» nederst
 viser mobilbredden).
 
+**Status 24. august:** bit 1 (v1.3.0) er ferdig bygget og testet lokalt —
+lyst og mørkt tema er klart, med bryter i toppmenyen. Den venter på at du
+sier «kjør release» før den legges ut.
+
 Det bygges i fire biter, og hver bit legges ut for seg når du sier fra —
 siden er aldri halvferdig:
 

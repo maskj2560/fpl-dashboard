@@ -1043,17 +1043,25 @@ mockupen. Konkret:
 
 ## Task 1.0-6 — Røyk, Playwright, docs — STOPP
 
-- [ ] **Røyk uten nøkler (0 AI-kall):** scratchpad-.env med
+- [x] **Røyk uten nøkler (0 AI-kall):** scratchpad-.env med
       `ANTHROPIC_API_KEY=` og `DISCORD_WEBHOOK_URL=` TOMME, `node --env-file=<sti> src/server.js`
       på ledig port. `/health` → `ai:false, discord:false` FØRST. Så alle 11
-      ruter → 200, ukjent → 404. Observert: ______
-- [ ] **Playwright (Vedlegg A)** mot samme server: forventet **0 feil** av
-      ≈ 259 sjekker. Observert: ______
-- [ ] Manuell: bytt tema → reload → valget står. Systemtema-bytte i auto
+      ruter → 200, ukjent → 404. Observert: **port 3011, `ai:false,
+      discord:false, leagues:0`; alle 11 ruter 200, /finnes-ikke 404**
+- [x] **Playwright (Vedlegg A)** mot samme server: forventet **0 feil** av
+      ≈ 259 sjekker. Observert: **OK 332/332, 0 feil** (332 er fasiten fra
+      Vedlegg A; «≈ 259» var det gamle anslaget i §10.3)
+- [x] Manuell: bytt tema → reload → valget står. Systemtema-bytte i auto
       (Windows: Innstillinger → Farger) → siden følger uten reload.
-- [ ] Docs: ROADMAP (huk av etappe 1-punktene), HANDOVER (status + logg),
+      Verifisert programmatisk med Playwright `emulateMedia`: auto dark →
+      light uten reload (data-mode=auto), låst valg følger IKKE systemet,
+      aria-label = «Tema: mørkt» etter to klikk. Reload-persistens dekkes
+      av de 8 persistens-sjekkene i qa.mjs.
+- [x] Docs: ROADMAP (huk av etappe 1-punktene), HANDOVER (status + logg),
       VIDERE (kort: «lyst/mørkt tema er klart, venter på klarsignal»).
-- [ ] Commit `docs: v1.3.0 klar for release`. Rapporter til Marius og
+      HANDOVER rotert til 174 linjer (v1.2.5-status + loggpost økt 29 →
+      arkivet).
+- [x] Commit `docs: v1.3.0 klar for release`. Rapporter til Marius og
       **STOPP.** Task 1.0-7 kun på klarsignal.
 
 ## Task 1.0-7 — Release v1.3.0 (KUN på klarsignal)
