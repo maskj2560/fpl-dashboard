@@ -16,16 +16,17 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | Nr | Hva | Kø-punkt | Blokkert av |
 | --- | --- | --- | --- |
 | ~~**v1.2.4**~~ | ~~AI-rådgiverens promptstruktur på /lag~~ | **utført 24. aug** | — |
-| **P1** | Marius: bekreft auto-briefen 20. aug i Discord | 2 | Marius (minutter) |
-| **P2** | Marius: README-skjermbilder + mobil-QA | 4 | Marius |
-| **P3** | Etter GW2: transfers-skjema mot ekte data | 3 | GW2 spilt (~29.–31. aug) |
-| **P4** | Kostnadsmåling uken etter 1. sep | 1 | dato |
+| **P0** | Marius: prod svarer 401 etter v1.3.3-deployen | 1 | Coolify-deployloggen |
+| **P1** | Marius: bekreft auto-briefen 20. aug i Discord | 3 | Marius (minutter) |
+| **P2** | Marius: README-skjermbilder + mobil-QA | 5 | Marius |
+| **P3** | Etter GW2: transfers-skjema mot ekte data | 4 | GW2 spilt (~29.–31. aug) |
+| **P4** | Kostnadsmåling uken etter 1. sep | 2 | dato |
 | ~~**v1.2.5**~~ | ~~Brief-kvalitetstrioen~~ | **utført 24. aug** | — |
 | ~~**v1.3.0**~~ | ~~UI-overhaling, etappe 1: fundament (tokens i to temaer, temabryter, lilla topbar)~~ | **utført 24. aug** | — |
 | ~~**v1.3.1**~~ | ~~UI-overhaling, etappe 2: klubbgrafikk (merker + drakter, selvhostet)~~ | **utført 24. aug** | — |
 | ~~**v1.3.2**~~ | ~~UI-overhaling, etappe 3: finpuss per side~~ | **utført 24. aug** | — |
-| ~~**v1.3.3**~~ | ~~UI-overhaling, etappe 4: QA-rettelser~~ | **utført 24. aug** | — |
-| **v1.3.1+** | Robusthetskandidatene, én og én etter avtale | 5 | avtale per punkt |
+| ~~**v1.3.3**~~ | ~~UI-overhaling, etappe 4: QA-rettelser~~ | **kode utført 24. aug — prod uverifisert, se kø-punkt 1** | — |
+| **v1.3.1+** | Robusthetskandidatene, én og én etter avtale | 6 | avtale per punkt |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
 Kalenderlogikk: utviklingssporet (v1.3.0 → v1.3.1+) går uavbrutt;
@@ -33,7 +34,28 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
 
 ## Kø — hva gjøres videre, i rekkefølge
 
-### 1. (P4) Kostnadskontroll etter prisskiftet
+### 1. (P0) Prod svarer 401 — v1.3.3 er pushet, men aldri sett kjøre `[Marius]`
+
+- **Hva:** etter pushen av `edc372b` (tag `v1.3.3`) mandag 24. aug 18:00
+  svarer https://fpl.marsk.no `401 Unauthorized` på ALLE stier — `/`,
+  `/health`, `/spillere`, `/style.css` — med
+  `www-authenticate: Basic realm="traefik"`. Appen sender aldri 401 selv,
+  så dette er origin-Traefik uten rute for domenet. Cloudflare slipper
+  gjennom (`cf-cache-status: DYNAMIC`), og `dash.marsk.no` svarer 302,
+  så serveren og proxyen lever — det er appruten som mangler.
+  90 forespurte forsøk over 15 min (18:02–18:17) ga 401 hele veien;
+  ny sjekk 18:20 ga fortsatt 401.
+- **Utelukket lokalt:** `package.json`/`package-lock.json` er i synk på
+  1.3.3 (`npm ci` skal gå), Dockerfile er urørt og kopierer kun `src/`,
+  `views/`, `public/`. `npm test` 322/322 og lint 0 på `main`.
+- **Neste steg:** Marius åpner Coolify-deployloggen for `edc372b`.
+  Går deployen gjennom, gjenstår plan-steg 8 og 9 i
+  `docs/arkiv/plan-v133-qa.md`: 9 ruter + `/health` + footer `v1.3.3` +
+  ny asset-hash (UTEN `/brief` og `/nyheter`), så `qa-prod.mjs` (240),
+  `qa-clubs-prod.mjs` (14) og `qa-v133.mjs` (~56).
+- **Størrelse:** ukjent — avhenger av hva loggen sier.
+
+### 2. (P4) Kostnadskontroll etter prisskiftet
 
 - **Hva:** Sonnet 5 går fra intropris $2/$10 til ordinær $3/$15 per 1M
   tokens 1. september. Målingen 23. aug ga $0,94/uke (under terskelen);
@@ -46,7 +68,7 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
   organisk trafikk uten utviklingsstøy.
 - **Størrelse:** liten.
 
-### 2. (P1) Verifiser auto-briefen 20. august `[Marius]`
+### 3. (P1) Verifiser auto-briefen 20. august `[Marius]`
 
 - **Hva:** eneste gjenstående punkt fra sjekkpunkt A: at den naturlige
   auto-briefen torsdag 20. aug ~19:30 faktisk kom. Coolify-loggen er
@@ -55,7 +77,7 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
 - **Blokkert av:** Marius (sjekker Discord-kanalen).
 - **Størrelse:** minutter.
 
-### 3. (P3) Etter GW2: verifiser transfers-skjemaet mot ekte data
+### 4. (P3) Etter GW2: verifiser transfers-skjemaet mot ekte data
 
 - **Hva:** feltnavnene i `entry/5330646/transfers/` (`element_in`,
   `element_out`, `event`, `time`, `event_transfers_cost`) er antatt og lest
@@ -68,7 +90,7 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
   28. aug 19:30).
 - **Størrelse:** liten.
 
-### 4. (P2) README-skjermbilder + mobil-QA `[Marius]`
+### 5. (P2) README-skjermbilder + mobil-QA `[Marius]`
 
 - **Hva:** Del 6-restene fra sesongstart-verifiseringen: skjermbilder til
   README (dashbord, /spillere, /lag i desktop + 390 px), og mobilvisning på
@@ -77,7 +99,7 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
 - **Blokkert av:** Marius (nettleser + telefon).
 - **Størrelse:** liten.
 
-### 5. Robusthetskandidater (v1.3.1+, avtales én og én, uprioritert innbyrdes)
+### 6. Robusthetskandidater (v1.3.1+, avtales én og én, uprioritert innbyrdes)
 
 Reelle funn fra kvalitetspasset v1.1.3 (P3) og verifiseringen — ingen
 fikses uten avtale:

@@ -5,7 +5,10 @@
 
 **Sist oppdatert:** 24. august 2026
 
-## Dette har du nå (v1.3.3, live på fpl.marsk.no)
+## Dette har du nå (v1.3.3, sluppet 24. august)
+
+> **NB 24. aug 18:20:** fpl.marsk.no svarer 401 etter utrullingen — v1.3.3 er
+> pushet, men ikke sett kjøre. Se kø-punkt 1 i ROADMAP.md.
 
 Dashbord med nedtelling og skader · spillertabell med søk og filter · laget
 ditt med kapteinsråd · miniligaen · rundebrief (AI skriver den på norsk) ·

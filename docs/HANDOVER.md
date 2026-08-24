@@ -10,28 +10,27 @@
 
 ## Status akkurat nå
 
-- **ETAPPE 4 (v1.3.3 QA-rettelser) BYGGET FERDIG — venter på klarsignal
-  for release.** Økt 34, Opus. Branch `fix/ui-v133-qa` (13 commits, ikke
-  pushet). Task 1.3-0 t.o.m. 1.3-12 utført; **kun Task 1.3-13 (release)
-  gjenstår, og den krever eksplisitt «kjør» fra Marius.**
-  - **Målt lokalt 24. aug:** `npm test` **322/322** (fra 299), `npm run
-    lint` exit 0, 11 ruter 200 + ukjent sti 404, `/health` →
-    `ai:false, discord:false`. Playwright i scratchpad: `qa.mjs` 332/332,
-    `qa-clubs.mjs` 22/22, nye `qa-v133.mjs` 56/56. **0 AI-kall i hele
-    etappen** — prod-`/brief` og prod-`/nyheter` ble aldri lastet.
-  - Alle 18 QA-funn er rettet, pluss det uverifiserte transfers-
-    pillepunktet (låst med test). Task-for-task-loggen med observerte tall
-    står i `docs/arkiv/plan-v133-qa.md` og er rotert til arkivet.
-  - **To avvik fra planteksten** (begge ført inn i planfilas «Observert»):
-    mobilreserven for `.table-scroll--pinned` måtte flyttes ETTER
-    basisregelen for å virke, og desktopreserven fra 13rem til 14rem.
-    `test/format.test.js` fantes fra før — de to nye testene ble lagt til,
-    ikke erstattet.
-  - **Release-vinduet:** FØR fredag 28. aug ~18:00 ELLER etter at GW2 er
-    ferdigspilt (~31. aug) — aldri midt i. Aldri torsdag 19–21.
-  - README trenger ingen endring av rettelsene (ingen skjermbilder i fila,
-    rutebeskrivelsene er generiske). P2-punktet (skjermbilder + mobil-QA)
-    er fortsatt Marius' — /liga og /spillere er verdt å fange når det gjøres.
+- **ETAPPE 4 / v1.3.3: kode og git er FERDIG, men PROD SVARER 401.**
+  Økt 34, Opus. Klarsignal «Kjør» mandag 24. aug ~17:55. `main` =
+  `origin/main` = `edc372b` (merge `--no-ff` av `fix/ui-v133-qa`), tag
+  `v1.3.3` pushet 18:00. Alle 18 QA-funn + transfers-pillepunktet rettet.
+  - **Målt før push:** `npm test` **322/322** (fra 299), lint 0, 11 ruter
+    200 + 404, `/health` → `ai:false, discord:false`. Playwright:
+    `qa.mjs` 332/332, `qa-clubs.mjs` 22/22, `qa-v133.mjs` 56/56.
+    **0 AI-kall i hele etappen.** Etter merge på `main`: 322/322, lint 0,
+    CHANGELOG-plasseringen inspisert og riktig.
+  - **BLOKKERT (P0): https://fpl.marsk.no svarer `401 Unauthorized` på
+    ALLE stier** (`/`, `/health`, `/spillere`, `/style.css`) med
+    `www-authenticate: Basic realm="traefik"`. Cloudflare slipper gjennom
+    (`cf-cache-status: DYNAMIC`), så det er origin-Traefik som svarer:
+    ingen rute for domenet. Polling hvert 10. sek i 15 min (90 forsøk,
+    18:02–18:17) ga 401 hele veien. `dash.marsk.no` svarer 302, så
+    serveren og Traefik lever — det er appruten som mangler.
+    **Prod-verifiseringen (plan-steg 8 og 9) er IKKE utført.** Marius må
+    se på Coolify-deployloggen. Buildet er utelukket som årsak lokalt:
+    `package.json`/`package-lock.json` er i synk på 1.3.3, og Dockerfile
+    kopierer kun `src/`, `views/`, `public/` — ingenting av det etappen
+    endret ligger utenfor de mappene.
 - **v1.3.2 (etappe 3) RELEASET 24. aug (økt 33):** finpuss per side +
   kontraktstester for markupen `app.js` avhenger av. 299/299, lint 0.
   Detaljene (inkl. de manuelt målte pillekontrastene) er rotert til
@@ -46,12 +45,11 @@
 - **Plan for UI-overhalingen:** `docs/arkiv/plan-v130-ui-overhaul.md` (etappe 1–3,
   godkjent 24. aug) + `docs/arkiv/plan-v133-qa.md` (etappe 4). Mockup:
   https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849
-- **Prod kjører v1.3.2 på https://fpl.marsk.no — verifisert 24. aug 13:22.**
-  `/health` → 200, `ai:true, discord:true, leagues:1,`
-  `clubImages {badges:20, shirts:20, keepers:20}`; footer `v1.3.2`;
-  `style.css`/`app.js` `?v=000fa6f3` og `/img/clubs/t3.png?v=2627` → 200 +
-  `immutable`; 9 ruter 200 + 404 (uten /brief og /nyheter). Playwright mot
-  prod: 240/240 + klubbskript 14/14.
+- **Prod er NEDE for oss siden ~18:02 mandag 24. aug: 401 på alle stier.**
+  Siste bekreftet grønne prod-verifisering var v1.3.2, 24. aug 13:22
+  (`/health` 200, `ai:true, discord:true`, footer `v1.3.2`, assets
+  `?v=000fa6f3`, 9 ruter 200 + 404, Playwright 240/240 + 14/14).
+  v1.3.3 er pushet, men aldri sett kjøre. Se P0-punktet under.
 - **AI-budsjettet for UI-overhalingen er brukt opp: 1 av 1.** Den ene
   visningen av prod-`/brief` (24. aug 13:23) var grønn: cyan hairline +
   AI-merke, 60 `<strong>` og 0 rå `**`, 9 `.sub-head` og 0 rå `###`,
@@ -59,9 +57,10 @@
   `/nyheter` ble aldri besøkt med ekte nøkkel.
 - Kostnad målt 23. aug: **$0,94/uke** — under terskelen, ingen tiltak. Ny
   måling i uken etter 31. aug (prisskiftet), se kø-punkt 1.
-- **Git akkurat nå:** arbeidstreet står på **`fix/ui-v133-qa`** med 13
-  commits som IKKE er pushet. `main` = `origin/main` = `15fa8f5`
-  (tag `v1.3.2`). Branchen merges først i Task 1.3-13, på klarsignal.
+- **Git akkurat nå:** arbeidstreet står på **`main` = `origin/main` =
+  `edc372b`**, tag `v1.3.3` pushet. Merge `--no-ff` av
+  `fix/ui-v133-qa` (14 commits). Featurebranchen er slettet lokalt.
+  Ingen åpne brancher, rent tre.
 - Eldre status (v1.2.3-deploy, doks-opprydning økt 24, versjonsplan økt 25,
   v1.2.4 økt 27): rotert til `docs/arkiv/HANDOVER-historikk.md` 24. aug.
 
@@ -69,17 +68,23 @@
 
 Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 
-1. P4: kostnadsmåling uken etter 31. aug (metode i `docs/sjekkpunkt-d-kostnad.md`).
-2. P1 `[Marius]`: bekreft auto-briefen 20. aug i Discord-kanalen.
-3. P3: etter GW2, transfers-skjema mot ekte data + `/overganger` på mobil.
-4. P2 `[Marius]`: README-skjermbilder + mobil-QA.
-5. v1.3.3 (ETAPPE 4): **bygget ferdig, venter på klarsignal for release**
-   (Task 1.3-13 i `docs/arkiv/plan-v133-qa.md`). Deretter
+1. **P0 `[Marius]`: prod svarer 401 — se Coolify-deployloggen for
+   v1.3.3 (`edc372b`).** Alt annet står på vent til appen er oppe.
+2. P4: kostnadsmåling uken etter 31. aug (metode i `docs/sjekkpunkt-d-kostnad.md`).
+3. P1 `[Marius]`: bekreft auto-briefen 20. aug i Discord-kanalen.
+4. P3: etter GW2, transfers-skjema mot ekte data + `/overganger` på mobil.
+5. P2 `[Marius]`: README-skjermbilder + mobil-QA.
+6. v1.3.3 (ETAPPE 4): **kode og git ferdig, prod-verifiseringen gjenstår**
+   (plan-steg 8 og 9 i `docs/arkiv/plan-v133-qa.md`). Deretter
    robusthetskandidatene. Gammel åpen boks som er Marius' (Task 1.0-5):
    «Visuell sjekk mot mockupen i begge temaer».
 
 ## Driftslærdommer (ikke glem disse)
 
+- **`401` med `www-authenticate: Basic realm="traefik"` = ingen Traefik-
+  rute for domenet**, ikke en app-feil. Appen svarer aldri 401 selv.
+  Sjekk `dash.marsk.no` (svarer den, lever serveren) og deretter
+  Coolify-deployloggen. Skjedde ved v1.3.3-deployen 24. aug.
 - **Sjekk at fila ikke finnes før du «oppretter» den:** planen sa
   «Create `test/format.test.js`», men fila fantes med 3 tester fra
   v1.2.0. Write overskrev dem stille, og det ble bare synlig fordi
@@ -180,9 +185,10 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
   avhengigheter, CRLF i patchskript. STOPP etter Task 1.3-12 — release
   (1.3-13) kun på eksplisitt klarsignal, og kun FØR fre 28. aug ~18:00
   eller etter at GW2 er ferdigspilt. Aldri push uten klarsignal.
-  Handling: Task 1.3-0 t.o.m. 1.3-12 utført (13 commits på
-  `fix/ui-v133-qa`, ingen push). Rapportert og STOPPET før release —
-  se statusdelen øverst for målte tall.
+  Handling: Task 1.3-0 t.o.m. 1.3-12 utført (13 commits), rapportert og
+  stoppet. Deretter klarsignal **«Kjør»** (~17:55) → Task 1.3-13:
+  tidsvindu og `fixtures/` sjekket, 1.3.3, merge, tag, push 18:00.
+  Prod-verifiseringen strandet på 401 — se statusdelen øverst.
 - Loggposten fra økt 33 (v1.3.2-releasen): rotert til
   `docs/arkiv/HANDOVER-historikk.md` 2026-08-24 (200-linjerstaket).
 - Loggposten fra økt 32 (v1.3.1-releasen + v1.3.2-bygget): rotert til

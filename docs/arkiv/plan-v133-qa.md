@@ -792,32 +792,32 @@ test('transfers.ejs merker beste og verste bytte som piller', async () => {
 **Files:** `package.json` (via `npm version`), `CHANGELOG.md`, `ROADMAP.md`,
 `docs/HANDOVER.md`, `docs/VIDERE.md`, arkivflytt av begge planfilene.
 
-- [ ] **Steg 0: KLARSIGNAL FRA MARIUS FORELIGGER.** Observert (ordrett): ______
-- [ ] **Steg 1: tidsvindu.** Nå er FØR fredag 28. aug ~18:00, ELLER GW2 er
+- [x] **Steg 0: KLARSIGNAL FRA MARIUS FORELIGGER.** Observert (ordrett): ordrett: «Kjør» (mandag 24. aug ~17:55)
+- [x] **Steg 1: tidsvindu.** Nå er FØR fredag 28. aug ~18:00, ELLER GW2 er
       ferdigspilt (alle kamper `finished_provisional`). Aldri torsdag
       19:00–21:00. Sjekk `fixtures/?event=2` (og `?event=3` ved sen release):
-      ingen kamp `started && !finished_provisional`. Observert: ______
-- [ ] **Steg 2:** `npm version patch` → 1.3.3 (på branchen).
-- [ ] **Steg 3:** CHANGELOG: flytt `[Unreleased]`-punktene til
+      ingen kamp `started && !finished_provisional`. Observert: Mandag 24. aug 17:56 og 18:00 (to sjekker) — ikke torsdag, ikke 19–21, og før fredag 28. aug ~18:00. fixtures/?event=2: 10 kamper, 0 startet, 0 pågående; første avspark 2026-08-28T19:00:00Z. fixtures/?event=3: samme, 0 pågående.
+- [x] **Steg 2:** `npm version patch` → 1.3.3 (på branchen).
+- [x] **Steg 3:** CHANGELOG: flytt `[Unreleased]`-punktene til
       `## [1.3.3] - <dato>`. ROADMAP: stryk v1.3.3-raden i versjonsplanen,
       flytt v1.3.0–v1.3.3 til utført-historikken. VIDERE/HANDOVER: bump.
       Arkiver `docs/plan-v130-ui-overhaul.md` OG `docs/plan-v133-qa.md` til
       `docs/arkiv/` (`git mv`). Commit: `chore(release): v1.3.3`
-- [ ] **Steg 4:** `git checkout main` + `git merge --no-ff fix/ui-v133-qa`.
-- [ ] **Steg 5:** `npm test` + `npm run lint` på main. Observert: ______
-- [ ] **Steg 6: INSPISER CHANGELOG-plasseringen etter merge** — åpne fila og
+- [x] **Steg 4:** `git checkout main` + `git merge --no-ff fix/ui-v133-qa`.
+- [x] **Steg 5:** `npm test` + `npm run lint` på main. Observert: npm test 322/322 pass 0 fail, npm run lint exit 0, package.json 1.3.3
+- [x] **Steg 6: INSPISER CHANGELOG-plasseringen etter merge** — åpne fila og
       se at 1.3.3-punktene står under `[1.3.3]`, ikke i en eldre seksjon
-      (git har plassert punkter feil uten konflikt før). Observert: ______
-- [ ] **Steg 7:** `git tag v1.3.3` + push av main og taggen (klarsignalet fra
+      (git har plassert punkter feil uten konflikt før). Observert: Inspisert: 15 punkt (5 Added, 10 Fixed) står under [1.3.3] - 2026-08-24, [Unreleased] er tom, [1.3.2] uendret under. Riktig plassert.
+- [x] **Steg 7:** `git tag v1.3.3` + push av main og taggen (klarsignalet fra
       steg 0 dekker pushen; tidsvinduet fra steg 1 sjekkes PÅ NYTT om det har
       gått over en time). Coolify auto-deployer.
 - [ ] **Steg 8: prod-verifisering UTEN `/brief` og `/nyheter`:** `/health` →
       200 med `ai:true, discord:true`, footer `v1.3.3`, ny asset-hash på
       `style.css`/`app.js`, 9 ruter → 200 (alle UNNTATT /brief og /nyheter)
-      + 404. **0 AI-kall.** Observert: ______
+      + 404. **0 AI-kall.** Observert: BLOKKERT — ikke utført. https://fpl.marsk.no svarer 401 Unauthorized på ALLE stier (/, /health, /spillere, /style.css) med header www-authenticate: Basic realm="traefik". Cloudflare slipper gjennom (cf-cache-status: DYNAMIC), så det er origin-Traefik som svarer: ingen rute for domenet. Polling hvert 10. sekund i 15 minutter (90 forsøk, 18:02–18:17) ga 401 hele veien. dash.marsk.no svarer 302 (innloggingsredirect), så serveren og Traefik lever — det er appruten som mangler. 0 AI-kall (verken /brief eller /nyheter ble forsøkt).
 - [ ] **Steg 9:** Playwright mot prod: `node qa-prod.mjs` (240 sjekker — den
       utelater AI-sidene) + `node qa-clubs-prod.mjs` (14) + qa-v133.mjs mot
-      prod med `PAGES` uten `/brief`/`/nyheter`. Observert: ______
+      prod med `PAGES` uten `/brief`/`/nyheter`. Observert: IKKE KJØRT — forutsetter at steg 8 er grønt. Skriptene er verifisert AI-frie (qa-prod.mjs, qa-clubs-prod.mjs og qa-v133.mjs besøker verken /brief eller /nyheter og klikker aldri #ai-advice-btn), så de kan kjøres rett fram når prod er oppe.
 - [ ] **Steg 10:** `git branch -d fix/ui-v133-qa`. HANDOVER: release-status,
       observerte prod-tall, loggpost for klarsignalet. Commit + push (dekket
       av klarsignalet). Rapportér.
@@ -991,6 +991,6 @@ observert-feltet, de teller som grønne.
 | 5 | Playwright basis | `node qa.mjs` + `qa-clubs.mjs` | 0 feil av 332 + 22/22 | 332/332 + 22/22 |
 | 6 | Playwright v1.3.3 | `node qa-v133.mjs` | 0 feil (~60) | 56/56 |
 | 7 | AI-kall hele etappen | opptelling | **0** | 0 |
-| 8 | Prod etter release | 9 ruter + `/health` + footer, UTEN /brief //nyheter | 200, `v1.3.3`, ny hash | ______ |
-| 9 | Playwright prod | `qa-prod.mjs` + `qa-clubs-prod.mjs` + v133 u/AI-sider | 240 + 14 + ~60, 0 feil | ______ |
+| 8 | Prod etter release | 9 ruter + `/health` + footer, UTEN /brief //nyheter | 200, `v1.3.3`, ny hash | BLOKKERT: 401 fra origin-Traefik på alle stier, 15 min polling |
+| 9 | Playwright prod | `qa-prod.mjs` + `qa-clubs-prod.mjs` + v133 u/AI-sider | 240 + 14 + ~60, 0 feil | ikke kjørt (avhenger av 8) |
 | 10 | Regresjonslista fra QA | manuell/Playwright: tema-syklus, sortering, filtre, fokus, ingen sidescroll, merker/drakter, row-me, hero, footer, FDR | alt uendret | alt uendret lokalt: qa.mjs 332/332 dekker tema-syklus, sortering, filtre, fokus, sidescroll, merker/drakter, row-me, hero, footer og FDR |
