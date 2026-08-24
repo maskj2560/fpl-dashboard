@@ -1072,13 +1072,17 @@ mockupen. Konkret:
 - [x] CHANGELOG `[Unreleased]` → `## [1.3.0] - <dato>`. ROADMAP: kø-punkt
       5 huk av etappe 1; versjonsplan-rad v1.3.0 strykes. VIDERE «Nytt
       siden sist». HANDOVER status.
-- [ ] Commit `chore(release): v1.3.0`, `git checkout main`,
+- [x] Commit `chore(release): v1.3.0`, `git checkout main`,
       `git merge --no-ff feat/ui-v130-fundament`, `npm test` på main
       (282/282), inspiser CHANGELOG-plasseringen, tag `v1.3.0`.
-- [ ] Push `main` + tag. Coolify deployer. `/health` → 200, footer
+- [x] Push `main` + tag. Coolify deployer. `/health` → 200, footer
       `v1.3.0`, `curl -sI "https://fpl.marsk.no/style.css?v=<ny hash>"`
-      → immutable. Rutesveip **uten** `/brief` og `/nyheter`.
-- [ ] Åpne prod i begge temaer (Marius). Slett lokal branch.
+      → immutable. Rutesveip **uten** `/brief` og `/nyheter`. Observert:
+      **/health 200 `ai:true, discord:true, leagues:1`, footer v1.3.0, hash
+      374071c1 → `public, max-age=31536000, immutable`, 9 ruter 200 + 404.
+      Playwright mot prod (samme unntak): OK 100/100, topbar rgb(55,0,60)
+      i begge temaer.**
+- [x] Åpne prod i begge temaer (Marius). Slett lokal branch.
 
 ---
 
