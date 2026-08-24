@@ -225,7 +225,7 @@ test('style.css: ingen opacity-demping på versjonslinja og benkeradene', () => 
 **Interfaces — produserer:** `formatNumber`/`formatSigned` med VANLIGE
 mellomrom som tusenskille (brekker mellom grupper, aldri inni).
 
-- [ ] **Steg 1 (rød):** ny fil `test/format.test.js`:
+- [x] **Steg 1 (rød):** ny fil `test/format.test.js`:
 
 ```js
 import { test } from 'node:test';
@@ -255,10 +255,10 @@ test('style.css: orddeling er manuell i brødtekst og av i statistikkortene', ()
 });
 ```
 
-- [ ] **Steg 2:** kjør begge filene → forventet 3 røde (NBSP-strengene ser
+- [x] **Steg 2:** kjør begge filene → forventet 3 røde (NBSP-strengene ser
       like ut i terminalen — sammenlikningen feiler på `\u00A0`/`\u202F`).
-      Observert: ______
-- [ ] **Steg 3:** `format.js`: i `formatNumber` returner
+      Observert: 10 tester i de to filene, 7 pass, 3 fail (som anslått). NB: planen sier «Create test/format.test.js», men fila FANTES med 3 tester fra v1.2.0 — de to nye ble lagt TIL, ikke erstattet.
+- [x] **Steg 3:** `format.js`: i `formatNumber` returner
       `number.format(n).replace(/[\u00A0\u202F]/g, ' ')` (kommentar: Intl
       bruker NBSP; vanlige mellomrom lar tall brekke MELLOM grupper, og
       `white-space: nowrap` på `.num` holder tabellceller hele). I
@@ -268,11 +268,11 @@ test('style.css: orddeling er manuell i brødtekst og av i statistikkortene', ()
       endres `hyphens: auto` → `hyphens: manual` (oppdater kommentaren over:
       lange ord nødbrekkes fortsatt av `overflow-wrap: break-word`, men uten
       automatisk bindestrek).
-- [ ] **Steg 4:** `npm test` → 305 (302 + 2 format + 1 style). Observert: ______
-- [ ] **Steg 5:** Playwright-sjekk 3 (Vedlegg B): ingen `.stat-val` med
+- [x] **Steg 4:** `npm test` → 305 (302 + 2 format + 1 style). Observert: npm test 305/305 pass 0 fail, lint exit 0
+- [x] **Steg 5:** Playwright-sjekk 3 (Vedlegg B): ingen `.stat-val` med
       vannrett overflow på /lag og /overganger 390, `hyphens` computed
-      `none`/`manual`. Observert: ______
-- [ ] **Steg 6:** CHANGELOG (Fixed: tall brekker aldri inni sifergrupper;
+      `none`/`manual`. Observert: qa-t3.mjs (begge temaer × 390/1440 × /lag+/overganger, 5 sjekker hver): 40/40 OK. stat-val: hyphens none og 0 px overflow (5 kort på /lag, /overganger har ingen). body-hyphens computed manual, .num nowrap, ingen NBSP igjen i teksten. NB: serveren måtte restartes — ESM-moduler lastes én gang ved oppstart, så gammel format.js ga falske NBSP-treff mens CSS-endringer slo gjennom med én gang.
+- [x] **Steg 6:** CHANGELOG (Fixed: tall brekker aldri inni sifergrupper;
       langt mindre orddeling på mobil), HANDOVER. Commit:
       `fix: vanlige mellomrom i tallgrupper og manuell orddeling (QA 2+9+10)`
 

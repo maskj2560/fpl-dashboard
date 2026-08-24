@@ -108,3 +108,11 @@ test('style.css: ingen opacity-demping på versjonslinja og benkeradene', () => 
   assert.ok(!block('footer .version').includes('opacity'));
   assert.ok(!block('.row-bench td').includes('opacity'));
 });
+
+test('style.css: orddeling er manuell i brødtekst og av i statistikkortene', () => {
+  assert.match(css, /hyphens: manual/);
+  assert.ok(!/hyphens: auto/.test(css));
+  assert.match(block('.stat-lbl'), /hyphens: none/);
+  assert.match(block('.stat-val'), /hyphens: none/);
+  assert.match(block('.num'), /white-space: nowrap/);
+});
