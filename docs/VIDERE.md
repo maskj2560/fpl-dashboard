@@ -5,7 +5,7 @@
 
 **Sist oppdatert:** 24. august 2026
 
-## Dette har du nå (v1.3.2, live på fpl.marsk.no)
+## Dette har du nå (v1.3.3, live på fpl.marsk.no)
 
 Dashbord med nedtelling og skader · spillertabell med søk og filter · laget
 ditt med kapteinsråd · miniligaen · rundebrief (AI skriver den på norsk) ·
@@ -13,14 +13,30 @@ live-poeng mens kampene går · nyheter med AI-oppsummering · auto-brief til
 Discord kvelden før hver deadline · «Overganger» som viser om byttene dine
 ga eller kostet poeng.
 
-**Nytt siden sist (v1.3.2, 24. august): finpuss på alle sidene.** Toppen av
+**Nytt siden sist (v1.3.3): QA-rettelsene etter gjennomgangen din.**
+Tabellhodet på Spillere blir ikke lenger liggende bak toppmenyen når du
+scroller på telefonen. Ligatabellen viser en pil på hver rad — også i
+runde 1, der ingen har flyttet på seg ennå — og hele raden er klikkbar,
+med laget du sammenlikner deg med tydelig markert. Lagsiden viser
+formasjonen (for eksempel 3-4-3) i overskriften over banen, og
+rankgrafen viser en prikk når det bare finnes én runde å tegne. Live-siden
+har fått samme tellere i korthodene som dashbordet. Store tall som
+1 339 328 brekker aldri lenger midt i en tallgruppe, og teksten deles
+langt sjeldnere med bindestrek på smal skjerm. Filtrerer du bort alle
+spillerne, sier siden fra og tilbyr en knapp som nullstiller filtrene.
+Tabeller du kan dra sidelengs toner ut i kanten, slik menyen allerede
+gjorde. I tillegg: bedre kontrast på versjonslinja og benkeradene i lyst
+tema, cyan AI-merke på rådgiverkortet, og én vei tilbake fra 404-siden i
+stedet for to. Dette er bit 4 av 4 — drakten er ferdig.
+
+Fra før (v1.3.2): **finpuss på alle sidene.** Toppen av
 dashbordet viser nå hvilken runde det gjelder ved siden av nedtellingen, og
 hvert kort har fått et tall i overskriften — hvor mange skadede, hvor mange
 kampene teller. Kamplista i rundebriefen har fått klokkeslett og klubbmerker
 i stedet for bare navn, lagsiden sier fra i overskriften hvis du har en chip
 aktiv, og «Overganger» markerer beste og verste bytte som farget pille.
 Går noe galt, får feilsidene nå en tydelig knapp tilbake til dashbordet i
-stedet for bare en lenke i teksten. Dette er bit 3 av 4.
+stedet for bare en lenke i teksten. Dette var bit 3 av 4.
 
 Fra før (v1.3.1): **klubbmerker og drakter.** Merket
 til klubben står nå ved siden av spilleren i alle tabeller og lister, og

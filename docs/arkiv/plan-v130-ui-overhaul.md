@@ -1939,17 +1939,8 @@ Som 1.0-7 → 1.3.2. Etter deploy og `/health`:
 
 # ETAPPE 4 — v1.3.3 QA-rettelser (branch `fix/ui-v133-qa`)
 
-Ingen planlagte tasks — innholdet er funnene fra (a) Playwright-kjøringene,
-(b) Marius' QA i nettleser og på telefon etter v1.3.2. Prosess:
-
-- [ ] Marius leverer funn som nummerert liste (P0/P1/P2) i chatten.
-- [ ] Hvert funn: test først der det er testbart (view-markup, tokens,
-      app.js-funksjoner), ellers Playwright-sjekk i Vedlegg A utvides.
-- [ ] Ingen designendringer utenfor funnene. Nye ønsker → ROADMAP «Senere».
-- [ ] `npm test` ≥ 299, lint 0, Playwright 0 feil → docs → STOPP →
-      release på klarsignal (`npm version patch` → 1.3.3).
-- [ ] Etter v1.3.3: denne planen arkiveres til `docs/arkiv/plan-v130-ui-overhaul.md`,
-      ROADMAP får v1.3.0–v1.3.3 i utført-historikken, VIDERE «Nytt siden sist».
+Funnlista kom 24. aug. Utførelsesplanen ligger i `docs/plan-v133-qa.md`
+— denne fila planlegger kun etappe 1–3.
 
 ---
 

@@ -989,3 +989,91 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
   HANDOVER skrevet som overlevering på branchen, prompt levert i chatten
   (ikke som fil). `feat/ui-v132-finpuss` bevisst IKKE pushet — en push
   til `main` av den ville vært release, som krever eget klarsignal.
+
+## Rotert 2026-08-24 (økt 34): loggposten fra økt 33 (verbatim fra HANDOVER.md)
+
+- 2026-08-24 (økt 33, Opus): kjøreprompt «fullfør ETAPPE 3 — release
+  v1.3.2 — og forbered ETAPPE 4». Rammer: Task 1.2-4 kun på eksplisitt
+  klarsignal, ingen designbeslutninger, aldri push uten klarsignal
+  (heller ikke docs), `fixtures/?event=N` før enhver push, aldri torsdag
+  19–21, **nøyaktig ett AI-kall igjen** (én visning av prod-`/brief`
+  ETTER deploy), `/nyheter` aldri med ekte nøkkel, rutesveip uten
+  `/brief` og `/nyheter`, ingen nye avhengigheter, Playwright kun i
+  scratchpad, docs i samme commit, kryss av i planfila med observerte
+  tall. ETAPPE 4 startes ikke før Marius leverer P0/P1/P2-lista.
+  Handling: status rapportert (299/299, lint 0, versjon 1.3.1, rent tre,
+  4 commits foran `main`), deretter klarsignal **«Kjør»** (mandag
+  24. aug ~13:18). Task 1.2-4 utført — se statusdelen øverst.
+
+## Rotert 2026-08-24 (økt 34): v1.3.0-statusbulleten (verbatim fra HANDOVER.md)
+
+- **v1.3.0 (etappe 1) ute siden 24. aug:** tokenpalett i to temaer med
+  kontrast låst av `test/style.test.js`, inline-tema-script, temabryter,
+  lilla topbar, `views/partials/`. Detaljene fra økt 31 er rotert til
+  `docs/arkiv/HANDOVER-historikk.md`.
+
+## Rotert 2026-08-24 (økt 34): v1.3.2-statusblokka (verbatim fra HANDOVER.md)
+
+- **v1.3.2 (etappe 3) RELEASET 24. aug (økt 33, Opus).** Task 1.2-4 kjørt
+  på klarsignal: bump 1.3.2, docs, merge `--no-ff` til `main`, tag
+  `v1.3.2`, push, Coolify-deploy. **299/299 tester, lint 0, prod grønn,
+  AI-budsjettet brukt opp (1 av 1).** Detaljene: se prod-linjene nedenfor.
+  - Innholdet: kontraktstester som låser markupen `app.js` avhenger av
+    (heroens `data-deadline` + fire `data-unit`, 11 kolonnehoder med
+    `data-type` og `aria-sort`), `btn-link` tilbake til dashbordet på
+    404/error/no-team, tellere i dashbord-korthodene, aktiv chip i
+    Oppstilling-hodet, kamplista i briefen som `.fixture-row` med
+    klokkeslett, Beste/Verste som piller, kreditering på egen linje i
+    footeren.
+  - Heroen var allerede ferdig fra etappe 1 — ingen endring nødvendig.
+  - Pillenes forgrunnsfarger var ikke spesifisert i planen. Målt der de
+    står (kortflaten `--surface`): beste 10,42 mørkt / 5,66 lyst, verste
+    5,39 / 5,27. Kan ikke låses i `PAIRS` — `*-soft` er rgba, ikke hex.
+
+## Rotert 2026-08-24 (økt 34): planbulleten for UI-overhalingen (verbatim fra HANDOVER.md)
+
+- **Plan for UI-overhalingen:** `docs/plan-v130-ui-overhaul.md` (~1900
+  linjer, godkjent 24. aug) — fire etapper v1.3.0–v1.3.3 med kode og
+  testtall (272 → 282 → 296 → 299). Mockup:
+  https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849.
+  **20 av 21 tasks ferdige. Kun ETAPPE 4 gjenstår (ingen planlagte
+  tasks — innholdet er Marius' QA-funn).**
+
+## Rotert 2026-08-24 (økt 34): task-for-task-loggen for ETAPPE 4 (verbatim fra HANDOVER.md)
+
+- **ETAPPE 4 (v1.3.3 QA-rettelser) PÅGÅR — økt 34, Opus.** Branch
+  `fix/ui-v133-qa`, plan i `docs/plan-v133-qa.md` (13 tasks, 18 QA-funn +
+  det uverifiserte transfers-pillepunktet). Baseline: 299/299, lint 0.
+  Ingen AI-kall — `/brief` og `/nyheter` kun LOKALT med tomme nøkler
+  (`/health` → `ai:false, discord:false` bekreftet), aldri i prod.
+  Lint exit 0 etter hver task. Avvik fra planteksten føres inn i
+  planfilas «Observert»-felt.
+  - 1.3-0: branch, planfiler, ETAPPE 4-stubben peker videre.
+  - 1.3-1 (QA 1+8): 301/301, Playwright 8/8. `--topbar-h` styrer
+    menyhøyden (57/50 px); pinned-boksen mistet sin virkningsløse sticky
+    og fikk en høydereserve (14rem desktop / 19rem mobil) i stedet.
+  - 1.3-2 (QA 6+7): 302/302. `opacity` ut av versjonslinja og
+    benkeradene — `--text-dim` i stedet, låst med `text-dim`/`bg` i PAIRS.
+  - 1.3-3 (QA 2+9+10): 305/305, Playwright 40/40. Intl-NBSP byttet mot
+    vanlige mellomrom i `formatNumber`/`formatSigned`, `.num` er `nowrap`,
+    statistikkortene deler aldri ord, `hyphens: manual` i body.
+  - 1.3-4 (QA 3+14): 308/308, Playwright 16/16. `.rank-up/-down/-same`
+    med `aria-label` på hver ligarad, hele raden klikkbar via
+    `tr[data-href]` (Modul 6 i app.js), valgt rival får `.row-rival`.
+  - 1.3-5 (QA 4): 311/311. `formationOf()` i analysis.js, formasjonen i
+    Oppstilling-hodet via ny `.h2-meta`-wrapper.
+  - 1.3-6 (QA 5): 312/312. Tellere i /live-korthodene (`live-count-players`,
+    `live-count-matches` + antall rader per liga), oppdatert av Modul 3.
+  - 1.3-7 (QA 12): 314/314. `rankGraph` returnerer `single`, og team.ejs
+    tegner en `<circle>` når grafen bare har ett punkt.
+  - 1.3-8 (QA 13): 315/315, Playwright 8/8. Tomtilstand med nullstill-knapp
+    på /spillere (`players-empty`), styrt av Modul 2.
+  - 1.3-9 (QA 16+17): 318/318, Playwright 6/6. `edgeFadeState`/`initEdgeFades`
+    på filnivå i app.js deles av menyen og `.table-scroll`; Modul 0 måler på
+    nytt i neste frame (fikser racen mot `scrollIntoView`).
+  - 1.3-10 (QA 11+15+18): 321/321. `card-ai` + `.ai-badge` på AI-rådgiveren,
+    404 har kun knappelenken, `.grid--start` på anbefalingsgridet.
+  - 1.3-11: **322/322** — måltallet i planen. Beste/verste-pillene på
+    /overganger er nå låst av en test (grønn med én gang; fixturen hadde
+    allerede begge indeksene). Det uverifiserte punktet er dermed lukket
+    som markup-kontrakt — P3-punktet om ekte data etter GW2 står fortsatt.

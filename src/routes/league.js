@@ -55,6 +55,7 @@ router.get('/', async (req, res, next) => {
       leagues,
       diff,
       myEntry: config.fplTeamId,
+      rivalEntry: diff?.rivalEntry ?? null,
       firstLeague,
       teamsById: byId(bootstrap.teams),
       formatNumber,

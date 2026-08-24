@@ -70,6 +70,12 @@ export function resolvePicks(picks, elementsById) {
   return resolved;
 }
 
+/** «3-5-2» fra starterne: forsvar-midtbane-angrep. Keeperen telles ikke. */
+export function formationOf(starters) {
+  const count = (t) => starters.filter((s) => s.player.element_type === t).length;
+  return `${count(2)}-${count(3)}-${count(4)}`;
+}
+
 function ownership(p) {
   return parseFloat(p.selected_by_percent) || 0;
 }
@@ -357,7 +363,15 @@ export function rankGraph(historyCurrent, width = 600, height = 140) {
     .join(' ');
   // Lukket polygon for arealfyll under linjen. Ett punkt gir ingen flate.
   const area = ranks.length > 1 ? `${points} ${width},${height} 0,${height}` : null;
-  return { points, area, min, max, first: values[0], last: values[values.length - 1] };
+  return {
+    points,
+    area,
+    min,
+    max,
+    first: values[0],
+    last: values[values.length - 1],
+    single: ranks.length === 1,
+  };
 }
 
 /**

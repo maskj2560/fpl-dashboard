@@ -53,7 +53,7 @@ const ratio = (a, b) => {
 // [forgrunn, bakgrunn, krav] — 4.5 tekst, 3 grafikk. Kun hex-tokens.
 const PAIRS = [
   ['text', 'bg', 4.5], ['text', 'surface', 4.5], ['text', 'surface-2', 4.5], ['text', 'surface-3', 4.5],
-  ['text-dim', 'surface', 4.5], ['text-dim', 'surface-2', 4.5], ['text-dim', 'surface-3', 4.5],
+  ['text-dim', 'bg', 4.5], ['text-dim', 'surface', 4.5], ['text-dim', 'surface-2', 4.5], ['text-dim', 'surface-3', 4.5],
   ['dim-strong', 'surface', 4.5], ['dim-strong', 'surface-3', 4.5],
   ['accent-text', 'bg', 4.5], ['accent-text', 'surface', 4.5], ['accent-text', 'surface-2', 4.5],
   ['accent-ink', 'accent', 4.5],
@@ -83,3 +83,42 @@ for (const [name, tokens] of [['mørkt', dark], ['lyst', light]]) {
     assert.deepEqual(feil, []);
   });
 }
+
+// Ankeret er linjestart: samme selektor kan finnes innrykket i en
+// medieblokk lenger oppe i fila, og da vil et rent indexOf treffe den.
+const block = (sel) => {
+  const start = css.indexOf(`\n${sel} {`);
+  assert.notEqual(start, -1, `fant ikke blokken «${sel} {»`);
+  return css.slice(start + 1, css.indexOf('\n}', start + 1));
+};
+
+test('style.css: topbaren låses til --topbar-h', () => {
+  assert.match(block('.topbar'), /height: var\(--topbar-h\)/);
+  assert.ok(!block('.topbar').includes('padding: 0.7rem'), 'vertikal padding skal ikke styre høyden');
+});
+
+test('style.css: pinned-tabellen er en indre scrollboks uten egen sticky', () => {
+  const b = block('.table-scroll--pinned');
+  assert.ok(!b.includes('position: sticky'), 'sticky på boksen har ~0 reiserom inne i kortet og er død vekt');
+  assert.match(b, /max-height: min\(75vh/);
+  assert.match(block('.table-scroll--pinned table.data thead th'), /position: sticky/);
+});
+
+test('style.css: ingen opacity-demping på versjonslinja og benkeradene', () => {
+  assert.ok(!block('footer .version').includes('opacity'));
+  assert.ok(!block('.row-bench td').includes('opacity'));
+});
+
+test('style.css: orddeling er manuell i brødtekst og av i statistikkortene', () => {
+  assert.match(css, /hyphens: manual/);
+  assert.ok(!/hyphens: auto/.test(css));
+  assert.match(block('.stat-lbl'), /hyphens: none/);
+  assert.match(block('.stat-val'), /hyphens: none/);
+  assert.match(block('.num'), /white-space: nowrap/);
+});
+
+test('style.css: tabellboksene har samme kantfade-mekanikk som menyen', () => {
+  assert.match(block('.table-scroll'), /mask-image: linear-gradient\(90deg/);
+  assert.match(css, /\.table-scroll\.table-fade-left \{ --fade-l: 28px; \}/);
+  assert.match(css, /\.table-scroll\.table-fade-right \{ --fade-r: 28px; \}/);
+});

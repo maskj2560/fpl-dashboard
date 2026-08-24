@@ -118,3 +118,15 @@ test('clubBadgeHtml escaper kortnavnet og skriver versjonert bilde eller plassho
   assert.ok(noImg.includes('&lt;b&gt;'));
   assert.ok(!noImg.includes('<img'));
 });
+
+// NB: objekter fra vm-konteksten har en annen realms prototyper — deepEqual
+// fra assert/strict feiler på dem. Sammenlign derfor JSON-strenger.
+test('edgeFadeState viser fade kun mot skjult innhold', () => {
+  assert.equal(app.evaluate('JSON.stringify(edgeFadeState(0, 800, 400))'), '{"left":false,"right":true}');
+  assert.equal(app.evaluate('JSON.stringify(edgeFadeState(396, 800, 400))'), '{"left":true,"right":false}');
+});
+
+test('edgeFadeState er nøytral uten overflow og dobbel midt i', () => {
+  assert.equal(app.evaluate('JSON.stringify(edgeFadeState(0, 400, 400))'), '{"left":false,"right":false}');
+  assert.equal(app.evaluate('JSON.stringify(edgeFadeState(200, 800, 400))'), '{"left":true,"right":true}');
+});

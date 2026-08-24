@@ -21,7 +21,7 @@
   </section>
 <% } else { %>
   <section class="card card-wide">
-    <h2><span class="h2-title">Oppstilling</span><% if (squadView.activeChip) { %><span class="status">Chip: <%= squadView.activeChip %></span><% } %></h2>
+    <h2><span class="h2-title">Oppstilling</span><span class="h2-meta"><span class="dim"><%= squadView.formation %></span><% if (squadView.activeChip) { %><span class="status">Chip: <%= squadView.activeChip %></span><% } %></span></h2>
     <div class="pitch">
       <% for (const line of [1, 2, 3, 4]) { %>
         <div class="pitch-row">
@@ -63,6 +63,8 @@
       <% } %>
       <% if (graph.area) { %><polygon points="<%= graph.area %>" fill="url(#rank-fill)" /><% } %>
       <polyline points="<%= graph.points %>" fill="none" stroke="var(--accent)" stroke-width="2.5" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round" />
+      <%# Ett punkt: span=0 gir alltid x=0,y=70 (height/2) i rankGraph. %>
+      <% if (graph.single) { %><circle cx="0" cy="70" r="5" fill="var(--accent)" /><% } %>
     </svg>
     <p class="hint">Best: <%= formatNumber(graph.min) %> · Nå: <%= formatNumber(graph.last) %> (lavere er bedre — toppen av grafen er best)</p>
   </section>
@@ -70,7 +72,7 @@
 
 <% if (recommendations) { %>
   <h2 class="sub-head">Anbefalinger for Runde <%= fromGw %></h2>
-  <div class="grid">
+  <div class="grid grid--start">
     <section class="card">
       <h2>Kapteinsvalg</h2>
       <% if (recommendations.captains.length === 0) { %>
@@ -112,8 +114,8 @@
     </section>
   </div>
 
-  <section class="card card-wide" id="ai-advice-box">
-    <h2>AI-rådgiver</h2>
+  <section class="card card-wide card-ai" id="ai-advice-box">
+    <h2><span class="h2-title"><span class="ai-badge">AI</span> AI-rådgiver</span></h2>
     <p class="dim">Sender troppen og analysen til Claude og får begrunnede råd. Svar caches i én time.</p>
     <button type="button" id="ai-advice-btn" class="btn-accent">Spør AI om råd</button>
     <div id="ai-advice-result" class="ai-result" hidden></div>

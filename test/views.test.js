@@ -306,3 +306,66 @@ test('players.ejs: alle kolonneoverskrifter beholder data-type og aria-sort (sor
   }
   assert.equal((html.match(/aria-sort="descending"/g) ?? []).length, 1, 'nøyaktig én startsortering');
 });
+
+test('league.ejs viser retningsmarkører med skjermlesertekst', async () => {
+  const html = await renderView('league', fx.league);
+  assert.match(html, /class="rank-up" aria-label="opp 2 plasser">▲/);
+  assert.match(html, /class="rank-down" aria-label="ned 1 plass">▼/);
+});
+
+test('league.ejs viser nøytral markør uten historikk', async () => {
+  const html = await renderView('league', fx.league);
+  assert.match(html, /class="rank-same" aria-label="uendret plassering">–/);
+});
+
+test('league.ejs gjør radene klikkbare og markerer valgt rival', async () => {
+  const html = await renderView('league', fx.league);
+  assert.match(html, /data-href="\/liga\?rival=456"/);
+  assert.match(html, /row-rival/);
+  assert.ok(!html.includes('data-href="/liga?rival=123"'), 'aldri lenke på min egen rad');
+});
+
+test('team.ejs viser formasjonen i Oppstilling-hodet', async () => {
+  const html = await renderView('team', fx.team);
+  assert.match(html, /h2-meta"><span class="dim">3-4-3<\/span>/);
+});
+
+test('live.ejs viser antall til høyre i korthodene', async () => {
+  const html = await renderView('live', fx.live);
+  assert.match(html, new RegExp('id="live-count-players">' + fx.live.live.myPlayers.length + '<'));
+  assert.match(html, new RegExp('id="live-count-matches">' + fx.live.live.matches.length + '<'));
+});
+
+test('team.ejs tegner en synlig markør når grafen bare har ett punkt', async () => {
+  const html = await renderView('team', { ...fx.team, graph: { points: '0,70', area: null, single: true, min: 5, max: 5, first: 5, last: 5 } });
+  assert.match(html, /<circle cx="0" cy="70" r="5" fill="var\(--accent\)"/);
+});
+
+test('players.ejs har en skjult tomtilstand for null filtertreff', async () => {
+  const html = await renderView('players', fx.players);
+  assert.match(html, /id="players-empty" hidden>Ingen spillere matcher filtrene\./);
+  assert.match(html, /id="players-empty-reset"[^>]*>Nullstill filtrene</);
+});
+
+test('team.ejs merker AI-rådgiveren som AI-kort', async () => {
+  const html = await renderView('team', fx.team);
+  assert.match(html, /card-wide card-ai" id="ai-advice-box"/);
+  assert.match(html, /ai-badge">AI<\/span> AI-rådgiver/);
+});
+
+test('404.ejs har bare knappelenken tilbake', async () => {
+  const html = await renderView('404', {});
+  assert.ok(!html.includes('>dashbordet</a>'), 'tekstlenka i brødteksten skal bort');
+  assert.match(html, /href="\/" class="btn-link"/);
+});
+
+test('team.ejs lar ikke anbefalingskortene strekkes forbi innholdet', async () => {
+  const html = await renderView('team', fx.team);
+  assert.match(html, /class="grid grid--start"/);
+});
+
+test('transfers.ejs merker beste og verste bytte som piller', async () => {
+  const html = await renderView('transfers', fx.transfers);
+  assert.match(html, /status status-best">Beste</);
+  assert.match(html, /status status-worst">Verste</);
+});

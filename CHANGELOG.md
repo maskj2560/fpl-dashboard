@@ -7,6 +7,43 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.3.3] - 2026-08-24
+
+### Added
+
+- Hele raden i ligatabellen er klikkbar, og laget du sammenlikner deg med
+  markeres i tabellen.
+- Formasjonen (for eksempel 3-4-3) vises i hodet på Oppstilling-kortet.
+- Live-siden viser antall i korthodene («Mine spillere», «Kamper» og hver
+  liga), som på dashbordet — og tallene oppdateres med live-dataene.
+- Spillere-siden sier fra når filtrene ikke gir treff, med en knapp for å
+  nullstille dem.
+- Tabeller som kan dras sidelengs har samme myke kanthint som menyen.
+
+### Fixed
+
+- Tabellhodet på Spillere legger seg ikke lenger bak toppmenyen på mobil;
+  toppmenyens høyde styres nå av `--topbar-h` (57/50 px).
+- Bedre kontrast i lyst tema på versjonslinja i footeren og på benkeradene
+  på lagsiden — de var dempet med gjennomsiktighet og falt under kravet.
+- Store tall brekker aldri lenger inni en sifergruppe — «1 339 328» deles
+  bare mellom gruppene, og aldri i tabellceller.
+- Mindre orddeling på mobil: automatisk bindestrek er slått av, og
+  statistikkortene deler aldri ord. Lange ord nødbrekkes fortsatt.
+- Ligatabellen viser en retningsmarkør på hver rad — også i runde 1, der
+  ingen har historikk ennå — og markørene har skjermlesertekst
+  («opp 2 plasser»).
+- Rankgrafen på lagsiden viser en synlig markør når det bare finnes ett
+  datapunkt — før var linjen usynlig i runde 1.
+- Toppmenyen toner ut på begge kanter når det finnes mer å scrolle til —
+  venstrefaden manglet når den aktive siden ble scrollet inn ved sidelast.
+- AI-rådgiverkortet på lagsiden har samme cyan AI-markering som
+  AI-kortene ellers i appen.
+- 404-siden har bare én vei tilbake — knappen — i stedet for både en
+  tekstlenke og en knapp.
+- Kapteinsvalg-kortet strekkes ikke lenger forbi sitt eget innhold for å
+  møte nabokortets høyde.
+
 ## [1.3.2] - 2026-08-24
 
 ### Changed

@@ -210,7 +210,8 @@ a:hover {
   display: flex;
   align-items: center;
   gap: var(--space-5);
-  padding: 0.7rem 1.25rem;
+  height: var(--topbar-h);
+  padding: 0 1.25rem;
   background: var(--topbar-bg);
   color: var(--topbar-text);
   position: sticky;
@@ -310,7 +311,7 @@ a:hover {
 
   .topbar {
     gap: var(--space-3);
-    padding: 0.55rem 0.9rem;
+    padding: 0 0.9rem;
   }
 
   /* Kantfade som hint om at menyen kan dras sidelengs. Faden vises bare på
@@ -472,6 +473,11 @@ footer {
   margin-bottom: var(--space-4);
 }
 
+/* Kort som ikke skal strekkes til naboens høyde (anbefalingene på /lag). */
+.grid--start {
+  align-items: start;
+}
+
 /* Dashbordets fire kort: auto-fit ga tre i bredden og ett alene på siste rad
    ved 1440 px. Låst til 2 x 2 fra 900 px og opp. */
 @media (min-width: 900px) {
@@ -506,6 +512,13 @@ footer {
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: var(--text-dim);
+}
+
+/* Høyresiden av et korthode kan ha flere elementer (formasjon + chip). */
+.card h2 .h2-meta {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: baseline;
 }
 
 .h2-title {
@@ -548,7 +561,16 @@ footer {
   overflow-x: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--scrollbar-thumb) transparent;
+  --fade-l: 0px;
+  --fade-r: 0px;
+  mask-image: linear-gradient(90deg, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent);
 }
+
+/* Kanthint om at boksen kan dras sidelengs — samme mekanikk som menyen.
+   app.js togglar klassene. Uten JS: ingen fade, men boksen scroller. */
+.table-scroll.table-fade-left { --fade-l: 28px; }
+.table-scroll.table-fade-right { --fade-r: 28px; }
 
 .table-scroll::-webkit-scrollbar {
   width: 10px;
@@ -570,15 +592,13 @@ footer {
   background-color: var(--scrollbar-thumb-hover);
 }
 
-/* Varianten for lange tabeller (/spillere, 500+ rader): hele scrollboksen
-   festes under toppmenyen, og tabellhodet festes til toppen av boksen.
-   Høyden må levne plass til footeren, ellers skyves boksen opp under menyen
-   når man scroller helt til bunns. */
+/* Varianten for lange tabeller (/spillere, 500+ rader): tabellhodet festes
+   til toppen av scrollboksen. Boksen selv er IKKE sticky — den har ~0
+   reiserom inne i kortet. I stedet holdes høyden lav nok til at siden aldri
+   kan scrolle boksen opp bak toppmenyen (se mobilreserven lenger oppe). */
 .table-scroll--pinned {
-  position: sticky;
-  top: var(--topbar-h);
   overflow: auto;
-  max-height: min(75vh, calc(100dvh - var(--topbar-h) - 13rem));
+  max-height: min(75vh, calc(100dvh - var(--topbar-h) - 14rem));
 }
 
 .table-scroll--pinned table.data thead th {
@@ -586,6 +606,17 @@ footer {
   top: 0;
   background: var(--surface);
   z-index: 1;
+}
+
+/* Reserven må være større enn alt innhold UNDER boksen (footer + marger),
+   ellers kan siden scrolle boksen opp bak topbaren — footeren brekker til
+   flere linjer på mobil og trenger mer. max() beskytter lave
+   landskapsvinduer mot en kollapset boks. Blokka MÅ stå etter regelen over:
+   lik spesifisitet, så rekkefølgen avgjør. */
+@media (max-width: 640px) {
+  .table-scroll--pinned {
+    max-height: max(14rem, calc(100dvh - var(--topbar-h) - 19rem));
+  }
 }
 
 table.data {
@@ -623,6 +654,7 @@ table.data tbody tr:hover {
 .num {
   text-align: right;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .accent {
@@ -982,6 +1014,7 @@ table.sortable th[aria-sort='ascending']::after {
   font-size: var(--fs-xl);
   font-weight: 800;
   letter-spacing: -0.02em;
+  hyphens: none;
 }
 
 .stat-lbl {
@@ -989,6 +1022,7 @@ table.sortable th[aria-sort='ascending']::after {
   text-transform: uppercase;
   letter-spacing: 0.09em;
   color: var(--text-dim);
+  hyphens: none;
 }
 
 /* Banen: klippestriper, midtsirkel-bue nederst og 16-meter øverst — diskret
@@ -1146,6 +1180,32 @@ table.sortable th[aria-sort='ascending']::after {
   box-shadow: inset 3px 0 0 var(--accent);
 }
 
+/* Valgt rival på /liga — samme mønster som .row-me, men rosa: det er
+   raden differensialpanelet under tabellen faktisk viser. */
+.row-rival td {
+  background: var(--surface-2);
+}
+
+.row-rival td:first-child {
+  box-shadow: inset 3px 0 0 var(--accent-2);
+}
+
+.rank-up {
+  color: var(--accent-text);
+}
+
+.rank-down {
+  color: var(--accent-2-text);
+}
+
+.rank-same {
+  color: var(--text-dim);
+}
+
+tr[data-href] {
+  cursor: pointer;
+}
+
 .sub-head {
   font-family: var(--font-display);
   font-size: 0.75rem;
@@ -1214,8 +1274,10 @@ table.sortable th[aria-sort='ascending']::after {
   font-weight: 700;
 }
 
+/* Dempet tekst — ikke opacity: den ville dratt kontrasten under kravet i
+   lyst tema, og kan ikke låses i PAIRS. Klubbmerkene beholder full farge. */
 .row-bench td {
-  opacity: 0.55;
+  color: var(--text-dim);
 }
 
 /* ---------- Live-puls ---------- */
@@ -1357,7 +1419,6 @@ footer .version {
   margin: 0.25rem 0 0;
   font-family: var(--font-mono);
   font-size: var(--fs-sm);
-  opacity: 0.75;
 }
 
 /* ---------- Mobil (≤ 480 px) ---------- */
@@ -1425,10 +1486,12 @@ footer .version {
   }
 
   /* Lange ord (lagnavn, nyhetstitler) skal brekke i stedet for å skyve siden,
-     men bare når ordet ikke får plass — «anywhere» brøt midt i vanlige ord. */
+     men bare når ordet ikke får plass — «anywhere» brøt midt i vanlige ord.
+     «manual», ikke «auto»: automatisk orddeling delte norske ord på uventede
+     steder. Nødbrekk skjer fortsatt via overflow-wrap, bare uten bindestrek. */
   body {
     overflow-wrap: break-word;
-    hyphens: auto;
+    hyphens: manual;
   }
 }
 

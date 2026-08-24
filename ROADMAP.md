@@ -24,8 +24,8 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.3.0**~~ | ~~UI-overhaling, etappe 1: fundament (tokens i to temaer, temabryter, lilla topbar)~~ | **utført 24. aug** | — |
 | ~~**v1.3.1**~~ | ~~UI-overhaling, etappe 2: klubbgrafikk (merker + drakter, selvhostet)~~ | **utført 24. aug** | — |
 | ~~**v1.3.2**~~ | ~~UI-overhaling, etappe 3: finpuss per side~~ | **utført 24. aug** | — |
-| **v1.3.3** | UI-overhaling, etappe 4: QA-rettelser | 5 | Marius' QA etter v1.3.2 |
-| **v1.3.1+** | Robusthetskandidatene, én og én etter avtale | 6 | avtale per punkt |
+| ~~**v1.3.3**~~ | ~~UI-overhaling, etappe 4: QA-rettelser~~ | **utført 24. aug** | — |
+| **v1.3.1+** | Robusthetskandidatene, én og én etter avtale | 5 | avtale per punkt |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
 Kalenderlogikk: utviklingssporet (v1.3.0 → v1.3.1+) går uavbrutt;
@@ -77,36 +77,7 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
 - **Blokkert av:** Marius (nettleser + telefon).
 - **Størrelse:** liten.
 
-### 5. UI-overhaling (v1.3.0 → v1.3.3) — **plan godkjent 24. aug**
-
-- **Hva:** FPL-gjenkjennelse (FPLs lilla/grønn/cyan/rosa + FPLs FDR-farger),
-  klubbmerker og drakter (selvhostet, 60 PNG), clean og lett å bruke, tema
-  mørk/lys/auto med bryter i topbaren. Alle 15 designspørsmål er besluttet
-  av Marius i planøkt 30 — Opus tar ingen designvalg.
-- **Eier detaljene:** `docs/plan-v130-ui-overhaul.md` (task for task med
-  kode, testnavn og forventede testtall) + mockupen
-  https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849.
-- **Etapper (hver grønn, merges alene, prod alltid et helt UI):**
-  - [x] **v1.3.0 Fundament** — tokenpalett i begge temaer (kontrast låst av
-        `test/style.test.js`), inline-tema-script, temabryter, lilla topbar,
-        `views/partials/`. 272 → 282 tester. **Utført 24. aug: 282/282,
-        lint 0, Playwright 332/332, tag `v1.3.0` i prod.**
-  - [x] **v1.3.1 Klubbgrafikk** — `scripts/fetch-club-assets.mjs`,
-        `public/img/clubs/`, `clubAssets.js`, `IMG_VERSION`, `teamCode` i
-        brief/live/transfers, partials club-badge/club-shirt i alle views,
-        footer-kreditering, `/health` teller bildene. → 296 tester.
-        **Utført 24. aug: 296/296, lint 0, Playwright 332/332 + 22/22
-        klubbsjekker, 0 AI-kall, tag `v1.3.1` i prod.**
-  - [x] **v1.3.2 Finpuss** — hero, korthoder, kampliste, feilsider, mobil.
-        → 299 tester. Deretter 1 AI-kall: prod-visning av `/brief`.
-        **Utført 24. aug: 299/299, lint 0, Playwright 332/332 + 22/22,
-        tag `v1.3.2` i prod.**
-  - [ ] **v1.3.3 QA-rettelser** — funn fra Playwright + Marius' QA.
-- **Blokkert av:** klarsignal fra Marius per etappe (release-tasken).
-- **Størrelse:** stor — fire utførelsesøkter (Opus), Playwright-QA i
-  scratchpad etter hver, QA-runder hos Marius etter v1.3.2.
-
-### 6. Robusthetskandidater (v1.3.1+, avtales én og én, uprioritert innbyrdes)
+### 5. Robusthetskandidater (v1.3.1+, avtales én og én, uprioritert innbyrdes)
 
 Reelle funn fra kvalitetspasset v1.1.3 (P3) og verifiseringen — ingen
 fikses uten avtale:
@@ -137,7 +108,7 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 | `ROADMAP.md` (rot) | fasiten: versjonsplan, kø, dokumentkart, historikk |
 | `docs/HANDOVER.md` | nåtilstand + lærdommer + beslutninger (tak 200 linjer) |
 | `docs/VIDERE.md` | Marius' ikke-tekniske kortversjon |
-| `docs/plan-v130-ui-overhaul.md` | godkjent plan for v1.3.0–v1.3.3 (UI-overhaling), utføres etappevis |
+| `docs/arkiv/plan-v130-ui-overhaul.md` | godkjent plan for v1.3.0–v1.3.3 (UI-overhaling), utføres etappevis |
 | `docs/sjekkpunkt-d-kostnad.md` | metode + skript for P4-målingen |
 | `docs/sjekkpunkt-c-live.md` | bevismateriale v1.2.3 |
 | `docs/port9-chrome-prompt.md` | gjenbrukbar nettleser-QA-oppskrift |
@@ -155,7 +126,7 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 
 ---
 
-## Utført (v0.1.0 → v1.2.5)
+## Utført (v0.1.0 → v1.3.3)
 
 ### v0.1.0 — Deploybart skjelett (MVP)
 
@@ -425,3 +396,38 @@ mest brukte kapteinsvalgene globalt» — en kapteinsandel FPL ikke publiserer.
       prosenter eksakt i `/api/brief.json`, ingen friskmelding tross to navn
       på skadelista, og **0 setninger felt av sanitize** (ingen `console.warn`)
 - [x] Release v1.2.5 + prod-retest
+
+### v1.3.0–v1.3.3 — UI-overhaling i fire etapper
+
+_Planer: `docs/arkiv/plan-v130-ui-overhaul.md` (etappe 1–3) og
+`docs/arkiv/plan-v133-qa.md` (etappe 4)._
+
+- **Hva:** FPL-gjenkjennelse (FPLs lilla/grønn/cyan/rosa + FPLs FDR-farger),
+  klubbmerker og drakter (selvhostet, 60 PNG), clean og lett å bruke, tema
+  mørk/lys/auto med bryter i topbaren. Alle 15 designspørsmål er besluttet
+  av Marius i planøkt 30 — Opus tar ingen designvalg.
+- **Eier detaljene:** `docs/arkiv/plan-v130-ui-overhaul.md` (task for task
+  med kode, testnavn og forventede testtall) + mockupen
+  https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849.
+- **Etapper (hver grønn, merges alene, prod alltid et helt UI):**
+  - [x] **v1.3.0 Fundament** — tokenpalett i begge temaer (kontrast låst av
+        `test/style.test.js`), inline-tema-script, temabryter, lilla topbar,
+        `views/partials/`. 272 → 282 tester. **Utført 24. aug: 282/282,
+        lint 0, Playwright 332/332, tag `v1.3.0` i prod.**
+  - [x] **v1.3.1 Klubbgrafikk** — `scripts/fetch-club-assets.mjs`,
+        `public/img/clubs/`, `clubAssets.js`, `IMG_VERSION`, `teamCode` i
+        brief/live/transfers, partials club-badge/club-shirt i alle views,
+        footer-kreditering, `/health` teller bildene. → 296 tester.
+        **Utført 24. aug: 296/296, lint 0, Playwright 332/332 + 22/22
+        klubbsjekker, 0 AI-kall, tag `v1.3.1` i prod.**
+  - [x] **v1.3.2 Finpuss** — hero, korthoder, kampliste, feilsider, mobil.
+        → 299 tester. Deretter 1 AI-kall: prod-visning av `/brief`.
+        **Utført 24. aug: 299/299, lint 0, Playwright 332/332 + 22/22,
+        tag `v1.3.2` i prod.**
+  - [x] **v1.3.3 QA-rettelser** — alle 18 funn fra Marius' QA + det
+        uverifiserte transfers-pillepunktet. 299 → 322 tester.
+        **Utført 24. aug: 322/322, lint 0, Playwright 332/332 + 22/22
+        klubbsjekker + 56/56 nye v1.3.3-sjekker, 11 ruter 200 + 404,
+        0 AI-kall, tag `v1.3.3` i prod.**
+- **Størrelse:** stor — fire utførelsesøkter (Opus), Playwright-QA i
+  scratchpad etter hver, QA-runder hos Marius etter v1.3.2.
