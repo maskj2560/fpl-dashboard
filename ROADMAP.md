@@ -101,7 +101,12 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
         → 299 tester. Deretter 1 AI-kall: prod-visning av `/brief`.
         **Utført 24. aug: 299/299, lint 0, Playwright 332/332 + 22/22,
         tag `v1.3.2` i prod.**
-  - [ ] **v1.3.3 QA-rettelser** — funn fra Playwright + Marius' QA.
+  - [x] **v1.3.3 QA-rettelser** — alle 18 funn fra Marius' QA + det
+        uverifiserte transfers-pillepunktet. Plan: `docs/plan-v133-qa.md`.
+        **Bygget 24. aug: 299 → 322 tester (322/322), lint 0,
+        Playwright 332/332 + 22/22 klubbsjekker + 56/56 nye
+        v1.3.3-sjekker, 11 ruter 200 + 404, 0 AI-kall.
+        Venter på klarsignal for release (Task 1.3-13).**
 - **Blokkert av:** klarsignal fra Marius per etappe (release-tasken).
 - **Størrelse:** stor — fire utførelsesøkter (Opus), Playwright-QA i
   scratchpad etter hver, QA-runder hos Marius etter v1.3.2.

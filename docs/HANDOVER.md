@@ -10,42 +10,28 @@
 
 ## Status akkurat nå
 
-- **ETAPPE 4 (v1.3.3 QA-rettelser) PÅGÅR — økt 34, Opus.** Branch
-  `fix/ui-v133-qa`, plan i `docs/plan-v133-qa.md` (13 tasks, 18 QA-funn +
-  det uverifiserte transfers-pillepunktet). Baseline: 299/299, lint 0.
-  Ingen AI-kall — `/brief` og `/nyheter` kun LOKALT med tomme nøkler
-  (`/health` → `ai:false, discord:false` bekreftet), aldri i prod.
-  Lint exit 0 etter hver task. Avvik fra planteksten føres inn i
-  planfilas «Observert»-felt.
-  - 1.3-0: branch, planfiler, ETAPPE 4-stubben peker videre.
-  - 1.3-1 (QA 1+8): 301/301, Playwright 8/8. `--topbar-h` styrer
-    menyhøyden (57/50 px); pinned-boksen mistet sin virkningsløse sticky
-    og fikk en høydereserve (14rem desktop / 19rem mobil) i stedet.
-  - 1.3-2 (QA 6+7): 302/302. `opacity` ut av versjonslinja og
-    benkeradene — `--text-dim` i stedet, låst med `text-dim`/`bg` i PAIRS.
-  - 1.3-3 (QA 2+9+10): 305/305, Playwright 40/40. Intl-NBSP byttet mot
-    vanlige mellomrom i `formatNumber`/`formatSigned`, `.num` er `nowrap`,
-    statistikkortene deler aldri ord, `hyphens: manual` i body.
-  - 1.3-4 (QA 3+14): 308/308, Playwright 16/16. `.rank-up/-down/-same`
-    med `aria-label` på hver ligarad, hele raden klikkbar via
-    `tr[data-href]` (Modul 6 i app.js), valgt rival får `.row-rival`.
-  - 1.3-5 (QA 4): 311/311. `formationOf()` i analysis.js, formasjonen i
-    Oppstilling-hodet via ny `.h2-meta`-wrapper.
-  - 1.3-6 (QA 5): 312/312. Tellere i /live-korthodene (`live-count-players`,
-    `live-count-matches` + antall rader per liga), oppdatert av Modul 3.
-  - 1.3-7 (QA 12): 314/314. `rankGraph` returnerer `single`, og team.ejs
-    tegner en `<circle>` når grafen bare har ett punkt.
-  - 1.3-8 (QA 13): 315/315, Playwright 8/8. Tomtilstand med nullstill-knapp
-    på /spillere (`players-empty`), styrt av Modul 2.
-  - 1.3-9 (QA 16+17): 318/318, Playwright 6/6. `edgeFadeState`/`initEdgeFades`
-    på filnivå i app.js deles av menyen og `.table-scroll`; Modul 0 måler på
-    nytt i neste frame (fikser racen mot `scrollIntoView`).
-  - 1.3-10 (QA 11+15+18): 321/321. `card-ai` + `.ai-badge` på AI-rådgiveren,
-    404 har kun knappelenken, `.grid--start` på anbefalingsgridet.
-  - 1.3-11: **322/322** — måltallet i planen. Beste/verste-pillene på
-    /overganger er nå låst av en test (grønn med én gang; fixturen hadde
-    allerede begge indeksene). Det uverifiserte punktet er dermed lukket
-    som markup-kontrakt — P3-punktet om ekte data etter GW2 står fortsatt.
+- **ETAPPE 4 (v1.3.3 QA-rettelser) BYGGET FERDIG — venter på klarsignal
+  for release.** Økt 34, Opus. Branch `fix/ui-v133-qa` (13 commits, ikke
+  pushet). Task 1.3-0 t.o.m. 1.3-12 utført; **kun Task 1.3-13 (release)
+  gjenstår, og den krever eksplisitt «kjør» fra Marius.**
+  - **Målt lokalt 24. aug:** `npm test` **322/322** (fra 299), `npm run
+    lint` exit 0, 11 ruter 200 + ukjent sti 404, `/health` →
+    `ai:false, discord:false`. Playwright i scratchpad: `qa.mjs` 332/332,
+    `qa-clubs.mjs` 22/22, nye `qa-v133.mjs` 56/56. **0 AI-kall i hele
+    etappen** — prod-`/brief` og prod-`/nyheter` ble aldri lastet.
+  - Alle 18 QA-funn er rettet, pluss det uverifiserte transfers-
+    pillepunktet (låst med test). Task-for-task-loggen med observerte tall
+    står i `docs/plan-v133-qa.md` og er rotert til arkivet.
+  - **To avvik fra planteksten** (begge ført inn i planfilas «Observert»):
+    mobilreserven for `.table-scroll--pinned` måtte flyttes ETTER
+    basisregelen for å virke, og desktopreserven fra 13rem til 14rem.
+    `test/format.test.js` fantes fra før — de to nye testene ble lagt til,
+    ikke erstattet.
+  - **Release-vinduet:** FØR fredag 28. aug ~18:00 ELLER etter at GW2 er
+    ferdigspilt (~31. aug) — aldri midt i. Aldri torsdag 19–21.
+  - README trenger ingen endring av rettelsene (ingen skjermbilder i fila,
+    rutebeskrivelsene er generiske). P2-punktet (skjermbilder + mobil-QA)
+    er fortsatt Marius' — /liga og /spillere er verdt å fange når det gjøres.
 - **v1.3.2 (etappe 3) RELEASET 24. aug (økt 33):** finpuss per side +
   kontraktstester for markupen `app.js` avhenger av. 299/299, lint 0.
   Detaljene (inkl. de manuelt målte pillekontrastene) er rotert til
@@ -73,10 +59,9 @@
   `/nyheter` ble aldri besøkt med ekte nøkkel.
 - Kostnad målt 23. aug: **$0,94/uke** — under terskelen, ingen tiltak. Ny
   måling i uken etter 31. aug (prisskiftet), se kø-punkt 1.
-- **Git akkurat nå:** arbeidstreet står på **`main` = `origin/main`**,
-  tag `v1.3.2` (`2eb6c95..d68c810`, merge `--no-ff` av
-  `feat/ui-v132-finpuss` + release-commit). Featurebranchen er slettet
-  lokalt. Ingen åpne brancher.
+- **Git akkurat nå:** arbeidstreet står på **`fix/ui-v133-qa`** med 13
+  commits som IKKE er pushet. `main` = `origin/main` = `15fa8f5`
+  (tag `v1.3.2`). Branchen merges først i Task 1.3-13, på klarsignal.
 - Eldre status (v1.2.3-deploy, doks-opprydning økt 24, versjonsplan økt 25,
   v1.2.4 økt 27): rotert til `docs/arkiv/HANDOVER-historikk.md` 24. aug.
 
@@ -88,13 +73,20 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 2. P1 `[Marius]`: bekreft auto-briefen 20. aug i Discord-kanalen.
 3. P3: etter GW2, transfers-skjema mot ekte data + `/overganger` på mobil.
 4. P2 `[Marius]`: README-skjermbilder + mobil-QA.
-5. v1.3.3 (ETAPPE 4): **venter på Marius' QA-funn** som nummerert
-   P0/P1/P2-liste i chatten. Ingen planlagte tasks. Deretter
+5. v1.3.3 (ETAPPE 4): **bygget ferdig, venter på klarsignal for release**
+   (Task 1.3-13 i `docs/plan-v133-qa.md`). Deretter
    robusthetskandidatene. Gammel åpen boks som er Marius' (Task 1.0-5):
    «Visuell sjekk mot mockupen i begge temaer».
 
 ## Driftslærdommer (ikke glem disse)
 
+- **Sjekk at fila ikke finnes før du «oppretter» den:** planen sa
+  «Create `test/format.test.js`», men fila fantes med 3 tester fra
+  v1.2.0. Write overskrev dem stille, og det ble bare synlig fordi
+  testtallet ble 302 i stedet for 305. Gjenopprettet med `git checkout`.
+- **Restart serveren etter endringer i `src/`:** ESM-moduler lastes én
+  gang ved oppstart, så en Playwright-kjøring mot en gammel prosess gir
+  falske funn (CSS og views slo gjennom med én gang, `format.js` ikke).
 - **En CSS-overstyring må stå ETTER regelen den overstyrer:** en
   medieblokk lenger oppe i fila har lik spesifisitet og taper cascaden.
   `.table-scroll--pinned`-reserven lå i ≤640-blokka på linje 307, mens
@@ -188,7 +180,9 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
   avhengigheter, CRLF i patchskript. STOPP etter Task 1.3-12 — release
   (1.3-13) kun på eksplisitt klarsignal, og kun FØR fre 28. aug ~18:00
   eller etter at GW2 er ferdigspilt. Aldri push uten klarsignal.
-  Handling: startet på Task 1.3-0.
+  Handling: Task 1.3-0 t.o.m. 1.3-12 utført (13 commits på
+  `fix/ui-v133-qa`, ingen push). Rapportert og STOPPET før release —
+  se statusdelen øverst for målte tall.
 - Loggposten fra økt 33 (v1.3.2-releasen): rotert til
   `docs/arkiv/HANDOVER-historikk.md` 2026-08-24 (200-linjerstaket).
 - Loggposten fra økt 32 (v1.3.1-releasen + v1.3.2-bygget): rotert til

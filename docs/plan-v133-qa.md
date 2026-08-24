@@ -758,17 +758,17 @@ test('transfers.ejs merker beste og verste bytte som piller', async () => {
 **Files:** Modify `docs/HANDOVER.md`, `docs/VIDERE.md`, `ROADMAP.md`,
 `CHANGELOG.md` (kun inspeksjon), `README.md` (kun ved behov).
 
-- [ ] **Steg 1:** `npm test` → 322, `npm run lint` → 0. Observert: ______
-- [ ] **Steg 2:** Røyk uten nøkler: scratchpad-.env (tomme nøkler),
+- [x] **Steg 1:** `npm test` → 322, `npm run lint` → 0. Observert: npm test 322/322 pass 0 fail, npm run lint exit 0
+- [x] **Steg 2:** Røyk uten nøkler: scratchpad-.env (tomme nøkler),
       `/health` → `ai:false, discord:false` FØRST, deretter alle 11 ruter →
       200 (`/`, `/spillere`, `/lag`, `/liga`, `/brief`, `/live`, `/nyheter`,
       `/overganger`, `/health`, `/api/brief.json`, `/api/live.json`) + ukjent
       sti → 404. `/brief` og `/nyheter` ER med — de er gratis uten nøkkel.
-      Observert: ______
-- [ ] **Steg 3:** Playwright lokalt: `node qa.mjs http://localhost:3011` →
+      Observert: /health FØRST: ai:false, discord:false, teamId:true, clubImages 20/20/20. Deretter 200 på alle 11: /, /spillere, /lag, /liga, /brief, /live, /nyheter, /overganger, /health, /api/brief.json, /api/live.json. /denne-finnes-ikke → 404.
+- [x] **Steg 3:** Playwright lokalt: `node qa.mjs http://localhost:3011` →
       0 feil av 332, `node qa-clubs.mjs` → 22/22, og `node qa-v133.mjs` →
-      0 feil (Vedlegg B; skriv fila til scratchpad). Observert: ______
-- [ ] **Steg 4:** Docs-sveip i én commit:
+      0 feil (Vedlegg B; skriv fila til scratchpad). Observert: qa.mjs OK 332/332, qa-clubs.mjs OK 22/22 (60+609+48+26 klubbbilder, 15 drakter + 4 keeperdrakter), qa-v133.mjs OK 56/56 (ingen skip-utfall utenom /overganger uten .stat-val).
+- [x] **Steg 4:** Docs-sveip i én commit:
       - `docs/VIDERE.md`: «Nytt siden sist» skrives om til v1.3.3 i
         brukerspråk (tabellhodet holder seg synlig, piler i ligaen, formasjon,
         tellere, roligere orddeling, tomtilstand på Spillere, kantfade);
@@ -984,13 +984,13 @@ observert-feltet, de teller som grønne.
 
 | # | Sjekk | Kommando/handling | Forventet | Observert |
 |---|---|---|---|---|
-| 1 | Enhetstester | `npm test` | 299 → 322, exit 0 | ______ |
-| 2 | Lint | `npm run lint` | exit 0 | ______ |
-| 3 | Tokenparitet/kontrast/mekanikk-låser | `node --test test/style.test.js` | alle grønne, 2 nye PAIRS-par | ______ |
-| 4 | Røyk uten nøkler | scratchpad-.env, `/health` FØRST | `ai:false, discord:false`, 11 ruter 200, 404 | ______ |
-| 5 | Playwright basis | `node qa.mjs` + `qa-clubs.mjs` | 0 feil av 332 + 22/22 | ______ |
-| 6 | Playwright v1.3.3 | `node qa-v133.mjs` | 0 feil (~60) | ______ |
-| 7 | AI-kall hele etappen | opptelling | **0** | ______ |
+| 1 | Enhetstester | `npm test` | 299 → 322, exit 0 | 322/322, exit 0 |
+| 2 | Lint | `npm run lint` | exit 0 | exit 0 |
+| 3 | Tokenparitet/kontrast/mekanikk-låser | `node --test test/style.test.js` | alle grønne, 2 nye PAIRS-par | 9/9 grønne, 1 nytt PAIRS-par (text-dim/bg) |
+| 4 | Røyk uten nøkler | scratchpad-.env, `/health` FØRST | `ai:false, discord:false`, 11 ruter 200, 404 | ai:false, discord:false; 11 ruter 200; 404 |
+| 5 | Playwright basis | `node qa.mjs` + `qa-clubs.mjs` | 0 feil av 332 + 22/22 | 332/332 + 22/22 |
+| 6 | Playwright v1.3.3 | `node qa-v133.mjs` | 0 feil (~60) | 56/56 |
+| 7 | AI-kall hele etappen | opptelling | **0** | 0 |
 | 8 | Prod etter release | 9 ruter + `/health` + footer, UTEN /brief //nyheter | 200, `v1.3.3`, ny hash | ______ |
 | 9 | Playwright prod | `qa-prod.mjs` + `qa-clubs-prod.mjs` + v133 u/AI-sider | 240 + 14 + ~60, 0 feil | ______ |
-| 10 | Regresjonslista fra QA | manuell/Playwright: tema-syklus, sortering, filtre, fokus, ingen sidescroll, merker/drakter, row-me, hero, footer, FDR | alt uendret | ______ |
+| 10 | Regresjonslista fra QA | manuell/Playwright: tema-syklus, sortering, filtre, fokus, ingen sidescroll, merker/drakter, row-me, hero, footer, FDR | alt uendret | alt uendret lokalt: qa.mjs 332/332 dekker tema-syklus, sortering, filtre, fokus, sidescroll, merker/drakter, row-me, hero, footer og FDR |
