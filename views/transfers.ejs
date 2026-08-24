@@ -44,8 +44,8 @@
               <td class="num"><%= r.penaltyShare > 0 ? formatSigned(-r.penaltyShare) : '0' %></td>
               <td class="num <%= r.played && r.netto > 0 ? 'accent' : (r.played && r.netto < 0 ? 'negative' : '') %>">
                 <%= r.played ? formatSigned(r.netto) : '–' %>
-                <% if (i === analysis.bestIndex) { %> <span class="status">Beste</span><% } %>
-                <% if (i === analysis.worstIndex) { %> <span class="status">Verste</span><% } %>
+                <% if (i === analysis.bestIndex) { %> <span class="status status-best">Beste</span><% } %>
+                <% if (i === analysis.worstIndex) { %> <span class="status status-worst">Verste</span><% } %>
               </td>
               <td class="dim"><% if (r.pending) { %>Venter på runde <%= r.event %><% } else if (!r.played) { %>Angret før deadline<% } else if (r.window.from === r.window.to) { %>R<%= r.window.from %><% } else { %>R<%= r.window.from %>–R<%= r.window.to %><% } %></td>
             </tr>

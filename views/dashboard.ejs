@@ -19,7 +19,7 @@
 
 <div class="grid grid-quad">
   <section class="card">
-    <h2>Ukens flagg</h2>
+    <h2><span class="h2-title">Ukens flagg</span><span class="dim"><%= flagged.length %></span></h2>
     <% if (flagged.length === 0) { %>
       <p class="empty">Ingen spillere er flagget nå. Status endrer seg ofte etter pressekonferansene — sjekk igjen nærmere deadline.</p>
     <% } else { %>
@@ -52,7 +52,7 @@
   </section>
 
   <section class="card">
-    <h2>Toppform</h2>
+    <h2><span class="h2-title">Toppform</span><span class="dim"><%= inForm.length %></span></h2>
     <% if (inForm.length === 0) { %>
       <p class="empty">Formtallene nullstilles mellom sesongene. Toppformlisten fylles så snart den første runden er spilt.</p>
     <% } else { %>
@@ -78,7 +78,7 @@
   </section>
 
   <section class="card">
-    <h2>Mest kjøpt denne runden</h2>
+    <h2><span class="h2-title">Mest kjøpt denne runden</span><span class="dim"><%= boughtMost.length %></span></h2>
     <% if (boughtMost.length === 0) { %>
       <p class="empty">Ingen overganger er registrert i denne runden ennå. Listen fylles etter hvert som managerne begynner å bytte.</p>
     <% } else { %>
@@ -102,7 +102,7 @@
   </section>
 
   <section class="card">
-    <h2>Mest solgt denne runden</h2>
+    <h2><span class="h2-title">Mest solgt denne runden</span><span class="dim"><%= soldMost.length %></span></h2>
     <% if (soldMost.length === 0) { %>
       <p class="empty">Ingen overganger er registrert i denne runden ennå. Listen fylles etter hvert som managerne begynner å bytte.</p>
     <% } else { %>

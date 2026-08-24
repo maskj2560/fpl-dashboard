@@ -5,6 +5,31 @@
 > sjekkpunkt-tabellen, versjonshistorikken, utdaterte åpne punkter og hele
 > loggen over brukerbeskjeder til og med økt 22. Nyere logg: HANDOVER.md.
 
+## Rotert 2026-08-24 (økt 32): v1.3.1-statusblokka (verbatim fra HANDOVER.md)
+
+- **v1.3.1 ETAPPE 2 FERDIG OG UTE (økt 32, Opus, 24. aug).** Task
+  1.1-0…1.1-7 utført, merget til `main`, tagget `v1.3.1` og deployet.
+  **296/296 tester, lint 0, 0 AI-kall.**
+  - `IMG_VERSION = '2627'` i `middleware.js` (immutable-regelen), ny
+    `src/services/clubAssets.js` (leser `public/img/clubs/` én gang til
+    `app.locals`), `/health` teller bildene, `scripts/fetch-club-assets.mjs`
+    + 60 committede bildefiler (561 KB), `teamCode`/`homeCode`/`awayCode` i
+    brief-, live- og transfers-payloadene, partialene `club-badge` og
+    `club-shirt` tatt i bruk i alle views, `clubBadgeHtml` + error-lytter i
+    `public/app.js`, klubb-CSS, footer-kreditering.
+  - TDD-tallene: 282 → rødt 277/1 (ESM-linkfeil tar hele fila) → 283 →
+    rødt 284/1 (modul mangler) → 287 → rødt **290/5 som planlagt** → 290 →
+    rødt **296/6 som planlagt** → **296**.
+  - Røyk uten nøkler (port 3011): `ai:false, discord:false`,
+    `clubImages {badges:20, shirts:20, keepers:20}`, 8 ruter 200, 404 på
+    ukjent sti, alle klubb-URL-er versjonert, bilde → `immutable`.
+    **Playwright: 332/332** + eget klubbskript **22/22** (0 brutte bilder
+    også når lazy tvinges, 609 merker på /spillere, 15 drakter + 4
+    keeperdrakter på /lag, Lag-kolonnen sorterer alfabetisk begge veier).
+  - **Ett avvik fra planens bokstav:** assertionen «uversjonert bilde-URL» i
+    dashboard-testen var en selvmotsigende regex (flagget korrekte URL-er).
+    Rettet til `/\/img\/clubs\/[^"?]+"/`. Markupen er som i planen.
+
 ## Rotert 2026-08-24 (økt 32): loggposter økt 30–31 (verbatim fra HANDOVER.md)
 
 - 2026-08-24 (økt 31, Opus): kjøreprompt «Oppdrag (Opus 5,
@@ -926,3 +951,41 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
   ikke som fil. To åpne ryddepunkter meldt til Marius, ikke utført:
   lokal branch `fix/radgiver-prompt` står igjen, og
   `docs/plan-v124-radgiver-prompt.md` bør arkiveres til `docs/arkiv/`.
+
+## Rotert 2026-08-24 (økt 33): loggposten fra økt 32 (verbatim fra HANDOVER.md)
+
+- 2026-08-24 (økt 32, Opus): kjøreprompt «Oppdrag (Opus 5,
+  utførelsesøkt): utfør ETAPPE 2 — v1.3.1 Klubbgrafikk» med
+  `superpowers:executing-plans` mot `docs/plan-v130-ui-overhaul.md` og
+  mockupen som fasit (ved avvik vinner planen). Harde rammer: Task
+  1.1-0…1.1-6 nå, 1.1-7 kun på klarsignal, ingen designbeslutninger,
+  aldri push uten klarsignal (heller ikke docs), sjekk `fixtures/?event=N`
+  og aldri to. 19–21, **0 AI-kall** (`/health` → `ai:false` FØRST),
+  `npm run fetch-clubs` eneste tillatte nettverkskall, TDD med observert
+  rødt i planfila (282 → 283 → 287 → 290 → 296), ingen nye avhengigheter,
+  Playwright kun i scratchpad, docs i samme commit, branch
+  `feat/ui-v131-klubbgrafikk` fra rent og grønt `main`.
+  Handling: alle sju tasks (1.1-0…1.1-6) utført, 5 commits, **296/296 +
+  lint 0**, Playwright 332/332 + 22/22 klubbsjekker, 60 bildefiler
+  (561 KB) committet, 0 AI-kall, ingenting pushet. Ett avvik rapportert:
+  planens regex for «uversjonert bilde-URL» flagget korrekte URL-er og ble
+  rettet (markupen står som planlagt). Rødfasene 1.1-1 og 1.1-2 ga færre
+  tester enn planen anslo fordi ESM-linkfeil tar hele testfila — årsak
+  dokumentert i planfila. Deretter klarsignal: **«Kjør»** (mandag 24. aug
+  ~03:45). Handling: Task 1.1-7 utført — bump 1.3.1, docs, merge til
+  `main`, tag `v1.3.1`, push, Coolify-deploy, prod-verifisering uten
+  `/brief` og `/nyheter` (240/240 + 14/14 i Playwright). Tidsvindu før
+  push: mandag 03:44, 0 kamper i gang, neste avspark 24. aug 19:00 UTC.
+  Til slutt nytt **«Kjør»** (~04:05), tolket som klarsignal for ETAPPE 3.
+  Handling: Task 1.2-0…1.2-3 utført på `feat/ui-v132-finpuss`, 3 commits,
+  299/299 + lint 0, Playwright 332/332 + 22/22, 0 AI-kall, ingenting
+  pushet. Deretter spørsmål om status på overhalingen (svart: 20 av 21
+  tasks ferdig, kun Task 1.2-4 igjen + etappe 4 som avhenger av Marius’
+  QA-funn). Til slutt: **«DU kan pushe til main. Deretter lag en fin
+  overtagelse til neste agent med en kopierbar prompt. Ikke lag en fil
+  for den prompten alene.»** Handling: kampvindu sjekket (mandag 13:12,
+  0 kamper i gang, neste avspark 24. aug 19:00 UTC), `main` pushet
+  (`8ec5410..2eb6c95`), Coolify-rebuild verifisert (prod oppe, v1.3.1),
+  HANDOVER skrevet som overlevering på branchen, prompt levert i chatten
+  (ikke som fil). `feat/ui-v132-finpuss` bevisst IKKE pushet — en push
+  til `main` av den ville vært release, som krever eget klarsignal.

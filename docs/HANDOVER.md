@@ -6,32 +6,31 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-24 (økt 32, Opus: v1.3.1 released og deployet)
+**Sist oppdatert:** 2026-08-24 (økt 33, Opus: v1.3.2 released)
 
 ## Status akkurat nå
 
-- **v1.3.1 ETAPPE 2 FERDIG OG UTE (økt 32, Opus, 24. aug).** Task
-  1.1-0…1.1-7 utført, merget til `main`, tagget `v1.3.1` og deployet.
-  **296/296 tester, lint 0, 0 AI-kall.**
-  - `IMG_VERSION = '2627'` i `middleware.js` (immutable-regelen), ny
-    `src/services/clubAssets.js` (leser `public/img/clubs/` én gang til
-    `app.locals`), `/health` teller bildene, `scripts/fetch-club-assets.mjs`
-    + 60 committede bildefiler (561 KB), `teamCode`/`homeCode`/`awayCode` i
-    brief-, live- og transfers-payloadene, partialene `club-badge` og
-    `club-shirt` tatt i bruk i alle views, `clubBadgeHtml` + error-lytter i
-    `public/app.js`, klubb-CSS, footer-kreditering.
-  - TDD-tallene: 282 → rødt 277/1 (ESM-linkfeil tar hele fila) → 283 →
-    rødt 284/1 (modul mangler) → 287 → rødt **290/5 som planlagt** → 290 →
-    rødt **296/6 som planlagt** → **296**.
-  - Røyk uten nøkler (port 3011): `ai:false, discord:false`,
-    `clubImages {badges:20, shirts:20, keepers:20}`, 8 ruter 200, 404 på
-    ukjent sti, alle klubb-URL-er versjonert, bilde → `immutable`.
-    **Playwright: 332/332** + eget klubbskript **22/22** (0 brutte bilder
-    også når lazy tvinges, 609 merker på /spillere, 15 drakter + 4
-    keeperdrakter på /lag, Lag-kolonnen sorterer alfabetisk begge veier).
-  - **Ett avvik fra planens bokstav:** assertionen «uversjonert bilde-URL» i
-    dashboard-testen var en selvmotsigende regex (flagget korrekte URL-er).
-    Rettet til `/\/img\/clubs\/[^"?]+"/`. Markupen er som i planen.
+- **v1.3.2 (etappe 3) RELEASET 24. aug (økt 33, Opus).** Task 1.2-4 kjørt
+  på klarsignal: bump 1.3.2, docs, merge `--no-ff` til `main`, tag
+  `v1.3.2`, push, Coolify-deploy. **299/299 tester, lint 0.**
+  Prod-verifisering og det ene AI-kallet: se linjen om prod nedenfor.
+  - Innholdet: kontraktstester som låser markupen `app.js` avhenger av
+    (heroens `data-deadline` + fire `data-unit`, 11 kolonnehoder med
+    `data-type` og `aria-sort`), `btn-link` tilbake til dashbordet på
+    404/error/no-team, tellere i dashbord-korthodene, aktiv chip i
+    Oppstilling-hodet, kamplista i briefen som `.fixture-row` med
+    klokkeslett, Beste/Verste som piller, kreditering på egen linje i
+    footeren.
+  - Heroen var allerede ferdig fra etappe 1 — ingen endring nødvendig.
+  - Pillenes forgrunnsfarger var ikke spesifisert i planen. Målt der de
+    står (kortflaten `--surface`): beste 10,42 mørkt / 5,66 lyst, verste
+    5,39 / 5,27. Kan ikke låses i `PAIRS` — `*-soft` er rgba, ikke hex.
+  - **Neste: ETAPPE 4 (v1.3.3 QA-rettelser) — blokkert av Marius' funn
+    som nummerert P0/P1/P2-liste. Ingen planlagte tasks.**
+- **v1.3.1 (etappe 2) ute siden 24. aug:** klubbmerker i alle tabeller og
+  lister, drakter på banen, `clubAssets.js` + `IMG_VERSION`,
+  `npm run fetch-clubs` og 60 bildefiler. Detaljene er rotert til
+  `docs/arkiv/HANDOVER-historikk.md`.
 - **v1.3.0 (etappe 1) ute siden 24. aug:** tokenpalett i to temaer med
   kontrast låst av `test/style.test.js`, inline-tema-script, temabryter,
   lilla topbar, `views/partials/`. Detaljene fra økt 31 er rotert til
@@ -40,16 +39,22 @@
   linjer, godkjent 24. aug) — fire etapper v1.3.0–v1.3.3 med kode og
   testtall (272 → 282 → 296 → 299). Mockup:
   https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849.
-  **Neste: etappe 3 (v1.3.2 Finpuss) — venter på klarsignal.**
-- **Prod kjører v1.3.1 på https://fpl.marsk.no — verifisert 24. aug 03:55.**
+  **20 av 21 tasks ferdige. Kun ETAPPE 4 gjenstår (ingen planlagte
+  tasks — innholdet er Marius' QA-funn).**
+- **Prod kjører v1.3.1 på https://fpl.marsk.no — verifisert 24. aug 13:16**
+  (etter docs-rebuilden).
   `/health` → 200, `ai:true, discord:true, leagues:1,`
   `clubImages {badges:20, shirts:20, keepers:20}`; footer `v1.3.1`;
   `/img/clubs/t3.png?v=2627` → 200 + `immutable`. Playwright mot prod
   (uten /brief og /nyheter): 240/240 + klubbskript 14/14.
 - Kostnad målt 23. aug: **$0,94/uke** — under terskelen, ingen tiltak. Ny
   måling i uken etter 31. aug (prisskiftet), se kø-punkt 1.
-- `main` = `origin/main` etter push 24. aug (tag `v1.3.1`), rent tre,
-  **296/296 tester, lint 0**. Ingen åpne feature-brancher.
+- **Git akkurat nå:** `main` = `origin/main` (docs-commiten fra
+  v1.3.1-releasen pushet 24. aug 13:12; Coolify bygde identisk kode på
+  nytt, prod verifisert oppe etterpå: `/health` 200, footer `v1.3.1`).
+  Arbeidstreet står på **`feat/ui-v132-finpuss`** — 3 commits, **kun
+  lokalt, ikke pushet**. Det er der v1.3.2-jobben og denne fila er
+  nyest; `main` sin HANDOVER er fortsatt v1.3.1-versjonen.
 - Eldre status (v1.2.3-deploy, doks-opprydning økt 24, versjonsplan økt 25,
   v1.2.4 økt 27): rotert til `docs/arkiv/HANDOVER-historikk.md` 24. aug.
 
@@ -61,9 +66,10 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 2. P1 `[Marius]`: bekreft auto-briefen 20. aug i Discord-kanalen.
 3. P3: etter GW2, transfers-skjema mot ekte data + `/overganger` på mobil.
 4. P2 `[Marius]`: README-skjermbilder + mobil-QA.
-5. v1.3.2 (etappe 3, finpuss): neste utviklingsjobb i
-   `docs/plan-v130-ui-overhaul.md` — venter på klarsignal fra Marius.
-   Deretter v1.3.3, så robusthetskandidatene.
+5. v1.3.3 (ETAPPE 4): **venter på Marius' QA-funn** som nummerert
+   P0/P1/P2-liste i chatten. Ingen planlagte tasks. Deretter
+   robusthetskandidatene. Gammel åpen boks som er Marius' (Task 1.0-5):
+   «Visuell sjekk mot mockupen i begge temaer».
 
 ## Driftslærdommer (ikke glem disse)
 
@@ -145,28 +151,20 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
-- 2026-08-24 (økt 32, Opus): kjøreprompt «Oppdrag (Opus 5,
-  utførelsesøkt): utfør ETAPPE 2 — v1.3.1 Klubbgrafikk» med
-  `superpowers:executing-plans` mot `docs/plan-v130-ui-overhaul.md` og
-  mockupen som fasit (ved avvik vinner planen). Harde rammer: Task
-  1.1-0…1.1-6 nå, 1.1-7 kun på klarsignal, ingen designbeslutninger,
-  aldri push uten klarsignal (heller ikke docs), sjekk `fixtures/?event=N`
-  og aldri to. 19–21, **0 AI-kall** (`/health` → `ai:false` FØRST),
-  `npm run fetch-clubs` eneste tillatte nettverkskall, TDD med observert
-  rødt i planfila (282 → 283 → 287 → 290 → 296), ingen nye avhengigheter,
-  Playwright kun i scratchpad, docs i samme commit, branch
-  `feat/ui-v131-klubbgrafikk` fra rent og grønt `main`.
-  Handling: alle sju tasks (1.1-0…1.1-6) utført, 5 commits, **296/296 +
-  lint 0**, Playwright 332/332 + 22/22 klubbsjekker, 60 bildefiler
-  (561 KB) committet, 0 AI-kall, ingenting pushet. Ett avvik rapportert:
-  planens regex for «uversjonert bilde-URL» flagget korrekte URL-er og ble
-  rettet (markupen står som planlagt). Rødfasene 1.1-1 og 1.1-2 ga færre
-  tester enn planen anslo fordi ESM-linkfeil tar hele testfila — årsak
-  dokumentert i planfila. Deretter klarsignal: **«Kjør»** (mandag 24. aug
-  ~03:45). Handling: Task 1.1-7 utført — bump 1.3.1, docs, merge til
-  `main`, tag `v1.3.1`, push, Coolify-deploy, prod-verifisering uten
-  `/brief` og `/nyheter` (240/240 + 14/14 i Playwright). Tidsvindu før
-  push: mandag 03:44, 0 kamper i gang, neste avspark 24. aug 19:00 UTC.
+- 2026-08-24 (økt 33, Opus): kjøreprompt «fullfør ETAPPE 3 — release
+  v1.3.2 — og forbered ETAPPE 4». Rammer: Task 1.2-4 kun på eksplisitt
+  klarsignal, ingen designbeslutninger, aldri push uten klarsignal
+  (heller ikke docs), `fixtures/?event=N` før enhver push, aldri torsdag
+  19–21, **nøyaktig ett AI-kall igjen** (én visning av prod-`/brief`
+  ETTER deploy), `/nyheter` aldri med ekte nøkkel, rutesveip uten
+  `/brief` og `/nyheter`, ingen nye avhengigheter, Playwright kun i
+  scratchpad, docs i samme commit, kryss av i planfila med observerte
+  tall. ETAPPE 4 startes ikke før Marius leverer P0/P1/P2-lista.
+  Handling: status rapportert (299/299, lint 0, versjon 1.3.1, rent tre,
+  4 commits foran `main`), deretter klarsignal **«Kjør»** (mandag
+  24. aug ~13:18). Task 1.2-4 utført — se statusdelen øverst.
+- Loggposten fra økt 32 (v1.3.1-releasen + v1.3.2-bygget): rotert til
+  `docs/arkiv/HANDOVER-historikk.md` 2026-08-24 (200-linjerstaket).
 - Loggposter fra økt 30–31: rotert til
   `docs/arkiv/HANDOVER-historikk.md` 2026-08-24 (200-linjerstaket).
 - Eldre loggposter (økt 22–28): rotert til

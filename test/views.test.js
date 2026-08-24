@@ -277,3 +277,32 @@ test('layout.ejs krediterer klubbmerker og drakter i footeren', async () => {
   const html = await renderView('layout', layoutLocals('/'));
   assert.ok(html.includes('Klubbmerker og drakter tilhører respektive klubber og Premier League.'));
 });
+
+// ---- v1.3.2: markup-kontrakter som app.js og feilsidene avhenger av -------
+
+test('dashboard.ejs: heroen har rundeetikett, deadline-dato og nedtelling med data-deadline + fire data-unit', async () => {
+  const html = await renderView('dashboard', fx.dashboard);
+  assert.ok(html.includes('class="gw-badge">Runde 1<'), 'gw-badge mangler');
+  assert.match(html, /data-deadline="2026-08-21T17:30:00Z"/);
+  for (const u of ['d', 'h', 'm', 's']) assert.ok(html.includes(`data-unit="${u}"`), `data-unit=${u} mangler`);
+  assert.ok(html.includes('Neste deadline'));
+});
+
+test('feilsidene (404, error, no-team) bruker empty-state og lenker tilbake til dashbordet', async () => {
+  for (const name of ['404', 'error', 'no-team']) {
+    const html = await renderView(name, {});
+    assert.ok(html.includes('class="empty-state"'), `${name}: mangler empty-state`);
+    assert.match(html, /href="\/"[^>]*class="btn-link"/, `${name}: mangler knappelenke til /`);
+  }
+});
+
+test('players.ejs: alle kolonneoverskrifter beholder data-type og aria-sort (sorteringskontrakten)', async () => {
+  const html = await renderView('players', fx.players);
+  const ths = html.match(/<th [^>]*>/g) ?? [];
+  assert.equal(ths.length, 11, 'antall kolonner endret — app.js Modul 2 sorterer på indeks');
+  for (const th of ths) {
+    assert.match(th, /data-type="(text|num)"/, th);
+    assert.match(th, /aria-sort="(none|ascending|descending)"/, th);
+  }
+  assert.equal((html.match(/aria-sort="descending"/g) ?? []).length, 1, 'nøyaktig én startsortering');
+});

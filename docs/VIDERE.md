@@ -5,7 +5,7 @@
 
 **Sist oppdatert:** 24. august 2026
 
-## Dette har du nå (v1.3.1, live på fpl.marsk.no)
+## Dette har du nå (v1.3.2, live på fpl.marsk.no)
 
 Dashbord med nedtelling og skader · spillertabell med søk og filter · laget
 ditt med kapteinsråd · miniligaen · rundebrief (AI skriver den på norsk) ·
@@ -13,7 +13,16 @@ live-poeng mens kampene går · nyheter med AI-oppsummering · auto-brief til
 Discord kvelden før hver deadline · «Overganger» som viser om byttene dine
 ga eller kostet poeng.
 
-**Nytt siden sist (v1.3.1, 24. august): klubbmerker og drakter.** Merket
+**Nytt siden sist (v1.3.2, 24. august): finpuss på alle sidene.** Toppen av
+dashbordet viser nå hvilken runde det gjelder ved siden av nedtellingen, og
+hvert kort har fått et tall i overskriften — hvor mange skadede, hvor mange
+kampene teller. Kamplista i rundebriefen har fått klokkeslett og klubbmerker
+i stedet for bare navn, lagsiden sier fra i overskriften hvis du har en chip
+aktiv, og «Overganger» markerer beste og verste bytte som farget pille.
+Går noe galt, får feilsidene nå en tydelig knapp tilbake til dashbordet i
+stedet for bare en lenke i teksten. Dette er bit 3 av 4.
+
+Fra før (v1.3.1): **klubbmerker og drakter.** Merket
 til klubben står nå ved siden av spilleren i alle tabeller og lister, og
 på lagsiden har spillerne på banen fått klubbdrakta si — keeperen sin
 egen keeperdrakt, akkurat som på FPL. Bildene ligger på vår egen server,
@@ -65,7 +74,8 @@ siden er aldri halvferdig:
    Merker i alle tabeller og lister, drakter på banen på lagsiden
    (keeperen får keeperdrakt). Bildene ligger på vår egen server;
    mangler et bilde, vises kortnavnet.
-3. **v1.3.2 — finpuss.** Rundeetiketten i nedtellingen, kampliste med
+3. **v1.3.2 — finpuss.** **Bygget ferdig 24. august — venter på at du
+   sier fra før den legges ut.** Rundeetiketten i nedtellingen, kampliste med
    klokkeslett i briefen, tydeligere feilsider, mobilpuss. Etterpå én
    AI-visning av briefen i prod for å se at teksten sitter i det nye
    designet (eneste AI-kall i hele løpet).
@@ -86,7 +96,8 @@ er «porter» — de skjer når datoen eller du er klar, uten å stoppe utviklin
 - ~~**v1.2.5** — rundebriefen blir ærligere.~~ **Ferdig 24. august.**
 - ~~**v1.3.0** — nye farger og temavalg.~~ **Ferdig 24. august.**
 - ~~**v1.3.1** — klubbmerker og drakter.~~ **Ferdig 24. august.**
-- **v1.3.2** — finpuss på alle sider. **Neste jobb.**
+- **v1.3.2** — finpuss på alle sider. **Bygget 24. august, klar til
+  utlegging når du sier fra.**
 - **v1.3.3** — rettelser fra din gjennomgang.
 - **v1.3.4 og utover** — små robusthetsfikser fra kvalitetsgjennomgangen,
   én og én etter avtale.
