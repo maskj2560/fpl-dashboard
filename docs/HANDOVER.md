@@ -167,13 +167,11 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
 - 2026-08-24 (økt 35, Fable): Marius sendte kø-punkt 2-oppdraget hit for
-  planlegging og ba om kjøreprompt til Opus som også ferdigstiller HELE
-  v1.3. Plan laget; rotårsaken bekreftet i kode — `ai.js:39-44` blokkerer
-  også FORSIDEN (`routes/index.js:26-30` awaiter `getNews()`), ikke bare
-  /brief og /nyheter. Beslutning: deadlinevindu **6 timer** (anbefalingen
-  valgt) → ~41–45 kall/uke. Handling: ROADMAP-porten «takten bekreftes»
-  lukket, kjøreprompt levert i chatten; utførelsesøkten skriver
-  `docs/plan-v134-ai-swr.md` som Task 0.
+  planlegging + kjøreprompt til Opus som også ferdigstiller HELE v1.3.
+  Rotårsak bekreftet i kode: `ai.js:39-44` blokkerer også FORSIDEN
+  (`routes/index.js:26-30` awaiter `getNews()`). Beslutning: deadlinevindu
+  **6 timer** → ~41–45 kall/uke. Handling: takt-porten i ROADMAP lukket,
+  kjøreprompt levert; utførelsesøkten skriver `docs/plan-v134-ai-swr.md`.
 - 2026-08-24 (økt 34, etter releasen): Marius melder at **deler av siden
   bruker ekstremt lang tid på å laste**, mistenker briefene, og ber om at
   de caches en periode og friskes opp jevnlig på serveren. Valgte omfang:
