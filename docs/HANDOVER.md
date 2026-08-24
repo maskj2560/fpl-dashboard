@@ -48,19 +48,16 @@
   (`/health` 200, `ai:true, discord:true`, footer `v1.3.2`, assets
   `?v=000fa6f3`, 9 ruter 200 + 404, Playwright 240/240 + 14/14).
   v1.3.3 er pushet, men aldri sett kjøre. Se P0-punktet under.
-- **AI-budsjettet for UI-overhalingen er brukt opp: 1 av 1.** Den ene
-  visningen av prod-`/brief` (24. aug 13:23) var grønn: cyan hairline +
-  AI-merke, 60 `<strong>` og 0 rå `**`, 9 `.sub-head` og 0 rå `###`,
-  10 `.fixture-row` med klokkeslett, 25 klubbmerker (0 uversjonerte).
-  `/nyheter` ble aldri besøkt med ekte nøkkel.
+- **AI-budsjettet for UI-overhalingen: brukt opp (1 av 1), og den ene
+  prod-visningen av `/brief` 24. aug 13:23 var grønn.** Detaljene er
+  rotert til `docs/arkiv/HANDOVER-historikk.md`.
 - Kostnad målt 23. aug: **$0,94/uke** — under terskelen, ingen tiltak. Ny
   måling i uken etter 31. aug (prisskiftet), se kø-punkt 1.
 - **Git akkurat nå:** arbeidstreet står på **`main` = `origin/main` =
   `edc372b`**, tag `v1.3.3` pushet. Merge `--no-ff` av
   `fix/ui-v133-qa` (14 commits). Featurebranchen er slettet lokalt.
   Ingen åpne brancher, rent tre.
-- Eldre status (v1.2.3-deploy, doks-opprydning økt 24, versjonsplan økt 25,
-  v1.2.4 økt 27): rotert til `docs/arkiv/HANDOVER-historikk.md` 24. aug.
+- Eldre status (v1.2.3, doks-opprydning, versjonsplan, v1.2.4): arkivert.
 
 ## Åpne punkter
 
@@ -149,14 +146,10 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 - Alle beskjeder fra Marius loggføres i loggen nederst.
 - ROADMAP/CHANGELOG/CLAUDE.md/HANDOVER oppdateres løpende, i samme commit
   som endringen.
-- UI-overhalingen (24. aug, økt 30): 15 beslutninger i
-  `docs/arkiv/plan-v130-ui-overhaul.md` §2 — selvhostet klubbgrafikk (70/110 px)
-  med footer-kreditering og server-side fallback, ett tema-ikon i topbaren
-  med inline-script + matchMedia, FPL-familien (lilla natt / lilla
-  dagslys, grønn kun som fyll på lyst), fire etapper med hvert sitt
-  patchnummer, Playwright etter hver etappe, 1 AI-kall totalt,
-  `views/partials/` opprettes. Brainstorming-formen: ett spørsmålssett om
-  gangen, anbefaling først — Marius valgte anbefalingen på alle 15.
+- UI-overhalingen (24. aug, økt 30): alle 15 designbeslutninger står i
+  `docs/arkiv/plan-v130-ui-overhaul.md` §2. Brainstorming-formen: ett
+  spørsmålssett om gangen, anbefaling først — Marius valgte anbefalingen
+  på alle 15. Den formen gjelder videre.
 - Doks-opprydningen (23. aug, økt 24): konsumerte prompter slettes, utførte
   planer arkiveres til `docs/arkiv/`; docs/-rot holdes på ~7 filer;
   ROADMAP-køen har promptstruktur-fiksen øverst; HANDOVER-tak 200 linjer
@@ -173,6 +166,16 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
+- 2026-08-24 (økt 34, etter releasen): Marius melder at **deler av siden
+  bruker ekstremt lang tid på å laste**, mistenker briefene, og ber om at
+  de caches en periode og friskes opp jevnlig på serveren. Valgte omfang:
+  brief + nyheter + rådgiver (huket av alle tre, inkludert det motstridende
+  «kun briefen nå» — tolket som alle tre). Takt: spurte «kanskje 1 gang om
+  dagen?» og ba om min vurdering. **Anbefaling gitt og pinnet i ROADMAP:**
+  daglig oppfriskning + ekstra i timene før deadline, nyheter hver 6. time,
+  og — viktigst — SWR i `ai.js` så ingen sidevisning blokkerer.
+  Handling: lagt inn som kø-punkt 2 (v1.3.4), robusthetskandidaten
+  «SWR i ai.js» strøket og peker dit. Kjøreprompt levert i chatten.
 - 2026-08-24 (økt 34, Opus): kjøreprompt «utfør ETAPPE 4 — v1.3.3
   QA-rettelser». Rammer: utfør, ikke re-planlegg — ingen designbeslutninger
   (alt pinnet i planens «Pinnede skjønnsvalg»); avvik plan/kode → STOPP og
@@ -191,7 +194,4 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
   `docs/arkiv/HANDOVER-historikk.md` 2026-08-24 (200-linjerstaket).
 - Loggposten fra økt 32 (v1.3.1-releasen + v1.3.2-bygget): rotert til
   `docs/arkiv/HANDOVER-historikk.md` 2026-08-24 (200-linjerstaket).
-- Loggposter fra økt 30–31: rotert til
-  `docs/arkiv/HANDOVER-historikk.md` 2026-08-24 (200-linjerstaket).
-- Eldre loggposter (økt 22–28): rotert til
-  `docs/arkiv/HANDOVER-historikk.md` 2026-08-24 (200-linjerstaket).
+- Loggposter fra økt 22–31: rotert til arkivet 2026-08-24.

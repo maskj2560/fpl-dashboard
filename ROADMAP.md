@@ -17,16 +17,17 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | --- | --- | --- | --- |
 | ~~**v1.2.4**~~ | ~~AI-rådgiverens promptstruktur på /lag~~ | **utført 24. aug** | — |
 | **P0** | Marius: prod svarer 401 etter v1.3.3-deployen | 1 | Coolify-deployloggen |
-| **P1** | Marius: bekreft auto-briefen 20. aug i Discord | 3 | Marius (minutter) |
-| **P2** | Marius: README-skjermbilder + mobil-QA | 5 | Marius |
-| **P3** | Etter GW2: transfers-skjema mot ekte data | 4 | GW2 spilt (~29.–31. aug) |
-| **P4** | Kostnadsmåling uken etter 1. sep | 2 | dato |
+| **P1** | Marius: bekreft auto-briefen 20. aug i Discord | 4 | Marius (minutter) |
+| **P2** | Marius: README-skjermbilder + mobil-QA | 6 | Marius |
+| **P3** | Etter GW2: transfers-skjema mot ekte data | 5 | GW2 spilt (~29.–31. aug) |
+| **P4** | Kostnadsmåling uken etter 1. sep | 3 | dato |
 | ~~**v1.2.5**~~ | ~~Brief-kvalitetstrioen~~ | **utført 24. aug** | — |
 | ~~**v1.3.0**~~ | ~~UI-overhaling, etappe 1: fundament (tokens i to temaer, temabryter, lilla topbar)~~ | **utført 24. aug** | — |
 | ~~**v1.3.1**~~ | ~~UI-overhaling, etappe 2: klubbgrafikk (merker + drakter, selvhostet)~~ | **utført 24. aug** | — |
 | ~~**v1.3.2**~~ | ~~UI-overhaling, etappe 3: finpuss per side~~ | **utført 24. aug** | — |
 | ~~**v1.3.3**~~ | ~~UI-overhaling, etappe 4: QA-rettelser~~ | **kode utført 24. aug — prod uverifisert, se kø-punkt 1** | — |
-| **v1.3.1+** | Robusthetskandidatene, én og én etter avtale | 6 | avtale per punkt |
+| **v1.3.4** | Ingen ventetid på AI-tekst: SWR + bakgrunnsoppfriskning | 2 | takten bekreftes av Marius |
+| **v1.3.1+** | Robusthetskandidatene, én og én etter avtale | 7 | avtale per punkt |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
 Kalenderlogikk: utviklingssporet (v1.3.0 → v1.3.1+) går uavbrutt;
@@ -55,7 +56,40 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
   `qa-clubs-prod.mjs` (14) og `qa-v133.mjs` (~56).
 - **Størrelse:** ukjent — avhenger av hva loggen sier.
 
-### 2. (P4) Kostnadskontroll etter prisskiftet
+### 2. (v1.3.4) Ingen skal vente på en AI-tekst — SWR + bakgrunnsoppfriskning
+
+- **Hva:** Marius melder 24. aug at deler av siden bruker ekstremt lang tid
+  på å laste, og mistenker briefene. Koden støtter mistanken:
+  `ai.js:38-40` serverer cachen KUN mens den er ferskere enn
+  `minIntervalMs`. Er den eldre, venter den besøkende på hele
+  Claude-rundturen (brief: `max_tokens` 4000 + adaptiv tenkning).
+  `cache.js` har stale-while-revalidate; `ai.js` har det ikke. I tillegg
+  bor AI-cachen i minnet, så den er TOM etter hver deploy — første
+  besøkende etter en utrulling betaler alltid full ventetid.
+- **Mål:** en sidevisning skal aldri blokkere på et AI-kall. Cachet tekst
+  serveres umiddelbart og fornyes i bakgrunnen; er cachen kald, vises
+  data-briefen (som allerede er den dokumenterte fallbacken) mens teksten
+  genereres. Serveren frisker opp på timer, ikke ved sidebesøk.
+- **Omfang (Marius 24. aug):** alle tre AI-tekstene — briefen (`/brief`),
+  nyhetsoppsummeringen (`/nyheter`) og rådgiveren på `/lag`. Rådgiveren
+  utløses av et klikk, så der må kald cache fortsatt vente — knappen kan
+  ikke svare med ingenting. Stale cache skal aldri blokkere noe sted.
+- **Takt (anbefaling, Marius kan overstyre før økten):** briefen friskes
+  opp én gang i døgnet PLUSS i timene før deadline — det er da skadenytt
+  og laguttak endrer seg, og 24 timer gammel tekst ville vært feil.
+  Nyhetene hver 6. time. Anslag ~35 kall i uka mot dagens håndfull;
+  måles mot `AI-kall:`-linjene før og etter. Auto-briefen i `notify.js`
+  bruker ALLEREDE samme `cacheKey` som `/brief`, så det kallet varmer
+  cachen gratis — gjenbruk det i stedet for å legge et nytt oppå.
+- **Mål først, ikke gjett:** økten starter med å tidfeste hver rute
+  server-side (AI-kall vs. FPL-kall vs. rendring) og rapportere tallene.
+  `/overganger` gjør opptil 38 live-kall og `/liga` henter rival-picks —
+  de kan være en egen kilde til ventetid enn AI.
+- **Eier detaljene:** dette punktet. Erstatter robusthetskandidaten
+  «SWR i `ai.js`» i kø-punkt 7.
+- **Størrelse:** middels — én planleggings-/utførelsesøkt.
+
+### 3. (P4) Kostnadskontroll etter prisskiftet
 
 - **Hva:** Sonnet 5 går fra intropris $2/$10 til ordinær $3/$15 per 1M
   tokens 1. september. Målingen 23. aug ga $0,94/uke (under terskelen);
@@ -68,7 +102,7 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
   organisk trafikk uten utviklingsstøy.
 - **Størrelse:** liten.
 
-### 3. (P1) Verifiser auto-briefen 20. august `[Marius]`
+### 4. (P1) Verifiser auto-briefen 20. august `[Marius]`
 
 - **Hva:** eneste gjenstående punkt fra sjekkpunkt A: at den naturlige
   auto-briefen torsdag 20. aug ~19:30 faktisk kom. Coolify-loggen er
@@ -77,7 +111,7 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
 - **Blokkert av:** Marius (sjekker Discord-kanalen).
 - **Størrelse:** minutter.
 
-### 4. (P3) Etter GW2: verifiser transfers-skjemaet mot ekte data
+### 5. (P3) Etter GW2: verifiser transfers-skjemaet mot ekte data
 
 - **Hva:** feltnavnene i `entry/5330646/transfers/` (`element_in`,
   `element_out`, `event`, `time`, `event_transfers_cost`) er antatt og lest
@@ -90,7 +124,7 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
   28. aug 19:30).
 - **Størrelse:** liten.
 
-### 5. (P2) README-skjermbilder + mobil-QA `[Marius]`
+### 6. (P2) README-skjermbilder + mobil-QA `[Marius]`
 
 - **Hva:** Del 6-restene fra sesongstart-verifiseringen: skjermbilder til
   README (dashbord, /spillere, /lag i desktop + 390 px), og mobilvisning på
@@ -99,7 +133,7 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
 - **Blokkert av:** Marius (nettleser + telefon).
 - **Størrelse:** liten.
 
-### 6. Robusthetskandidater (v1.3.1+, avtales én og én, uprioritert innbyrdes)
+### 7. Robusthetskandidater (v1.3.1+, avtales én og én, uprioritert innbyrdes)
 
 Reelle funn fra kvalitetspasset v1.1.3 (P3) og verifiseringen — ingen
 fikses uten avtale:
@@ -110,9 +144,9 @@ fikses uten avtale:
   Redesign: tidsstemplet flagg eller status per endepunkt.
 - **Alderstak på stale data + `dataAlder` i payloaden** (rest av P3-2):
   produktbeslutning + payload-kontraktsendring — tas separat med Marius.
-- **SWR i `ai.js`**: første besøkende per intervall venter hele
-  Claude-rundturen (5–20 s). NB: endrer semantikken «AI-kall skjer ved
-  sidebesøk» som verifiseringen bygger på — må avklares først.
+- ~~**SWR i `ai.js`**~~ — løftet ut av lista 24. aug på Marius’ melding om
+  lange lastetider. Se kø-punkt 2 (v1.3.4). NB derfra: grepet endrer
+  semantikken «AI-kall skjer ved sidebesøk» som verifiseringen bygger på.
 - **`filterSummaryPoints`-dybde** (`src/services/news.js:158`): genitiv
   bommer på substring-matchen. Robusthet ligger i promptendring
   (kildeindeks per punkt) — koster AI-kall å teste, må avtales.

@@ -1077,3 +1077,11 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
     /overganger er nå låst av en test (grønn med én gang; fixturen hadde
     allerede begge indeksene). Det uverifiserte punktet er dermed lukket
     som markup-kontrakt — P3-punktet om ekte data etter GW2 står fortsatt.
+
+## Rotert 2026-08-24 (økt 34): AI-budsjettdetaljene for UI-overhalingen
+
+- **AI-budsjettet for UI-overhalingen er brukt opp: 1 av 1.** Den ene
+  visningen av prod-`/brief` (24. aug 13:23) var grønn: cyan hairline +
+  AI-merke, 60 `<strong>` og 0 rå `**`, 9 `.sub-head` og 0 rå `###`,
+  10 `.fixture-row` med klokkeslett, 25 klubbmerker (0 uversjonerte).
+  `/nyheter` ble aldri besøkt med ekte nøkkel.
