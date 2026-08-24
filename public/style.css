@@ -391,19 +391,19 @@ footer {
   letter-spacing: 0.14em;
   font-size: var(--fs-sm);
   font-weight: 600;
-  color: var(--accent);
+  color: var(--hero-dim);
 }
 
 .gw-badge {
   display: inline-block;
-  background: var(--surface-3);
-  border: 1px solid var(--border-strong);
+  background: var(--accent);
+  border: 0;
   border-radius: var(--radius-pill);
   padding: 0.15rem 0.7rem;
   font-family: var(--font-display);
   font-weight: 700;
   letter-spacing: 0.04em;
-  color: var(--text);
+  color: var(--accent-ink);
 }
 
 .hero h1 {
@@ -414,7 +414,7 @@ footer {
 
 .hero-date {
   margin: 0 0 var(--space-5);
-  color: var(--text-dim);
+  color: var(--hero-dim);
 }
 
 .sr-only {
@@ -444,7 +444,7 @@ footer {
   font-size: var(--fs-hero);
   font-weight: 800;
   letter-spacing: -0.03em;
-  color: var(--text);
+  color: var(--hero-text);
   line-height: 1.05;
 }
 
@@ -452,13 +452,13 @@ footer {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-size: var(--fs-xs);
-  color: var(--text-dim);
+  color: var(--hero-dim);
 }
 
 .deadline-passed {
   font-family: var(--font-display);
   font-size: var(--fs-xl);
-  color: var(--accent-2-text);
+  color: var(--hero-text);
   font-weight: 700;
   margin: 0;
 }
@@ -1195,15 +1195,24 @@ table.sortable th[aria-sort='ascending']::after {
 
 /* ---------- AI-rådgiver ---------- */
 
-.btn-accent {
-  background: var(--accent-soft);
-  border: 1px solid var(--accent);
-  color: var(--accent);
-  border-radius: 6px;
+.btn-accent,
+.btn-link {
+  display: inline-block;
+  background: var(--accent);
+  border: 0;
+  color: var(--accent-ink);
+  border-radius: var(--radius-sm);
   padding: 0.5rem 1rem;
   font: inherit;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-accent:hover,
+.btn-link:hover {
+  text-decoration: none;
+  filter: brightness(0.95);
 }
 
 .btn-accent:disabled {

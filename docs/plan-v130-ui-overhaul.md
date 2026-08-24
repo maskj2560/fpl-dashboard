@@ -1035,10 +1035,11 @@ mockupen. Konkret:
 - `.filters input:focus, select:focus { outline-color: var(--focus) }`.
 - Skriftstørrelser → `--fs-*` som beskrevet i 1.0-2.
 
-- [ ] `npm test` → **282/282**, `npm run lint` → 0, `node --test test/style.test.js`
-      → «ingen hardkodede farger» OK. Observert: ______
+- [x] `npm test` → **282/282**, `npm run lint` → 0, `node --test test/style.test.js`
+      → «ingen hardkodede farger» OK. Observert: **282/282, lint 0, 4/4 i
+      style.test.js**
 - [ ] Visuell sjekk mot mockupen i begge temaer (lokal server, se 1.0-6).
-- [ ] Commit: `feat(ui): re-toner alle komponenter til tokenpaletten`
+- [x] Commit: `feat(ui): re-toner alle komponenter til tokenpaletten`
 
 ## Task 1.0-6 — Røyk, Playwright, docs — STOPP
 
