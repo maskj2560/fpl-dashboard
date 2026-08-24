@@ -1390,8 +1390,15 @@ test('buildTransferAnalysis legger teamShort og teamCode på inn og ut', () => {
 });
 ```
 
-- [ ] Rødt: **290 tester, forventet 5 feiler** (3 nye + live.test 183 +
-      live.test nøkkelliste). Observert: ______
+- [x] Rødt: **290 tester, forventet 5 feiler** (3 nye + live.test 183 +
+      live.test nøkkelliste). Observert: **290 tester, 5 feiler** — nøyaktig
+      de forventede (brief-, live- og transfers-testen, «matches speiler
+      stilling og status fra fixtures», «payloaden har ingen døde felter»).
+      Fixture-notat: `spiller(1, 1, { status: 'd', news: 'Knock' })` treffer
+      `flaggedPlayers` uendret, og 20 % eierskap holder både ≥ 5 %-kravet i
+      `injuries` og ≥ 15 %-kravet i `globalCaptains` — ingen justering
+      trengtes. `test/transfers.test.js` manglet `teams` helt: la til tre lag
+      (MCI 43, AVL 7, LIV 14) og `team` på alle fem elementene.
 
 ### 4b. Implementasjon
 
@@ -1428,8 +1435,9 @@ Eksisterende asserts på `.inn.name`/`.ut.name` består.
 `src/routes/league.js`: `teamsById: byId(bootstrap.teams),` i locals
 (importer `byId` fra analysis.js hvis ikke alt importert).
 
-- [ ] Grønt: **290/290**, lint 0. Observert: ______
-- [ ] Commit: `feat(data): klubbkode i brief-, live- og transfers-payloadene`
+- [x] Grønt: **290/290**, lint 0. Observert: **290/290, fail 0**, lint uten
+      utskrift.
+- [x] Commit: `feat(data): klubbkode i brief-, live- og transfers-payloadene`
 
 ## Task 1.1-5 — Partials + integrasjon i viewene + live-JS + footer (TDD)
 

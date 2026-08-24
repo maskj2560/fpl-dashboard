@@ -4,8 +4,8 @@ import { buildLive } from '../src/services/live.js';
 
 const bootstrap = {
   teams: [
-    { id: 1, short_name: 'ARS' },
-    { id: 2, short_name: 'CHE' },
+    { id: 1, short_name: 'ARS', code: 3 },
+    { id: 2, short_name: 'CHE', code: 8 },
   ],
   elements: [
     { id: 10, web_name: 'Saka', team: 1, element_type: 3 },
@@ -181,7 +181,17 @@ test('matches speiler stilling og status fra fixtures', () => {
     ],
   });
   assert.deepEqual(result.matches, [
-    { home: 'ARS', away: 'CHE', homeScore: 2, awayScore: 1, started: true, finished: false, minutes: 63 },
+    {
+      home: 'ARS',
+      away: 'CHE',
+      homeCode: 3,
+      awayCode: 8,
+      homeScore: 2,
+      awayScore: 1,
+      started: true,
+      finished: false,
+      minutes: 63,
+    },
   ]);
 });
 
@@ -348,5 +358,21 @@ test('payloaden har ingen døde felter', () => {
     'onBench',
     'points',
     'team',
+    'teamCode',
   ]);
+});
+
+test('buildLive legger teamCode på mine spillere og homeCode/awayCode på kamper', () => {
+  const result = buildLive({
+    bootstrap,
+    gw: 1,
+    fixtures: [
+      { event: 1, team_h: 1, team_a: 2, started: true, finished: false, minutes: 10, stats: [] },
+    ],
+    live: liveStats([[10, { total_points: 3, minutes: 10, bonus: 0 }]]),
+    picks: { picks: [{ element: 10, position: 1, multiplier: 1 }] },
+  });
+  assert.equal(result.myPlayers[0].teamCode, 3);
+  assert.equal(result.matches[0].homeCode, 3);
+  assert.equal(result.matches[0].awayCode, 8);
 });
