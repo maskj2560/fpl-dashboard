@@ -18,6 +18,12 @@
   (tregest: `/spillere` 282 ms, ren rendering av 496 KB HTML).
   `/overganger` var 3 ms fordi laget ennå ikke har transfers — de inntil
   38 live-kallene er altså ikke målt under last (hører til P3).
+  **Målt etter (samme fake-klient): forsiden 35 ms, `/nyheter` 4 ms,
+  `/brief` 17 ms på KALD cache — 0 AI-kall utløst av sidevisninger, i alle
+  cachetilstander. `refresh._tick()` varmer begge tekstene (2 kall), andre
+  tikk 0 kall. Rådgiverklikk: kald 10 150 ms (som avtalt), fersk 2 ms,
+  stale 1 ms + fornying i bakgrunnen.** Røyktest med tomme nøkler: 11 ruter
+  200 + 404, `/health` ai:false, 0 AI-kall, ingen oppfrisker startet.
   Delfunksjoner: (1) `ai.js` SWR + `getCached` ✅ 330/330, (2) `/brief`
   leser cachen (`getCachedAiBrief`) ✅ 333/333, (3) `news.js`:
   `getNews` leser cachen, `refreshNewsSummary` genererer ✅ 337/337,
@@ -25,28 +31,16 @@
   ✅ 339/339, (5) `refresh.js` + `startAiRefresher()` i `server.js`
   ✅ **350/350, lint 0** (baseline 322).
 
-- **ETAPPE 4 / v1.3.3: kode og git er FERDIG, men PROD SVARER 401.**
-  Økt 34, Opus. Klarsignal «Kjør» mandag 24. aug ~17:55. `main` =
-  `origin/main` = `edc372b` (merge `--no-ff` av `fix/ui-v133-qa`), tag
-  `v1.3.3` pushet 18:00. Alle 18 QA-funn + transfers-pillepunktet rettet.
-  - **Målt før push:** `npm test` **322/322** (fra 299), lint 0, 11 ruter
-    200 + 404, `/health` → `ai:false, discord:false`. Playwright:
-    `qa.mjs` 332/332, `qa-clubs.mjs` 22/22, `qa-v133.mjs` 56/56.
-    **0 AI-kall i hele etappen.** Etter merge på `main`: 322/322, lint 0,
-    CHANGELOG-plasseringen inspisert og riktig.
-  - **BLOKKERT (P0): https://fpl.marsk.no svarer `401 Unauthorized` på
-    ALLE stier** (`/`, `/health`, `/spillere`, `/style.css`) med
-    `www-authenticate: Basic realm="traefik"`. Cloudflare slipper gjennom
-    (`cf-cache-status: DYNAMIC`), så det er origin-Traefik som svarer:
-    ingen rute for domenet. Polling hvert 10. sek i 15 min (90 forsøk,
-    18:02–18:17) ga 401 hele veien. `dash.marsk.no` svarer 302, så
-    serveren og Traefik lever — det er appruten som mangler.
-    **Prod-verifiseringen (plan-steg 8 og 9) er IKKE utført.** Marius må
-    se på Coolify-deployloggen. Buildet er utelukket som årsak lokalt:
-    `package.json`/`package-lock.json` er i synk på 1.3.3, og Dockerfile
-    kopierer kun `src/`, `views/`, `public/` — ingenting av det etappen
-    endret ligger utenfor de mappene. Docs-pushen 18:22 trigget en NY
-    deploy — fortsatt 401 gjennom 18:29. To deployforsøk, samme utfall.
+- **ETAPPE 4 / v1.3.3: kode og git FERDIG, men PROD SVARER 401.** Økt 34.
+  `main` = `origin/main` = `edc372b` (merge `--no-ff` av `fix/ui-v133-qa`),
+  tag `v1.3.3` pushet 24. aug 18:00. Målt før push: 322/322, lint 0,
+  11 ruter 200 + 404, Playwright 332 + 22 + 56, 0 AI-kall.
+  **https://fpl.marsk.no svarer `401` på ALLE stier** med
+  `www-authenticate: Basic realm="traefik"` — origin-Traefik uten rute for
+  domenet, ikke en app-feil (`dash.marsk.no` svarer 302). To deployforsøk,
+  samme utfall; 90 forsøk 18:02–18:29. **Prod-verifiseringen (plan-steg 8
+  og 9 i `docs/arkiv/plan-v133-qa.md`) er IKKE utført.** Detaljer og neste
+  steg: ROADMAP kø-punkt 1.
 - **v1.3.2 (etappe 3) RELEASET 24. aug (økt 33):** finpuss per side +
   kontraktstester for markupen `app.js` avhenger av. 299/299, lint 0.
   Detaljene (inkl. de manuelt målte pillekontrastene) er rotert til
