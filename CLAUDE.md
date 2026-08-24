@@ -125,7 +125,7 @@ aldri et krav.
   `npm test` + `npm run lint` før en milepæl regnes som ferdig.
 - **Stil**: moderne JS (ESM, async/await), ingen nye avhengigheter uten god
   grunn — appen skal forbli liten og rask.
-- **Design** (fra v1.3.0, plan i `docs/plan-v130-ui-overhaul.md`): to
+- **Design** (fra v1.3.0, plan i `docs/arkiv/plan-v130-ui-overhaul.md`): to
   temaer — mørkt er CSS-basen i `:root`, lyst er `:root[data-theme="light"]`.
   Auto følger `prefers-color-scheme`; manuelt valg lagres i
   `localStorage['fpl-theme']`; temaet settes av et inline-script i

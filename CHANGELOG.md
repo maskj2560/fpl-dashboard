@@ -7,6 +7,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.3.3] - 2026-08-24
+
 ### Added
 
 - Hele raden i ligatabellen er klikkbar, og laget du sammenlikner deg med

@@ -5,7 +5,7 @@
 
 **Sist oppdatert:** 24. august 2026
 
-## Dette har du nå (v1.3.3, klar for utrulling — prod kjører v1.3.2)
+## Dette har du nå (v1.3.3, live på fpl.marsk.no)
 
 Dashbord med nedtelling og skader · spillertabell med søk og filter · laget
 ditt med kapteinsråd · miniligaen · rundebrief (AI skriver den på norsk) ·
