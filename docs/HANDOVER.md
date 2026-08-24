@@ -6,10 +6,18 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-24 (økt 33, Opus: v1.3.2 released)
+**Sist oppdatert:** 2026-08-24 (økt 34, Opus: ETAPPE 4 / v1.3.3)
 
 ## Status akkurat nå
 
+- **ETAPPE 4 (v1.3.3 QA-rettelser) PÅGÅR — økt 34, Opus.** Branch
+  `fix/ui-v133-qa`, plan i `docs/plan-v133-qa.md` (13 tasks, 18 QA-funn +
+  det uverifiserte transfers-pillepunktet). Baseline verifisert:
+  **299/299 tester, lint exit 0**, `main` = `origin/main` (15fa8f5).
+  - Task 1.3-0 ferdig: branch opprettet, ETAPPE 4-stubben i
+    `docs/plan-v130-ui-overhaul.md` peker nå på utførelsesplanen.
+  - Ingen AI-kall i etappen (budsjettet er brukt opp): `/brief` og
+    `/nyheter` lastes kun LOKALT med tomme nøkler, aldri i prod.
 - **v1.3.2 (etappe 3) RELEASET 24. aug (økt 33, Opus).** Task 1.2-4 kjørt
   på klarsignal: bump 1.3.2, docs, merge `--no-ff` til `main`, tag
   `v1.3.2`, push, Coolify-deploy. **299/299 tester, lint 0, prod grønn,
@@ -25,8 +33,6 @@
   - Pillenes forgrunnsfarger var ikke spesifisert i planen. Målt der de
     står (kortflaten `--surface`): beste 10,42 mørkt / 5,66 lyst, verste
     5,39 / 5,27. Kan ikke låses i `PAIRS` — `*-soft` er rgba, ikke hex.
-  - **Neste: ETAPPE 4 (v1.3.3 QA-rettelser) — blokkert av Marius' funn
-    som nummerert P0/P1/P2-liste. Ingen planlagte tasks.**
 - **v1.3.1 (etappe 2) ute siden 24. aug:** klubbmerker i alle tabeller og
   lister, drakter på banen, `clubAssets.js` + `IMG_VERSION`,
   `npm run fetch-clubs` og 60 bildefiler. Detaljene er rotert til
@@ -154,18 +160,19 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
-- 2026-08-24 (økt 33, Opus): kjøreprompt «fullfør ETAPPE 3 — release
-  v1.3.2 — og forbered ETAPPE 4». Rammer: Task 1.2-4 kun på eksplisitt
-  klarsignal, ingen designbeslutninger, aldri push uten klarsignal
-  (heller ikke docs), `fixtures/?event=N` før enhver push, aldri torsdag
-  19–21, **nøyaktig ett AI-kall igjen** (én visning av prod-`/brief`
-  ETTER deploy), `/nyheter` aldri med ekte nøkkel, rutesveip uten
-  `/brief` og `/nyheter`, ingen nye avhengigheter, Playwright kun i
-  scratchpad, docs i samme commit, kryss av i planfila med observerte
-  tall. ETAPPE 4 startes ikke før Marius leverer P0/P1/P2-lista.
-  Handling: status rapportert (299/299, lint 0, versjon 1.3.1, rent tre,
-  4 commits foran `main`), deretter klarsignal **«Kjør»** (mandag
-  24. aug ~13:18). Task 1.2-4 utført — se statusdelen øverst.
+- 2026-08-24 (økt 34, Opus): kjøreprompt «utfør ETAPPE 4 — v1.3.3
+  QA-rettelser». Rammer: utfør, ikke re-planlegg — ingen designbeslutninger
+  (alt pinnet i planens «Pinnede skjønnsvalg»); avvik plan/kode → STOPP og
+  spør. **0 AI-kall:** prod-`/brief` og prod-`/nyheter` lastes ALDRI, og
+  `#ai-advice-btn` klikkes aldri; lokalt kjøres alt med TOMME nøkler
+  (`/health` → `ai:false, discord:false` først). Én commit per task, docs i
+  samme commit, TDD 299 → 322, Playwright kun i scratchpad, ingen nye
+  avhengigheter, CRLF i patchskript. STOPP etter Task 1.3-12 — release
+  (1.3-13) kun på eksplisitt klarsignal, og kun FØR fre 28. aug ~18:00
+  eller etter at GW2 er ferdigspilt. Aldri push uten klarsignal.
+  Handling: startet på Task 1.3-0.
+- Loggposten fra økt 33 (v1.3.2-releasen): rotert til
+  `docs/arkiv/HANDOVER-historikk.md` 2026-08-24 (200-linjerstaket).
 - Loggposten fra økt 32 (v1.3.1-releasen + v1.3.2-bygget): rotert til
   `docs/arkiv/HANDOVER-historikk.md` 2026-08-24 (200-linjerstaket).
 - Loggposter fra økt 30–31: rotert til

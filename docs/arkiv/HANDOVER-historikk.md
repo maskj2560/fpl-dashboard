@@ -989,3 +989,18 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
   HANDOVER skrevet som overlevering på branchen, prompt levert i chatten
   (ikke som fil). `feat/ui-v132-finpuss` bevisst IKKE pushet — en push
   til `main` av den ville vært release, som krever eget klarsignal.
+
+## Rotert 2026-08-24 (økt 34): loggposten fra økt 33 (verbatim fra HANDOVER.md)
+
+- 2026-08-24 (økt 33, Opus): kjøreprompt «fullfør ETAPPE 3 — release
+  v1.3.2 — og forbered ETAPPE 4». Rammer: Task 1.2-4 kun på eksplisitt
+  klarsignal, ingen designbeslutninger, aldri push uten klarsignal
+  (heller ikke docs), `fixtures/?event=N` før enhver push, aldri torsdag
+  19–21, **nøyaktig ett AI-kall igjen** (én visning av prod-`/brief`
+  ETTER deploy), `/nyheter` aldri med ekte nøkkel, rutesveip uten
+  `/brief` og `/nyheter`, ingen nye avhengigheter, Playwright kun i
+  scratchpad, docs i samme commit, kryss av i planfila med observerte
+  tall. ETAPPE 4 startes ikke før Marius leverer P0/P1/P2-lista.
+  Handling: status rapportert (299/299, lint 0, versjon 1.3.1, rent tre,
+  4 commits foran `main`), deretter klarsignal **«Kjør»** (mandag
+  24. aug ~13:18). Task 1.2-4 utført — se statusdelen øverst.
