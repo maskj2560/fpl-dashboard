@@ -6,14 +6,13 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-24 (økt 32, Opus: v1.3.1 bygget, venter klarsignal)
+**Sist oppdatert:** 2026-08-24 (økt 32, Opus: v1.3.1 released og deployet)
 
 ## Status akkurat nå
 
-- **v1.3.1 ETAPPE 2 BYGGET FERDIG, IKKE RELEASET (økt 32, Opus, 24. aug).**
-  Task 1.1-0…1.1-6 utført på branch `feat/ui-v131-klubbgrafikk` (5 commits,
-  ikke pushet). **296/296 tester, lint 0, 0 AI-kall.** Task 1.1-7 (release)
-  venter på eksplisitt klarsignal fra Marius.
+- **v1.3.1 ETAPPE 2 FERDIG OG UTE (økt 32, Opus, 24. aug).** Task
+  1.1-0…1.1-7 utført, merget til `main`, tagget `v1.3.1` og deployet.
+  **296/296 tester, lint 0, 0 AI-kall.**
   - `IMG_VERSION = '2627'` i `middleware.js` (immutable-regelen), ny
     `src/services/clubAssets.js` (leser `public/img/clubs/` én gang til
     `app.locals`), `/health` teller bildene, `scripts/fetch-club-assets.mjs`
@@ -60,9 +59,9 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 2. P1 `[Marius]`: bekreft auto-briefen 20. aug i Discord-kanalen.
 3. P3: etter GW2, transfers-skjema mot ekte data + `/overganger` på mobil.
 4. P2 `[Marius]`: README-skjermbilder + mobil-QA.
-5. v1.3.1: **bygget og grønt — venter kun på klarsignal for release**
-   (Task 1.1-7 i `docs/plan-v130-ui-overhaul.md`). Deretter v1.3.2/v1.3.3,
-   så robusthetskandidatene.
+5. v1.3.2 (etappe 3, finpuss): neste utviklingsjobb i
+   `docs/plan-v130-ui-overhaul.md` — venter på klarsignal fra Marius.
+   Deretter v1.3.3, så robusthetskandidatene.
 
 ## Driftslærdommer (ikke glem disse)
 

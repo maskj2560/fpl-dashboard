@@ -7,6 +7,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.3.1] - 2026-08-24
+
 ### Added
 
 - Klubbmerker i alle tabeller og lister, og klubbdrakter på banen på
