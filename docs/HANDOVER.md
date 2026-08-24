@@ -6,41 +6,27 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-25 (økt 36, Opus: v1.3.4 under arbeid)
+**Sist oppdatert:** 2026-08-25 (økt 38, Opus: v1.3.4 klar for release)
 
 ## Status akkurat nå
 
-- **v1.3.4 UNDER ARBEID (økt 36, Opus), branch `feat/ai-swr-v134`.**
-  Plan: `docs/plan-v134-ai-swr.md`. **Rotårsaken er målt, ikke gjettet:**
-  med fake Claude-klient (10 s forsinkelse; ekte kall 20–60 s) tok `/`
-  10 038 ms og `/brief` 10 023 ms på KALD cache — og nøyaktig det samme på
-  STALE cache. Uten AI (tomme nøkler) er alle 11 ruter under 0,3 s varme
-  (tregest: `/spillere` 282 ms, ren rendering av 496 KB HTML).
-  `/overganger` var 3 ms fordi laget ennå ikke har transfers — de inntil
-  38 live-kallene er altså ikke målt under last (hører til P3).
-  **Målt etter (samme fake-klient): forsiden 35 ms, `/nyheter` 4 ms,
-  `/brief` 17 ms på KALD cache — 0 AI-kall utløst av sidevisninger, i alle
-  cachetilstander. `refresh._tick()` varmer begge tekstene (2 kall), andre
-  tikk 0 kall. Rådgiverklikk: kald 10 150 ms (som avtalt), fersk 2 ms,
-  stale 1 ms + fornying i bakgrunnen.** Røyktest med tomme nøkler: 11 ruter
-  200 + 404, `/health` ai:false, 0 AI-kall, ingen oppfrisker startet.
-  Delfunksjoner: (1) `ai.js` SWR + `getCached` ✅ 330/330, (2) `/brief`
-  leser cachen (`getCachedAiBrief`) ✅ 333/333, (3) `news.js`:
-  `getNews` leser cachen, `refreshNewsSummary` genererer ✅ 337/337,
-  (4) rådgiveren `swr: true` + kildekontrakt i `test/routes.test.js`
-  ✅ 339/339, (5) `refresh.js` + `startAiRefresher()` i `server.js`
-  ✅ **350/350, lint 0** (baseline 322).
+- **v1.3.4 KODEFERDIG (økt 36, Opus), branch `feat/ai-swr-v134`, upushet:
+  350/350, lint 0** (baseline 322). Plan: `docs/plan-v134-ai-swr.md`.
+  Rotårsaken ble MÅLT, ikke gjettet — med fake Claude-klient (10 s
+  forsinkelse) falt KALD `/brief` fra **10 023 ms → 17 ms** og forsiden fra
+  **10 038 ms → 35 ms**, og **0 AI-kall utløses av sidevisninger** i noen
+  cachetilstand. `refresh._tick()` varmer begge tekstene (2 kall ved
+  oppstart), andre tikk 0. Rådgiverklikket venter kun på helt kald cache
+  (10 150 ms — som avtalt), fersk 2 ms, stale 1 ms + fornying i bakgrunnen.
+  Fulle før/etter-tall og delfunksjon-for-delfunksjon-loggen:
+  `docs/arkiv/HANDOVER-historikk.md`.
 
-- **ETAPPE 4 / v1.3.3: kode og git FERDIG, men PROD SVARER 401.** Økt 34.
+- **v1.3.3 (ETAPPE 4): kode og git FERDIG 24. aug, prod-QA gjenstår.**
   `main` = `origin/main` = `edc372b` (merge `--no-ff` av `fix/ui-v133-qa`),
   tag `v1.3.3` pushet 24. aug 18:00. Målt før push: 322/322, lint 0,
-  11 ruter 200 + 404, Playwright 332 + 22 + 56, 0 AI-kall.
-  **https://fpl.marsk.no svarer `401` på ALLE stier** med
-  `www-authenticate: Basic realm="traefik"` — origin-Traefik uten rute for
-  domenet, ikke en app-feil (`dash.marsk.no` svarer 302). To deployforsøk,
-  samme utfall; 90 forsøk 18:02–18:29. **Prod-verifiseringen (plan-steg 8
-  og 9 i `docs/arkiv/plan-v133-qa.md`) er IKKE utført.** Detaljer og neste
-  steg: ROADMAP kø-punkt 1.
+  11 ruter 200 + 404, Playwright 332 + 22 + 56, 0 AI-kall. Prod-
+  verifiseringen (plan-steg 8 og 9 i `docs/arkiv/plan-v133-qa.md`) er
+  IKKE utført — den kjøres ÉN gang mot prod på v1.3.4, se kø-punkt 2.
 - **v1.3.2 (etappe 3) RELEASET 24. aug (økt 33):** finpuss per side +
   kontraktstester for markupen `app.js` avhenger av. 299/299, lint 0.
   Detaljene (inkl. de manuelt målte pillekontrastene) er rotert til
@@ -52,43 +38,53 @@
 - **Plan for UI-overhalingen:** `docs/arkiv/plan-v130-ui-overhaul.md` (etappe 1–3,
   godkjent 24. aug) + `docs/arkiv/plan-v133-qa.md` (etappe 4). Mockup:
   https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849
-- **Prod er NEDE for oss siden ~18:02 mandag 24. aug: 401 på alle stier.**
-  Siste bekreftet grønne prod-verifisering var v1.3.2, 24. aug 13:22
-  (`/health` 200, `ai:true, discord:true`, footer `v1.3.2`, assets
-  `?v=000fa6f3`, 9 ruter 200 + 404, Playwright 240/240 + 14/14).
-  v1.3.3 er pushet, men aldri sett kjøre. Se P0-punktet under.
-- **AI-budsjettet for UI-overhalingen: brukt opp (1 av 1), og den ene
-  prod-visningen av `/brief` 24. aug 13:23 var grønn.** Detaljene er
-  rotert til `docs/arkiv/HANDOVER-historikk.md`.
+- **Prod er OPPE igjen siden 25. aug.** Marius fjernet «HTTP Basic
+  Authentication»-haken i Coolify + Redeploy; 401-en forsvant. Prod kjører
+  **v1.3.3** (image bygget fra `1082833`, samme `src/` som `edc372b`),
+  `/health` → `ai:true, discord:true, leagues:1`. Siste bekreftet grønne
+  prod-VERIFISERING er fortsatt v1.3.2, 24. aug 13:22 (footer `v1.3.2`,
+  assets `?v=000fa6f3`, 9 ruter 200 + 404, Playwright 240/240 + 14/14) —
+  v1.3.3 er sett kjøre, men aldri QA-et.
 - Kostnad målt 23. aug: **$0,94/uke** — under terskelen, ingen tiltak. Ny
-  måling i uken etter 31. aug (prisskiftet), se kø-punkt 1.
-- **Git akkurat nå:** arbeidstreet står på **`main` = `origin/main` =
-  `edc372b`**, tag `v1.3.3` pushet. Merge `--no-ff` av
-  `fix/ui-v133-qa` (14 commits). Featurebranchen er slettet lokalt.
-  Ingen åpne brancher, rent tre.
+  måling i uken etter 31. aug (prisskiftet), se kø-punkt 3.
+- **Git akkurat nå:** arbeidstreet står på **`feat/ai-swr-v134`** (rent,
+  v1.3.4-koden). `main` ligger **2 docs-commits foran `origin/main`**
+  (kjent og riktig — de blir med i release-pushen); siste pushede tag er
+  `v1.3.3` (`edc372b`).
 - Eldre status (v1.2.3, doks-opprydning, versjonsplan, v1.2.4): arkivert.
 
 ## Åpne punkter
 
 Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 
-1. **P0 `[Marius]`: prod svarer 401 — se Coolify-deployloggen for
-   v1.3.3 (`edc372b`).** Alt annet står på vent til appen er oppe.
+1. **P0 `[Marius]`: Coolify-helsesjekken er en no-op — slå av Coolifys
+   egen sjekk (Dockerfilens HEALTHCHECK gjelder) + bevis.** Blokkerer
+   pushen i kø-punkt 2: deploy-signalet må være til å stole på først.
 2. P4: kostnadsmåling uken etter 31. aug (metode i `docs/sjekkpunkt-d-kostnad.md`).
 3. P1 `[Marius]`: bekreft auto-briefen 20. aug i Discord-kanalen.
 4. P3: etter GW2, transfers-skjema mot ekte data + `/overganger` på mobil.
 5. P2 `[Marius]`: README-skjermbilder + mobil-QA.
-6. v1.3.3 (ETAPPE 4): **kode og git ferdig, prod-verifiseringen gjenstår**
-   (plan-steg 8 og 9 i `docs/arkiv/plan-v133-qa.md`). Deretter
+6. v1.3.3-QA-en (plan-steg 8 og 9 i `docs/arkiv/plan-v133-qa.md`) kjøres
+   sammen med v1.3.4-verifiseringen — kø-punkt 2. Deretter
    robusthetskandidatene. Gammel åpen boks som er Marius' (Task 1.0-5):
    «Visuell sjekk mot mockupen i begge temaer».
 
 ## Driftslærdommer (ikke glem disse)
 
-- **`401` med `www-authenticate: Basic realm="traefik"` = ingen Traefik-
-  rute for domenet**, ikke en app-feil. Appen svarer aldri 401 selv.
-  Sjekk `dash.marsk.no` (svarer den, lever serveren) og deretter
-  Coolify-deployloggen. Skjedde ved v1.3.3-deployen 24. aug.
+- **401 med `Basic realm="traefik"`: sjekk FØRST om «HTTP Basic
+  Authentication» er slått på for appen i Coolify.** Haken henger en
+  Traefik basicauth-middleware på HTTPS-routeren og rammer ALLE stier,
+  også `/health` — og `realm="traefik"` er Traefiks standardrealm for
+  BasicAuth, ikke et tegn på manglende rute. En manglende app-rute gir
+  normalt 404, ikke 401. Redeploy hjelper ikke (tre forsøk 24. aug);
+  fjern haken + Redeploy løste det (25. aug). Routeren pekte riktig på
+  port 3000 hele tiden.
+- **Coolifys «Running (healthy)» er ikke bevis på at appen svarer.**
+  Coolifys egen HTTP-helsesjekk overstyrer Dockerfilens HEALTHCHECK,
+  og kommandoen brukte `curl` som ikke finnes i `node:22-alpine`:
+  `Healthcheck logs: /bin/sh: curl: not found | Return code: 0` →
+  «New container is healthy» — gjennom hele perioden prod svarte 401
+  på alt. Fiks + bevis-krav: ROADMAP kø-punkt 1 og DEPLOY.md.
 - **Sjekk at fila ikke finnes før du «oppretter» den:** planen sa
   «Create `test/format.test.js`», men fila fantes med 3 tester fra
   v1.2.0. Write overskrev dem stille, og det ble bare synlig fordi
@@ -177,6 +173,11 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
+- 2026-08-25 (økt 37, Fable): plan for resten av v1.3 oppdatert etter
+  incidenten; A/B/C besluttet (QA én gang på v1.3.4; helsesjekk alt. a med
+  b-fallback, Marius, før release; release ons 26. aug). Planfil:
+  `.claude/plans/du-er-planleggings-kten-fable-jiggly-iverson.md`.
+  Handling: docs-rettelser + release utføres av økt 38 (denne).
 - 2026-08-25 (økt 36, etter incidenten): Marius fikk prod opp igjen —
   401-en var «HTTP Basic Authentication» slått på i Coolify, IKKE en
   manglende Traefik-rute. Ba om planleggingsprompt til Fable som oppdaterer

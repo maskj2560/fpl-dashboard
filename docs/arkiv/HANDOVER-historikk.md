@@ -1112,3 +1112,26 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
   stoppet. Deretter klarsignal **«Kjør»** (~17:55) → Task 1.3-13:
   tidsvindu og `fixtures/` sjekket, 1.3.3, merge, tag, push 18:00.
   Prod-verifiseringen strandet på 401 — se statusdelen øverst.
+
+## Rotert 2026-08-25 (økt 38): v1.3.4-statusbulleten med fulle måltall (verbatim fra HANDOVER.md)
+
+- **v1.3.4 KODEFERDIG (økt 36, Opus), branch `feat/ai-swr-v134`, upushet.**
+  Plan: `docs/plan-v134-ai-swr.md`. **Rotårsaken er målt, ikke gjettet:**
+  med fake Claude-klient (10 s forsinkelse; ekte kall 20–60 s) tok `/`
+  10 038 ms og `/brief` 10 023 ms på KALD cache — og nøyaktig det samme på
+  STALE cache. Uten AI (tomme nøkler) er alle 11 ruter under 0,3 s varme
+  (tregest: `/spillere` 282 ms, ren rendering av 496 KB HTML).
+  `/overganger` var 3 ms fordi laget ennå ikke har transfers — de inntil
+  38 live-kallene er altså ikke målt under last (hører til P3).
+  **Målt etter (samme fake-klient): forsiden 35 ms, `/nyheter` 4 ms,
+  `/brief` 17 ms på KALD cache — 0 AI-kall utløst av sidevisninger, i alle
+  cachetilstander. `refresh._tick()` varmer begge tekstene (2 kall), andre
+  tikk 0 kall. Rådgiverklikk: kald 10 150 ms (som avtalt), fersk 2 ms,
+  stale 1 ms + fornying i bakgrunnen.** Røyktest med tomme nøkler: 11 ruter
+  200 + 404, `/health` ai:false, 0 AI-kall, ingen oppfrisker startet.
+  Delfunksjoner: (1) `ai.js` SWR + `getCached` ✅ 330/330, (2) `/brief`
+  leser cachen (`getCachedAiBrief`) ✅ 333/333, (3) `news.js`:
+  `getNews` leser cachen, `refreshNewsSummary` genererer ✅ 337/337,
+  (4) rådgiveren `swr: true` + kildekontrakt i `test/routes.test.js`
+  ✅ 339/339, (5) `refresh.js` + `startAiRefresher()` i `server.js`
+  ✅ **350/350, lint 0** (baseline 322).
