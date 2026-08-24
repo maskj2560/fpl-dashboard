@@ -40,6 +40,8 @@
   - 1.3-9 (QA 16+17): 318/318, Playwright 6/6. `edgeFadeState`/`initEdgeFades`
     på filnivå i app.js deles av menyen og `.table-scroll`; Modul 0 måler på
     nytt i neste frame (fikser racen mot `scrollIntoView`).
+  - 1.3-10 (QA 11+15+18): 321/321. `card-ai` + `.ai-badge` på AI-rådgiveren,
+    404 har kun knappelenken, `.grid--start` på anbefalingsgridet.
 - **v1.3.2 (etappe 3) RELEASET 24. aug (økt 33):** finpuss per side +
   kontraktstester for markupen `app.js` avhenger av. 299/299, lint 0.
   Detaljene (inkl. de manuelt målte pillekontrastene) er rotert til

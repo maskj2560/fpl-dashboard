@@ -72,7 +72,7 @@
 
 <% if (recommendations) { %>
   <h2 class="sub-head">Anbefalinger for Runde <%= fromGw %></h2>
-  <div class="grid">
+  <div class="grid grid--start">
     <section class="card">
       <h2>Kapteinsvalg</h2>
       <% if (recommendations.captains.length === 0) { %>
@@ -114,8 +114,8 @@
     </section>
   </div>
 
-  <section class="card card-wide" id="ai-advice-box">
-    <h2>AI-rådgiver</h2>
+  <section class="card card-wide card-ai" id="ai-advice-box">
+    <h2><span class="h2-title"><span class="ai-badge">AI</span> AI-rådgiver</span></h2>
     <p class="dim">Sender troppen og analysen til Claude og får begrunnede råd. Svar caches i én time.</p>
     <button type="button" id="ai-advice-btn" class="btn-accent">Spør AI om råd</button>
     <div id="ai-advice-result" class="ai-result" hidden></div>

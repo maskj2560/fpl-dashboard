@@ -35,6 +35,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   datapunkt — før var linjen usynlig i runde 1.
 - Toppmenyen toner ut på begge kanter når det finnes mer å scrolle til —
   venstrefaden manglet når den aktive siden ble scrollet inn ved sidelast.
+- AI-rådgiverkortet på lagsiden har samme cyan AI-markering som
+  AI-kortene ellers i appen.
+- 404-siden har bare én vei tilbake — knappen — i stedet for både en
+  tekstlenke og en knapp.
+- Kapteinsvalg-kortet strekkes ikke lenger forbi sitt eget innhold for å
+  møte nabokortets høyde.
 
 ## [1.3.2] - 2026-08-24
 

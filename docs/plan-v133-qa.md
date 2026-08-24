@@ -681,7 +681,7 @@ function initEdgeFades(el, prefix) {
 **Files:** Modify `views/team.ejs` (:73, :115-116), `views/404.ejs` (:4),
 `public/style.css`, `test/views.test.js`.
 
-- [ ] **Steg 1 (rød):**
+- [x] **Steg 1 (rød):**
 
 ```js
 test('team.ejs merker AI-rådgiveren som AI-kort', async () => {
@@ -702,10 +702,10 @@ test('team.ejs lar ikke anbefalingskortene strekkes forbi innholdet', async () =
 });
 ```
 
-- [ ] **Steg 2:** rød (3 nye; den eksisterende feilside-testen
+- [x] **Steg 2:** rød (3 nye; den eksisterende feilside-testen
       (`views.test.js:291-297`) krever fortsatt `href="/" class="btn-link"` —
-      den forblir grønn). Observert: ______
-- [ ] **Steg 3:** `team.ejs` (:115-116):
+      den forblir grønn). Observert: views.test.js: 68 tester, 65 pass, 3 fail (som anslått). Den eksisterende feilside-testen forble grønn.
+- [x] **Steg 3:** `team.ejs` (:115-116):
       `<section class="card card-wide card-ai" id="ai-advice-box">` og
       `<h2><span class="h2-title"><span class="ai-badge">AI</span> AI-rådgiver</span></h2>`.
       `team.ejs` (:73): `<div class="grid grid--start">` (kun anbefalingsgridet).
@@ -718,8 +718,8 @@ test('team.ejs lar ikke anbefalingskortene strekkes forbi innholdet', async () =
 .grid--start { align-items: start; }
 ```
 
-- [ ] **Steg 4:** `npm test` → 321, lint 0. Observert: ______
-- [ ] **Steg 5:** CHANGELOG (Fixed: cyan AI-markering på rådgiverkortet, én
+- [x] **Steg 4:** `npm test` → 321, lint 0. Observert: npm test 321/321 pass 0 fail, lint exit 0
+- [x] **Steg 5:** CHANGELOG (Fixed: cyan AI-markering på rådgiverkortet, én
       lenke på 404, Kapteinsvalg strekkes ikke forbi innholdet), HANDOVER.
       Commit: `fix: AI-markering på /lag, enkel 404-lenke, kortstrekk (QA 11+15+18)`
 

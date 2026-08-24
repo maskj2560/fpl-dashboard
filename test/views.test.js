@@ -346,3 +346,20 @@ test('players.ejs har en skjult tomtilstand for null filtertreff', async () => {
   assert.match(html, /id="players-empty" hidden>Ingen spillere matcher filtrene\./);
   assert.match(html, /id="players-empty-reset"[^>]*>Nullstill filtrene</);
 });
+
+test('team.ejs merker AI-rådgiveren som AI-kort', async () => {
+  const html = await renderView('team', fx.team);
+  assert.match(html, /card-wide card-ai" id="ai-advice-box"/);
+  assert.match(html, /ai-badge">AI<\/span> AI-rådgiver/);
+});
+
+test('404.ejs har bare knappelenken tilbake', async () => {
+  const html = await renderView('404', {});
+  assert.ok(!html.includes('>dashbordet</a>'), 'tekstlenka i brødteksten skal bort');
+  assert.match(html, /href="\/" class="btn-link"/);
+});
+
+test('team.ejs lar ikke anbefalingskortene strekkes forbi innholdet', async () => {
+  const html = await renderView('team', fx.team);
+  assert.match(html, /class="grid grid--start"/);
+});

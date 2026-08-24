@@ -473,6 +473,11 @@ footer {
   margin-bottom: var(--space-4);
 }
 
+/* Kort som ikke skal strekkes til naboens høyde (anbefalingene på /lag). */
+.grid--start {
+  align-items: start;
+}
+
 /* Dashbordets fire kort: auto-fit ga tre i bredden og ett alene på siste rad
    ved 1440 px. Låst til 2 x 2 fra 900 px og opp. */
 @media (min-width: 900px) {
