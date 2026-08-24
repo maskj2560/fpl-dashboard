@@ -12,6 +12,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - `/brief` vises med en gang: siden leser AI-teksten fra cachen i stedet for
   å generere den mens du venter. Er teksten ikke laget ennå, vises
   data-briefen som før.
+- Forsiden og `/nyheter` vises med en gang: nyhetsoppsummeringen leses fra
+  cachen i stedet for å genereres mens du venter. Forsiden ventet på den
+  samme teksten som `/nyheter`, uten at det var synlig noe sted.
 
 ### Changed
 
