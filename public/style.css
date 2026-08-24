@@ -11,45 +11,89 @@
 }
 
 :root {
-  /* Flater — dyp fiolett kampkveld, tre nivåer + hairline-kanter */
-  --bg: #0d0a15;
-  --surface: #151021;
-  --surface-2: #1d172e;
-  --surface-3: #262039;
-  --border: rgba(160, 145, 220, 0.14);
-  --border-strong: rgba(160, 145, 220, 0.3);
+  color-scheme: dark;
+
+  /* Flater — FPL-lilla natt. Mørkt er basen: det man får uten JS. */
+  --bg: #170826;
+  --surface: #221035;
+  --surface-2: #2d1846;
+  --surface-3: #3a2358;
+  --border: rgba(190, 160, 255, 0.14);
+  --border-strong: rgba(190, 160, 255, 0.3);
 
   /* Tekst */
-  --text: #f0edfa;
-  --text-dim: #a49bc4;
-  --dim-strong: #8c83ad; /* dempet, men lesbar: 5,3:1 mot --surface */
+  --text: #f4f1fa;
+  --text-dim: #b8a9d1;
+  --dim-strong: #a293c0;
 
-  /* Aksenter — grønn = handling/positivt, magenta = kaptein/live/negativt varsel */
-  --accent: #00e58c;
-  --accent-soft: rgba(0, 229, 140, 0.12);
-  --accent-2: #ff3d81;
-  --accent-2-soft: rgba(255, 61, 129, 0.12);
-  --negative: #ff6b8a;
-  --warn-bg: #352b12;
+  /* Grønn = handling. --accent er FYLL (mørk tekst oppå), --accent-text er
+     grønn som tekst — i lyst tema blir den mørkegrønn, FPL-grønn på hvitt
+     er 1,34:1. */
+  --accent: #00ff87;
+  --accent-text: #00ff87;
+  --accent-ink: #170826;
+  --accent-soft: rgba(0, 255, 135, 0.12);
+
+  /* Rosa = kaptein, live, negativt varsel. Fyll/tekst/ink som for grønn. */
+  --accent-2: #e90052;
+  --accent-2-text: #ff4d99;
+  --accent-2-ink: #ffffff;
+  --accent-2-soft: rgba(233, 0, 82, 0.14);
+
+  /* Cyan = AI-innhold */
+  --cyan: #04f5ff;
+  --cyan-text: #04f5ff;
+  --cyan-soft: rgba(4, 245, 255, 0.12);
+
+  --negative: #ff5c8a;
+  --warn-bg: #3d2f0f;
   --warn-border: #8a6d1f;
-  --warn-text: #f5cf6b;
+  --warn-text: #ffd166;
 
-  /* FDR — FPL-konvensjon 1 lett → 5 vanskelig. 1–2 får mørk tekst, 4–5 hvit */
-  --fdr-1: #0e8c4f;
-  --fdr-2: #27a35f;
-  --fdr-3: #4a4168;
-  --fdr-4: #bd3a5f;
-  --fdr-5: #97183f;
-  --fdr-blank: #221b36;
+  /* FDR — FPLs egne farger, like i begge temaer. 1/4/5 hvit tekst, 2/3 lilla. */
+  --fdr-1: #375523;
+  --fdr-2: #01fc7a;
+  --fdr-3: #e7e7e7;
+  --fdr-4: #ff1751;
+  --fdr-5: #80072d;
+  --fdr-ink-light: #ffffff;
+  --fdr-ink-dark: #37003C;
+  --fdr-blank: #2d1846;
 
-  /* Scrollbar i mørke scrollbokser — Chrome tegner ellers lys standard */
-  --scrollbar-thumb: #3a3550;
-  --scrollbar-thumb-hover: #4d4668;
+  /* Topbar er FPL-lilla i begge temaer — merkevareankeret. */
+  --topbar-bg: #37003C;
+  --topbar-text: #ffffff;
+  --topbar-dim: #d9cfe0;
+  --topbar-hover: rgba(255, 255, 255, 0.1);
+
+  /* Hero */
+  --hero-from: #221035;
+  --hero-to: #3a2358;
+  --hero-text: #f4f1fa;
+  --hero-dim: #b8a9d1;
+
+  /* Banen, skygger, scrollbar, fokus, plassholder */
+  --pitch-line: rgba(240, 253, 248, 0.09);
+  --pitch-stripe-a: rgba(0, 255, 135, 0.055);
+  --pitch-stripe-b: rgba(0, 255, 135, 0.03);
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --scrollbar-thumb: #5c4a80;
+  --scrollbar-thumb-hover: #7a66a3;
+  --focus: #00ff87;
+  --club-fallback: #3a2358;
 
   /* Typografi */
   --font-display: 'Archivo', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-mono: ui-monospace, 'Cascadia Mono', Consolas, 'SF Mono', monospace;
+  --fs-xs: 0.7rem;
+  --fs-sm: 0.8rem;
+  --fs-base: 0.9rem;
+  --fs-md: 1rem;
+  --fs-lg: 1.2rem;
+  --fs-xl: 1.5rem;
+  --fs-2xl: 1.9rem;
+  --fs-hero: clamp(2.6rem, 9vw, 4.2rem);
 
   /* Rytme */
   --space-1: 0.25rem;
@@ -63,8 +107,64 @@
   --topbar-h: 57px;
   --radius: 12px;
   --radius-sm: 8px;
+  --radius-pill: 999px;
   --pad: 1rem;
   --maxw: 1160px;
+}
+
+/* Lyst tema — FPL-dagslys. Settes av inline-scriptet i layout.ejs (lagret
+   valg eller prefers-color-scheme) og av temabryteren i app.js. Kun
+   fargetokens: alt annet arves fra :root. */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f4f2f8;
+  --surface: #ffffff;
+  --surface-2: #efeaf4;
+  --surface-3: #e3dcec;
+  --border: rgba(55, 0, 60, 0.12);
+  --border-strong: rgba(55, 0, 60, 0.25);
+  --text: #37003C;
+  --text-dim: #5c4a6b;
+  --dim-strong: #665573;
+  --accent: #00ff87;
+  --accent-text: #04703d;
+  --accent-ink: #37003C;
+  --accent-soft: rgba(0, 255, 135, 0.18);
+  --accent-2: #e90052;
+  --accent-2-text: #c2003f;
+  --accent-2-ink: #ffffff;
+  --accent-2-soft: rgba(233, 0, 82, 0.1);
+  --cyan: #04f5ff;
+  --cyan-text: #0b6f78;
+  --cyan-soft: rgba(4, 245, 255, 0.14);
+  --negative: #c2003f;
+  --warn-bg: #fff3cd;
+  --warn-border: #e0b84a;
+  --warn-text: #6b4d00;
+  --fdr-1: #375523;
+  --fdr-2: #01fc7a;
+  --fdr-3: #e7e7e7;
+  --fdr-4: #ff1751;
+  --fdr-5: #80072d;
+  --fdr-ink-light: #ffffff;
+  --fdr-ink-dark: #37003C;
+  --fdr-blank: #efeaf4;
+  --topbar-bg: #37003C;
+  --topbar-text: #ffffff;
+  --topbar-dim: #d9cfe0;
+  --topbar-hover: rgba(255, 255, 255, 0.1);
+  --hero-from: #37003C;
+  --hero-to: #5e1a6b;
+  --hero-text: #ffffff;
+  --hero-dim: #d9cfe0;
+  --pitch-line: rgba(55, 0, 60, 0.12);
+  --pitch-stripe-a: rgba(0, 255, 135, 0.16);
+  --pitch-stripe-b: rgba(0, 255, 135, 0.1);
+  --shadow: 0 2px 8px rgba(55, 0, 60, 0.12);
+  --scrollbar-thumb: #c9bfd6;
+  --scrollbar-thumb-hover: #b1a4c2;
+  --focus: #37003C;
+  --club-fallback: #e3dcec;
 }
 
 * {
@@ -88,7 +188,7 @@ h3 {
 }
 
 a {
-  color: var(--accent);
+  color: var(--accent-text);
   text-decoration: none;
 }
 
@@ -97,7 +197,7 @@ a:hover {
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--focus);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -111,10 +211,8 @@ a:hover {
   align-items: center;
   gap: var(--space-5);
   padding: 0.7rem 1.25rem;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
-  background: color-mix(in srgb, var(--bg) 85%, transparent);
-  backdrop-filter: blur(10px);
+  background: var(--topbar-bg);
+  color: var(--topbar-text);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -123,9 +221,9 @@ a:hover {
 .wordmark {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 1.1rem;
+  font-size: var(--fs-lg);
   letter-spacing: -0.02em;
-  color: var(--text);
+  color: var(--topbar-text);
   flex: 0 0 auto;
 }
 
@@ -149,24 +247,60 @@ a:hover {
 
 .topbar nav a {
   flex: 0 0 auto;
-  color: var(--text-dim);
+  color: var(--topbar-dim);
   padding: 0.35rem 0.75rem;
-  border-radius: 99px;
-  font-size: 0.92rem;
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-base);
   font-weight: 500;
   scroll-snap-align: start;
 }
 
 .topbar nav a:hover {
-  color: var(--text);
-  background: var(--surface-2);
+  color: var(--topbar-text);
+  background: var(--topbar-hover);
   text-decoration: none;
 }
 
 .topbar nav a[aria-current='page'] {
-  color: var(--accent);
-  background: var(--accent-soft);
+  color: var(--accent-ink);
+  background: var(--accent);
   font-weight: 600;
+}
+
+.topbar :focus-visible {
+  outline-color: var(--topbar-text);
+}
+
+.theme-toggle {
+  flex: 0 0 auto;
+  margin-left: auto;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--topbar-hover);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--topbar-text);
+  cursor: pointer;
+  padding: 0;
+}
+
+.theme-toggle:hover {
+  background: var(--topbar-hover);
+}
+
+.theme-toggle .theme-icon {
+  display: none;
+  width: 20px;
+  height: 20px;
+}
+
+.theme-toggle[data-mode='auto'] .theme-icon--auto,
+.theme-toggle[data-mode='light'] .theme-icon--light,
+.theme-toggle[data-mode='dark'] .theme-icon--dark {
+  display: block;
 }
 
 @media (max-width: 640px) {
@@ -205,7 +339,7 @@ a:hover {
   border-bottom: 1px solid var(--warn-border);
   color: var(--warn-text);
   padding: 0.6rem 1.25rem;
-  font-size: 0.9rem;
+  font-size: var(--fs-base);
 }
 
 /* ---------- Hovedinnhold ---------- */
@@ -221,7 +355,7 @@ footer {
   margin: 0 auto;
   padding: var(--space-4) 1.25rem var(--space-6);
   color: var(--text-dim);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
 }
 
 /* ---------- Hero: deadline-scoreboard (signaturelementet) ---------- */
@@ -229,7 +363,8 @@ footer {
 .hero {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(160deg, var(--surface) 0%, var(--surface-2) 70%, #241a3d 100%);
+  background: linear-gradient(160deg, var(--hero-from), var(--hero-to));
+  color: var(--hero-text);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: var(--space-6) var(--pad);
@@ -243,7 +378,7 @@ footer {
   position: absolute;
   inset: auto 0 0 0;
   height: 3px;
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  background: linear-gradient(90deg, var(--accent), var(--cyan));
 }
 
 .eyebrow {
@@ -254,32 +389,32 @@ footer {
   margin: 0 0 var(--space-3);
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  font-size: 0.78rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
-  color: var(--accent);
+  color: var(--hero-dim);
 }
 
 .gw-badge {
   display: inline-block;
-  background: var(--surface-3);
-  border: 1px solid var(--border-strong);
-  border-radius: 99px;
+  background: var(--accent);
+  border: 0;
+  border-radius: var(--radius-pill);
   padding: 0.15rem 0.7rem;
   font-family: var(--font-display);
   font-weight: 700;
   letter-spacing: 0.04em;
-  color: var(--text);
+  color: var(--accent-ink);
 }
 
 .hero h1 {
   margin: 0;
-  font-size: 1.4rem;
+  font-size: var(--fs-xl);
   font-weight: 700;
 }
 
 .hero-date {
   margin: 0 0 var(--space-5);
-  color: var(--text-dim);
+  color: var(--hero-dim);
 }
 
 .sr-only {
@@ -306,24 +441,24 @@ footer {
 .countdown .val {
   font-family: var(--font-display);
   font-variant-numeric: tabular-nums;
-  font-size: clamp(2.6rem, 9vw, 4.2rem);
+  font-size: var(--fs-hero);
   font-weight: 800;
   letter-spacing: -0.03em;
-  color: var(--text);
+  color: var(--hero-text);
   line-height: 1.05;
 }
 
 .countdown .lbl {
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  font-size: 0.72rem;
-  color: var(--text-dim);
+  font-size: var(--fs-xs);
+  color: var(--hero-dim);
 }
 
 .deadline-passed {
   font-family: var(--font-display);
-  font-size: 1.35rem;
-  color: var(--accent-2);
+  font-size: var(--fs-xl);
+  color: var(--hero-text);
   font-weight: 700;
   margin: 0;
 }
@@ -366,7 +501,7 @@ footer {
   gap: var(--space-2);
   margin: 0 0 var(--space-3);
   font-family: var(--font-display);
-  font-size: 0.8rem;
+  font-size: var(--fs-sm);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -380,29 +515,29 @@ footer {
   min-width: 0;
 }
 
-/* AI-merket kort: magenta hairline på venstre kant gjør det tydelig hva som
+/* AI-merket kort: cyan hairline på venstre kant gjør det tydelig hva som
    er generert tekst og hva som er rådata. */
 .card-ai {
-  border-left: 3px solid var(--accent-2);
+  border-left: 3px solid var(--cyan);
 }
 
 .ai-badge {
   display: inline-block;
   white-space: nowrap;
   flex-shrink: 0;
-  background: var(--accent-2-soft);
-  color: var(--accent-2);
+  background: var(--cyan-soft);
+  color: var(--cyan-text);
   border-radius: var(--radius-sm);
   padding: 0.05rem 0.4rem;
   font-family: var(--font-display);
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   font-weight: 800;
   letter-spacing: 0.08em;
 }
 
 .empty {
   color: var(--text-dim);
-  font-size: 0.9rem;
+  font-size: var(--fs-base);
 }
 
 /* ---------- Tabeller ---------- */
@@ -456,13 +591,13 @@ footer {
 table.data {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.88rem;
+  font-size: var(--fs-base);
   white-space: nowrap;
 }
 
 table.data th {
   text-align: left;
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--dim-strong);
@@ -491,7 +626,7 @@ table.data tbody tr:hover {
 }
 
 .accent {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 .negative {
@@ -500,13 +635,13 @@ table.data tbody tr:hover {
 
 .dim {
   color: var(--text-dim);
-  font-size: 0.82rem;
+  font-size: var(--fs-sm);
 }
 
 .news {
   display: block;
   color: var(--text-dim);
-  font-size: 0.78rem;
+  font-size: var(--fs-sm);
   max-width: 34ch;
   white-space: normal;
 }
@@ -516,8 +651,8 @@ table.data tbody tr:hover {
 .status {
   display: inline-block;
   padding: 0.1rem 0.5rem;
-  border-radius: 99px;
-  font-size: 0.72rem;
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-xs);
   font-weight: 600;
   letter-spacing: 0.01em;
   background: var(--surface-2);
@@ -529,7 +664,7 @@ table.data tbody tr:hover {
 .status-u,
 .status-n {
   background: var(--accent-2-soft);
-  color: var(--accent-2);
+  color: var(--accent-2-text);
 }
 
 .status-d {
@@ -561,13 +696,13 @@ table.data tbody tr:hover {
   font-size: 0.75rem;
   font-weight: 700;
   font-family: var(--font-mono);
-  color: #fff;
+  color: var(--fdr-ink-light);
 }
 
-/* 1–2 er lys grønn: mørk tekst holder kontrastkravet, hvit gjør det ikke. */
-.fdr-1,
-.fdr-2 {
-  color: var(--bg);
+/* FPLs egne FDR-farger: 1/4/5 bærer hvit tekst, 2/3 er lyse og bærer lilla. */
+.fdr-2,
+.fdr-3 {
+  color: var(--fdr-ink-dark);
 }
 
 .fdr-1 { background: var(--fdr-1); }
@@ -591,7 +726,7 @@ table.data tbody tr:hover {
 
 .hint {
   margin: 0.6rem 0 0;
-  font-size: 0.78rem;
+  font-size: var(--fs-sm);
   color: var(--text-dim);
 }
 
@@ -609,13 +744,13 @@ table.data tbody tr:hover {
   font-size: 4rem;
   font-weight: 800;
   letter-spacing: -0.03em;
-  color: var(--accent-2);
+  color: var(--accent-2-text);
   margin: 0;
   line-height: 1;
 }
 
 .empty-state h1 {
-  font-size: 1.25rem;
+  font-size: var(--fs-lg);
   margin: var(--space-2) 0;
 }
 
@@ -662,7 +797,7 @@ table.data tbody tr:hover {
   flex-direction: column;
   gap: var(--space-1);
   font-family: var(--font-display);
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--text-dim);
@@ -677,13 +812,13 @@ table.data tbody tr:hover {
   color: var(--text);
   padding: 0.45rem 0.65rem;
   font: inherit;
-  font-size: 0.9rem;
+  font-size: var(--fs-base);
   min-width: 9rem;
 }
 
 .filters input:focus,
 .filters select:focus {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--focus);
   outline-offset: 1px;
 }
 
@@ -694,13 +829,13 @@ table.data tbody tr:hover {
   color: var(--text);
   padding: 0.45rem 0.9rem;
   font: inherit;
-  font-size: 0.9rem;
+  font-size: var(--fs-base);
   cursor: pointer;
 }
 
 .filters button:hover {
   border-color: var(--accent);
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 /* «Viser X av Y» skyves ut til høyre kant av panelet. */
@@ -721,7 +856,7 @@ table.sortable th:hover {
 
 table.sortable th[aria-sort='descending'],
 table.sortable th[aria-sort='ascending'] {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 table.sortable th[aria-sort='descending']::after {
@@ -754,13 +889,13 @@ table.sortable th[aria-sort='ascending']::after {
 .stat-val {
   font-family: var(--font-display);
   font-variant-numeric: tabular-nums;
-  font-size: 1.5rem;
+  font-size: var(--fs-xl);
   font-weight: 800;
   letter-spacing: -0.02em;
 }
 
 .stat-lbl {
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   text-transform: uppercase;
   letter-spacing: 0.09em;
   color: var(--text-dim);
@@ -769,7 +904,6 @@ table.sortable th[aria-sort='ascending']::after {
 /* Banen: klippestriper, midtsirkel-bue nederst og 16-meter øverst — diskret
    nok til at spillerkortene fortsatt er det man leser først. */
 .pitch {
-  --pitch-line: rgba(240, 253, 248, 0.09);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -777,8 +911,7 @@ table.sortable th[aria-sort='ascending']::after {
   overflow: hidden;
   background:
     radial-gradient(circle 3.5rem at 50% 100%, transparent calc(3.5rem - 2px), var(--pitch-line) calc(3.5rem - 1px), transparent 3.5rem),
-    repeating-linear-gradient(180deg, rgba(0, 229, 140, 0.055) 0 3rem, rgba(0, 229, 140, 0.03) 3rem 6rem),
-    linear-gradient(180deg, rgba(0, 229, 140, 0.05), rgba(0, 229, 140, 0.015));
+    repeating-linear-gradient(180deg, var(--pitch-stripe-a) 0 3rem, var(--pitch-stripe-b) 3rem 6rem);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: var(--space-5) var(--space-2) var(--space-6);
@@ -811,7 +944,7 @@ table.sortable th[aria-sort='ascending']::after {
   background: var(--surface);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--shadow);
   padding: 0.4rem 0.6rem;
   min-width: 7.5rem;
   text-align: center;
@@ -822,34 +955,34 @@ table.sortable th[aria-sort='ascending']::after {
 /* Magenta er reservert kaptein, live og negative varsler. */
 .chip-captain {
   border-color: transparent;
-  box-shadow: 0 0 0 2px var(--accent-2), 0 2px 8px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 0 2px var(--accent-2), var(--shadow);
 }
 
 .chip-name {
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
 }
 
 .chip-meta {
-  font-size: 0.72rem;
+  font-size: var(--fs-xs);
   color: var(--text-dim);
 }
 
 .cap {
   display: inline-block;
   background: var(--accent-2);
-  color: #fff;
+  color: var(--accent-2-ink);
   border-radius: 50%;
   width: 1.1rem;
   height: 1.1rem;
   line-height: 1.1rem;
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   text-align: center;
 }
 
 .cap.vice {
   background: var(--surface);
-  color: var(--accent-2);
+  color: var(--accent-2-text);
   border: 1px solid var(--accent-2);
 }
 
@@ -862,7 +995,7 @@ table.sortable th[aria-sort='ascending']::after {
 }
 
 .bench-label {
-  font-size: 0.72rem;
+  font-size: var(--fs-xs);
   text-transform: uppercase;
   letter-spacing: 0.09em;
   color: var(--text-dim);
@@ -892,7 +1025,7 @@ table.sortable th[aria-sort='ascending']::after {
 .reasons {
   margin: 0.2rem 0 0;
   padding-left: 1.1rem;
-  font-size: 0.82rem;
+  font-size: var(--fs-sm);
   color: var(--text-dim);
 }
 
@@ -955,7 +1088,7 @@ table.sortable th[aria-sort='ascending']::after {
 .match-team {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: var(--fs-base);
   letter-spacing: 0.02em;
 }
 
@@ -967,7 +1100,7 @@ table.sortable th[aria-sort='ascending']::after {
   font-family: var(--font-display);
   font-variant-numeric: tabular-nums;
   font-weight: 800;
-  font-size: 1.25rem;
+  font-size: var(--fs-lg);
   letter-spacing: -0.02em;
   padding: 0 var(--space-2);
 }
@@ -987,7 +1120,7 @@ table.sortable th[aria-sort='ascending']::after {
 }
 
 .match-live .match-status {
-  color: var(--accent-2);
+  color: var(--accent-2-text);
   font-weight: 700;
 }
 
@@ -1044,7 +1177,7 @@ table.sortable th[aria-sort='ascending']::after {
 }
 
 .news-list a:hover {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 /* Ingressen fra RSS-en. Den gjør AI-punktene over etterprøvbare mot det
@@ -1052,7 +1185,7 @@ table.sortable th[aria-sort='ascending']::after {
 .news-list .news-lead {
   margin: 0;
   color: var(--text-dim);
-  font-size: 0.9rem;
+  font-size: var(--fs-base);
   line-height: 1.45;
 }
 
@@ -1062,15 +1195,24 @@ table.sortable th[aria-sort='ascending']::after {
 
 /* ---------- AI-rådgiver ---------- */
 
-.btn-accent {
-  background: var(--accent-soft);
-  border: 1px solid var(--accent);
-  color: var(--accent);
-  border-radius: 6px;
+.btn-accent,
+.btn-link {
+  display: inline-block;
+  background: var(--accent);
+  border: 0;
+  color: var(--accent-ink);
+  border-radius: var(--radius-sm);
   padding: 0.5rem 1rem;
   font: inherit;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-accent:hover,
+.btn-link:hover {
+  text-decoration: none;
+  filter: brightness(0.95);
 }
 
 .btn-accent:disabled {
@@ -1082,7 +1224,7 @@ table.sortable th[aria-sort='ascending']::after {
   margin-top: var(--space-3);
   border-top: 1px solid var(--border);
   padding-top: var(--space-3);
-  font-size: 0.92rem;
+  font-size: var(--fs-base);
 }
 
 .loading {
@@ -1117,7 +1259,7 @@ table.sortable th[aria-sort='ascending']::after {
 footer .version {
   margin: 0.25rem 0 0;
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: var(--fs-sm);
   opacity: 0.75;
 }
 
@@ -1127,7 +1269,7 @@ footer .version {
   /* Topbaren er nå én scrollbar linje på ~48 px og kan trygt være sticky. */
   .topbar nav a {
     padding: 0.3rem 0.6rem;
-    font-size: 0.9rem;
+    font-size: var(--fs-base);
   }
 
   main {

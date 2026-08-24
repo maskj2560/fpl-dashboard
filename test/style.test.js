@@ -1,0 +1,85 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+// Stilarket er et API: hver fargetoken finnes i begge temaer, ingen farger
+// utenfor tokenblokkene, og kontrastparene består WCAG i begge temaer.
+// Erstatter engangsskriptet kontrast.mjs fra v1.1.0 med en varig test.
+const css = fs.readFileSync(new URL('../public/style.css', import.meta.url), 'utf8');
+
+function tokensIn(selector) {
+  const start = css.indexOf(`${selector} {`);
+  assert.notEqual(start, -1, `fant ikke blokken «${selector} {»`);
+  const end = css.indexOf('\n}', start);
+  const out = new Map();
+  for (const m of css.slice(start, end).matchAll(/--([\w-]+):\s*([^;]+);/g)) out.set(m[1], m[2].trim());
+  return out;
+}
+
+const dark = tokensIn(':root');
+const light = tokensIn(':root[data-theme="light"]');
+const isColor = (v) => /^(#|rgba?\(|0 2px 8px)/.test(v);
+
+test('style.css: hver fargetoken i :root finnes også i lyst tema, og omvendt', () => {
+  const darkColors = [...dark].filter(([, v]) => isColor(v)).map(([k]) => k);
+  const lightKeys = [...light.keys()];
+  assert.deepEqual(lightKeys.filter((k) => !dark.has(k)), [], 'lys-token uten mørk motpart');
+  assert.deepEqual(darkColors.filter((k) => !light.has(k)), [], 'mørk fargetoken mangler i lyst tema');
+  assert.ok(darkColors.length >= 40, `for få fargetokens: ${darkColors.length}`);
+});
+
+test('style.css: ingen hardkodede farger utenfor tokenblokkene', () => {
+  const stripped = css
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/:root(\[data-theme="light"\])? \{[\s\S]*?\n\}/g, '')
+    .split('\n')
+    .filter((line) => !line.includes('mask-image')) // #000 i masken er alfa, ikke farge
+    .join('\n');
+  const hits = stripped.match(/#[0-9a-fA-F]{3,8}\b|rgba?\(/g) ?? [];
+  assert.deepEqual(hits, [], `hardkodede farger: ${hits.join(', ')}`);
+});
+
+const lum = (hex) => {
+  const [r, g, b] = [1, 3, 5]
+    .map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+    .map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+};
+const ratio = (a, b) => {
+  const [l1, l2] = [lum(a), lum(b)].sort((x, y) => y - x);
+  return (l1 + 0.05) / (l2 + 0.05);
+};
+
+// [forgrunn, bakgrunn, krav] — 4.5 tekst, 3 grafikk. Kun hex-tokens.
+const PAIRS = [
+  ['text', 'bg', 4.5], ['text', 'surface', 4.5], ['text', 'surface-2', 4.5], ['text', 'surface-3', 4.5],
+  ['text-dim', 'surface', 4.5], ['text-dim', 'surface-2', 4.5], ['text-dim', 'surface-3', 4.5],
+  ['dim-strong', 'surface', 4.5], ['dim-strong', 'surface-3', 4.5],
+  ['accent-text', 'bg', 4.5], ['accent-text', 'surface', 4.5], ['accent-text', 'surface-2', 4.5],
+  ['accent-ink', 'accent', 4.5],
+  ['accent-2-text', 'surface', 4.5], ['accent-2-text', 'surface-2', 4.5],
+  ['accent-2-ink', 'accent-2', 4.5],
+  ['cyan-text', 'surface', 4.5], ['cyan-text', 'surface-2', 4.5],
+  ['negative', 'surface', 4.5], ['negative', 'surface-2', 4.5],
+  ['warn-text', 'warn-bg', 4.5],
+  ['topbar-text', 'topbar-bg', 4.5], ['topbar-dim', 'topbar-bg', 4.5], ['accent-ink', 'accent', 4.5],
+  ['hero-text', 'hero-from', 4.5], ['hero-text', 'hero-to', 4.5], ['hero-dim', 'hero-from', 4.5], ['hero-dim', 'hero-to', 4.5],
+  ['fdr-ink-light', 'fdr-1', 3], ['fdr-ink-dark', 'fdr-2', 3], ['fdr-ink-dark', 'fdr-3', 3],
+  ['fdr-ink-light', 'fdr-4', 3], ['fdr-ink-light', 'fdr-5', 3],
+  ['focus', 'bg', 3], ['focus', 'surface', 3],
+];
+
+for (const [name, tokens] of [['mørkt', dark], ['lyst', light]]) {
+  test(`style.css: kontrastparene består WCAG i ${name} tema`, () => {
+    const feil = [];
+    for (const [fg, bg, krav] of PAIRS) {
+      const f = tokens.get(fg) ?? dark.get(fg);
+      const b = tokens.get(bg) ?? dark.get(bg);
+      assert.match(f, /^#[0-9a-f]{6}$/i, `${fg} er ikke hex i ${name}`);
+      assert.match(b, /^#[0-9a-f]{6}$/i, `${bg} er ikke hex i ${name}`);
+      const r = ratio(f, b);
+      if (r < krav) feil.push(`${fg}/${bg} = ${r.toFixed(2)} (krav ${krav})`);
+    }
+    assert.deepEqual(feil, []);
+  });
+}

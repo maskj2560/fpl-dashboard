@@ -146,6 +146,24 @@ test('layout.ejs preloader fonten med samme ?v som @font-face i style.css', asyn
   assert.ok(preload?.includes('?v='), 'fonten er ikke versjonert');
 });
 
+test('layout.ejs setter data-theme i et inline-script FØR stilarket lastes', async () => {
+  const html = await renderView('layout', layoutLocals('/'));
+  const script = html.indexOf("localStorage.getItem('fpl-theme')");
+  const css = html.indexOf('href="/style.css?v=');
+  assert.notEqual(script, -1, 'inline-scriptet mangler');
+  assert.ok(script < css, 'scriptet må ligge før stilarket, ellers blaffer siden i feil tema');
+  assert.ok(html.includes("setAttribute('data-theme'"), 'scriptet setter ikke data-theme');
+  assert.ok(html.includes('prefers-color-scheme: light'), 'auto-fallback mangler');
+});
+
+test('layout.ejs har temabryteren i topbaren med aria-label', async () => {
+  const html = await renderView('layout', layoutLocals('/'));
+  assert.match(html, /<button type="button" class="theme-toggle" id="theme-toggle" data-mode="auto" aria-label="Tema: automatisk \(følger systemet\)"/);
+  const topbarEnd = html.indexOf('</header>');
+  assert.ok(html.indexOf('id="theme-toggle"') < topbarEnd, 'bryteren ligger ikke i topbaren');
+  assert.equal((html.match(/class="theme-icon /g) ?? []).length, 3, 'tre ikoner (auto/lys/mørk)');
+});
+
 test('live.ejs escaper < i lagnavn inne i script-blokken', async () => {
   const html = await renderView('live', fx.live);
   assert.ok(!html.includes('</script><img'), 'lagnavn brøt ut av script-taggen');

@@ -477,10 +477,11 @@ temabryter som husker valget. Ingen markup-endringer utenfor `layout.ejs`.
 
 ## Task 1.0-0 — Oppstart
 
-- [ ] Les `docs/HANDOVER.md` + `CLAUDE.md` + denne planen + mockupen.
-- [ ] `git checkout main && git status --porcelain` tomt. `npm test` →
-      **272/272**, `npm run lint` → exit 0. Observert: ______
-- [ ] `git checkout -b feat/ui-v130-fundament`
+- [x] Les `docs/HANDOVER.md` + `CLAUDE.md` + denne planen + mockupen.
+- [x] `git checkout main && git status --porcelain` tomt. `npm test` →
+      **272/272**, `npm run lint` → exit 0. Observert: **272/272, lint exit 0,
+      rent tre** (24. aug)
+- [x] `git checkout -b feat/ui-v130-fundament`
 
 ## Task 1.0-1 — `test/style.test.js` (ny fil): tokenparitet, ingen hardkodede farger, kontrast
 
@@ -577,11 +578,12 @@ for (const [name, tokens] of [['mørkt', dark], ['lyst', light]]) {
 Merk: dette er 4 `test(`-kall (paritet, hardkodet, kontrast ×2 via løkke),
 som i §10.2.
 
-- [ ] Tester skrevet. `npm test` — **forventet rødt: 276 tester, 3 feiler**
+- [x] Tester skrevet. `npm test` — **forventet rødt: 276 tester, 3 feiler**
       (paritet: lys-blokk finnes ikke → `assert.notEqual` kaster i modul-
       scope → hele fila feiler som én). NB: kaster `tokensIn` på toppnivå,
       rapporterer node:test det som 1 feilende fil, ikke 4 tester. Godta
-      begge former; noter observert: ______
+      begge former; noter observert: **273 tester, 1 feiler** (hele
+      style.test.js som én — den andre av de to godtatte formene)
 
 ## Task 1.0-2 — `public/style.css`: tokenblokkene (grønt for 1.0-1)
 
@@ -767,14 +769,14 @@ Skriftstørrelser: erstatt de faste rem-verdiene med nærmeste `--fs-*`
 1.35–1.5 → xl, 1.9 → 2xl, countdown → hero). `border-radius: 99px` →
 `var(--radius-pill)`.
 
-- [ ] `npm test` — **forventet grønt: 276/276** (style-testene grønne).
-      `npm run lint` exit 0. Observert: ______
-- [ ] Kjør style-testen alene og les output: `node --test test/style.test.js`
-      — alle 4 OK.
-- [ ] CHANGELOG `[Unreleased]` → `### Changed`: «Ny palett i FPL-familien
+- [x] `npm test` — **forventet grønt: 276/276** (style-testene grønne).
+      `npm run lint` exit 0. Observert: **276/276, lint exit 0**
+- [x] Kjør style-testen alene og les output: `node --test test/style.test.js`
+      — alle 4 OK. Observert: **4/4 pass**
+- [x] CHANGELOG `[Unreleased]` → `### Changed`: «Ny palett i FPL-familien
       (lilla, grønn, cyan, rosa) og FPLs egne FDR-farger, som tokens i to
       temaer. Kontrasten (≥ 4,5:1) er nå låst av en test.»
-- [ ] Commit: `feat(ui): tokenpalett for mørkt og lyst tema, kontrast låst av test`
+- [x] Commit: `feat(ui): tokenpalett for mørkt og lyst tema, kontrast låst av test`
 
 ## Task 1.0-3 — Temafunksjoner i `app.js` (TDD)
 
@@ -814,7 +816,8 @@ test('THEME_LABELS har norsk etikett for alle tre modusene', () => {
 });
 ```
 
-- [ ] `npm test` — **forventet rødt: 280 tester, 4 feiler.** Observert: ______
+- [x] `npm test` — **forventet rødt: 280 tester, 4 feiler.** Observert: **280
+      tester, 4 feiler** (nøyaktig som forventet)
 
 ### 3b. Implementasjon (public/app.js)
 
@@ -892,10 +895,10 @@ Og nederst i fila, etter Modul 4:
 })();
 ```
 
-- [ ] `npm test` — **forventet grønt: 280/280.** `npm run lint` exit 0
+- [x] `npm test` — **forventet grønt: 280/280.** `npm run lint` exit 0
       (`no-unused-vars`: `THEME_LABELS`, `resolveTheme`, `nextMode` brukes i
-      Modul 5). Observert: ______
-- [ ] Commit: `feat(ui): temafunksjoner og bryter-modul i app.js`
+      Modul 5). Observert: **280/280, lint exit 0**
+- [x] Commit: `feat(ui): temafunksjoner og bryter-modul i app.js`
 
 ## Task 1.0-4 — Layout: inline-script, bryter-partial, topbar (TDD)
 
@@ -924,7 +927,8 @@ test('layout.ejs har temabryteren i topbaren med aria-label', async () => {
 });
 ```
 
-- [ ] `npm test` — **forventet rødt: 282 tester, 2 feiler.** Observert: ______
+- [x] `npm test` — **forventet rødt: 282 tester, 2 feiler.** Observert: **282
+      tester, 2 feiler** (nøyaktig som forventet)
 
 ### 4b. Implementasjon
 
@@ -1004,14 +1008,14 @@ i 1.0-2-blokkene (samme verdi i begge).
 Mobil (≤ 640): `.topbar { gap: var(--space-3) }` som før; bryteren
 uendret 36 px.
 
-- [ ] `npm test` — **forventet grønt: 282/282** (asset-hash- og font-
+- [x] `npm test` — **forventet grønt: 282/282** (asset-hash- og font-
       testene består: scriptet refererer ingen filer). `npm run lint` exit 0.
-      Observert: ______
-- [ ] CHANGELOG `[Unreleased]` `### Added`: «Mørkt og lyst tema: følger
+      Observert: **282/282, lint exit 0**
+- [x] CHANGELOG `[Unreleased]` `### Added`: «Mørkt og lyst tema: følger
       nettleseren automatisk, og en bryter i toppmenyen (auto → lys → mørk)
       husker valget. Ingen blaff i feil tema ved sidelast.» `### Changed`:
       «Toppmenyen er FPL-lilla i begge temaer.»
-- [ ] Commit: `feat(ui): temabryter, inline-tema-script og lilla topbar`
+- [x] Commit: `feat(ui): temabryter, inline-tema-script og lilla topbar`
 
 ## Task 1.0-5 — Re-toning av komponentene (kun CSS)
 
@@ -1031,31 +1035,41 @@ mockupen. Konkret:
 - `.filters input:focus, select:focus { outline-color: var(--focus) }`.
 - Skriftstørrelser → `--fs-*` som beskrevet i 1.0-2.
 
-- [ ] `npm test` → **282/282**, `npm run lint` → 0, `node --test test/style.test.js`
-      → «ingen hardkodede farger» OK. Observert: ______
+- [x] `npm test` → **282/282**, `npm run lint` → 0, `node --test test/style.test.js`
+      → «ingen hardkodede farger» OK. Observert: **282/282, lint 0, 4/4 i
+      style.test.js**
 - [ ] Visuell sjekk mot mockupen i begge temaer (lokal server, se 1.0-6).
-- [ ] Commit: `feat(ui): re-toner alle komponenter til tokenpaletten`
+- [x] Commit: `feat(ui): re-toner alle komponenter til tokenpaletten`
 
 ## Task 1.0-6 — Røyk, Playwright, docs — STOPP
 
-- [ ] **Røyk uten nøkler (0 AI-kall):** scratchpad-.env med
+- [x] **Røyk uten nøkler (0 AI-kall):** scratchpad-.env med
       `ANTHROPIC_API_KEY=` og `DISCORD_WEBHOOK_URL=` TOMME, `node --env-file=<sti> src/server.js`
       på ledig port. `/health` → `ai:false, discord:false` FØRST. Så alle 11
-      ruter → 200, ukjent → 404. Observert: ______
-- [ ] **Playwright (Vedlegg A)** mot samme server: forventet **0 feil** av
-      ≈ 259 sjekker. Observert: ______
-- [ ] Manuell: bytt tema → reload → valget står. Systemtema-bytte i auto
+      ruter → 200, ukjent → 404. Observert: **port 3011, `ai:false,
+      discord:false, leagues:0`; alle 11 ruter 200, /finnes-ikke 404**
+- [x] **Playwright (Vedlegg A)** mot samme server: forventet **0 feil** av
+      ≈ 259 sjekker. Observert: **OK 332/332, 0 feil** (332 er fasiten fra
+      Vedlegg A; «≈ 259» var det gamle anslaget i §10.3)
+- [x] Manuell: bytt tema → reload → valget står. Systemtema-bytte i auto
       (Windows: Innstillinger → Farger) → siden følger uten reload.
-- [ ] Docs: ROADMAP (huk av etappe 1-punktene), HANDOVER (status + logg),
+      Verifisert programmatisk med Playwright `emulateMedia`: auto dark →
+      light uten reload (data-mode=auto), låst valg følger IKKE systemet,
+      aria-label = «Tema: mørkt» etter to klikk. Reload-persistens dekkes
+      av de 8 persistens-sjekkene i qa.mjs.
+- [x] Docs: ROADMAP (huk av etappe 1-punktene), HANDOVER (status + logg),
       VIDERE (kort: «lyst/mørkt tema er klart, venter på klarsignal»).
-- [ ] Commit `docs: v1.3.0 klar for release`. Rapporter til Marius og
+      HANDOVER rotert til 174 linjer (v1.2.5-status + loggpost økt 29 →
+      arkivet).
+- [x] Commit `docs: v1.3.0 klar for release`. Rapporter til Marius og
       **STOPP.** Task 1.0-7 kun på klarsignal.
 
 ## Task 1.0-7 — Release v1.3.0 (KUN på klarsignal)
 
-- [ ] Tidsvindu sjekket (ukedag/klokke, kamper i gang: nei). Observert: ______
-- [ ] `npm version minor --no-git-tag-version` → 1.3.0.
-- [ ] CHANGELOG `[Unreleased]` → `## [1.3.0] - <dato>`. ROADMAP: kø-punkt
+- [x] Tidsvindu sjekket (ukedag/klokke, kamper i gang: nei). Observert:
+      **mandag 24. aug 03:09, 0 kamper i gang, neste avspark 28. aug 19:00 UTC**
+- [x] `npm version minor --no-git-tag-version` → 1.3.0.
+- [x] CHANGELOG `[Unreleased]` → `## [1.3.0] - <dato>`. ROADMAP: kø-punkt
       5 huk av etappe 1; versjonsplan-rad v1.3.0 strykes. VIDERE «Nytt
       siden sist». HANDOVER status.
 - [ ] Commit `chore(release): v1.3.0`, `git checkout main`,

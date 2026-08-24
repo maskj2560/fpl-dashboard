@@ -25,6 +25,27 @@ function nextWakeupDelay(live, nowMs, bufferMs) {
   return Math.max(at + bufferMs - nowMs, 0);
 }
 
+// Tema: «auto» følger systemet, «light»/«dark» er lagret valg. Inline-
+// scriptet i layout.ejs setter data-theme før første paint med samme
+// regel — dette er bare bryteren og live-lytting på systemet etterpå.
+const THEME_KEY = 'fpl-theme';
+const THEME_MODES = ['auto', 'light', 'dark'];
+const THEME_LABELS = {
+  auto: 'Tema: automatisk (følger systemet)',
+  light: 'Tema: lyst',
+  dark: 'Tema: mørkt',
+};
+
+function resolveTheme(stored, prefersLight) {
+  if (stored === 'light' || stored === 'dark') return stored;
+  return prefersLight ? 'light' : 'dark';
+}
+
+function nextMode(mode) {
+  const i = THEME_MODES.indexOf(mode);
+  return THEME_MODES[(i + 1) % THEME_MODES.length];
+}
+
 // Modul 0: Mobilmenyen. Scroller aktiv lenke inn i syne, og togglar
 // kantfade-klassene som viser at menyen har mer innhold sidelengs.
 (function () {
@@ -315,5 +336,50 @@ function nextWakeupDelay(live, nowMs, bufferMs) {
       btn.disabled = false;
       btn.textContent = 'Spør AI om råd';
     }
+  });
+})();
+
+// Modul 5: Temabryteren i topbaren. Sykler auto → lys → mørk, lagrer valget
+// (auto = ingen nøkkel), og følger systemet live så lenge valget er auto.
+(function () {
+  'use strict';
+
+  const btn = document.getElementById('theme-toggle');
+  if (!btn) return;
+
+  const media = window.matchMedia('(prefers-color-scheme: light)');
+  const read = () => {
+    try {
+      return localStorage.getItem(THEME_KEY);
+    } catch {
+      return null;
+    }
+  };
+  const write = (mode) => {
+    try {
+      if (mode === 'auto') localStorage.removeItem(THEME_KEY);
+      else localStorage.setItem(THEME_KEY, mode);
+    } catch {
+      // Privat modus / blokkert lagring: valget gjelder til neste sidelast.
+    }
+  };
+
+  function apply(mode) {
+    const theme = resolveTheme(mode === 'auto' ? null : mode, media.matches);
+    document.documentElement.setAttribute('data-theme', theme);
+    btn.dataset.mode = mode;
+    btn.setAttribute('aria-label', THEME_LABELS[mode]);
+    btn.title = THEME_LABELS[mode];
+  }
+
+  let mode = THEME_MODES.includes(read()) ? read() : 'auto';
+  apply(mode);
+  btn.addEventListener('click', () => {
+    mode = nextMode(mode);
+    write(mode);
+    apply(mode);
+  });
+  media.addEventListener('change', () => {
+    if (mode === 'auto') apply(mode);
   });
 })();

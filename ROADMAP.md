@@ -21,7 +21,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | **P3** | Etter GW2: transfers-skjema mot ekte data | 3 | GW2 spilt (~29.–31. aug) |
 | **P4** | Kostnadsmåling uken etter 1. sep | 1 | dato |
 | ~~**v1.2.5**~~ | ~~Brief-kvalitetstrioen~~ | **utført 24. aug** | — |
-| **v1.3.0** | UI-overhaling, etappe 1: fundament (tokens i to temaer, temabryter, lilla topbar) | 5 | plan godkjent 24. aug — klarsignal per etappe |
+| ~~**v1.3.0**~~ | ~~UI-overhaling, etappe 1: fundament (tokens i to temaer, temabryter, lilla topbar)~~ | **utført 24. aug** | — |
 | **v1.3.1** | UI-overhaling, etappe 2: klubbgrafikk (merker + drakter, selvhostet) | 5 | v1.3.0 i prod |
 | **v1.3.2** | UI-overhaling, etappe 3: finpuss per side | 5 | v1.3.1 i prod |
 | **v1.3.3** | UI-overhaling, etappe 4: QA-rettelser | 5 | Marius' QA etter v1.3.2 |
@@ -87,9 +87,10 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
   kode, testnavn og forventede testtall) + mockupen
   https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849.
 - **Etapper (hver grønn, merges alene, prod alltid et helt UI):**
-  - [ ] **v1.3.0 Fundament** — tokenpalett i begge temaer (kontrast låst av
+  - [x] **v1.3.0 Fundament** — tokenpalett i begge temaer (kontrast låst av
         `test/style.test.js`), inline-tema-script, temabryter, lilla topbar,
-        `views/partials/`. 272 → 282 tester.
+        `views/partials/`. 272 → 282 tester. **Utført 24. aug: 282/282,
+        lint 0, Playwright 332/332, tag `v1.3.0` i prod.**
   - [ ] **v1.3.1 Klubbgrafikk** — `scripts/fetch-club-assets.mjs`,
         `public/img/clubs/`, `clubAssets.js`, `IMG_VERSION`, `teamCode` i
         brief/live/transfers, partials club-badge/club-shirt i alle views,

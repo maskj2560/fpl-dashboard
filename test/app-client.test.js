@@ -77,3 +77,33 @@ test('nextWakeupDelay gir null når kamper pågår eller avspark er ukjent', () 
   assert.equal(app.nextWakeupDelay({ anyLive: false, nextKickoff: 'tull' }, now, 30000), null);
   assert.equal(app.nextWakeupDelay(null, now, 30000), null);
 });
+
+// ---- v1.3.0: tema ----------------------------------------------------------
+// Inline-scriptet i layout.ejs speiler resolveTheme(); app.js eier bryteren.
+
+test('resolveTheme bruker lagret valg foran systemet', () => {
+  assert.equal(app.resolveTheme('light', false), 'light');
+  assert.equal(app.resolveTheme('dark', true), 'dark');
+});
+
+test('resolveTheme faller tilbake på systemet når ingenting gyldig er lagret', () => {
+  assert.equal(app.resolveTheme(null, true), 'light');
+  assert.equal(app.resolveTheme(null, false), 'dark');
+  assert.equal(app.resolveTheme('tull', true), 'light');
+  assert.equal(app.resolveTheme(undefined, false), 'dark');
+});
+
+test('nextMode sykler auto → light → dark → auto', () => {
+  assert.equal(app.nextMode('auto'), 'light');
+  assert.equal(app.nextMode('light'), 'dark');
+  assert.equal(app.nextMode('dark'), 'auto');
+  assert.equal(app.nextMode('ukjent'), 'auto');
+});
+
+test('THEME_LABELS har norsk etikett for alle tre modusene', () => {
+  const labels = app.evaluate('THEME_LABELS');
+  assert.deepEqual(Object.keys(labels).sort(), ['auto', 'dark', 'light']);
+  assert.match(labels.auto, /^Tema: automatisk/);
+  assert.equal(labels.light, 'Tema: lyst');
+  assert.equal(labels.dark, 'Tema: mørkt');
+});
