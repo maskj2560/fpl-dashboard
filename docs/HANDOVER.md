@@ -6,9 +6,19 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-24 (økt 35, Fable: plan for v1.3.4)
+**Sist oppdatert:** 2026-08-25 (økt 36, Opus: v1.3.4 under arbeid)
 
 ## Status akkurat nå
+
+- **v1.3.4 UNDER ARBEID (økt 36, Opus), branch `feat/ai-swr-v134`.**
+  Plan: `docs/plan-v134-ai-swr.md`. **Rotårsaken er målt, ikke gjettet:**
+  med fake Claude-klient (10 s forsinkelse; ekte kall 20–60 s) tok `/`
+  10 038 ms og `/brief` 10 023 ms på KALD cache — og nøyaktig det samme på
+  STALE cache. Uten AI (tomme nøkler) er alle 11 ruter under 0,3 s varme
+  (tregest: `/spillere` 282 ms, ren rendering av 496 KB HTML).
+  `/overganger` var 3 ms fordi laget ennå ikke har transfers — de inntil
+  38 live-kallene er altså ikke målt under last (hører til P3).
+  Delfunksjoner: (1) `ai.js` SWR + `getCached` ✅ 330/330.
 
 - **ETAPPE 4 / v1.3.3: kode og git er FERDIG, men PROD SVARER 401.**
   Økt 34, Opus. Klarsignal «Kjør» mandag 24. aug ~17:55. `main` =

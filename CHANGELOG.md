@@ -7,6 +7,13 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Changed
+
+- `ai.js` kan servere en utgått AI-tekst med en gang og fornye den i
+  bakgrunnen (stale-while-revalidate), og har fått `getCached()` som leser
+  cachen uten noen gang å gjøre et nettverkskall. Grunnlaget for at ingen
+  sidevisning skal vente på en AI-tekst.
+
 ## [1.3.3] - 2026-08-24
 
 ### Added

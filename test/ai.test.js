@@ -1,6 +1,6 @@
 import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { generate, isEnabled, _setClient, _setNow, _reset } from '../src/services/ai.js';
+import { generate, getCached, isEnabled, _flush, _setClient, _setNow, _reset } from '../src/services/ai.js';
 
 // Ingen ekte Claude-kall: klienten injiseres, klokken styres.
 function fakeClient(handler) {
@@ -118,4 +118,96 @@ test('cache og in-flight dedup er uendret', async () => {
   clock += 30_000; // innenfor minIntervalMs
   await generate(opts);
   assert.equal(calls.length, 1, 'cache innenfor minimumsintervallet');
+});
+
+// --- v1.3.4: getCached + stale-while-revalidate ----------------------------
+
+test('getCached gir null for en nøkkel som aldri er generert', async () => {
+  const calls = fakeClient(() => textResponse('aldri'));
+  assert.equal(getCached('test'), null);
+  assert.equal(calls.length, 0, 'getCached skal aldri gjøre nettverkskall');
+});
+
+test('getCached gir teksten uansett alder, uten å generere på nytt', async () => {
+  const calls = fakeClient(() => textResponse('gammel'));
+  await generate(opts);
+  clock += 24 * 60 * 60_000; // ett døgn: langt forbi minIntervalMs
+
+  const entry = getCached('test');
+  assert.equal(entry.text, 'gammel');
+  assert.equal(calls.length, 1, 'ingen regenerering fra getCached');
+});
+
+test('swr med fersk cache genererer ikke', async () => {
+  const calls = fakeClient(() => textResponse('fersk'));
+  await generate(opts);
+
+  clock += 30_000; // innenfor minIntervalMs
+  const entry = await generate({ ...opts, swr: true });
+  assert.equal(entry.text, 'fersk');
+  assert.equal(calls.length, 1);
+});
+
+test('swr med stale cache svarer med gammel tekst og fornyer i bakgrunnen', async () => {
+  const calls = fakeClient((n) => textResponse(`svar ${n}`));
+  await generate(opts);
+
+  clock += 2 * 60_000; // forbi minIntervalMs
+  const entry = await generate({ ...opts, swr: true });
+  assert.equal(entry.text, 'svar 1', 'den besøkende venter aldri på det nye kallet');
+
+  await _flush();
+  assert.equal(calls.length, 2, 'bakgrunnsregenerering ble fyrt');
+  assert.equal(getCached('test').text, 'svar 2');
+});
+
+test('swr med kald cache venter på svaret (rådgiverklikket)', async () => {
+  const calls = fakeClient(() => textResponse('første'));
+  const entry = await generate({ ...opts, swr: true });
+  assert.equal(entry.text, 'første');
+  assert.equal(calls.length, 1);
+});
+
+test('swr fyrer ikke bakgrunnskall innenfor failure-backoff', async () => {
+  const calls = fakeClient((n) => {
+    if (n === 1) return textResponse('bra');
+    throw new Error('502');
+  });
+  await generate(opts);
+
+  clock += 2 * 60_000; // stale
+  await generate({ ...opts, swr: true });
+  await _flush();
+  assert.equal(calls.length, 2, 'første bakgrunnsforsøk feilet');
+
+  const entry = await generate({ ...opts, swr: true });
+  assert.equal(entry.text, 'bra', 'stale serveres fortsatt');
+  await _flush();
+  assert.equal(calls.length, 2, 'ingen nytt kall innenfor backoff-vinduet');
+});
+
+test('swr deduper samtidige stale-kall til én bakgrunnsgenerering', async () => {
+  const calls = fakeClient((n) => textResponse(`svar ${n}`));
+  await generate(opts);
+
+  clock += 2 * 60_000;
+  const [a, b] = await Promise.all([
+    generate({ ...opts, swr: true }),
+    generate({ ...opts, swr: true }),
+  ]);
+  assert.equal(a.text, 'svar 1');
+  assert.equal(b.text, 'svar 1');
+
+  await _flush();
+  assert.equal(calls.length, 2, 'to stale-treff gir ett bakgrunnskall');
+});
+
+test('uten swr blokkerer stale cache fortsatt (uendret oppførsel)', async () => {
+  const calls = fakeClient((n) => textResponse(`svar ${n}`));
+  await generate(opts);
+
+  clock += 2 * 60_000;
+  const entry = await generate(opts);
+  assert.equal(entry.text, 'svar 2', 'den besøkende ventet på det nye kallet');
+  assert.equal(calls.length, 2);
 });
