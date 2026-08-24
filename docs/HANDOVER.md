@@ -32,22 +32,24 @@
   - **Ett avvik fra planens bokstav:** assertionen «uversjonert bilde-URL» i
     dashboard-testen var en selvmotsigende regex (flagget korrekte URL-er).
     Rettet til `/\/img\/clubs\/[^"?]+"/`. Markupen er som i planen.
-- **v1.3.0 ute i prod siden 24. aug** (tag `v1.3.0`): tokenpalett i to
-  temaer med kontrast låst av `test/style.test.js`, inline-tema-script,
-  temabryter, lilla topbar, `views/partials/`. Detaljene fra økt 31 er
-  rotert til `docs/arkiv/HANDOVER-historikk.md`.
+- **v1.3.0 (etappe 1) ute siden 24. aug:** tokenpalett i to temaer med
+  kontrast låst av `test/style.test.js`, inline-tema-script, temabryter,
+  lilla topbar, `views/partials/`. Detaljene fra økt 31 er rotert til
+  `docs/arkiv/HANDOVER-historikk.md`.
 - **Plan for UI-overhalingen:** `docs/plan-v130-ui-overhaul.md` (~1900
   linjer, godkjent 24. aug) — fire etapper v1.3.0–v1.3.3 med kode og
   testtall (272 → 282 → 296 → 299). Mockup:
   https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849.
-  **Neste etter release av v1.3.1: etappe 3 (v1.3.2 Finpuss).**
-- **Prod kjører v1.3.0 på https://fpl.marsk.no** (deployet og verifisert
-  24. aug): `/health` → 200, `ai:true, discord:true, leagues:1`.
+  **Neste: etappe 3 (v1.3.2 Finpuss) — venter på klarsignal.**
+- **Prod kjører v1.3.1 på https://fpl.marsk.no — verifisert 24. aug 03:55.**
+  `/health` → 200, `ai:true, discord:true, leagues:1,`
+  `clubImages {badges:20, shirts:20, keepers:20}`; footer `v1.3.1`;
+  `/img/clubs/t3.png?v=2627` → 200 + `immutable`. Playwright mot prod
+  (uten /brief og /nyheter): 240/240 + klubbskript 14/14.
 - Kostnad målt 23. aug: **$0,94/uke** — under terskelen, ingen tiltak. Ny
   måling i uken etter 31. aug (prisskiftet), se kø-punkt 1.
-- `main` ligger **1 docs-commit foran `origin/main`** (loggføringen fra
-  slutten av økt 31 — ikke pushet). Aktiv branch:
-  `feat/ui-v131-klubbgrafikk`, rent tre, **296/296 tester, lint 0**.
+- `main` = `origin/main` etter push 24. aug (tag `v1.3.1`), rent tre,
+  **296/296 tester, lint 0**. Ingen åpne feature-brancher.
 - Eldre status (v1.2.3-deploy, doks-opprydning økt 24, versjonsplan økt 25,
   v1.2.4 økt 27): rotert til `docs/arkiv/HANDOVER-historikk.md` 24. aug.
 
@@ -160,7 +162,11 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
   planens regex for «uversjonert bilde-URL» flagget korrekte URL-er og ble
   rettet (markupen står som planlagt). Rødfasene 1.1-1 og 1.1-2 ga færre
   tester enn planen anslo fordi ESM-linkfeil tar hele testfila — årsak
-  dokumentert i planfila.
+  dokumentert i planfila. Deretter klarsignal: **«Kjør»** (mandag 24. aug
+  ~03:45). Handling: Task 1.1-7 utført — bump 1.3.1, docs, merge til
+  `main`, tag `v1.3.1`, push, Coolify-deploy, prod-verifisering uten
+  `/brief` og `/nyheter` (240/240 + 14/14 i Playwright). Tidsvindu før
+  push: mandag 03:44, 0 kamper i gang, neste avspark 24. aug 19:00 UTC.
 - Loggposter fra økt 30–31: rotert til
   `docs/arkiv/HANDOVER-historikk.md` 2026-08-24 (200-linjerstaket).
 - Eldre loggposter (økt 22–28): rotert til

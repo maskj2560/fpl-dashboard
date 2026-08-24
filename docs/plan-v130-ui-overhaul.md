@@ -1766,6 +1766,25 @@ Som 1.0-7 med `npm version patch` → 1.3.1, tag `v1.3.1`. Etter deploy:
 `curl -sI "https://fpl.marsk.no/img/clubs/t3.png?v=2627"` → 200 +
 `immutable`. Rutesveip uten `/brief` og `/nyheter`.
 
+- [x] Tidsvindu sjekket. Observert: **mandag 24. aug 03:44, 0 kamper i gang
+      (GW1 og GW2: ingen `started && !finished_provisional`), neste avspark
+      24. aug 19:00 UTC.**
+- [x] `npm version patch --no-git-tag-version` → 1.3.1; CHANGELOG
+      `[1.3.1] - 2026-08-24`; ROADMAP, VIDERE og HANDOVER oppdatert;
+      commit `chore(release): v1.3.1`.
+- [x] Merget til `main` (`--no-ff`), **296/296 + lint 0 på main**,
+      CHANGELOG-plasseringen inspisert ([1.3.1] over [1.3.0], under
+      [Unreleased]), tag `v1.3.1`, pushet `main` + tag (`3b3b50e..8ec5410`).
+- [x] Coolify deployet. Observert: **footer `v1.3.1`; `/health` → 200
+      `ai:true, discord:true, leagues:1,`
+      `clubImages {badges:20, shirts:20, keepers:20}`;
+      `/img/clubs/t3.png?v=2627` → 200 + `public, max-age=31536000,
+      immutable`; `style.css?v=116be2a2` → immutable; 9 ruter 200 + 404
+      (uten `/brief` og `/nyheter`); klubb-URL-er i prod: / 20, /spillere 20,
+      /lag 19 — 0 uversjonerte. Playwright mot prod: OK 240/240 (topbar
+      rgb(55, 0, 60) i begge temaer) + klubbskript OK 14/14 (0 brutte
+      bilder av 60/609/48, 15 drakter + 4 keeperdrakter). 0 AI-kall.**
+
 ---
 
 # ETAPPE 3 — v1.3.2 Finpuss (branch `feat/ui-v132-finpuss`)
