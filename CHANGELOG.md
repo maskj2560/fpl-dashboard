@@ -7,6 +7,13 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+
+- Serveren frisker opp AI-tekstene selv, på klokka: rundebriefen én gang i
+  døgnet og hver time de siste seks timene før deadline, nyhetene hver
+  sjette time — pluss én gang like etter en oppdatering av appen. Tekstene
+  er dermed klare før noen ser på siden.
+
 ### Fixed
 
 - `/brief` vises med en gang: siden leser AI-teksten fra cachen i stedet for

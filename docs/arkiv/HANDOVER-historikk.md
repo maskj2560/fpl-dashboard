@@ -1085,3 +1085,30 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
   AI-merke, 60 `<strong>` og 0 rå `**`, 9 `.sub-head` og 0 rå `###`,
   10 `.fixture-row` med klokkeslett, 25 klubbmerker (0 uversjonerte).
   `/nyheter` ble aldri besøkt med ekte nøkkel.
+
+## Rotert 2026-08-25 (økt 36): loggposter fra økt 34 (verbatim fra HANDOVER.md)
+
+- 2026-08-24 (økt 34, etter releasen): Marius melder at **deler av siden
+  bruker ekstremt lang tid på å laste**, mistenker briefene, og ber om at
+  de caches en periode og friskes opp jevnlig på serveren. Valgte omfang:
+  brief + nyheter + rådgiver (huket av alle tre, inkludert det motstridende
+  «kun briefen nå» — tolket som alle tre). Takt: spurte «kanskje 1 gang om
+  dagen?» og ba om min vurdering. **Anbefaling gitt og pinnet i ROADMAP:**
+  daglig oppfriskning + ekstra i timene før deadline, nyheter hver 6. time,
+  og — viktigst — SWR i `ai.js` så ingen sidevisning blokkerer.
+  Handling: lagt inn som kø-punkt 2 (v1.3.4), robusthetskandidaten
+  «SWR i ai.js» strøket og peker dit. Kjøreprompt levert i chatten.
+- 2026-08-24 (økt 34, Opus): kjøreprompt «utfør ETAPPE 4 — v1.3.3
+  QA-rettelser». Rammer: utfør, ikke re-planlegg — ingen designbeslutninger
+  (alt pinnet i planens «Pinnede skjønnsvalg»); avvik plan/kode → STOPP og
+  spør. **0 AI-kall:** prod-`/brief` og prod-`/nyheter` lastes ALDRI, og
+  `#ai-advice-btn` klikkes aldri; lokalt kjøres alt med TOMME nøkler
+  (`/health` → `ai:false, discord:false` først). Én commit per task, docs i
+  samme commit, TDD 299 → 322, Playwright kun i scratchpad, ingen nye
+  avhengigheter, CRLF i patchskript. STOPP etter Task 1.3-12 — release
+  (1.3-13) kun på eksplisitt klarsignal, og kun FØR fre 28. aug ~18:00
+  eller etter at GW2 er ferdigspilt. Aldri push uten klarsignal.
+  Handling: Task 1.3-0 t.o.m. 1.3-12 utført (13 commits), rapportert og
+  stoppet. Deretter klarsignal **«Kjør»** (~17:55) → Task 1.3-13:
+  tidsvindu og `fixtures/` sjekket, 1.3.3, merge, tag, push 18:00.
+  Prod-verifiseringen strandet på 401 — se statusdelen øverst.

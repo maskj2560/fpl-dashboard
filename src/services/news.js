@@ -65,7 +65,7 @@ export function buildNewsPrompt(items) {
   return `Her er dagens fotballnyheter fra britiske kilder:\n\n${lines.join('\n')}\n\nOppsummer det som er relevant for Fantasy Premier League på norsk, som maks 8 korte punkter. Start hvert punkt med «- ». Sett spillernavn i fet med **navn**. Fokuser på skader, form, overganger og startplass-nytt. Bruk kun personer, klubber og hendelser som står i sakene over — ingen overgangstype, beløp, kontraktslengde eller andre detaljer som ikke er nevnt der. Er du usikker på et navn, utelat punktet. Ingen innledning eller avslutning — kun punktene.`;
 }
 
-const NEWS_CACHE_KEY = 'news-summary';
+export const NEWS_CACHE_KEY = 'news-summary';
 
 const newsSummaryRequest = (items) => ({
   cacheKey: NEWS_CACHE_KEY,

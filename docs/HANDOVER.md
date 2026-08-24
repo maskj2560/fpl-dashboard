@@ -22,7 +22,8 @@
   leser cachen (`getCachedAiBrief`) ✅ 333/333, (3) `news.js`:
   `getNews` leser cachen, `refreshNewsSummary` genererer ✅ 337/337,
   (4) rådgiveren `swr: true` + kildekontrakt i `test/routes.test.js`
-  ✅ 339/339.
+  ✅ 339/339, (5) `refresh.js` + `startAiRefresher()` i `server.js`
+  ✅ **350/350, lint 0** (baseline 322).
 
 - **ETAPPE 4 / v1.3.3: kode og git er FERDIG, men PROD SVARER 401.**
   Økt 34, Opus. Klarsignal «Kjør» mandag 24. aug ~17:55. `main` =
@@ -128,10 +129,12 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
   Aldri push mens kamper pågår.
 - **`/health` først** ved «virker lokalt, ikke i prod» — viser hvilke
   valgfrie funksjoner som er på, aldri verdiene.
-- **Prod-rutesveip koster penger:** `GET /brief` og `/nyheter` genererer
-  AI-tekst per besøk. Deploy-/verifiseringsplaner må utelate dem fra sveip
-  eller budsjettere (~6 kall / ~$0,07 sist). `/api/brief.json` er ren data
-  og trygg.
+- **Prod-rutesveip koster penger — GJELDER KUN T.O.M. v1.3.3:** `GET /brief`
+  og `/nyheter` genererte AI-tekst per besøk. Deploy-/verifiseringsplaner
+  måtte utelate dem fra sveip eller budsjettere (~6 kall / ~$0,07 sist).
+  Fra v1.3.4 leser rutene kun cachen, og et besøk koster ingenting — de kan
+  inngå i sveip igjen så snart v1.3.4 er verifisert i prod.
+  `/api/brief.json` har alltid vært ren data og trygg.
 - **Per-funksjon-AI-kostnad kan ikke måles retroaktivt:** Coolify-loggen er
   100 linjer og nullstilles ved hver deploy. Skal fordelingen måles, må
   `AI-kall:`-linjene samles løpende (f.eks. før hver deploy).
@@ -180,35 +183,16 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
+- 2026-08-25 (økt 36, Opus): kjøreprompt «utfør kø-punkt 2 (v1.3.4) og
+  ferdigstill hele v1.3». Rammer: utfør, ikke re-planlegg; 0 ekte AI-kall
+  (tomme nøkler lokalt); prod-/brief og /nyheter lastes aldri før v1.3.4 er
+  ute; aldri push uten klarsignal. Målerapporten levert først → klarsignal
+  «Kjør». Handling: Task 0–6 utført, 6 commits, 350/350, lint 0.
 - 2026-08-24 (økt 35, Fable): Marius sendte kø-punkt 2-oppdraget hit for
   planlegging + kjøreprompt til Opus som også ferdigstiller HELE v1.3.
   Rotårsak bekreftet i kode: `ai.js:39-44` blokkerer også FORSIDEN
   (`routes/index.js:26-30` awaiter `getNews()`). Beslutning: deadlinevindu
   **6 timer** → ~41–45 kall/uke. Handling: takt-porten i ROADMAP lukket,
   kjøreprompt levert; utførelsesøkten skriver `docs/plan-v134-ai-swr.md`.
-- 2026-08-24 (økt 34, etter releasen): Marius melder at **deler av siden
-  bruker ekstremt lang tid på å laste**, mistenker briefene, og ber om at
-  de caches en periode og friskes opp jevnlig på serveren. Valgte omfang:
-  brief + nyheter + rådgiver (huket av alle tre, inkludert det motstridende
-  «kun briefen nå» — tolket som alle tre). Takt: spurte «kanskje 1 gang om
-  dagen?» og ba om min vurdering. **Anbefaling gitt og pinnet i ROADMAP:**
-  daglig oppfriskning + ekstra i timene før deadline, nyheter hver 6. time,
-  og — viktigst — SWR i `ai.js` så ingen sidevisning blokkerer.
-  Handling: lagt inn som kø-punkt 2 (v1.3.4), robusthetskandidaten
-  «SWR i ai.js» strøket og peker dit. Kjøreprompt levert i chatten.
-- 2026-08-24 (økt 34, Opus): kjøreprompt «utfør ETAPPE 4 — v1.3.3
-  QA-rettelser». Rammer: utfør, ikke re-planlegg — ingen designbeslutninger
-  (alt pinnet i planens «Pinnede skjønnsvalg»); avvik plan/kode → STOPP og
-  spør. **0 AI-kall:** prod-`/brief` og prod-`/nyheter` lastes ALDRI, og
-  `#ai-advice-btn` klikkes aldri; lokalt kjøres alt med TOMME nøkler
-  (`/health` → `ai:false, discord:false` først). Én commit per task, docs i
-  samme commit, TDD 299 → 322, Playwright kun i scratchpad, ingen nye
-  avhengigheter, CRLF i patchskript. STOPP etter Task 1.3-12 — release
-  (1.3-13) kun på eksplisitt klarsignal, og kun FØR fre 28. aug ~18:00
-  eller etter at GW2 er ferdigspilt. Aldri push uten klarsignal.
-  Handling: Task 1.3-0 t.o.m. 1.3-12 utført (13 commits), rapportert og
-  stoppet. Deretter klarsignal **«Kjør»** (~17:55) → Task 1.3-13:
-  tidsvindu og `fixtures/` sjekket, 1.3.3, merge, tag, push 18:00.
-  Prod-verifiseringen strandet på 401 — se statusdelen øverst.
-- Loggposter fra økt 22–33: rotert til `docs/arkiv/HANDOVER-historikk.md`
-  2026-08-24 (200-linjerstaket).
+- Loggposter fra økt 22–34: rotert til `docs/arkiv/HANDOVER-historikk.md`
+  (200-linjerstaket, sist 2026-08-25).
