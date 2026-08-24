@@ -11,6 +11,7 @@ npm run dev     # node --watch, leser .env
 npm start       # produksjon
 npm test        # node:test — tester i test/
 npm run lint    # ESLint (flat config)
+npm run fetch-clubs  # (fra v1.3.1) last ned klubbgrafikk, én gang per sesong
 ```
 
 ## Arkitektur
@@ -42,8 +43,15 @@ src/services/
                    cache med minimumsintervall per funksjon
   news.js          RSS-nyheter + valgfri AI-oppsummering (via ai.js, cachet)
   notify.js        deadline-scheduler + Discord-webhook for auto-brief (valgfri)
-views/             EJS med layout + partials
-public/            style.css (CSS-variabler i :root), app.js (vanilla JS)
+views/             EJS: layout.ejs + én fil per side. views/partials/ opprettes
+                   i v1.3.0 (theme-toggle) og v1.3.1 (club-badge, club-shirt) —
+                   fram til da finnes ingen partials
+public/            style.css (alle farger som tokens: :root = mørkt tema,
+                   :root[data-theme="light"] = lyst), app.js (vanilla JS),
+                   fonts/ (lokal Archivo), img/clubs/ (klubbgrafikk fra v1.3.1)
+scripts/           fetch-club-assets.mjs (fra v1.3.1): henter klubbmerker og
+                   drakter fra FPL én gang per sesong — CLI-verktøy, aldri
+                   kjøretid. Eneste nettverkskall utenfor fplClient.js
 test/              node:test — ingen nettverkskall. Fakes injiseres via små
                    test-hooks (_setNow/_flush/clear i cache.js, _setClient/
                    _setNow/_reset i ai.js, _send/_setHooks/_reset i notify.js)
@@ -113,8 +121,20 @@ aldri et krav.
   `npm test` + `npm run lint` før en milepæl regnes som ferdig.
 - **Stil**: moderne JS (ESM, async/await), ingen nye avhengigheter uten god
   grunn — appen skal forbli liten og rask.
-- **Design**: mørkt tema, alle farger som CSS-variabler i `:root`,
-  systemfonter, ingen eksterne CDN-er, responsivt.
+- **Design** (fra v1.3.0, plan i `docs/plan-v130-ui-overhaul.md`): to
+  temaer — mørkt er CSS-basen i `:root`, lyst er `:root[data-theme="light"]`.
+  Auto følger `prefers-color-scheme`; manuelt valg lagres i
+  `localStorage['fpl-theme']`; temaet settes av et inline-script i
+  `<head>` i layout.ejs FØR stilarket (ingen blaff). Alle farger er tokens
+  som finnes i BEGGE blokker, ingen hardkodede farger utenfor dem, kontrast
+  ≥ 4,5:1 tekst / ≥ 3:1 grafikk — låst av `test/style.test.js`. FPLs
+  merkevarefarger (lilla #37003C, grønn #00ff87, cyan #04f5ff, rosa
+  #e90052) og FPLs egne FDR-farger; grønn er fyll med mørk tekst, grønn
+  TEKST kun i mørkt tema. Klubbgrafikk (merker 70 px, drakter 110 px)
+  selvhostes i `public/img/clubs/`, versjonert med `?v=<IMG_VERSION>`;
+  viewene skriver aldri `<img>` for en fil som ikke finnes (clubAssets).
+  Systemfonter + lokal Archivo, ingen eksterne CDN-er ved kjøretid,
+  responsivt (390 px er referansen).
 
 ## Handover (VIKTIG — les først i ny økt)
 
