@@ -154,6 +154,12 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
   1.3.0, docs, merge til `main`, tag `v1.3.0`, push, Coolify-deploy,
   prod-verifisering uten `/brief` og `/nyheter`. Tidsvindu sjekket før
   push: mandag 03:09, 0 kamper i gang, neste avspark 28. aug 19:00 UTC.
+  Til slutt: «lag en prompt for å starte på etappe 2 til en ny opus chat».
+  Handling: kjøreprompt for ETAPPE 2 (v1.3.1 Klubbgrafikk) levert i chatten,
+  ikke som fil — med testtallene 282 → 283 → 287 → 290 → 296, rødfasene,
+  0 AI-kall, GW2-kampvinduet som pushregel, og lærdommene fra etappe 1
+  (CRLF-normalisering i node-skript, heredoc/apostrof, Playwright-cache,
+  hero-tokens, les asset-hash fra prod-HTML).
 
 - 2026-08-24 (økt 30, Fable): kjøreprompt «Oppdrag (Fable 5): planlegg
   v1.3.0 — full UI-overhaling. KUN PLANLEGGING» med krav: brainstorming
