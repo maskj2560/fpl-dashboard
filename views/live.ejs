@@ -16,14 +16,14 @@
     </div>
     <div class="grid">
       <section class="card">
-        <h2>Mine spillere</h2>
+        <h2><span class="h2-title">Mine spillere</span><span class="dim" id="live-count-players"><%= live.myPlayers.length %></span></h2>
         <div class="table-scroll"><table class="data" id="live-players">
           <thead><tr><th>Spiller</th><th class="num">Min</th><th class="num">Poeng</th><th class="num">Bonus</th><th class="num">Effektivt</th></tr></thead>
           <tbody></tbody>
         </table></div>
       </section>
       <section class="card">
-        <h2>Kamper</h2>
+        <h2><span class="h2-title">Kamper</span><span class="dim" id="live-count-matches"><%= live.matches.length %></span></h2>
         <div class="scoreboard" id="live-matches"></div>
       </section>
     </div>

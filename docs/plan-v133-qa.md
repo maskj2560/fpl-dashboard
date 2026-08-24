@@ -2,7 +2,7 @@
 
 > **For utførende økt (Opus):** REQUIRED SUB-SKILL: bruk
 > superpowers:executing-plans. Følg taskene i rekkefølge, én commit per task,
-> kryss av `- [ ]` og før inn «Observert: ______». Ta INGEN designbeslutninger —
+> kryss av `- [x]` og før inn «Observert: ______». Ta INGEN designbeslutninger —
 > alt er pinnet her. Ved avvik mellom mockup og denne planen vinner planen.
 
 **Mål:** rette alle 18 QA-funn fra v1.3.2-gjennomgangen (P0×1, P1×4, P2×13)
@@ -438,7 +438,7 @@ export function formationOf(starters) {
 **Files:** Modify `views/live.ejs` (:19, :26), `public/app.js` (Modul 3),
 `test/views.test.js`.
 
-- [ ] **Steg 1 (rød):** `test/views.test.js` (bruk live-fixturens faktiske
+- [x] **Steg 1 (rød):** `test/views.test.js` (bruk live-fixturens faktiske
       lengder):
 
 ```js
@@ -460,8 +460,8 @@ test('live.ejs viser antall til høyre i korthodene', async () => {
       `if (matchesCount) matchesCount.textContent = live.matches.length;`
       Liga-kortene (JS-genererte) får telleren i template-strengen (:280):
       `'<section class="card"><h2><span class="h2-title">' + escapeHtml(l.name) + '</span><span class="dim">' + l.top.length + '</span></h2><div class="table-scroll">…'`
-- [ ] **Steg 4:** `npm test` → 312, lint 0. Observert: ______
-- [ ] **Steg 5:** CHANGELOG (Added: tellere i /live-korthodene som på
+- [x] **Steg 4:** `npm test` → 312, lint 0. Observert: npm test 312/312 pass 0 fail, lint exit 0
+- [x] **Steg 5:** CHANGELOG (Added: tellere i /live-korthodene som på
       dashbordet), HANDOVER. Commit: `feat: tellere i korthodene på /live (QA 5)`
 
 ### Task 1.3-7: Funn 12 — grafen ved ett datapunkt

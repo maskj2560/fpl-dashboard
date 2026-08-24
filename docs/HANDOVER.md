@@ -31,6 +31,8 @@
     `tr[data-href]` (Modul 6 i app.js), valgt rival får `.row-rival`.
   - 1.3-5 (QA 4): 311/311. `formationOf()` i analysis.js, formasjonen i
     Oppstilling-hodet via ny `.h2-meta`-wrapper.
+  - 1.3-6 (QA 5): 312/312. Tellere i /live-korthodene (`live-count-players`,
+    `live-count-matches` + antall rader per liga), oppdatert av Modul 3.
 - **v1.3.2 (etappe 3) RELEASET 24. aug (økt 33):** finpuss per side +
   kontraktstester for markupen `app.js` avhenger av. 299/299, lint 0.
   Detaljene (inkl. de manuelt målte pillekontrastene) er rotert til

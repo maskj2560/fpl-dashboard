@@ -215,6 +215,8 @@ function clubBadgeHtml(shortName, code, version, size) {
   const playersBody = document.querySelector('#live-players tbody');
   const matchesRoot = document.getElementById('live-matches');
   const leaguesRoot = document.getElementById('live-leagues');
+  const playersCount = document.getElementById('live-count-players');
+  const matchesCount = document.getElementById('live-count-matches');
   const totalEl = document.getElementById('live-total');
   const statusEl = document.getElementById('live-status');
   const updatedEl = document.getElementById('live-updated');
@@ -274,10 +276,12 @@ function clubBadgeHtml(shortName, code, version, size) {
         );
       })
       .join('');
+    if (playersCount) playersCount.textContent = live.myPlayers.length;
+    if (matchesCount) matchesCount.textContent = live.matches.length;
     leaguesRoot.innerHTML = live.leagues
       .map(function (l) {
         return (
-          '<section class="card"><h2>' + escapeHtml(l.name) + '</h2><div class="table-scroll"><table class="data"><thead><tr><th class="num">#</th><th>Lag</th><th class="num">GW</th><th class="num">Totalt</th></tr></thead><tbody>' +
+          '<section class="card"><h2><span class="h2-title">' + escapeHtml(l.name) + '</span><span class="dim">' + l.top.length + '</span></h2><div class="table-scroll"><table class="data"><thead><tr><th class="num">#</th><th>Lag</th><th class="num">GW</th><th class="num">Totalt</th></tr></thead><tbody>' +
           l.top
             .map(function (r) {
               return '<tr' + (r.me ? ' class="row-me"' : '') + '><td class="num">' + r.rank + '</td><td>' + escapeHtml(r.name) + '</td><td class="num">' + r.gw + '</td><td class="num">' + r.total + '</td></tr>';

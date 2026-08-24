@@ -329,3 +329,9 @@ test('team.ejs viser formasjonen i Oppstilling-hodet', async () => {
   const html = await renderView('team', fx.team);
   assert.match(html, /h2-meta"><span class="dim">3-4-3<\/span>/);
 });
+
+test('live.ejs viser antall til høyre i korthodene', async () => {
+  const html = await renderView('live', fx.live);
+  assert.match(html, new RegExp('id="live-count-players">' + fx.live.live.myPlayers.length + '<'));
+  assert.match(html, new RegExp('id="live-count-matches">' + fx.live.live.matches.length + '<'));
+});
