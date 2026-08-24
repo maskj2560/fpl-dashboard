@@ -1794,8 +1794,10 @@ tomtilstander, feilsider, mobilfinpuss. Ingen nye datafelt.
 
 ## Task 1.2-0 — Oppstart
 
-- [ ] `main` rent, `npm test` → **296/296**, lint 0. Observert: ______
-- [ ] `git checkout -b feat/ui-v132-finpuss`
+- [x] `main` rent, `npm test` → **296/296**, lint 0. Observert: **296/296,
+      fail 0**, lint uten utskrift. (`main` lå 1 docs-commit foran
+      `origin/main` — post-release-loggføringen fra v1.3.1, ikke pushet.)
+- [x] `git checkout -b feat/ui-v132-finpuss`
 
 ## Task 1.2-1 — Kontraktstester for markup app.js avhenger av (TDD)
 
@@ -1832,17 +1834,20 @@ test('players.ejs: alle kolonneoverskrifter beholder data-type og aria-sort (sor
 });
 ```
 
-- [ ] Rødt: **299 tester, 1 feiler** (feilsidene mangler `btn-link`;
+- [x] Rødt: **299 tester, 1 feiler** (feilsidene mangler `btn-link`;
       hero- og players-testene er vern og grønne fra start — bekreft).
-      Observert: ______
+      Observert: **299 tester, 1 feiler** — kun feilside-testen. Hero- og
+      players-vernet grønt fra start, som forventet.
 
 Implementasjon: `no-team.ejs` får `<p><a href="/" class="btn-link">Til dashbordet</a></p>`
 nederst; `error.ejs` og `404.ejs`: lenken i teksten beholdes, og
 `<p><a href="/" class="btn-link">Til dashbordet</a></p>` legges til
 etter avsnittet.
 
-- [ ] Grønt: **299/299**, lint 0. Observert: ______
-- [ ] Commit: `feat(ui): knappelenke tilbake på feilsidene + kontraktstester`
+- [x] Grønt: **299/299**, lint 0. Observert: **299/299, fail 0**, lint uten
+      utskrift. (`views/no-team.ejs` er LF, de to andre CRLF — patchen tar
+      hensyn til begge.)
+- [x] Commit: `feat(ui): knappelenke tilbake på feilsidene + kontraktstester`
 
 ## Task 1.2-2 — Finpuss per side (markup + CSS, mockupen er fasit)
 
