@@ -706,3 +706,8 @@ test('formationOf teller forsvar-midtbane-angrep, keeper holdes utenfor', () => 
 test('formationOf tåler tom liste', () => {
   assert.equal(formationOf([]), '0-0-0');
 });
+
+test('rankGraph flagger ett-punkts-grafen', () => {
+  assert.equal(rankGraph([{ event: 1, overall_rank: 5 }], 600, 140).single, true);
+  assert.equal(rankGraph([{ event: 1, overall_rank: 100 }, { event: 2, overall_rank: 50 }], 600, 140).single, false);
+});

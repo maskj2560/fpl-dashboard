@@ -335,3 +335,8 @@ test('live.ejs viser antall til høyre i korthodene', async () => {
   assert.match(html, new RegExp('id="live-count-players">' + fx.live.live.myPlayers.length + '<'));
   assert.match(html, new RegExp('id="live-count-matches">' + fx.live.live.matches.length + '<'));
 });
+
+test('team.ejs tegner en synlig markør når grafen bare har ett punkt', async () => {
+  const html = await renderView('team', { ...fx.team, graph: { points: '0,70', area: null, single: true, min: 5, max: 5, first: 5, last: 5 } });
+  assert.match(html, /<circle cx="0" cy="70" r="5" fill="var\(--accent\)"/);
+});

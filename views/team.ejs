@@ -63,6 +63,8 @@
       <% } %>
       <% if (graph.area) { %><polygon points="<%= graph.area %>" fill="url(#rank-fill)" /><% } %>
       <polyline points="<%= graph.points %>" fill="none" stroke="var(--accent)" stroke-width="2.5" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round" />
+      <%# Ett punkt: span=0 gir alltid x=0,y=70 (height/2) i rankGraph. %>
+      <% if (graph.single) { %><circle cx="0" cy="70" r="5" fill="var(--accent)" /><% } %>
     </svg>
     <p class="hint">Best: <%= formatNumber(graph.min) %> · Nå: <%= formatNumber(graph.last) %> (lavere er bedre — toppen av grafen er best)</p>
   </section>

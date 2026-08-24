@@ -28,6 +28,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Ligatabellen viser en retningsmarkør på hver rad — også i runde 1, der
   ingen har historikk ennå — og markørene har skjermlesertekst
   («opp 2 plasser»).
+- Rankgrafen på lagsiden viser en synlig markør når det bare finnes ett
+  datapunkt — før var linjen usynlig i runde 1.
 
 ## [1.3.2] - 2026-08-24
 

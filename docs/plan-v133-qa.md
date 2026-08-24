@@ -449,8 +449,8 @@ test('live.ejs viser antall til høyre i korthodene', async () => {
 });
 ```
 
-- [ ] **Steg 2:** rød. Observert: ______
-- [ ] **Steg 3:** `live.ejs`:
+- [x] **Steg 2:** rød. Observert: views.test.js: 63 tester, 62 pass, 1 fail
+- [x] **Steg 3:** `live.ejs`:
       `<h2><span class="h2-title">Mine spillere</span><span class="dim" id="live-count-players"><%= live.myPlayers.length %></span></h2>`
       og tilsvarende `Kamper` / `live-count-matches` / `live.matches.length`.
       `app.js` Modul 3: hent `const playersCount = document.getElementById('live-count-players');`
@@ -470,7 +470,7 @@ test('live.ejs viser antall til høyre i korthodene', async () => {
 `views/team.ejs` (:65), `test/analysis.test.js`, `test/views.test.js`,
 `test/fixtures/views.js`.
 
-- [ ] **Steg 1 (rød):** `test/analysis.test.js`:
+- [x] **Steg 1 (rød):** `test/analysis.test.js`:
 
 ```js
 test('rankGraph flagger ett-punkts-grafen', () => {
@@ -491,9 +491,9 @@ test('team.ejs tegner en synlig markør når grafen bare har ett punkt', async (
 });
 ```
 
-- [ ] **Steg 2:** rød (2 nye). Eksisterende graf-fixture uten `single` rendrer
-      fortsatt (falsy → ingen sirkel). Observert: ______
-- [ ] **Steg 3:** `rankGraph` returner
+- [x] **Steg 2:** rød (2 nye). Eksisterende graf-fixture uten `single` rendrer
+      fortsatt (falsy → ingen sirkel). Observert: analysis+views: 126 tester, 124 pass, 2 fail (ingen ESM-linkfeil denne gangen — rankGraph var allerede importert)
+- [x] **Steg 3:** `rankGraph` returner
       `{ points, area, min, max, first: values[0], last: values[values.length - 1], single: ranks.length === 1 }`.
       `team.ejs` etter polyline-linja (:65):
 
@@ -504,8 +504,8 @@ test('team.ejs tegner en synlig markør når grafen bare har ett punkt', async (
 
       (Bonuspunktet i funnet er allerede oppfylt: polylinja HAR
       `vector-effect="non-scaling-stroke"` — verifisert, ingen endring.)
-- [ ] **Steg 4:** `npm test` → 314, lint 0. Observert: ______
-- [ ] **Steg 5:** CHANGELOG (Fixed: rank-grafen viser en markør ved ett
+- [x] **Steg 4:** `npm test` → 314, lint 0. Observert: npm test 314/314 pass 0 fail, lint exit 0
+- [x] **Steg 5:** CHANGELOG (Fixed: rank-grafen viser en markør ved ett
       datapunkt), HANDOVER. Commit: `fix: synlig markør i rank-grafen ved ett datapunkt (QA 12)`
 
 ### Task 1.3-8: Funn 13 — tomtilstand på /spillere
