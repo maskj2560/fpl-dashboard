@@ -7,6 +7,11 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+
+- Hele raden i ligatabellen er klikkbar, og laget du sammenlikner deg med
+  markeres i tabellen.
+
 ### Fixed
 
 - Tabellhodet på Spillere legger seg ikke lenger bak toppmenyen på mobil;
@@ -17,6 +22,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   bare mellom gruppene, og aldri i tabellceller.
 - Mindre orddeling på mobil: automatisk bindestrek er slått av, og
   statistikkortene deler aldri ord. Lange ord nødbrekkes fortsatt.
+- Ligatabellen viser en retningsmarkør på hver rad — også i runde 1, der
+  ingen har historikk ennå — og markørene har skjermlesertekst
+  («opp 2 plasser»).
 
 ## [1.3.2] - 2026-08-24
 

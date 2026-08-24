@@ -24,11 +24,15 @@
           <thead><tr><th class="num">#</th><th>Lag</th><th class="num">GW</th><th class="num">Totalt</th></tr></thead>
           <tbody>
             <% for (const r of l.standings.results) { %>
-              <tr class="<%= r.entry === myEntry ? 'row-me' : '' %>">
+              <tr class="<%= [r.entry === myEntry ? 'row-me' : '', r.entry === rivalEntry ? 'row-rival' : ''].join(' ').trim() %>"<% if (r.entry !== myEntry) { %> data-href="/liga?rival=<%= r.entry %>"<% } %>>
                 <td class="num">
                   <%= r.rank %>
-                  <% if (r.last_rank && r.last_rank !== r.rank) { %>
-                    <span class="<%= r.rank < r.last_rank ? 'accent' : 'negative' %>"><%= r.rank < r.last_rank ? '▲' : '▼' %></span>
+                  <% if (r.last_rank && r.rank < r.last_rank) { %>
+                    <span class="rank-up" aria-label="opp <%= r.last_rank - r.rank %> <%= r.last_rank - r.rank === 1 ? 'plass' : 'plasser' %>">▲</span>
+                  <% } else if (r.last_rank && r.rank > r.last_rank) { %>
+                    <span class="rank-down" aria-label="ned <%= r.rank - r.last_rank %> <%= r.rank - r.last_rank === 1 ? 'plass' : 'plasser' %>">▼</span>
+                  <% } else { %>
+                    <span class="rank-same" aria-label="uendret plassering">–</span>
                   <% } %>
                 </td>
                 <td>

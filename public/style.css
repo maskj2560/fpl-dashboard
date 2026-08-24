@@ -1159,6 +1159,32 @@ table.sortable th[aria-sort='ascending']::after {
   box-shadow: inset 3px 0 0 var(--accent);
 }
 
+/* Valgt rival på /liga — samme mønster som .row-me, men rosa: det er
+   raden differensialpanelet under tabellen faktisk viser. */
+.row-rival td {
+  background: var(--surface-2);
+}
+
+.row-rival td:first-child {
+  box-shadow: inset 3px 0 0 var(--accent-2);
+}
+
+.rank-up {
+  color: var(--accent-text);
+}
+
+.rank-down {
+  color: var(--accent-2-text);
+}
+
+.rank-same {
+  color: var(--text-dim);
+}
+
+tr[data-href] {
+  cursor: pointer;
+}
+
 .sub-head {
   font-family: var(--font-display);
   font-size: 0.75rem;

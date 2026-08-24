@@ -306,3 +306,21 @@ test('players.ejs: alle kolonneoverskrifter beholder data-type og aria-sort (sor
   }
   assert.equal((html.match(/aria-sort="descending"/g) ?? []).length, 1, 'nøyaktig én startsortering');
 });
+
+test('league.ejs viser retningsmarkører med skjermlesertekst', async () => {
+  const html = await renderView('league', fx.league);
+  assert.match(html, /class="rank-up" aria-label="opp 2 plasser">▲/);
+  assert.match(html, /class="rank-down" aria-label="ned 1 plass">▼/);
+});
+
+test('league.ejs viser nøytral markør uten historikk', async () => {
+  const html = await renderView('league', fx.league);
+  assert.match(html, /class="rank-same" aria-label="uendret plassering">–/);
+});
+
+test('league.ejs gjør radene klikkbare og markerer valgt rival', async () => {
+  const html = await renderView('league', fx.league);
+  assert.match(html, /data-href="\/liga\?rival=456"/);
+  assert.match(html, /row-rival/);
+  assert.ok(!html.includes('data-href="/liga?rival=123"'), 'aldri lenke på min egen rad');
+});

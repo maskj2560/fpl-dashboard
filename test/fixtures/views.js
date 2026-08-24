@@ -109,6 +109,7 @@ export const league = {
   teamsById, clubAssets,
   formatNumber,
   myEntry: 123,
+  rivalEntry: 456,
   firstLeague: 999,
   leagues: [{
     league: { id: 999, name: 'Kompisligaen' },
@@ -116,6 +117,7 @@ export const league = {
       results: [
         { entry: 123, entry_name: 'Marius XI', player_name: 'Marius S.', rank: 1, last_rank: 3, event_total: 60, total: 100 },
         { entry: 456, entry_name: 'Rival FC', player_name: 'Rival R.', rank: 2, last_rank: 1, event_total: 55, total: 95 },
+        { entry: 789, entry_name: 'Nykommer FC', player_name: 'Ny N.', rank: 3, last_rank: 0, event_total: 40, total: 80 },
       ],
     },
   }],

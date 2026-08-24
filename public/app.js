@@ -410,3 +410,14 @@ function clubBadgeHtml(shortName, code, version, size) {
     if (mode === 'auto') apply(mode);
   });
 })();
+
+// Modul 6: Klikkbare tabellrader (/liga). Raden speiler lenken i cellen —
+// tastatur og fokus dekkes av selve <a>-en, raden er bare et større mål.
+(function () {
+  'use strict';
+  document.addEventListener('click', (e) => {
+    const row = e.target.closest('tr[data-href]');
+    if (!row || e.target.closest('a')) return;
+    window.location.href = row.dataset.href;
+  });
+})();

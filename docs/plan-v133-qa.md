@@ -285,7 +285,7 @@ test('style.css: orddeling er manuell i brødtekst og av i statistikkortene', ()
 **Interfaces — produserer:** locals `rivalEntry` til league-viewet; klassene
 `.rank-up/.rank-down/.rank-same/.row-rival`; `tr[data-href]`-delegering.
 
-- [ ] **Steg 1 (rød):** i `test/fixtures/views.js` legg til en tredje rad i
+- [x] **Steg 1 (rød):** i `test/fixtures/views.js` legg til en tredje rad i
       liga-fixturens `standings.results`:
       `{ entry: 789, entry_name: 'Nykommer FC', player_name: 'Ny N.', rank: 3, last_rank: 0, event_total: 40, total: 80 },`
       og `rivalEntry: 456` i league-localsene (samme objekt som har
@@ -314,8 +314,8 @@ test('league.ejs gjør radene klikkbare og markerer valgt rival', async () => {
       (Fixture-eksportene er bekreftet i `test/fixtures/views.js`:
       `league`:108, `team`:64, `players`:103, `live`:182, `transfers`:229 —
       views-testen når dem som `fx.league` osv.)
-- [ ] **Steg 2:** kjør views-testen → 3 røde. Observert: ______
-- [ ] **Steg 3:** `views/league.ejs` — radstart og rangcelle erstattes med:
+- [x] **Steg 2:** kjør views-testen → 3 røde. Observert: views.test.js: 61 tester, 58 pass, 3 fail (som anslått)
+- [x] **Steg 3:** `views/league.ejs` — radstart og rangcelle erstattes med:
 
 ```ejs
 <tr class="<%= [r.entry === myEntry ? 'row-me' : '', r.entry === rivalEntry ? 'row-rival' : ''].join(' ').trim() %>"<% if (r.entry !== myEntry) { %> data-href="/liga?rival=<%= r.entry %>"<% } %>>
@@ -364,9 +364,9 @@ tr[data-href] { cursor: pointer; }
 })();
 ```
 
-- [ ] **Steg 4:** `npm test` → 308, lint 0. Observert: ______
-- [ ] **Steg 5:** Playwright-sjekk 4–5 (Vedlegg B). Observert: ______
-- [ ] **Steg 6:** CHANGELOG (Fixed: retningsmarkører med skjermlesertekst også
+- [x] **Steg 4:** `npm test` → 308, lint 0. Observert: npm test 308/308 pass 0 fail, lint exit 0
+- [x] **Steg 5:** Playwright-sjekk 4–5 (Vedlegg B). Observert: qa-t4.mjs (begge temaer × 390/1440, 4 sjekker hver): 16/16 OK. Ekte liga har 4 rader, alle med aria-merket markør; 3 klikkbare (egen rad har ingen data-href), cursor pointer; klikk på radcellen navigerte til /liga?rival=7185653 og .row-rival dukket opp.
+- [x] **Steg 6:** CHANGELOG (Fixed: retningsmarkører med skjermlesertekst også
       i runde 1; Added: hele ligaraden klikkbar, valgt rival markeres),
       HANDOVER. Commit: `fix: retningsmarkører og klikkbare rader på /liga (QA 3+14)`
 

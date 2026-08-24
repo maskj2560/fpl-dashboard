@@ -17,14 +17,18 @@
   (`/health` → `ai:false, discord:false` bekreftet), aldri i prod.
   Avvik fra planteksten føres inn i planfilas «Observert»-felt.
   - 1.3-0: branch, planfiler, ETAPPE 4-stubben peker videre.
-  - 1.3-1 (QA 1+8): 301/301, lint 0, Playwright 8/8. `--topbar-h` styrer
+  - 1.3-1 (QA 1+8): 301/301, Playwright 8/8. `--topbar-h` styrer
     menyhøyden (57/50 px); pinned-boksen mistet sin virkningsløse sticky
     og fikk en høydereserve (14rem desktop / 19rem mobil) i stedet.
-  - 1.3-2 (QA 6+7): 302/302, lint 0. `opacity` ut av versjonslinja og
+  - 1.3-2 (QA 6+7): 302/302. `opacity` ut av versjonslinja og
     benkeradene — `--text-dim` i stedet, låst med `text-dim`/`bg` i PAIRS.
-  - 1.3-3 (QA 2+9+10): 305/305, lint 0, Playwright 40/40. Intl-NBSP byttet
-    mot vanlige mellomrom i `formatNumber`/`formatSigned`, `.num` er
-    `nowrap`, statistikkortene deler aldri ord, `hyphens: manual` i body.
+  - 1.3-3 (QA 2+9+10): 305/305, Playwright 40/40. Intl-NBSP byttet mot
+    vanlige mellomrom i `formatNumber`/`formatSigned`, `.num` er `nowrap`,
+    statistikkortene deler aldri ord, `hyphens: manual` i body.
+  - 1.3-4 (QA 3+14): 308/308, Playwright 16/16. `.rank-up/-down/-same`
+    med `aria-label` på hver ligarad, hele raden klikkbar via
+    `tr[data-href]` (Modul 6 i app.js), valgt rival får `.row-rival`.
+  - Lint exit 0 etter hver task.
 - **v1.3.2 (etappe 3) RELEASET 24. aug (økt 33):** finpuss per side +
   kontraktstester for markupen `app.js` avhenger av. 299/299, lint 0.
   Detaljene (inkl. de manuelt målte pillekontrastene) er rotert til
