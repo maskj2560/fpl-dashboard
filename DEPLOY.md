@@ -23,6 +23,7 @@ Cache-headerne settes i `express.static`:
 | --- | --- |
 | `/style.css?v=<8 hex>` eller `?v=<tall>` | `public, max-age=31536000, immutable` |
 | `/style.css` (uten `?v=`) | `no-cache` |
+| `/img/clubs/*.png?v=<IMG_VERSION>` | `public, max-age=31536000, immutable` |
 
 Fonten (`/fonts/archivo-var.woff2?v=1`) er uendret innhold og versjoneres
 manuelt. **Endres fontfilen, må `?v=` bumpes to steder samtidig:**
@@ -31,6 +32,27 @@ manuelt. **Endres fontfilen, må `?v=` bumpes to steder samtidig:**
 - `public/style.css` (`@font-face`-URL-en)
 
 URL-ene må være identiske, ellers laster nettleseren fonten to ganger.
+
+## Klubbgrafikk (ny sesong)
+
+Klubbmerkene og draktene i `public/img/clubs/` er selvhostet og committet i
+repoet (60 filer, ~560 KB). Filnavnene er stabile per klubbkode, men FPL
+bytter draktene hver sesong på de samme URL-ene. Derfor versjoneres de med
+`?v=<IMG_VERSION>`, der versjonen er sesongen (`2627`).
+
+Én gang per sesong, før første deploy av den nye sesongen:
+
+1. `npm run fetch-clubs` — laster ned merke, drakt og keeperdrakt for alle
+   lag i `bootstrap-static`. Forventet utskrift: «Lagret 60 av 60 filer».
+   Nyopprykkede lag kommer med automatisk; mangler et bilde, feiler skriptet
+   med exit 1 og lister hvilke.
+2. Bump `IMG_VERSION` i `src/middleware.js` (f.eks. `'2627'` → `'2728'`).
+3. **Commit bildene og bumpen sammen.** Gjøres ikke bumpen, serverer
+   Cloudflare fjorårets drakter som `immutable` fram til manuell purge.
+
+Etter deploy: `/health` skal vise `clubImages: {badges:20, shirts:20,
+keepers:20}`. Mangler mappa helt, starter appen likevel — da vises kortnavn
+i stedet for merker.
 
 ## Engangssteg: Cloudflare-purge
 

@@ -1312,16 +1312,21 @@ if (failed.length) {
 `package.json` scripts: `"fetch-clubs": "node scripts/fetch-club-assets.mjs"`.
 `eslint.config.js`: første `files`-liste får `'scripts/**/*.mjs'`.
 
-- [ ] `npm run fetch-clubs` → «Lagret 60 av 60 filer». `ls public/img/clubs | wc -l`
-      → 60. Sum ≈ 560 KB (`du -sh`). Observert: ______
-- [ ] `npm run lint` → 0 (skriptet lintes nå). `npm test` → 287/287.
-- [ ] Start serveren lokalt (tomme nøkler) → `/health` viser
-      `clubImages: {badges: 20, shirts: 20, keepers: 20}`. Observert: ______
-- [ ] `DEPLOY.md`: ny seksjon «Klubbgrafikk (ny sesong)»: kjør
+- [x] `npm run fetch-clubs` → «Lagret 60 av 60 filer». `ls public/img/clubs | wc -l`
+      → 60. Sum ≈ 560 KB (`du -sh`). Observert: **«Lagret 60 av 60 filer»**,
+      60 filer, **561 KB** (`du -sh --apparent-size`; `du -sh` = 692 K disk).
+- [x] `npm run lint` → 0 (skriptet lintes nå). `npm test` → 287/287.
+      Observert: lint uten utskrift, **287/287**.
+- [x] Start serveren lokalt (tomme nøkler) → `/health` viser
+      `clubImages: {badges: 20, shirts: 20, keepers: 20}`. Observert:
+      `{"status":"ok","features":{"ai":false,"aiModel":null,"discord":false,`
+      `"teamId":true,"leagues":0,"clubImages":{"badges":20,"shirts":20,`
+      `"keepers":20}}}` (port 3011, scratchpad-.env med tomme nøkler).
+- [x] `DEPLOY.md`: ny seksjon «Klubbgrafikk (ny sesong)»: kjør
       `npm run fetch-clubs`, bump `IMG_VERSION` i `src/middleware.js`,
       commit begge sammen; URL-ene i tabellen får raden
       `/img/clubs/*.png?v=<IMG_VERSION>` → immutable.
-- [ ] Commit: `feat(assets): nedlastingsskript og klubbgrafikk for 2026/27 (60 filer)`
+- [x] Commit: `feat(assets): nedlastingsskript og klubbgrafikk for 2026/27 (60 filer)`
 
 ## Task 1.1-4 — `teamCode` i brief/live/transfers-payloadene + liga-route (TDD)
 
