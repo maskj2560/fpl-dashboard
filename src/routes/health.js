@@ -7,7 +7,7 @@ const router = Router();
 
 // Rapporterer HVILKE valgfrie funksjoner som er slått på — aldri verdiene.
 // Gjør det mulig å se fra utsiden om miljøvariablene faktisk nådde containeren.
-router.get('/', (_req, res) => {
+router.get('/', (req, res) => {
   // Ligaene auto-oppdages fra laget når LEAGUE_IDS ikke er satt. Health skal
   // telle det brukeren faktisk får se på /liga, ikke bare config-verdien —
   // men aldri vente på FPL: knownLeagueCount svarer med siste kjente tall og
@@ -22,6 +22,7 @@ router.get('/', (_req, res) => {
       discord: Boolean(config.discordWebhookUrl),
       teamId: config.hasTeamId,
       leagues,
+      clubImages: req.app.locals.clubAssets?.count ?? null,
     },
   });
 });

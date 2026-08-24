@@ -1184,8 +1184,10 @@ test('loadClubAssets tåler at mappa mangler — alt faller tilbake på tekst', 
 });
 ```
 
-- [ ] Rødt: **287 tester, 4 feiler** (modul finnes ikke → importfeil = 1
-      feilende fil; godta). Observert: ______
+- [x] Rødt: **287 tester, 4 feiler** (modul finnes ikke → importfeil = 1
+      feilende fil; godta). Observert: **284 tester, 1 feilende fil**
+      (`ERR_MODULE_NOT_FOUND: Cannot find module …/src/services/clubAssets.js`)
+      — den godtatte formen.
 
 ### 2b. Implementasjon
 
@@ -1247,8 +1249,9 @@ app.locals.clubAssets = loadClubAssets(path.join(rootDir, 'public', 'img', 'club
 `clubImages: req.app.locals.clubAssets?.count ?? null,` — og handleren
 må ta `(req, res)` i stedet for `(_req, res)`.
 
-- [ ] Grønt: **287/287**, lint 0. Observert: ______
-- [ ] Commit: `feat(assets): clubAssets-service, app.locals og /health-telling`
+- [x] Grønt: **287/287**, lint 0. Observert: **287/287, fail 0**, lint uten
+      utskrift.
+- [x] Commit: `feat(assets): clubAssets-service, app.locals og /health-telling`
 
 ## Task 1.1-3 — Nedlastingsskript + bildene
 

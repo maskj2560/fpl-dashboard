@@ -6,6 +6,7 @@ import express from 'express';
 import compression from 'compression';
 import config from './config.js';
 import { isGameUpdating } from './services/fplClient.js';
+import { loadClubAssets } from './services/clubAssets.js';
 import { formatDateTime } from './services/format.js';
 import { cacheControlFor, createErrorHandler } from './middleware.js';
 import indexRouter from './routes/index.js';
@@ -41,6 +42,10 @@ const assetVersion = crypto
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(rootDir, 'views'));
+
+// Klubbgrafikk: mappa leses én gang; app.locals når alle views og partials
+// via res.render uten at rutene må sende det.
+app.locals.clubAssets = loadClubAssets(path.join(rootDir, 'public', 'img', 'clubs'));
 
 app.use(compression());
 app.use(express.json());
