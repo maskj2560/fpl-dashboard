@@ -7,6 +7,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Changed
+
+- Ny palett i FPL-familien (lilla, grønn, cyan, rosa) og FPLs egne
+  FDR-farger, som tokens i to temaer. Kontrasten (≥ 4,5:1) er nå låst av
+  en test.
+
 ## [1.2.5] - 2026-08-24
 
 ### Fixed

@@ -477,10 +477,11 @@ temabryter som husker valget. Ingen markup-endringer utenfor `layout.ejs`.
 
 ## Task 1.0-0 — Oppstart
 
-- [ ] Les `docs/HANDOVER.md` + `CLAUDE.md` + denne planen + mockupen.
-- [ ] `git checkout main && git status --porcelain` tomt. `npm test` →
-      **272/272**, `npm run lint` → exit 0. Observert: ______
-- [ ] `git checkout -b feat/ui-v130-fundament`
+- [x] Les `docs/HANDOVER.md` + `CLAUDE.md` + denne planen + mockupen.
+- [x] `git checkout main && git status --porcelain` tomt. `npm test` →
+      **272/272**, `npm run lint` → exit 0. Observert: **272/272, lint exit 0,
+      rent tre** (24. aug)
+- [x] `git checkout -b feat/ui-v130-fundament`
 
 ## Task 1.0-1 — `test/style.test.js` (ny fil): tokenparitet, ingen hardkodede farger, kontrast
 
@@ -577,11 +578,12 @@ for (const [name, tokens] of [['mørkt', dark], ['lyst', light]]) {
 Merk: dette er 4 `test(`-kall (paritet, hardkodet, kontrast ×2 via løkke),
 som i §10.2.
 
-- [ ] Tester skrevet. `npm test` — **forventet rødt: 276 tester, 3 feiler**
+- [x] Tester skrevet. `npm test` — **forventet rødt: 276 tester, 3 feiler**
       (paritet: lys-blokk finnes ikke → `assert.notEqual` kaster i modul-
       scope → hele fila feiler som én). NB: kaster `tokensIn` på toppnivå,
       rapporterer node:test det som 1 feilende fil, ikke 4 tester. Godta
-      begge former; noter observert: ______
+      begge former; noter observert: **273 tester, 1 feiler** (hele
+      style.test.js som én — den andre av de to godtatte formene)
 
 ## Task 1.0-2 — `public/style.css`: tokenblokkene (grønt for 1.0-1)
 
@@ -767,14 +769,14 @@ Skriftstørrelser: erstatt de faste rem-verdiene med nærmeste `--fs-*`
 1.35–1.5 → xl, 1.9 → 2xl, countdown → hero). `border-radius: 99px` →
 `var(--radius-pill)`.
 
-- [ ] `npm test` — **forventet grønt: 276/276** (style-testene grønne).
-      `npm run lint` exit 0. Observert: ______
-- [ ] Kjør style-testen alene og les output: `node --test test/style.test.js`
-      — alle 4 OK.
-- [ ] CHANGELOG `[Unreleased]` → `### Changed`: «Ny palett i FPL-familien
+- [x] `npm test` — **forventet grønt: 276/276** (style-testene grønne).
+      `npm run lint` exit 0. Observert: **276/276, lint exit 0**
+- [x] Kjør style-testen alene og les output: `node --test test/style.test.js`
+      — alle 4 OK. Observert: **4/4 pass**
+- [x] CHANGELOG `[Unreleased]` → `### Changed`: «Ny palett i FPL-familien
       (lilla, grønn, cyan, rosa) og FPLs egne FDR-farger, som tokens i to
       temaer. Kontrasten (≥ 4,5:1) er nå låst av en test.»
-- [ ] Commit: `feat(ui): tokenpalett for mørkt og lyst tema, kontrast låst av test`
+- [x] Commit: `feat(ui): tokenpalett for mørkt og lyst tema, kontrast låst av test`
 
 ## Task 1.0-3 — Temafunksjoner i `app.js` (TDD)
 
