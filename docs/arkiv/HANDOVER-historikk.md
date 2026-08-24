@@ -1029,3 +1029,12 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
   - Pillenes forgrunnsfarger var ikke spesifisert i planen. Målt der de
     står (kortflaten `--surface`): beste 10,42 mørkt / 5,66 lyst, verste
     5,39 / 5,27. Kan ikke låses i `PAIRS` — `*-soft` er rgba, ikke hex.
+
+## Rotert 2026-08-24 (økt 34): planbulleten for UI-overhalingen (verbatim fra HANDOVER.md)
+
+- **Plan for UI-overhalingen:** `docs/plan-v130-ui-overhaul.md` (~1900
+  linjer, godkjent 24. aug) — fire etapper v1.3.0–v1.3.3 med kode og
+  testtall (272 → 282 → 296 → 299). Mockup:
+  https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849.
+  **20 av 21 tasks ferdige. Kun ETAPPE 4 gjenstår (ingen planlagte
+  tasks — innholdet er Marius' QA-funn).**

@@ -556,7 +556,16 @@ footer {
   overflow-x: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--scrollbar-thumb) transparent;
+  --fade-l: 0px;
+  --fade-r: 0px;
+  mask-image: linear-gradient(90deg, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent);
 }
+
+/* Kanthint om at boksen kan dras sidelengs — samme mekanikk som menyen.
+   app.js togglar klassene. Uten JS: ingen fade, men boksen scroller. */
+.table-scroll.table-fade-left { --fade-l: 28px; }
+.table-scroll.table-fade-right { --fade-r: 28px; }
 
 .table-scroll::-webkit-scrollbar {
   width: 10px;

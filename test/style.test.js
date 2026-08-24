@@ -116,3 +116,9 @@ test('style.css: orddeling er manuell i brødtekst og av i statistikkortene', ()
   assert.match(block('.stat-val'), /hyphens: none/);
   assert.match(block('.num'), /white-space: nowrap/);
 });
+
+test('style.css: tabellboksene har samme kantfade-mekanikk som menyen', () => {
+  assert.match(block('.table-scroll'), /mask-image: linear-gradient\(90deg/);
+  assert.match(css, /\.table-scroll\.table-fade-left \{ --fade-l: 28px; \}/);
+  assert.match(css, /\.table-scroll\.table-fade-right \{ --fade-r: 28px; \}/);
+});

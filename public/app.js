@@ -59,26 +59,51 @@ function clubBadgeHtml(shortName, code, version, size) {
   return '<span class="club club--' + (size || 'sm') + '">' + img + name + '</span>';
 }
 
-// Modul 0: Mobilmenyen. Scroller aktiv lenke inn i syne, og togglar
-// kantfade-klassene som viser at menyen har mer innhold sidelengs.
+// Kantfade-tilstand for en vannrett scrollboks. Ren funksjon (testes i
+// test/app-client.test.js); 4 px slingring så subpiksel-scroll ikke flimrer.
+function edgeFadeState(scrollLeft, scrollWidth, clientWidth) {
+  const maxScroll = scrollWidth - clientWidth;
+  return { left: scrollLeft > 4, right: maxScroll - scrollLeft > 4 };
+}
+
+// Delte oppdaterere: resize treffer alle registrerte bokser; oppdaterere for
+// elementer som er fjernet fra DOM (live-rerender) melder seg av selv.
+const edgeFadeUpdates = new Set();
+
+function initEdgeFades(el, prefix) {
+  function update() {
+    if (!el.isConnected) { edgeFadeUpdates.delete(update); return; }
+    const s = edgeFadeState(el.scrollLeft, el.scrollWidth, el.clientWidth);
+    el.classList.toggle(prefix + '-left', s.left);
+    el.classList.toggle(prefix + '-right', s.right);
+  }
+  update();
+  el.addEventListener('scroll', update, { passive: true });
+  edgeFadeUpdates.add(update);
+  return update;
+}
+
+// Modul 0: Kantfade på vannrette scrollbokser — mobilmenyen og tabellene.
+// Faden vises bare mot kanter med skjult innhold. Modul 3 initierer på nytt
+// for tabeller den rendrer selv.
 (function () {
   'use strict';
 
+  window.addEventListener('resize', () => {
+    for (const update of edgeFadeUpdates) update();
+  });
+
   const nav = document.querySelector('.topbar nav');
-  if (!nav) return;
-
-  const active = nav.querySelector('a[aria-current="page"]');
-  if (active) active.scrollIntoView({ inline: 'center', block: 'nearest' });
-
-  function updateFades() {
-    const maxScroll = nav.scrollWidth - nav.clientWidth;
-    nav.classList.toggle('nav-overflow-left', nav.scrollLeft > 4);
-    nav.classList.toggle('nav-overflow-right', maxScroll - nav.scrollLeft > 4);
+  if (nav) {
+    const update = initEdgeFades(nav, 'nav-overflow');
+    const active = nav.querySelector('a[aria-current="page"]');
+    if (active) active.scrollIntoView({ inline: 'center', block: 'nearest' });
+    requestAnimationFrame(update);
   }
 
-  updateFades();
-  nav.addEventListener('scroll', updateFades, { passive: true });
-  window.addEventListener('resize', updateFades);
+  for (const box of document.querySelectorAll('.table-scroll')) {
+    initEdgeFades(box, 'table-fade');
+  }
 })();
 
 // Modul 1: Nedtelling til neste deadline. Leser ISO-tidspunkt fra data-deadline.
@@ -295,6 +320,9 @@ function clubBadgeHtml(shortName, code, version, size) {
         );
       })
       .join('');
+    for (const box of leaguesRoot.querySelectorAll('.table-scroll')) {
+      initEdgeFades(box, 'table-fade');
+    }
     statusEl.textContent = live.anyLive ? 'Kamper pågår' : 'Ingen kamper pågår akkurat nå';
     updatedEl.textContent = 'Sist oppdatert ' + new Date().toLocaleTimeString('nb-NO');
     pulseEl.classList.toggle('pulse-on', live.anyLive);

@@ -556,7 +556,7 @@ test('players.ejs har en skjult tomtilstand for null filtertreff', async () => {
 → `{ left, right }`; `initEdgeFades(el, prefix)`; klassene
 `.table-fade-left/.table-fade-right`.
 
-- [ ] **Steg 1 (rød):** `test/app-client.test.js`:
+- [x] **Steg 1 (rød):** `test/app-client.test.js`:
 
 ```js
 // NB: objekter fra vm-konteksten har en annen realms prototyper — deepEqual
@@ -582,9 +582,9 @@ test('style.css: tabellboksene har samme kantfade-mekanikk som menyen', () => {
 });
 ```
 
-- [ ] **Steg 2:** rød (3 nye; vm-konteksten trenger ingen nye stubber —
-      `requestAnimationFrame` kalles bare når nav finnes). Observert: ______
-- [ ] **Steg 3:** `app.js` — på filnivå (ved `clubBadgeHtml`):
+- [x] **Steg 2:** rød (3 nye; vm-konteksten trenger ingen nye stubber —
+      `requestAnimationFrame` kalles bare når nav finnes). Observert: app-client + style: 22 tester, 19 pass, 3 fail (som anslått)
+- [x] **Steg 3:** `app.js` — på filnivå (ved `clubBadgeHtml`):
 
 ```js
 // Kantfade-tilstand for en vannrett scrollboks. Ren funksjon (testes i
@@ -668,11 +668,11 @@ function initEdgeFades(el, prefix) {
       (mask-linjer filtreres allerede fra fargeskannen i style-testen. Kjent
       kosmetikk: faden tar også med seg endene av scrollbaren i boksen —
       akseptert. Nav-CSS-en (:319-332) er uendret; klassene heter det samme.)
-- [ ] **Steg 4:** `npm test` → 318, lint 0. Observert: ______
-- [ ] **Steg 5:** Playwright-sjekk 9 (Vedlegg B): venstrefade på nav når
+- [x] **Steg 4:** `npm test` → 318, lint 0. Observert: npm test 318/318 pass 0 fail, lint exit 0
+- [x] **Steg 5:** Playwright-sjekk 9 (Vedlegg B): venstrefade på nav når
       aktiv side er scrollet inn (/lag 390), tabellfade høyre ved overflow og
-      venstre etter scroll. Observert: ______
-- [ ] **Steg 6:** CHANGELOG (Fixed: myk uttoning på begge kanter av menyen;
+      venstre etter scroll. Observert: qa-t9.mjs (begge temaer, 390 px): 6/6 OK. Nav på /lag: overflow, scrollet inn, BEGGE fadeklassene satt. Dashbordtabell: table-fade-right i ro, etter scroll til enden table-fade-left og right borte; mask-image satt i computed style.
+- [x] **Steg 6:** CHANGELOG (Fixed: myk uttoning på begge kanter av menyen;
       Added: samme kanthint på vannrett scrollende tabeller), HANDOVER.
       Commit: `fix: kantfade på begge menykanter og på tabellbokser (QA 16+17)`
 

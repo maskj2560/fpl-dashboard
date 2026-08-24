@@ -16,6 +16,7 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   liga), som på dashbordet — og tallene oppdateres med live-dataene.
 - Spillere-siden sier fra når filtrene ikke gir treff, med en knapp for å
   nullstille dem.
+- Tabeller som kan dras sidelengs har samme myke kanthint som menyen.
 
 ### Fixed
 
@@ -32,6 +33,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   («opp 2 plasser»).
 - Rankgrafen på lagsiden viser en synlig markør når det bare finnes ett
   datapunkt — før var linjen usynlig i runde 1.
+- Toppmenyen toner ut på begge kanter når det finnes mer å scrolle til —
+  venstrefaden manglet når den aktive siden ble scrollet inn ved sidelast.
 
 ## [1.3.2] - 2026-08-24
 

@@ -37,6 +37,9 @@
     tegner en `<circle>` når grafen bare har ett punkt.
   - 1.3-8 (QA 13): 315/315, Playwright 8/8. Tomtilstand med nullstill-knapp
     på /spillere (`players-empty`), styrt av Modul 2.
+  - 1.3-9 (QA 16+17): 318/318, Playwright 6/6. `edgeFadeState`/`initEdgeFades`
+    på filnivå i app.js deles av menyen og `.table-scroll`; Modul 0 måler på
+    nytt i neste frame (fikser racen mot `scrollIntoView`).
 - **v1.3.2 (etappe 3) RELEASET 24. aug (økt 33):** finpuss per side +
   kontraktstester for markupen `app.js` avhenger av. 299/299, lint 0.
   Detaljene (inkl. de manuelt målte pillekontrastene) er rotert til
@@ -48,12 +51,9 @@
 - **v1.3.0 (etappe 1) ute siden 24. aug:** tokenpalett i to temaer,
   inline-tema-script, temabryter, lilla topbar. Detaljene er rotert til
   `docs/arkiv/HANDOVER-historikk.md`.
-- **Plan for UI-overhalingen:** `docs/plan-v130-ui-overhaul.md` (~1900
-  linjer, godkjent 24. aug) — fire etapper v1.3.0–v1.3.3 med kode og
-  testtall (272 → 282 → 296 → 299). Mockup:
-  https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849.
-  **20 av 21 tasks ferdige. Kun ETAPPE 4 gjenstår (ingen planlagte
-  tasks — innholdet er Marius' QA-funn).**
+- **Plan for UI-overhalingen:** `docs/plan-v130-ui-overhaul.md` (etappe 1–3,
+  godkjent 24. aug) + `docs/plan-v133-qa.md` (etappe 4). Mockup:
+  https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849
 - **Prod kjører v1.3.2 på https://fpl.marsk.no — verifisert 24. aug 13:22.**
   `/health` → 200, `ai:true, discord:true, leagues:1,`
   `clubImages {badges:20, shirts:20, keepers:20}`; footer `v1.3.2`;
