@@ -6,10 +6,18 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-24 (økt 29, Opus: v1.2.5 released og verifisert i prod)
+**Sist oppdatert:** 2026-08-24 (økt 30, Fable: plan v1.3.0 UI-overhaling godkjent, mockup publisert)
 
 ## Status akkurat nå
 
+- **Plan for UI-overhalingen godkjent (økt 30, Fable, 24. aug).**
+  `docs/plan-v130-ui-overhaul.md` (~1900 linjer): 20 verifiserte fakta,
+  15 beslutninger fra Marius + 9 implementasjonsvalg, palett med 41 målte
+  kontrastpar, fire etapper v1.3.0–v1.3.3 task for task med kode og
+  testtall (272 → 282 → 296 → 299). Mockup (begge temaer, 390 px,
+  designsystem): https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849.
+  **Neste: Opus-økt for v1.3.0** på branch `feat/ui-v130-fundament`.
+  0 AI-kall brukt i planøkten, ingenting pushet.
 - **v1.2.5 ferdig og ute (økt 29, Opus).** Hele
   `docs/plan-v125-brief-kvalitet.md` (Task 0–6) utført, tag `v1.2.5`.
   **2 AI-kall brukt av 2 budsjetterte.**
@@ -41,26 +49,13 @@
     prod.
 - **Prod kjører v1.2.5 på https://fpl.marsk.no — verifisert 24. aug 01:43.**
   `/health` → 200, `ai:true, discord:true, leagues:1`; footer `v1.2.5`.
-- Eldre: v1.2.3-deployen (22.–23. aug). Deploy-planen
-  (port 0–10) ble ferdig utført 22.–23. aug; sjekkpunkt B, C og D er lukket,
-  A har ett restpunkt (auto-brief-verifisering, kø-punkt 3). Bevis og
-  detaljer: `docs/sjekkpunkt-c-live.md`, `docs/sjekkpunkt-d-kostnad.md` og
-  `docs/arkiv/HANDOVER-historikk.md`.
 - Kostnad målt 23. aug: **$0,94/uke** — under terskelen, ingen tiltak. Ny
-  måling i uken etter 31. aug (prisskiftet), se kø-punkt 2.
-- `main` = `origin/main`, rent tre, **272/272 tester, lint 0**.
-  Ingen åpne feature-brancher.
-- **Doks-opprydning utført (økt 24):** docs/-rot fra 30 til 7 filer,
-  utførte planer i `docs/arkiv/`, 19 konsumerte økt-prompter slettet,
-  ROADMAP omskrevet med prioritert kø, denne fila slanket til ≤200 linjer.
-  Plan: `docs/plan-doks-opprydning.md`.
-- **Versjonsplan lagt (økt 25):** ROADMAP har nå versjonsplan-tabell øverst
-  (v1.2.4 → v1.2.5 → v1.3.0 → v1.3.1+, porter P1–P4 for sjekker/målinger)
-  og et dokumentkart. Kun kodereleaser får versjonsnummer (Marius' valg).
-- **v1.2.4 ferdig og ute (økt 27).** Rådgiver-prompten bygges i
-  `buildAdvicePrompt` (prompts.js) med fullt signalsett + sidens
-  beregninger + REGLER. 2 AI-kall brukt av 2, B-2-kriteriene bestått både
-  lokalt og i prod. Full bevisføring: `docs/arkiv/HANDOVER-historikk.md`.
+  måling i uken etter 31. aug (prisskiftet), se kø-punkt 1.
+- `main` er **4 docs-commits foran `origin/main`** (upushet, venter på
+  klarsignal), rent tre, **272/272 tester, lint 0**. Ingen åpne
+  feature-brancher.
+- Eldre status (v1.2.3-deploy, doks-opprydning økt 24, versjonsplan økt 25,
+  v1.2.4 økt 27): rotert til `docs/arkiv/HANDOVER-historikk.md` 24. aug.
 
 ## Åpne punkter
 
@@ -70,11 +65,18 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 2. P1 `[Marius]`: bekreft auto-briefen 20. aug i Discord-kanalen.
 3. P3: etter GW2, transfers-skjema mot ekte data + `/overganger` på mobil.
 4. P2 `[Marius]`: README-skjermbilder + mobil-QA.
-5. v1.3.0: UI-overhaling — **neste utviklingsjobb**, trenger planøkt
-   (bekreftet av Marius 24. aug) → v1.3.1+: robusthetskandidater.
+5. v1.3.0–v1.3.3: UI-overhaling i fire etapper — **plan godkjent, neste
+   utviklingsjobb** (`docs/plan-v130-ui-overhaul.md`) → deretter
+   robusthetskandidatene.
 
 ## Driftslærdommer (ikke glem disse)
 
+- **Sjekk `git status -sb`, ikke anta at `main` = `origin/main`:** ved
+  starten av økt 30 lå `main` 2 docs-commits foran origin (loggføring fra
+  økt 29) selv om prompten sa «main = origin/main».
+- **Bash-heredoc med apostrofer i innholdet feiler** i dette verktøyet
+  (wrapperen bruker enkle anførselstegn) — bruk Write/Edit for filer med
+  `'` i teksten (CSS, norsk prosa).
 - **Lokal røyktest med prod-nøkler i repoets `.env`:** `config.js` kjører
   `process.loadEnvFile()` som leser repoets `.env` UANSETT `--env-file`.
   Riktig teknikk: sett `ANTHROPIC_API_KEY=` og `DISCORD_WEBHOOK_URL=` som
@@ -116,6 +118,14 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 - Alle beskjeder fra Marius loggføres i loggen nederst.
 - ROADMAP/CHANGELOG/CLAUDE.md/HANDOVER oppdateres løpende, i samme commit
   som endringen.
+- UI-overhalingen (24. aug, økt 30): 15 beslutninger i
+  `docs/plan-v130-ui-overhaul.md` §2 — selvhostet klubbgrafikk (70/110 px)
+  med footer-kreditering og server-side fallback, ett tema-ikon i topbaren
+  med inline-script + matchMedia, FPL-familien (lilla natt / lilla
+  dagslys, grønn kun som fyll på lyst), fire etapper med hvert sitt
+  patchnummer, Playwright etter hver etappe, 1 AI-kall totalt,
+  `views/partials/` opprettes. Brainstorming-formen: ett spørsmålssett om
+  gangen, anbefaling først — Marius valgte anbefalingen på alle 15.
 - Doks-opprydningen (23. aug, økt 24): konsumerte prompter slettes, utførte
   planer arkiveres til `docs/arkiv/`; docs/-rot holdes på ~7 filer;
   ROADMAP-køen har promptstruktur-fiksen øverst; HANDOVER-tak 200 linjer
@@ -132,6 +142,24 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
+- 2026-08-24 (økt 30, Fable): kjøreprompt «Oppdrag (Fable 5): planlegg
+  v1.3.0 — full UI-overhaling. KUN PLANLEGGING» med krav: brainstorming
+  FØR plan mode (ett sett om gangen, anbefaling først, Marius beslutter),
+  verifiser alle fakta selv, klikkbar mockup som Artifact i begge temaer,
+  ett definert sluttprodukt (palett/typografi/spacing/komponenter per side),
+  fire åpne spørsmål avgjort (klubbgrafikk-kilde/lisens, tema/FOUC,
+  FPL-nærhet/kontrast, etapper), plan etter v1.2.5-malen, oppdater
+  ROADMAP/VIDERE/HANDOVER/CLAUDE.md, slett `prompt-ui-overhaul-plan.md`,
+  ikke rør CHANGELOG, 0 AI-kall, aldri push, Opus-prompt i chatten.
+  Underveis: «Klarer du å skrive planfila?» / «Okay da kan du fortsette»
+  (bekreftelse etter avbrudd). Handling: 4 spørsmålssett (15 beslutninger,
+  alle = anbefalingen), 20 fakta verifisert (bl.a. 140 bilde-URL-er med
+  curl, PNG-dimensjoner, 41 kontrastpar), plan skrevet til
+  `docs/plan-v130-ui-overhaul.md`, mockup publisert
+  (https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849),
+  ROADMAP/VIDERE/HANDOVER/CLAUDE.md oppdatert, prompt-fila slettet,
+  loggpost økt 28 + eldre status rotert til arkivet, committet lokalt på
+  `main` uten push, Opus-prompt levert i chatten. 0 AI-kall.
 - 2026-08-24 (økt 29, Opus): kjøreprompt «Oppdrag (Opus 5, utførelsesøkt):
   utfør v1.2.5 — brief-kvalitetstrioen» med `superpowers:executing-plans`
   mot `docs/plan-v125-brief-kvalitet.md`. Harde rammer: Task 0–5 nå, Task 6
@@ -162,24 +190,5 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
   vurderes», oppdatering av plan/ROADMAP/VIDERE/HANDOVER/CLAUDE.md,
   sletting av den utdaterte `docs/prompt-ui-overhaul-plan.md`, 0 AI-kall,
   ingen push — og en kopierbar Opus-prompt til slutt.
-- 2026-08-24 (økt 28, Fable): kjøreprompt «Oppdrag (Fable 5, plan mode):
-  planlegg v1.2.5 — brief-kvalitetstrioen» med krav: brainstorming FØR plan
-  mode (spørsmål ett sett om gangen, anbefaling først, Marius beslutter),
-  plan så detaljert som mulig (kopierbar kode, eksakte testnavn/asserts,
-  testtall rødt→grønt, verifiseringstabell) til
-  `docs/plan-v125-brief-kvalitet.md` for Opus 5, TDD, ingen nye
-  avhengigheter, egen branch, aldri push uten klarsignal, release som eget
-  task på klarsignal, aldri push to. 19–21/under kamper, eksplisitt lavt
-  AI-tak, /brief og /nyheter aldri med ekte nøkkel utenfor budsjettet,
-  docs-oppdateringer i samme commit (ROADMAP/HANDOVER/VIDERE), commit
-  lokalt på main UTEN push, ta stilling til to ryddepunkter, Opus-prompt
-  leveres i chatten. Brainstorming: Marius valgte anbefalingen på alle 9
-  spørsmål (begge tiltak for motsigelser; nær-miss ±1,0; fjern setning;
-  speil captainSuggestions; minutes-slipp før sesongstart;
-  captainsCriterion; ærlig etikett + REGLER + view-synk; maks 2 AI-kall;
-  rydding i planøkten). Handling: plan skrevet og godkjent, ROADMAP/
-  HANDOVER/VIDERE oppdatert, v124-planen arkivert, `fix/radgiver-prompt`
-  slettet, alt committet på main (ingen push), Opus-prompt levert i
-  chatten. 0 AI-kall, ingen kodeendringer.
-- Eldre loggposter (økt 22–27): rotert til
+- Eldre loggposter (økt 22–28): rotert til
   `docs/arkiv/HANDOVER-historikk.md` 2026-08-24 (200-linjerstaket).

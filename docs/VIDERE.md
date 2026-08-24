@@ -33,12 +33,29 @@ Live-siden viser bonuspoeng underveis i kampene og skjønner at kampen er
 ferdig ved fløyta. Kapteinsrådene på lagsiden gir mening også før noen har
 spilt. Kostnaden for AI-en er målt: under 1 dollar i uka.
 
-## Neste oppgave (blir v1.3.0) — ny drakt på hele siden
+## Neste oppgave — ny drakt på hele siden, i fire etapper
 
-**Det store visuelle løftet.** Du bekreftet 24. august at du vil ha det:
-FPL-følelse med klubblogoer og drakter, og valg mellom mørkt og lyst tema.
-Neste steg er en planleggingsøkt — ingenting bygges før planen er godkjent,
-og ingenting legges ut før du gir klarsignal.
+**Planen er godkjent (24. august), og du kan se resultatet før noe bygges:**
+https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849
+(klikk deg rundt: dashbord, spillere, lag, brief — knappen øverst til
+høyre bytter mellom automatisk, lyst og mørkt tema, og «390 px» nederst
+viser mobilbredden).
+
+Det bygges i fire biter, og hver bit legges ut for seg når du sier fra —
+siden er aldri halvferdig:
+
+1. **v1.3.0 — nye farger og temavalg.** FPL-lilla toppmeny, FPLs grønne
+   og cyan som aksenter, og en knapp som bytter mellom automatisk/lyst/
+   mørkt og husker valget ditt. Alt annet ser ut som før.
+2. **v1.3.1 — klubbmerker og drakter.** Merker i alle tabeller og lister,
+   drakter på banen på lagsiden (keeperen får keeperdrakt). Bildene
+   ligger på vår egen server; mangler et bilde, vises kortnavnet.
+3. **v1.3.2 — finpuss.** Rundeetiketten i nedtellingen, kampliste med
+   klokkeslett i briefen, tydeligere feilsider, mobilpuss. Etterpå én
+   AI-visning av briefen i prod for å se at teksten sitter i det nye
+   designet (eneste AI-kall i hele løpet).
+4. **v1.3.3 — rettelser** fra din egen gjennomgang i nettleser og på
+   telefon.
 
 ## Deretter, i rekkefølge (nummerert plan, 24. august)
 
@@ -52,8 +69,11 @@ er «porter» — de skjer når datoen eller du er klar, uten å stoppe utviklin
   måler på nytt at det fortsatt er billig (dagens bruk vil koste ca.
   1,50 dollar/uka).
 - ~~**v1.2.5** — rundebriefen blir ærligere.~~ **Ferdig 24. august.**
-- **v1.3.0** — ny drakt på hele siden (oppgaven over). **Neste jobb.**
-- **v1.3.1 og utover** — små robusthetsfikser fra kvalitetsgjennomgangen,
+- **v1.3.0** — nye farger og temavalg. **Neste jobb.**
+- **v1.3.1** — klubbmerker og drakter.
+- **v1.3.2** — finpuss på alle sider.
+- **v1.3.3** — rettelser fra din gjennomgang.
+- **v1.3.4 og utover** — små robusthetsfikser fra kvalitetsgjennomgangen,
   én og én etter avtale.
 
 ## Ting bare du kan gjøre

@@ -5,6 +5,49 @@
 > sjekkpunkt-tabellen, versjonshistorikken, utdaterte åpne punkter og hele
 > loggen over brukerbeskjeder til og med økt 22. Nyere logg: HANDOVER.md.
 
+## Rotert 2026-08-24 (økt 30): status-blokker + loggpost økt 28 (verbatim fra HANDOVER.md)
+
+Status-blokker (sto under «Status akkurat nå»):
+
+- Eldre: v1.2.3-deployen (22.–23. aug). Deploy-planen
+  (port 0–10) ble ferdig utført 22.–23. aug; sjekkpunkt B, C og D er lukket,
+  A har ett restpunkt (auto-brief-verifisering, kø-punkt 3). Bevis og
+  detaljer: `docs/sjekkpunkt-c-live.md`, `docs/sjekkpunkt-d-kostnad.md` og
+  `docs/arkiv/HANDOVER-historikk.md`.
+- **Doks-opprydning utført (økt 24):** docs/-rot fra 30 til 7 filer,
+  utførte planer i `docs/arkiv/`, 19 konsumerte økt-prompter slettet,
+  ROADMAP omskrevet med prioritert kø, denne fila slanket til ≤200 linjer.
+  Plan: `docs/plan-doks-opprydning.md`.
+- **Versjonsplan lagt (økt 25):** ROADMAP har nå versjonsplan-tabell øverst
+  (v1.2.4 → v1.2.5 → v1.3.0 → v1.3.1+, porter P1–P4 for sjekker/målinger)
+  og et dokumentkart. Kun kodereleaser får versjonsnummer (Marius' valg).
+- **v1.2.4 ferdig og ute (økt 27).** Rådgiver-prompten bygges i
+  `buildAdvicePrompt` (prompts.js) med fullt signalsett + sidens
+  beregninger + REGLER. 2 AI-kall brukt av 2, B-2-kriteriene bestått både
+  lokalt og i prod. Full bevisføring: `docs/arkiv/HANDOVER-historikk.md`.
+
+Loggpost:
+
+- 2026-08-24 (økt 28, Fable): kjøreprompt «Oppdrag (Fable 5, plan mode):
+  planlegg v1.2.5 — brief-kvalitetstrioen» med krav: brainstorming FØR plan
+  mode (spørsmål ett sett om gangen, anbefaling først, Marius beslutter),
+  plan så detaljert som mulig (kopierbar kode, eksakte testnavn/asserts,
+  testtall rødt→grønt, verifiseringstabell) til
+  `docs/plan-v125-brief-kvalitet.md` for Opus 5, TDD, ingen nye
+  avhengigheter, egen branch, aldri push uten klarsignal, release som eget
+  task på klarsignal, aldri push to. 19–21/under kamper, eksplisitt lavt
+  AI-tak, /brief og /nyheter aldri med ekte nøkkel utenfor budsjettet,
+  docs-oppdateringer i samme commit (ROADMAP/HANDOVER/VIDERE), commit
+  lokalt på main UTEN push, ta stilling til to ryddepunkter, Opus-prompt
+  leveres i chatten. Brainstorming: Marius valgte anbefalingen på alle 9
+  spørsmål (begge tiltak for motsigelser; nær-miss ±1,0; fjern setning;
+  speil captainSuggestions; minutes-slipp før sesongstart;
+  captainsCriterion; ærlig etikett + REGLER + view-synk; maks 2 AI-kall;
+  rydding i planøkten). Handling: plan skrevet og godkjent, ROADMAP/
+  HANDOVER/VIDERE oppdatert, v124-planen arkivert, `fix/radgiver-prompt`
+  slettet, alt committet på main (ingen push), Opus-prompt levert i
+  chatten. 0 AI-kall, ingen kodeendringer.
+
 ## Rotert 2026-08-24 (økt 28): loggposter økt 22–24 (verbatim fra HANDOVER.md)
 
 - 2026-08-23 (økt 24, natt ~01:40): kjøreprompt «Oppdrag (Fable, plan mode):

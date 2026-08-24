@@ -21,7 +21,10 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | **P3** | Etter GW2: transfers-skjema mot ekte data | 3 | GW2 spilt (~29.–31. aug) |
 | **P4** | Kostnadsmåling uken etter 1. sep | 1 | dato |
 | ~~**v1.2.5**~~ | ~~Brief-kvalitetstrioen~~ | **utført 24. aug** | — |
-| **v1.3.0** | UI-overhaling | 5 | ingenting — neste utviklingsjobb |
+| **v1.3.0** | UI-overhaling, etappe 1: fundament (tokens i to temaer, temabryter, lilla topbar) | 5 | plan godkjent 24. aug — klarsignal per etappe |
+| **v1.3.1** | UI-overhaling, etappe 2: klubbgrafikk (merker + drakter, selvhostet) | 5 | v1.3.0 i prod |
+| **v1.3.2** | UI-overhaling, etappe 3: finpuss per side | 5 | v1.3.1 i prod |
+| **v1.3.3** | UI-overhaling, etappe 4: QA-rettelser | 5 | Marius' QA etter v1.3.2 |
 | **v1.3.1+** | Robusthetskandidatene, én og én etter avtale | 6 | avtale per punkt |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
@@ -74,18 +77,29 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
 - **Blokkert av:** Marius (nettleser + telefon).
 - **Størrelse:** liten.
 
-### 5. UI-overhaling (v1.3.0)
+### 5. UI-overhaling (v1.3.0 → v1.3.3) — **plan godkjent 24. aug**
 
-- **Hva:** FPL-gjenkjennelse (klubblogoer/drakter), clean og lett å bruke,
-  mørk/lys/auto-tema. Planleggingsprompten er skrevet, men aldri kjørt —
-  ingen plan finnes ennå.
-- **Eier detaljene:** `docs/prompt-ui-overhaul-plan.md` (planleggingsprompt
-  med verifiserte fakta og alle åpne spørsmål).
-- **Blokkert av:** ingenting — v1.2.5 er ute. Marius bekreftet 24. aug at den
-  fortsatt er ønsket. Kostnad avklares i planøkten (klubbgrafikk-kilde/
-  lisens, lys palett med kontrastkrav, etappeinndeling).
-- **Størrelse:** stor — egen planøkt, flere utførelsesøkter i etapper,
-  QA-runder hos Marius.
+- **Hva:** FPL-gjenkjennelse (FPLs lilla/grønn/cyan/rosa + FPLs FDR-farger),
+  klubbmerker og drakter (selvhostet, 60 PNG), clean og lett å bruke, tema
+  mørk/lys/auto med bryter i topbaren. Alle 15 designspørsmål er besluttet
+  av Marius i planøkt 30 — Opus tar ingen designvalg.
+- **Eier detaljene:** `docs/plan-v130-ui-overhaul.md` (task for task med
+  kode, testnavn og forventede testtall) + mockupen
+  https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849.
+- **Etapper (hver grønn, merges alene, prod alltid et helt UI):**
+  - [ ] **v1.3.0 Fundament** — tokenpalett i begge temaer (kontrast låst av
+        `test/style.test.js`), inline-tema-script, temabryter, lilla topbar,
+        `views/partials/`. 272 → 282 tester.
+  - [ ] **v1.3.1 Klubbgrafikk** — `scripts/fetch-club-assets.mjs`,
+        `public/img/clubs/`, `clubAssets.js`, `IMG_VERSION`, `teamCode` i
+        brief/live/transfers, partials club-badge/club-shirt i alle views,
+        footer-kreditering, `/health` teller bildene. → 296 tester.
+  - [ ] **v1.3.2 Finpuss** — hero, korthoder, kampliste, feilsider, mobil.
+        → 299 tester. Deretter 1 AI-kall: prod-visning av `/brief`.
+  - [ ] **v1.3.3 QA-rettelser** — funn fra Playwright + Marius' QA.
+- **Blokkert av:** klarsignal fra Marius per etappe (release-tasken).
+- **Størrelse:** stor — fire utførelsesøkter (Opus), Playwright-QA i
+  scratchpad etter hver, QA-runder hos Marius etter v1.3.2.
 
 ### 6. Robusthetskandidater (v1.3.1+, avtales én og én, uprioritert innbyrdes)
 
@@ -118,7 +132,7 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 | `ROADMAP.md` (rot) | fasiten: versjonsplan, kø, dokumentkart, historikk |
 | `docs/HANDOVER.md` | nåtilstand + lærdommer + beslutninger (tak 200 linjer) |
 | `docs/VIDERE.md` | Marius' ikke-tekniske kortversjon |
-| `docs/prompt-ui-overhaul-plan.md` | ukjørt planleggingsprompt for v1.3.0 |
+| `docs/plan-v130-ui-overhaul.md` | godkjent plan for v1.3.0–v1.3.3 (UI-overhaling), utføres etappevis |
 | `docs/sjekkpunkt-d-kostnad.md` | metode + skript for P4-målingen |
 | `docs/sjekkpunkt-c-live.md` | bevismateriale v1.2.3 |
 | `docs/port9-chrome-prompt.md` | gjenbrukbar nettleser-QA-oppskrift |
@@ -131,6 +145,8 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
   for seg, koster per generering — ettermonteres via ai.js ved behov)
 - Prisendrings-varsler
 - E-postvarsling som alternativ til Discord
+- Spillerbilder (FPLs `p{code}.png`, 609 × ~10 KB) — bevisst utelatt fra
+  v1.3-overhalingen (beslutning F-g i planen)
 
 ---
 
