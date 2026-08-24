@@ -65,7 +65,8 @@ siden er aldri halvferdig:
    Merker i alle tabeller og lister, drakter på banen på lagsiden
    (keeperen får keeperdrakt). Bildene ligger på vår egen server;
    mangler et bilde, vises kortnavnet.
-3. **v1.3.2 — finpuss.** Rundeetiketten i nedtellingen, kampliste med
+3. **v1.3.2 — finpuss.** **Bygget ferdig 24. august — venter på at du
+   sier fra før den legges ut.** Rundeetiketten i nedtellingen, kampliste med
    klokkeslett i briefen, tydeligere feilsider, mobilpuss. Etterpå én
    AI-visning av briefen i prod for å se at teksten sitter i det nye
    designet (eneste AI-kall i hele løpet).
@@ -86,7 +87,8 @@ er «porter» — de skjer når datoen eller du er klar, uten å stoppe utviklin
 - ~~**v1.2.5** — rundebriefen blir ærligere.~~ **Ferdig 24. august.**
 - ~~**v1.3.0** — nye farger og temavalg.~~ **Ferdig 24. august.**
 - ~~**v1.3.1** — klubbmerker og drakter.~~ **Ferdig 24. august.**
-- **v1.3.2** — finpuss på alle sider. **Neste jobb.**
+- **v1.3.2** — finpuss på alle sider. **Bygget 24. august, klar til
+  utlegging når du sier fra.**
 - **v1.3.3** — rettelser fra din gjennomgang.
 - **v1.3.4 og utover** — små robusthetsfikser fra kvalitetsgjennomgangen,
   én og én etter avtale.

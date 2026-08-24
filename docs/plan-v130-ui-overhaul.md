@@ -1885,9 +1885,14 @@ etter avsnittet.
 
 ## Task 1.2-3 — Røyk, Playwright, docs — STOPP
 
-- [ ] Røyk uten nøkler: 11 ruter 200, 404. Observert: ______
-- [ ] Playwright (Vedlegg A): 0 feil. Observert: ______
-- [ ] Docs oppdatert, commit `docs: v1.3.2 klar`. Rapporter, **STOPP.**
+- [x] Røyk uten nøkler: 11 ruter 200, 404. Observert: **11 ruter 200**
+      (/, /spillere, /lag, /overganger, /liga, /brief, /live, /nyheter,
+      /health, /api/brief.json, /api/live.json), ukjent sti 404,
+      `/health` → `ai:false, discord:false`, clubImages 20/20/20.
+- [x] Playwright (Vedlegg A): 0 feil. Observert: **OK 332/332**, og
+      klubbskriptet fra etappe 2 fortsatt **OK 22/22** (finpussen rørte
+      ikke merkene, draktene eller sorteringen).
+- [x] Docs oppdatert, commit `docs: v1.3.2 klar`. Rapporter, **STOPP.**
 
 ## Task 1.2-4 — Release v1.3.2 (KUN på klarsignal) + AI-kall 1 av 1
 

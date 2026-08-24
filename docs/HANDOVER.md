@@ -6,10 +6,25 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-24 (økt 32, Opus: v1.3.1 released og deployet)
+**Sist oppdatert:** 2026-08-24 (økt 32, Opus: v1.3.2 bygget, venter klarsignal)
 
 ## Status akkurat nå
 
+- **v1.3.2 ETAPPE 3 BYGGET FERDIG, IKKE RELEASET (økt 32, Opus, 24. aug).**
+  Task 1.2-0…1.2-3 utført på branch `feat/ui-v132-finpuss` (3 commits,
+  ikke pushet). **299/299 tester, lint 0, 0 AI-kall.** Task 1.2-4
+  (release + det ene budsjetterte AI-kallet) venter på klarsignal.
+  - Kontraktstester som låser markupen `app.js` avhenger av (heroens
+    `data-deadline` + fire `data-unit`, 11 kolonnehoder med `data-type`
+    og `aria-sort`), `btn-link` tilbake til dashbordet på 404/error/
+    no-team, tellere i dashbord-korthodene, aktiv chip i Oppstilling-
+    hodet, kamplista i briefen som `.fixture-row` med klokkeslett,
+    Beste/Verste som piller, kreditering på egen linje i footeren.
+  - Heroen var allerede ferdig fra etappe 1 — ingen endring nødvendig.
+  - Pillenes forgrunnsfarger var ikke spesifisert i planen. Målt der de
+    står (kortflaten `--surface`): beste 10,42 mørkt / 5,66 lyst, verste
+    5,39 / 5,27. Kan ikke låses i `PAIRS` — `*-soft` er rgba, ikke hex.
+  - Røyk uten nøkler: 11 ruter 200 + 404. Playwright 332/332 + 22/22.
 - **v1.3.1 ETAPPE 2 FERDIG OG UTE (økt 32, Opus, 24. aug).** Task
   1.1-0…1.1-7 utført, merget til `main`, tagget `v1.3.1` og deployet.
   **296/296 tester, lint 0, 0 AI-kall.**
@@ -61,9 +76,9 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 2. P1 `[Marius]`: bekreft auto-briefen 20. aug i Discord-kanalen.
 3. P3: etter GW2, transfers-skjema mot ekte data + `/overganger` på mobil.
 4. P2 `[Marius]`: README-skjermbilder + mobil-QA.
-5. v1.3.2 (etappe 3, finpuss): neste utviklingsjobb i
-   `docs/plan-v130-ui-overhaul.md` — venter på klarsignal fra Marius.
-   Deretter v1.3.3, så robusthetskandidatene.
+5. v1.3.2: **bygget og grønt — venter på klarsignal for release**
+   (Task 1.2-4, inkl. det ene budsjetterte AI-kallet: én visning av
+   `/brief` i prod). Deretter v1.3.3, så robusthetskandidatene.
 
 ## Driftslærdommer (ikke glem disse)
 
@@ -167,6 +182,11 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
   `main`, tag `v1.3.1`, push, Coolify-deploy, prod-verifisering uten
   `/brief` og `/nyheter` (240/240 + 14/14 i Playwright). Tidsvindu før
   push: mandag 03:44, 0 kamper i gang, neste avspark 24. aug 19:00 UTC.
+  Til slutt nytt **«Kjør»** (~04:05), tolket som klarsignal for ETAPPE 3.
+  Handling: Task 1.2-0…1.2-3 utført på `feat/ui-v132-finpuss`, 3 commits,
+  299/299 + lint 0, Playwright 332/332 + 22/22, 0 AI-kall, ingenting
+  pushet. Docs-commiten fra v1.3.1-releasen ligger fortsatt upushet
+  (ville trigget ny build av identisk kode) — Marius er varslet.
 - Loggposter fra økt 30–31: rotert til
   `docs/arkiv/HANDOVER-historikk.md` 2026-08-24 (200-linjerstaket).
 - Eldre loggposter (økt 22–28): rotert til
