@@ -7,6 +7,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-08-24
+
 ### Added
 
 - Mørkt og lyst tema: følger nettleseren automatisk, og en bryter i

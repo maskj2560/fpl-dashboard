@@ -6,13 +6,13 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-24 (økt 31, Opus: v1.3.0 etappe 1 ferdig bygget, venter klarsignal for release)
+**Sist oppdatert:** 2026-08-24 (økt 31, Opus: v1.3.0 released og deployet)
 
 ## Status akkurat nå
 
-- **v1.3.0 ETAPPE 1 FERDIG BYGGET (økt 31, Opus, 24. aug) — venter
-  klarsignal for Task 1.0-7 (release).** Branch `feat/ui-v130-fundament`,
-  4 commits, **282/282 tester, lint 0**, ingenting pushet, **0 AI-kall.**
+- **v1.3.0 ETAPPE 1 FERDIG OG UTE (økt 31, Opus, 24. aug).** Hele etappe 1
+  av UI-overhalingen utført (Task 1.0-0…1.0-7), merget til `main`, tagget
+  `v1.3.0` og deployet. **282/282 tester, lint 0, 0 AI-kall.**
   - Task 1.0-1…1.0-5 utført etter `docs/plan-v130-ui-overhaul.md`:
     `test/style.test.js` (tokenparitet + forbud mot hardkodede farger +
     35 kontrastpar i begge temaer), tokenblokkene i `public/style.css`
@@ -45,9 +45,8 @@
   `/health` → 200, `ai:true, discord:true, leagues:1`; footer `v1.2.5`.
 - Kostnad målt 23. aug: **$0,94/uke** — under terskelen, ingen tiltak. Ny
   måling i uken etter 31. aug (prisskiftet), se kø-punkt 1.
-- `main` er **4 docs-commits foran `origin/main`** (upushet, venter på
-  klarsignal), rent tre, **272/272 tester, lint 0**. Én åpen branch:
-  `feat/ui-v130-fundament` (4 commits, 282/282) — venter på klarsignal.
+- `main` = `origin/main` etter push 24. aug, rent tre, **282/282 tester,
+  lint 0**. Ingen åpne feature-brancher.
 - Eldre status (v1.2.3-deploy, doks-opprydning økt 24, versjonsplan økt 25,
   v1.2.4 økt 27): rotert til `docs/arkiv/HANDOVER-historikk.md` 24. aug.
 
@@ -147,10 +146,14 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
   `ai:false` FØRST), TDD med observert rødt ført inn i planfila, ingen nye
   avhengigheter, Playwright kun i scratchpad, docs i samme commit som
   endringen, branch `feat/ui-v130-fundament` fra rent og grønt `main`.
-  Handling: alle seks tasks utført, 4 commits, 282/282 + lint 0,
+  Handling: alle seks tasks utført, 5 commits, 282/282 + lint 0,
   Playwright 332/332, 0 AI-kall, ingenting pushet. Underveis ett spørsmål
   stilt (kontrastkonflikt på `.deadline-passed` inne i heroen) —
-  Marius valgte anbefalingen `--hero-text` (hvit).
+  Marius valgte anbefalingen `--hero-text` (hvit). Deretter klarsignal:
+  **«Kjør»** (mandag 24. aug ~03:10). Handling: Task 1.0-7 utført — bump
+  1.3.0, docs, merge til `main`, tag `v1.3.0`, push, Coolify-deploy,
+  prod-verifisering uten `/brief` og `/nyheter`. Tidsvindu sjekket før
+  push: mandag 03:09, 0 kamper i gang, neste avspark 28. aug 19:00 UTC.
 
 - 2026-08-24 (økt 30, Fable): kjøreprompt «Oppdrag (Fable 5): planlegg
   v1.3.0 — full UI-overhaling. KUN PLANLEGGING» med krav: brainstorming

@@ -1066,9 +1066,10 @@ mockupen. Konkret:
 
 ## Task 1.0-7 — Release v1.3.0 (KUN på klarsignal)
 
-- [ ] Tidsvindu sjekket (ukedag/klokke, kamper i gang: nei). Observert: ______
-- [ ] `npm version minor --no-git-tag-version` → 1.3.0.
-- [ ] CHANGELOG `[Unreleased]` → `## [1.3.0] - <dato>`. ROADMAP: kø-punkt
+- [x] Tidsvindu sjekket (ukedag/klokke, kamper i gang: nei). Observert:
+      **mandag 24. aug 03:09, 0 kamper i gang, neste avspark 28. aug 19:00 UTC**
+- [x] `npm version minor --no-git-tag-version` → 1.3.0.
+- [x] CHANGELOG `[Unreleased]` → `## [1.3.0] - <dato>`. ROADMAP: kø-punkt
       5 huk av etappe 1; versjonsplan-rad v1.3.0 strykes. VIDERE «Nytt
       siden sist». HANDOVER status.
 - [ ] Commit `chore(release): v1.3.0`, `git checkout main`,

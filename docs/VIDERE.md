@@ -5,7 +5,7 @@
 
 **Sist oppdatert:** 24. august 2026
 
-## Dette har du nå (v1.2.5, live på fpl.marsk.no)
+## Dette har du nå (v1.3.0, live på fpl.marsk.no)
 
 Dashbord med nedtelling og skader · spillertabell med søk og filter · laget
 ditt med kapteinsråd · miniligaen · rundebrief (AI skriver den på norsk) ·
@@ -13,7 +13,15 @@ live-poeng mens kampene går · nyheter med AI-oppsummering · auto-brief til
 Discord kvelden før hver deadline · «Overganger» som viser om byttene dine
 ga eller kostet poeng.
 
-**Nytt siden sist (v1.2.5, 24. august):** **rundebriefen er blitt ærligere.**
+**Nytt siden sist (v1.3.0, 24. august): siden har fått ny drakt — og du
+kan velge lyst eller mørkt tema.** Knappen helt til høyre i toppmenyen
+sykler mellom automatisk (følger telefonen/PC-en), lyst og mørkt, og
+husker valget ditt til neste gang. Fargene er FPLs egne: lilla toppmeny,
+grønn som handlingsfarge, cyan på alt AI-en har skrevet, og FPLs
+nøyaktige fargeskala på kampvanskelighet. Alt innhold er som før — dette
+er bit 1 av 4.
+
+Fra før (v1.2.5): **rundebriefen er blitt ærligere.**
 Tre ting: (1) den kan ikke lenger skrive «alle stiller friske» når skadelista
 har navn på seg — slike setninger lukes automatisk bort før du ser dem, og
 det samme gjelder prosenttall den har vridd på (den skrev en gang 32,3 % der
@@ -41,16 +49,12 @@ https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849
 høyre bytter mellom automatisk, lyst og mørkt tema, og «390 px» nederst
 viser mobilbredden).
 
-**Status 24. august:** bit 1 (v1.3.0) er ferdig bygget og testet lokalt —
-lyst og mørkt tema er klart, med bryter i toppmenyen. Den venter på at du
-sier «kjør release» før den legges ut.
-
 Det bygges i fire biter, og hver bit legges ut for seg når du sier fra —
 siden er aldri halvferdig:
 
-1. **v1.3.0 — nye farger og temavalg.** FPL-lilla toppmeny, FPLs grønne
-   og cyan som aksenter, og en knapp som bytter mellom automatisk/lyst/
-   mørkt og husker valget ditt. Alt annet ser ut som før.
+1. ~~**v1.3.0 — nye farger og temavalg.**~~ **Ferdig og ute 24. august.**
+   FPL-lilla toppmeny, FPLs grønne og cyan som aksenter, og en knapp som
+   bytter mellom automatisk/lyst/mørkt og husker valget ditt.
 2. **v1.3.1 — klubbmerker og drakter.** Merker i alle tabeller og lister,
    drakter på banen på lagsiden (keeperen får keeperdrakt). Bildene
    ligger på vår egen server; mangler et bilde, vises kortnavnet.
@@ -73,8 +77,8 @@ er «porter» — de skjer når datoen eller du er klar, uten å stoppe utviklin
   måler på nytt at det fortsatt er billig (dagens bruk vil koste ca.
   1,50 dollar/uka).
 - ~~**v1.2.5** — rundebriefen blir ærligere.~~ **Ferdig 24. august.**
-- **v1.3.0** — nye farger og temavalg. **Neste jobb.**
-- **v1.3.1** — klubbmerker og drakter.
+- ~~**v1.3.0** — nye farger og temavalg.~~ **Ferdig 24. august.**
+- **v1.3.1** — klubbmerker og drakter. **Neste jobb.**
 - **v1.3.2** — finpuss på alle sider.
 - **v1.3.3** — rettelser fra din gjennomgang.
 - **v1.3.4 og utover** — små robusthetsfikser fra kvalitetsgjennomgangen,
