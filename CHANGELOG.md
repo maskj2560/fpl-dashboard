@@ -7,6 +7,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Changed
+
+- Finpuss på alle sider etter mockupen: hero med rundeetikett, tellere i
+  korthodene, kampliste med klokkeslett og merker i briefen, tydeligere
+  feilsider.
+
 ## [1.3.1] - 2026-08-24
 
 ### Added

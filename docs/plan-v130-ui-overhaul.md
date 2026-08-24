@@ -1867,12 +1867,21 @@ etter avsnittet.
 - **Footer:** kreditering på egen linje (`<p class="credit">`), `--fs-sm`.
 - Ingen nye farger utenfor tokens (style-testen vokter).
 
-- [ ] `npm test` → **299/299**, lint 0 (view-markørene i §6 er urørt).
-      Observert: ______
-- [ ] CHANGELOG `[Unreleased]` `### Changed`: «Finpuss på alle sider etter
+- [x] `npm test` → **299/299**, lint 0 (view-markørene i §6 er urørt).
+      Observert: **299/299, fail 0**, lint uten utskrift.
+      Merknader: hero-punktet var allerede oppfylt i etappe 1 (`.eyebrow`
+      → `--hero-dim`, grønn `.gw-badge`, hairline grønn→cyan, `--fs-hero`,
+      480-padding) — ingen endring nødvendig. Piller: `.status-best` =
+      `--accent-soft` + `--accent-text`, `.status-worst` = `--accent-2-soft`
+      + `--negative`. Forgrunnsfargene var ikke spesifisert i planen;
+      kontrasten er målt der pillene faktisk står (kortflaten `--surface`,
+      ingen tabellrad bruker `--surface-2`): beste 10,42 mørkt / 5,66 lyst,
+      verste 5,39 / 5,27 — alle over 4,5. Parene kunne ikke legges i
+      `PAIRS` i style.test.js fordi `*-soft`-tokenene er rgba, ikke hex.
+- [x] CHANGELOG `[Unreleased]` `### Changed`: «Finpuss på alle sider etter
       mockupen: hero med rundeetikett, tellere i korthodene, kampliste med
       klokkeslett og merker i briefen, tydeligere feilsider.»
-- [ ] Commit: `feat(ui): finpuss per side etter mockupen`
+- [x] Commit: `feat(ui): finpuss per side etter mockupen`
 
 ## Task 1.2-3 — Røyk, Playwright, docs — STOPP
 

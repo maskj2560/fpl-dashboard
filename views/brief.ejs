@@ -54,8 +54,8 @@
     <% for (const d of brief.fixturesByDay) { %>
       <div>
         <h3 class="sub-head"><%= d.day %></h3>
-        <ul class="reasons" style="padding-left: 0; list-style: none;">
-          <% for (const m of d.matches) { %><li><strong><%= m.kickoff %></strong> <%- include('partials/club-badge', { team: { short_name: m.home, code: m.homeCode } }) %> – <%- include('partials/club-badge', { team: { short_name: m.away, code: m.awayCode } }) %></li><% } %>
+        <ul class="fixture-list">
+          <% for (const m of d.matches) { %><li class="fixture-row"><span class="num fixture-time"><%= m.kickoff %></span> <%- include('partials/club-badge', { team: { short_name: m.home, code: m.homeCode } }) %> – <%- include('partials/club-badge', { team: { short_name: m.away, code: m.awayCode } }) %></li><% } %>
         </ul>
       </div>
     <% } %>

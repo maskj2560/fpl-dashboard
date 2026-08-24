@@ -21,7 +21,7 @@
   </section>
 <% } else { %>
   <section class="card card-wide">
-    <h2>Oppstilling</h2>
+    <h2><span class="h2-title">Oppstilling</span><% if (squadView.activeChip) { %><span class="status">Chip: <%= squadView.activeChip %></span><% } %></h2>
     <div class="pitch">
       <% for (const line of [1, 2, 3, 4]) { %>
         <div class="pitch-row">
