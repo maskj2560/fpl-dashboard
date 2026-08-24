@@ -1093,9 +1093,11 @@ banen, kreditering i footer, `/health` teller bildene.
 
 ## Task 1.1-0 — Oppstart
 
-- [ ] `git checkout main`, rent tre, `npm test` → **282/282**, lint 0.
-      Observert: ______
-- [ ] `git checkout -b feat/ui-v131-klubbgrafikk`
+- [x] `git checkout main`, rent tre, `npm test` → **282/282**, lint 0.
+      Observert: **282/282, fail 0**, `npm run lint` uten utskrift (0).
+      (`main` lå 1 docs-commit foran `origin/main` — loggføringen fra økt 31,
+      ikke pushet.)
+- [x] `git checkout -b feat/ui-v131-klubbgrafikk`
 
 ## Task 1.1-1 — `IMG_VERSION` i middleware (TDD)
 
@@ -1112,7 +1114,12 @@ test('cacheControlFor gir immutable for bildeversjonen (klubbgrafikk)', () => {
 });
 ```
 
-- [ ] Rødt: **283 tester, 1 feiler** (import gir `undefined`). Observert: ______
+- [x] Rødt: **283 tester, 1 feiler** (import gir `undefined`).
+      Observert: **277 tester, 1 feilende fil** — ESM gir link-feil, ikke
+      `undefined`: `SyntaxError: The requested module '../src/middleware.js'
+      does not provide an export named 'IMG_VERSION'`. Hele fila (6 tester)
+      kjører derfor ikke: 276 pass + 1 feilende fil. Samme alternative form
+      som style.test.js i etappe 1, og som planen selv godtar i 1.1-2.
 
 Implementasjon (`src/middleware.js`, under `FONT_VERSION`):
 
@@ -1126,8 +1133,9 @@ export const IMG_VERSION = '2627';
 
 og i `cacheControlFor`: `(v === assetVersion || v === FONT_VERSION || v === IMG_VERSION)`.
 
-- [ ] Grønt: **283/283**, lint 0. Observert: ______
-- [ ] Commit: `feat(assets): IMG_VERSION for klubbgrafikk i cache-reglene`
+- [x] Grønt: **283/283**, lint 0. Observert: **283/283, fail 0**, lint uten
+      utskrift.
+- [x] Commit: `feat(assets): IMG_VERSION for klubbgrafikk i cache-reglene`
 
 ## Task 1.1-2 — `src/services/clubAssets.js` (TDD) + app.locals + /health
 

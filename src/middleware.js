@@ -7,6 +7,12 @@ const IMMUTABLE = 'public, max-age=31536000, immutable';
 // (`?v=1`). Bumpes den, bumpes denne — se DEPLOY.md.
 export const FONT_VERSION = '1';
 
+// Klubbgrafikken (public/img/clubs/) har stabile filnavn per klubbkode, men
+// draktene byttes hver sesong. Versjonen er sesongen: bumpes i samme commit
+// som `npm run fetch-clubs` kjøres, ellers serveres fjorårets drakter som
+// immutable fra Cloudflare.
+export const IMG_VERSION = '2627';
+
 /**
  * Cache-Control for statiske filer. Kun versjonsstrenger vi selv serverer nå
  * får `immutable`: under en deploy-overlapp kan en gammel container bli spurt
@@ -14,7 +20,8 @@ export const FONT_VERSION = '1';
  * innhold under den nye URL-en til noen purger manuelt.
  */
 export function cacheControlFor(v, assetVersion) {
-  return typeof v === 'string' && (v === assetVersion || v === FONT_VERSION)
+  return typeof v === 'string' &&
+    (v === assetVersion || v === FONT_VERSION || v === IMG_VERSION)
     ? IMMUTABLE
     : 'no-cache';
 }

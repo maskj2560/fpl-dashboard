@@ -1,6 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { cacheControlFor, createErrorHandler, FONT_VERSION } from '../src/middleware.js';
+import {
+  cacheControlFor,
+  createErrorHandler,
+  FONT_VERSION,
+  IMG_VERSION,
+} from '../src/middleware.js';
 
 // ---- P1-10: bare kjente versjonsstrenger får immutable --------------------
 
@@ -22,6 +27,12 @@ test('cacheControlFor gir no-cache uten versjon og for søppelverdier', () => {
   assert.equal(cacheControlFor(undefined, 'ead67020'), 'no-cache');
   assert.equal(cacheControlFor(['ead67020'], 'ead67020'), 'no-cache');
   assert.equal(cacheControlFor('../../etc/passwd', 'ead67020'), 'no-cache');
+});
+
+test('cacheControlFor gir immutable for bildeversjonen (klubbgrafikk)', () => {
+  assert.equal(IMG_VERSION, '2627');
+  assert.equal(cacheControlFor(IMG_VERSION, 'ead67020'), IMMUTABLE);
+  assert.equal(cacheControlFor('2526', 'ead67020'), 'no-cache');
 });
 
 // ---- P1-7: /api/*-feil skal svare JSON ------------------------------------
