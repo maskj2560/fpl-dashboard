@@ -927,7 +927,8 @@ test('layout.ejs har temabryteren i topbaren med aria-label', async () => {
 });
 ```
 
-- [ ] `npm test` — **forventet rødt: 282 tester, 2 feiler.** Observert: ______
+- [x] `npm test` — **forventet rødt: 282 tester, 2 feiler.** Observert: **282
+      tester, 2 feiler** (nøyaktig som forventet)
 
 ### 4b. Implementasjon
 
@@ -1007,14 +1008,14 @@ i 1.0-2-blokkene (samme verdi i begge).
 Mobil (≤ 640): `.topbar { gap: var(--space-3) }` som før; bryteren
 uendret 36 px.
 
-- [ ] `npm test` — **forventet grønt: 282/282** (asset-hash- og font-
+- [x] `npm test` — **forventet grønt: 282/282** (asset-hash- og font-
       testene består: scriptet refererer ingen filer). `npm run lint` exit 0.
-      Observert: ______
-- [ ] CHANGELOG `[Unreleased]` `### Added`: «Mørkt og lyst tema: følger
+      Observert: **282/282, lint exit 0**
+- [x] CHANGELOG `[Unreleased]` `### Added`: «Mørkt og lyst tema: følger
       nettleseren automatisk, og en bryter i toppmenyen (auto → lys → mørk)
       husker valget. Ingen blaff i feil tema ved sidelast.» `### Changed`:
       «Toppmenyen er FPL-lilla i begge temaer.»
-- [ ] Commit: `feat(ui): temabryter, inline-tema-script og lilla topbar`
+- [x] Commit: `feat(ui): temabryter, inline-tema-script og lilla topbar`
 
 ## Task 1.0-5 — Re-toning av komponentene (kun CSS)
 

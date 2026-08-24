@@ -211,10 +211,8 @@ a:hover {
   align-items: center;
   gap: var(--space-5);
   padding: 0.7rem 1.25rem;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
-  background: color-mix(in srgb, var(--bg) 85%, transparent);
-  backdrop-filter: blur(10px);
+  background: var(--topbar-bg);
+  color: var(--topbar-text);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -225,7 +223,7 @@ a:hover {
   font-weight: 800;
   font-size: var(--fs-lg);
   letter-spacing: -0.02em;
-  color: var(--text);
+  color: var(--topbar-text);
   flex: 0 0 auto;
 }
 
@@ -249,7 +247,7 @@ a:hover {
 
 .topbar nav a {
   flex: 0 0 auto;
-  color: var(--text-dim);
+  color: var(--topbar-dim);
   padding: 0.35rem 0.75rem;
   border-radius: var(--radius-pill);
   font-size: var(--fs-base);
@@ -258,8 +256,8 @@ a:hover {
 }
 
 .topbar nav a:hover {
-  color: var(--text);
-  background: var(--surface-2);
+  color: var(--topbar-text);
+  background: var(--topbar-hover);
   text-decoration: none;
 }
 
@@ -267,6 +265,42 @@ a:hover {
   color: var(--accent-ink);
   background: var(--accent);
   font-weight: 600;
+}
+
+.topbar :focus-visible {
+  outline-color: var(--topbar-text);
+}
+
+.theme-toggle {
+  flex: 0 0 auto;
+  margin-left: auto;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--topbar-hover);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--topbar-text);
+  cursor: pointer;
+  padding: 0;
+}
+
+.theme-toggle:hover {
+  background: var(--topbar-hover);
+}
+
+.theme-toggle .theme-icon {
+  display: none;
+  width: 20px;
+  height: 20px;
+}
+
+.theme-toggle[data-mode='auto'] .theme-icon--auto,
+.theme-toggle[data-mode='light'] .theme-icon--light,
+.theme-toggle[data-mode='dark'] .theme-icon--dark {
+  display: block;
 }
 
 @media (max-width: 640px) {

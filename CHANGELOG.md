@@ -7,8 +7,15 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+
+- Mørkt og lyst tema: følger nettleseren automatisk, og en bryter i
+  toppmenyen (auto → lys → mørk) husker valget. Ingen blaff i feil tema
+  ved sidelast.
+
 ### Changed
 
+- Toppmenyen er FPL-lilla i begge temaer.
 - Ny palett i FPL-familien (lilla, grønn, cyan, rosa) og FPLs egne
   FDR-farger, som tokens i to temaer. Kontrasten (≥ 4,5:1) er nå låst av
   en test.

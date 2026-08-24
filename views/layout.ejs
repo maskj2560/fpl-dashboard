@@ -5,6 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><%= title %> · FPL-dashboard</title>
   <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">⚽</text></svg>'>
+  <script>
+    // Tema før første paint: lagret valg vinner, ellers systemets. Må ligge
+    // inline foran stilarket — et eksternt script gir et blaff i feil tema.
+    // Speiler resolveTheme() i app.js. Uten JS: mørkt (CSS-basen).
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem('fpl-theme'); } catch (e) { /* privat modus */ }
+      if (t !== 'light' && t !== 'dark') {
+        t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      }
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
   <!-- Fonten er uendret innhold: ?v bumpes for hånd, og MÅ være identisk med
        @font-face-URL-en i style.css, ellers lastes fonten to ganger. -->
   <link rel="preload" href="/fonts/archivo-var.woff2?v=1" as="font" type="font/woff2" crossorigin>
@@ -26,6 +39,7 @@
       <a href="/live" <%- path.startsWith('/live') ? 'aria-current="page"' : '' %>>Live</a>
       <a href="/nyheter" <%- path.startsWith('/nyheter') ? 'aria-current="page"' : '' %>>Nyheter</a>
     </nav>
+    <%- include('partials/theme-toggle') %>
   </header>
 
   <% if (gameUpdating) { %>
