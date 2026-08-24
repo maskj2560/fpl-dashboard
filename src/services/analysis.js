@@ -70,6 +70,12 @@ export function resolvePicks(picks, elementsById) {
   return resolved;
 }
 
+/** «3-5-2» fra starterne: forsvar-midtbane-angrep. Keeperen telles ikke. */
+export function formationOf(starters) {
+  const count = (t) => starters.filter((s) => s.player.element_type === t).length;
+  return `${count(2)}-${count(3)}-${count(4)}`;
+}
+
 function ownership(p) {
   return parseFloat(p.selected_by_percent) || 0;
 }

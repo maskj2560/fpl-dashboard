@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   nextEvent,
+  formationOf,
   flaggedPlayers,
   topForm,
   mostTransferredIn,
@@ -695,4 +696,13 @@ test('nextOpponents gir to innslag ved dobbeltrunde', () => {
     { opponent: 3, home: false, difficulty: 5 },
   ]);
   assert.equal(map.has(4), false, 'kamp uten runde teller ikke');
+});
+
+test('formationOf teller forsvar-midtbane-angrep, keeper holdes utenfor', () => {
+  const s = (t) => ({ player: { element_type: t } });
+  assert.equal(formationOf([s(1), s(2), s(2), s(2), s(3), s(3), s(3), s(3), s(3), s(4), s(4)]), '3-5-2');
+});
+
+test('formationOf tåler tom liste', () => {
+  assert.equal(formationOf([]), '0-0-0');
 });

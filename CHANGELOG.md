@@ -11,6 +11,7 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 - Hele raden i ligatabellen er klikkbar, og laget du sammenlikner deg med
   markeres i tabellen.
+- Formasjonen (for eksempel 3-4-3) vises i hodet på Oppstilling-kortet.
 
 ### Fixed
 

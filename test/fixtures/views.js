@@ -71,6 +71,7 @@ export const team = {
   fromGw: 2,
   squadView: {
     activeChip: null,
+    formation: '3-4-3',
     entryHistory: { points: 60, value: 1002, bank: 15 },
     byLine: {
       1: [{ pick: { is_captain: false, is_vice_captain: false }, player: player(1, 'Raya', { element_type: 1 }) }],

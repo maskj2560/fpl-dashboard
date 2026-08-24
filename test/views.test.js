@@ -324,3 +324,8 @@ test('league.ejs gjør radene klikkbare og markerer valgt rival', async () => {
   assert.match(html, /row-rival/);
   assert.ok(!html.includes('data-href="/liga?rival=123"'), 'aldri lenke på min egen rad');
 });
+
+test('team.ejs viser formasjonen i Oppstilling-hodet', async () => {
+  const html = await renderView('team', fx.team);
+  assert.match(html, /h2-meta"><span class="dim">3-4-3<\/span>/);
+});

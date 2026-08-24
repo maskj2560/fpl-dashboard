@@ -10,6 +10,7 @@ import {
   nextEvent,
   POSITIONS_SHORT,
   resolvePicks,
+  formationOf,
   resolvedGw,
   byId,
 } from '../services/analysis.js';
@@ -58,7 +59,13 @@ router.get('/', async (req, res, next) => {
         3: starters.filter((s) => s.player.element_type === 3),
         4: starters.filter((s) => s.player.element_type === 4),
       };
-      squadView = { byLine, bench, entryHistory: picks.entry_history, activeChip: picks.active_chip };
+      squadView = {
+        byLine,
+        bench,
+        entryHistory: picks.entry_history,
+        activeChip: picks.active_chip,
+        formation: formationOf(starters),
+      };
 
       const squadPlayers = squad.map((s) => s.player);
       const squadIds = new Set(squadPlayers.map((p) => p.id));

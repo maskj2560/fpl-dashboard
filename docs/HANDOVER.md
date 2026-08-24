@@ -15,7 +15,8 @@
   det uverifiserte transfers-pillepunktet). Baseline: 299/299, lint 0.
   Ingen AI-kall — `/brief` og `/nyheter` kun LOKALT med tomme nøkler
   (`/health` → `ai:false, discord:false` bekreftet), aldri i prod.
-  Avvik fra planteksten føres inn i planfilas «Observert»-felt.
+  Lint exit 0 etter hver task. Avvik fra planteksten føres inn i
+  planfilas «Observert»-felt.
   - 1.3-0: branch, planfiler, ETAPPE 4-stubben peker videre.
   - 1.3-1 (QA 1+8): 301/301, Playwright 8/8. `--topbar-h` styrer
     menyhøyden (57/50 px); pinned-boksen mistet sin virkningsløse sticky
@@ -28,7 +29,8 @@
   - 1.3-4 (QA 3+14): 308/308, Playwright 16/16. `.rank-up/-down/-same`
     med `aria-label` på hver ligarad, hele raden klikkbar via
     `tr[data-href]` (Modul 6 i app.js), valgt rival får `.row-rival`.
-  - Lint exit 0 etter hver task.
+  - 1.3-5 (QA 4): 311/311. `formationOf()` i analysis.js, formasjonen i
+    Oppstilling-hodet via ny `.h2-meta`-wrapper.
 - **v1.3.2 (etappe 3) RELEASET 24. aug (økt 33):** finpuss per side +
   kontraktstester for markupen `app.js` avhenger av. 299/299, lint 0.
   Detaljene (inkl. de manuelt målte pillekontrastene) er rotert til

@@ -379,7 +379,7 @@ tr[data-href] { cursor: pointer; }
 **Interfaces — produserer:** `formationOf(starters)` → `'3-5-2'`;
 `squadView.formation`; `.h2-meta`-wrapper for høyresiden i korthoder.
 
-- [ ] **Steg 1 (rød):** `test/analysis.test.js`:
+- [x] **Steg 1 (rød):** `test/analysis.test.js`:
 
 ```js
 test('formationOf teller forsvar-midtbane-angrep, keeper holdes utenfor', () => {
@@ -402,10 +402,10 @@ test('team.ejs viser formasjonen i Oppstilling-hodet', async () => {
 });
 ```
 
-- [ ] **Steg 2:** kjør → 3 røde (formationOf er udefinert — importlinja kan
+- [x] **Steg 2:** kjør → 3 røde (formationOf er udefinert — importlinja kan
       felle hele analysis-testfila i rødfasen, da vises færre tester).
-      Observert: ______
-- [ ] **Steg 3:** `analysis.js`:
+      Observert: analysis.test.js + views.test.js: 63 tester, 61 pass, 2 fail — ESM-linkfeilen felte HELE analysis-fila (teller som 1 feil), pluss team.ejs-testen. Som planen advarte om: færre synlige røde enn anslått.
+- [x] **Steg 3:** `analysis.js`:
 
 ```js
 /** «3-5-2» fra starterne: forsvar-midtbane-angrep. Keeperen telles ikke. */
@@ -429,8 +429,8 @@ export function formationOf(starters) {
 .card h2 .h2-meta { display: inline-flex; gap: var(--space-2); align-items: baseline; }
 ```
 
-- [ ] **Steg 4:** `npm test` → 311, lint 0. Observert: ______
-- [ ] **Steg 5:** CHANGELOG (Added: formasjonen vises i Oppstilling-hodet),
+- [x] **Steg 4:** `npm test` → 311, lint 0. Observert: npm test 311/311 pass 0 fail, lint exit 0
+- [x] **Steg 5:** CHANGELOG (Added: formasjonen vises i Oppstilling-hodet),
       HANDOVER. Commit: `feat: formasjonen i Oppstilling-hodet på /lag (QA 4)`
 
 ### Task 1.3-6: Funn 5 — tellere i korthodene på /live
