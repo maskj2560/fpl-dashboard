@@ -816,7 +816,8 @@ test('THEME_LABELS har norsk etikett for alle tre modusene', () => {
 });
 ```
 
-- [ ] `npm test` — **forventet rødt: 280 tester, 4 feiler.** Observert: ______
+- [x] `npm test` — **forventet rødt: 280 tester, 4 feiler.** Observert: **280
+      tester, 4 feiler** (nøyaktig som forventet)
 
 ### 3b. Implementasjon (public/app.js)
 
@@ -894,10 +895,10 @@ Og nederst i fila, etter Modul 4:
 })();
 ```
 
-- [ ] `npm test` — **forventet grønt: 280/280.** `npm run lint` exit 0
+- [x] `npm test` — **forventet grønt: 280/280.** `npm run lint` exit 0
       (`no-unused-vars`: `THEME_LABELS`, `resolveTheme`, `nextMode` brukes i
-      Modul 5). Observert: ______
-- [ ] Commit: `feat(ui): temafunksjoner og bryter-modul i app.js`
+      Modul 5). Observert: **280/280, lint exit 0**
+- [x] Commit: `feat(ui): temafunksjoner og bryter-modul i app.js`
 
 ## Task 1.0-4 — Layout: inline-script, bryter-partial, topbar (TDD)
 
