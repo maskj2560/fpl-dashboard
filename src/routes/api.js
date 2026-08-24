@@ -68,6 +68,10 @@ router.post('/ai-rad', async (req, res, next) => {
     const result = await ai.generate({
       cacheKey: `ai-rad-${config.fplTeamId}-gw${fromGw}`,
       minIntervalMs: 60 * 60_000,
+      // Klikk, ikke sidevisning: kald cache må vente (knappen kan ikke svare
+      // med ingenting), men en utgått tekst svares det med umiddelbart mens
+      // den fornyes i bakgrunnen.
+      swr: true,
       system: 'Du er en norsk Fantasy Premier League-rådgiver. Vær konkret.',
       prompt: buildAdvicePrompt({
         entryName: entry.name,

@@ -15,6 +15,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Forsiden og `/nyheter` vises med en gang: nyhetsoppsummeringen leses fra
   cachen i stedet for å genereres mens du venter. Forsiden ventet på den
   samme teksten som `/nyheter`, uten at det var synlig noe sted.
+- AI-rådgiveren på `/lag` svarer med en gang når det finnes et tidligere
+  råd, og henter et nytt i bakgrunnen. Første klikk i en runde venter som før.
 
 ### Changed
 
