@@ -6,7 +6,8 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-24 (økt 32, Opus: v1.3.2 bygget, venter klarsignal)
+**Sist oppdatert:** 2026-08-24 (økt 32, Opus: v1.3.2 bygget, venter klarsignal;
+main pushet)
 
 ## Status akkurat nå
 
@@ -25,28 +26,10 @@
     står (kortflaten `--surface`): beste 10,42 mørkt / 5,66 lyst, verste
     5,39 / 5,27. Kan ikke låses i `PAIRS` — `*-soft` er rgba, ikke hex.
   - Røyk uten nøkler: 11 ruter 200 + 404. Playwright 332/332 + 22/22.
-- **v1.3.1 ETAPPE 2 FERDIG OG UTE (økt 32, Opus, 24. aug).** Task
-  1.1-0…1.1-7 utført, merget til `main`, tagget `v1.3.1` og deployet.
-  **296/296 tester, lint 0, 0 AI-kall.**
-  - `IMG_VERSION = '2627'` i `middleware.js` (immutable-regelen), ny
-    `src/services/clubAssets.js` (leser `public/img/clubs/` én gang til
-    `app.locals`), `/health` teller bildene, `scripts/fetch-club-assets.mjs`
-    + 60 committede bildefiler (561 KB), `teamCode`/`homeCode`/`awayCode` i
-    brief-, live- og transfers-payloadene, partialene `club-badge` og
-    `club-shirt` tatt i bruk i alle views, `clubBadgeHtml` + error-lytter i
-    `public/app.js`, klubb-CSS, footer-kreditering.
-  - TDD-tallene: 282 → rødt 277/1 (ESM-linkfeil tar hele fila) → 283 →
-    rødt 284/1 (modul mangler) → 287 → rødt **290/5 som planlagt** → 290 →
-    rødt **296/6 som planlagt** → **296**.
-  - Røyk uten nøkler (port 3011): `ai:false, discord:false`,
-    `clubImages {badges:20, shirts:20, keepers:20}`, 8 ruter 200, 404 på
-    ukjent sti, alle klubb-URL-er versjonert, bilde → `immutable`.
-    **Playwright: 332/332** + eget klubbskript **22/22** (0 brutte bilder
-    også når lazy tvinges, 609 merker på /spillere, 15 drakter + 4
-    keeperdrakter på /lag, Lag-kolonnen sorterer alfabetisk begge veier).
-  - **Ett avvik fra planens bokstav:** assertionen «uversjonert bilde-URL» i
-    dashboard-testen var en selvmotsigende regex (flagget korrekte URL-er).
-    Rettet til `/\/img\/clubs\/[^"?]+"/`. Markupen er som i planen.
+- **v1.3.1 (etappe 2) ute siden 24. aug:** klubbmerker i alle tabeller og
+  lister, drakter på banen, `clubAssets.js` + `IMG_VERSION`,
+  `npm run fetch-clubs` og 60 bildefiler. Detaljene er rotert til
+  `docs/arkiv/HANDOVER-historikk.md`.
 - **v1.3.0 (etappe 1) ute siden 24. aug:** tokenpalett i to temaer med
   kontrast låst av `test/style.test.js`, inline-tema-script, temabryter,
   lilla topbar, `views/partials/`. Detaljene fra økt 31 er rotert til
@@ -55,16 +38,21 @@
   linjer, godkjent 24. aug) — fire etapper v1.3.0–v1.3.3 med kode og
   testtall (272 → 282 → 296 → 299). Mockup:
   https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849.
-  **Neste: etappe 3 (v1.3.2 Finpuss) — venter på klarsignal.**
-- **Prod kjører v1.3.1 på https://fpl.marsk.no — verifisert 24. aug 03:55.**
+  **Neste: Task 1.2-4 — release av v1.3.2 (+ det ene AI-kallet).**
+- **Prod kjører v1.3.1 på https://fpl.marsk.no — verifisert 24. aug 13:16**
+  (etter docs-rebuilden).
   `/health` → 200, `ai:true, discord:true, leagues:1,`
   `clubImages {badges:20, shirts:20, keepers:20}`; footer `v1.3.1`;
   `/img/clubs/t3.png?v=2627` → 200 + `immutable`. Playwright mot prod
   (uten /brief og /nyheter): 240/240 + klubbskript 14/14.
 - Kostnad målt 23. aug: **$0,94/uke** — under terskelen, ingen tiltak. Ny
   måling i uken etter 31. aug (prisskiftet), se kø-punkt 1.
-- `main` = `origin/main` etter push 24. aug (tag `v1.3.1`), rent tre,
-  **296/296 tester, lint 0**. Ingen åpne feature-brancher.
+- **Git akkurat nå:** `main` = `origin/main` (docs-commiten fra
+  v1.3.1-releasen pushet 24. aug 13:12; Coolify bygde identisk kode på
+  nytt, prod verifisert oppe etterpå: `/health` 200, footer `v1.3.1`).
+  Arbeidstreet står på **`feat/ui-v132-finpuss`** — 3 commits, **kun
+  lokalt, ikke pushet**. Det er der v1.3.2-jobben og denne fila er
+  nyest; `main` sin HANDOVER er fortsatt v1.3.1-versjonen.
 - Eldre status (v1.2.3-deploy, doks-opprydning økt 24, versjonsplan økt 25,
   v1.2.4 økt 27): rotert til `docs/arkiv/HANDOVER-historikk.md` 24. aug.
 
@@ -185,8 +173,16 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
   Til slutt nytt **«Kjør»** (~04:05), tolket som klarsignal for ETAPPE 3.
   Handling: Task 1.2-0…1.2-3 utført på `feat/ui-v132-finpuss`, 3 commits,
   299/299 + lint 0, Playwright 332/332 + 22/22, 0 AI-kall, ingenting
-  pushet. Docs-commiten fra v1.3.1-releasen ligger fortsatt upushet
-  (ville trigget ny build av identisk kode) — Marius er varslet.
+  pushet. Deretter spørsmål om status på overhalingen (svart: 20 av 21
+  tasks ferdig, kun Task 1.2-4 igjen + etappe 4 som avhenger av Marius’
+  QA-funn). Til slutt: **«DU kan pushe til main. Deretter lag en fin
+  overtagelse til neste agent med en kopierbar prompt. Ikke lag en fil
+  for den prompten alene.»** Handling: kampvindu sjekket (mandag 13:12,
+  0 kamper i gang, neste avspark 24. aug 19:00 UTC), `main` pushet
+  (`8ec5410..2eb6c95`), Coolify-rebuild verifisert (prod oppe, v1.3.1),
+  HANDOVER skrevet som overlevering på branchen, prompt levert i chatten
+  (ikke som fil). `feat/ui-v132-finpuss` bevisst IKKE pushet — en push
+  til `main` av den ville vært release, som krever eget klarsignal.
 - Loggposter fra økt 30–31: rotert til
   `docs/arkiv/HANDOVER-historikk.md` 2026-08-24 (200-linjerstaket).
 - Eldre loggposter (økt 22–28): rotert til

@@ -5,6 +5,31 @@
 > sjekkpunkt-tabellen, versjonshistorikken, utdaterte åpne punkter og hele
 > loggen over brukerbeskjeder til og med økt 22. Nyere logg: HANDOVER.md.
 
+## Rotert 2026-08-24 (økt 32): v1.3.1-statusblokka (verbatim fra HANDOVER.md)
+
+- **v1.3.1 ETAPPE 2 FERDIG OG UTE (økt 32, Opus, 24. aug).** Task
+  1.1-0…1.1-7 utført, merget til `main`, tagget `v1.3.1` og deployet.
+  **296/296 tester, lint 0, 0 AI-kall.**
+  - `IMG_VERSION = '2627'` i `middleware.js` (immutable-regelen), ny
+    `src/services/clubAssets.js` (leser `public/img/clubs/` én gang til
+    `app.locals`), `/health` teller bildene, `scripts/fetch-club-assets.mjs`
+    + 60 committede bildefiler (561 KB), `teamCode`/`homeCode`/`awayCode` i
+    brief-, live- og transfers-payloadene, partialene `club-badge` og
+    `club-shirt` tatt i bruk i alle views, `clubBadgeHtml` + error-lytter i
+    `public/app.js`, klubb-CSS, footer-kreditering.
+  - TDD-tallene: 282 → rødt 277/1 (ESM-linkfeil tar hele fila) → 283 →
+    rødt 284/1 (modul mangler) → 287 → rødt **290/5 som planlagt** → 290 →
+    rødt **296/6 som planlagt** → **296**.
+  - Røyk uten nøkler (port 3011): `ai:false, discord:false`,
+    `clubImages {badges:20, shirts:20, keepers:20}`, 8 ruter 200, 404 på
+    ukjent sti, alle klubb-URL-er versjonert, bilde → `immutable`.
+    **Playwright: 332/332** + eget klubbskript **22/22** (0 brutte bilder
+    også når lazy tvinges, 609 merker på /spillere, 15 drakter + 4
+    keeperdrakter på /lag, Lag-kolonnen sorterer alfabetisk begge veier).
+  - **Ett avvik fra planens bokstav:** assertionen «uversjonert bilde-URL» i
+    dashboard-testen var en selvmotsigende regex (flagget korrekte URL-er).
+    Rettet til `/\/img\/clubs\/[^"?]+"/`. Markupen er som i planen.
+
 ## Rotert 2026-08-24 (økt 32): loggposter økt 30–31 (verbatim fra HANDOVER.md)
 
 - 2026-08-24 (økt 31, Opus): kjøreprompt «Oppdrag (Opus 5,
