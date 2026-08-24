@@ -40,6 +40,8 @@ export function groupFixturesByDay(fixtures, teamsById, deadline = null) {
     bucket.matches.push({
       home: teamsById.get(f.team_h)?.name ?? '?',
       away: teamsById.get(f.team_a)?.name ?? '?',
+      homeCode: teamsById.get(f.team_h)?.code ?? null,
+      awayCode: teamsById.get(f.team_a)?.code ?? null,
       kickoff: formatTime(f.kickoff_time),
       kickoffIso: f.kickoff_time,
       beforeDeadline: deadlineMs === null ? null : date.getTime() < deadlineMs,
@@ -109,6 +111,7 @@ export function buildBrief({ bootstrap, fixtures, myTeam = null }) {
     .map((p) => ({
       name: p.web_name,
       team: teamsById.get(p.team)?.short_name ?? '?',
+      teamCode: teamsById.get(p.team)?.code ?? null,
       ownership: p.selected_by_percent,
       // Oversatt i kilden: da arver view, Discord-fallbacken og AI-prompten
       // norsken uten hver sin kopi av oversettelsen.
@@ -120,6 +123,7 @@ export function buildBrief({ bootstrap, fixtures, myTeam = null }) {
   const captains = globals.list.map(({ p, avgFdr }) => ({
     name: p.web_name,
     team: teamsById.get(p.team)?.short_name ?? '?',
+    teamCode: teamsById.get(p.team)?.code ?? null,
     form: p.form,
     epNext: p.ep_next,
     ownership: p.selected_by_percent,

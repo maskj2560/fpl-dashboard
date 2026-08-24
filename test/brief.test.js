@@ -125,8 +125,8 @@ test('buildBrief viser avsluttet tilstand når ingen runde er kommende', () => {
 const kapteinBootstrap = (elements) => ({
   events: [{ id: 1, name: 'Gameweek 1', deadline_time: '2026-08-21T17:30:00Z', is_next: true }],
   teams: [
-    { id: 1, short_name: 'ARS', name: 'Arsenal' },
-    { id: 2, short_name: 'CHE', name: 'Chelsea' },
+    { id: 1, short_name: 'ARS', name: 'Arsenal', code: 3 },
+    { id: 2, short_name: 'CHE', name: 'Chelsea', code: 8 },
   ],
   elements,
 });
@@ -201,4 +201,17 @@ test('buildBrief: captainsCriterion er form når form finnes, og epNext følger 
 
   assert.equal(brief.captainsCriterion, 'form');
   assert.equal(brief.captains[0].epNext, '5.5');
+});
+
+test('buildBrief legger teamCode på skader, kapteiner og kamper (klubbgrafikk)', () => {
+  const elements = [
+    spiller(1, 1, { form: '6.0', status: 'd', news: 'Knock', selected_by_percent: '20.0' }),
+    spiller(2, 2, { form: '5.0' }),
+  ];
+  const brief = buildBrief({ bootstrap: kapteinBootstrap(elements), fixtures: kapteinFixtures });
+  assert.equal(brief.injuries[0].teamCode, 3);
+  assert.equal(brief.captains[0].teamCode, 3);
+  const m = brief.fixturesByDay[0].matches[0];
+  assert.equal(m.homeCode, 3);
+  assert.equal(m.awayCode, 8);
 });

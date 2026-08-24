@@ -227,3 +227,53 @@ test('team.ejs viser tomtilstand når ingen kapteinskandidater er spilleklare', 
   assert.ok(html.includes('Ingen aktuelle kapteiner'), 'tomtilstanden mangler');
   assert.ok(!html.includes('Ingen formdata ennå'), 'kriterielinja skal ikke vises uten kandidater');
 });
+
+// ---- v1.3.1: klubbgrafikk ---------------------------------------------------
+const badgeLocals = (team, extra = {}) => ({ team, clubAssets: fx.clubAssets, ...extra });
+
+test('partials/club-badge.ejs skriver versjonert <img> når merket finnes på disk', async () => {
+  const html = await renderView('partials/club-badge', badgeLocals(fx.teamsById.get(1)));
+  assert.match(html, /<img class="club-img" src="\/img\/clubs\/t3\.png\?v=2627" width="70" height="70" alt="" loading="lazy" decoding="async">/);
+  assert.ok(html.includes('<span class="club-name">ARS</span>'));
+  assert.ok(!html.includes('club-fallback'));
+});
+
+test('partials/club-badge.ejs faller tilbake på plassholder — aldri brutt bilde', async () => {
+  const html = await renderView('partials/club-badge', badgeLocals(fx.teamsById.get(2)));
+  assert.ok(!html.includes('<img'), 'skrev <img> for et merke som ikke finnes');
+  assert.ok(html.includes('class="club-fallback" aria-hidden="true"'));
+  assert.ok(html.includes('<span class="club-name">LIV</span>'));
+  // Uten clubAssets i det hele tatt (gamle locals): også tekst.
+  const bare = await renderView('partials/club-badge', { team: fx.teamsById.get(1) });
+  assert.ok(!bare.includes('<img'));
+  // showName:false → navnet som skjermlesertekst, ikke synlig.
+  const quiet = await renderView('partials/club-badge', badgeLocals(fx.teamsById.get(1), { showName: false }));
+  assert.ok(quiet.includes('<span class="sr-only">Arsenal</span>'));
+  assert.ok(!quiet.includes('club-name'));
+});
+
+test('partials/club-shirt.ejs velger keeperdrakt, drakt, merke eller plassholder', async () => {
+  const gk = await renderView('partials/club-shirt', badgeLocals(fx.teamsById.get(1), { keeper: true }));
+  assert.match(gk, /src="\/img\/clubs\/shirt_3_1\.png\?v=2627" width="110" height="145"/);
+  const out = await renderView('partials/club-shirt', badgeLocals(fx.teamsById.get(1), { keeper: false }));
+  assert.match(out, /src="\/img\/clubs\/shirt_3\.png\?v=2627"/);
+  const none = await renderView('partials/club-shirt', badgeLocals(fx.teamsById.get(2)));
+  assert.ok(!none.includes('<img'));
+  assert.ok(none.includes('club-fallback'));
+});
+
+test('dashboard.ejs viser klubbmerker i FDR-matrisen og lagkolonnene', async () => {
+  const html = await renderView('dashboard', fx.dashboard);
+  assert.ok(html.includes('/img/clubs/t3.png?v=2627'), 'Arsenal-merket mangler');
+  assert.ok(html.includes('club--md'), 'FDR-radhodet bruker ikke md-størrelsen');
+  assert.ok(html.includes('team-name-full'), 'fullnavnet i FDR-matrisen forsvant');
+  // En klubb-URL som lukkes uten spørrestreng er uversjonert. (Planens form,
+  // `[^"]+"(?![^>]*\?v=)`, slukte selve `?v=` inn i `[^"]+` og så etter en ny
+  // `?v=` i resten av taggen — den flagget dermed korrekte URL-er.)
+  assert.ok(!/\/img\/clubs\/[^"?]+"/.test(html), 'uversjonert bilde-URL');
+});
+
+test('layout.ejs krediterer klubbmerker og drakter i footeren', async () => {
+  const html = await renderView('layout', layoutLocals('/'));
+  assert.ok(html.includes('Klubbmerker og drakter tilhører respektive klubber og Premier League.'));
+});

@@ -10,12 +10,17 @@ const bootstrap = {
     { id: 2, is_current: false, finished: true },
     { id: 3, is_current: true, finished: false },
   ],
+  teams: [
+    { id: 1, short_name: 'MCI', name: 'Man City', code: 43 },
+    { id: 2, short_name: 'AVL', name: 'Aston Villa', code: 7 },
+    { id: 3, short_name: 'LIV', name: 'Liverpool', code: 14 },
+  ],
   elements: [
-    { id: 10, web_name: 'Haaland' },
-    { id: 11, web_name: 'Watkins' },
-    { id: 12, web_name: 'Salah' },
-    { id: 13, web_name: 'Saka' },
-    { id: 14, web_name: 'Isak' },
+    { id: 10, web_name: 'Haaland', team: 1 },
+    { id: 11, web_name: 'Watkins', team: 2 },
+    { id: 12, web_name: 'Salah', team: 3 },
+    { id: 13, web_name: 'Saka', team: 3 },
+    { id: 14, web_name: 'Isak', team: 3 },
   ],
 };
 
@@ -72,6 +77,16 @@ test('én transfer uten senere salg måles til og med pågående runde', () => {
   assert.equal(r.diff, 10);
   assert.equal(r.penaltyShare, 4);
   assert.equal(r.netto, 6);
+});
+
+test('buildTransferAnalysis legger teamShort og teamCode på inn og ut', () => {
+  const a = buildTransferAnalysis({
+    transfers: [t(11, 10, 2), t(10, 12, 3)],
+    history, bootstrap, liveByGw,
+  });
+  assert.equal(a.rows[0].inn.teamShort, 'MCI');
+  assert.equal(a.rows[0].inn.teamCode, 43);
+  assert.equal(typeof a.rows[0].ut.teamCode, 'number');
 });
 
 test('senere salg av inn-spilleren terminerer vinduet runden før', () => {

@@ -38,8 +38,8 @@
           <% for (let i = analysis.rows.length - 1; i >= 0; i--) { const r = analysis.rows[i]; %>
             <tr>
               <td><%= r.event %><% if (r.chip === 'wildcard') { %> <span class="status">Wildcard</span><% } else if (r.chip === 'freehit') { %> <span class="status">Free Hit</span><% } %></td>
-              <td><%= r.inn.name %><% if (r.played) { %> <span class="dim"><%= r.inn.points %> p</span><% } %></td>
-              <td><%= r.ut.name %><% if (r.played) { %> <span class="dim"><%= r.ut.points %> p</span><% } %></td>
+              <td><%- include('partials/club-badge', { team: { short_name: r.inn.teamShort, code: r.inn.teamCode, name: r.inn.teamShort }, showName: false }) %> <%= r.inn.name %><% if (r.played) { %> <span class="dim"><%= r.inn.points %> p</span><% } %></td>
+              <td><%- include('partials/club-badge', { team: { short_name: r.ut.teamShort, code: r.ut.teamCode, name: r.ut.teamShort }, showName: false }) %> <%= r.ut.name %><% if (r.played) { %> <span class="dim"><%= r.ut.points %> p</span><% } %></td>
               <td class="num"><%= r.played ? formatSigned(r.diff) : '–' %></td>
               <td class="num"><%= r.penaltyShare > 0 ? formatSigned(-r.penaltyShare) : '0' %></td>
               <td class="num <%= r.played && r.netto > 0 ? 'accent' : (r.played && r.netto < 0 ? 'negative' : '') %>">

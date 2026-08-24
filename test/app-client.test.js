@@ -107,3 +107,14 @@ test('THEME_LABELS har norsk etikett for alle tre modusene', () => {
   assert.equal(labels.light, 'Tema: lyst');
   assert.equal(labels.dark, 'Tema: mørkt');
 });
+
+test('clubBadgeHtml escaper kortnavnet og skriver versjonert bilde eller plassholder', () => {
+  const withImg = app.clubBadgeHtml('ARS', 3, '2627', 'md');
+  assert.ok(withImg.includes('<span class="club club--md">'));
+  assert.ok(withImg.includes('src="/img/clubs/t3.png?v=2627"'));
+  assert.ok(withImg.includes('<span class="club-name">ARS</span>'));
+  const noImg = app.clubBadgeHtml('<b>', null, '2627');
+  assert.ok(noImg.includes('club-fallback'));
+  assert.ok(noImg.includes('&lt;b&gt;'));
+  assert.ok(!noImg.includes('<img'));
+});

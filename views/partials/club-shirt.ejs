@@ -1,0 +1,16 @@
+<%#
+  Drakt til spillerkortene på banen (/lag). Locals: team, keeper (bool).
+  Finnes ikke drakta: merket; finnes ikke det heller: plassholder.
+  Dekorativ (alt=""): navn og lag står i kortet.
+%>
+<%
+  const _assets = typeof clubAssets !== 'undefined' ? clubAssets : null;
+  const _code = team ? team.code : undefined;
+  const _keeper = typeof keeper === 'boolean' ? keeper : false;
+  let _file = null;
+  let _kind = 'shirt';
+  if (_assets && _keeper && _assets.hasKeeper(_code)) _file = `shirt_${_code}_1.png`;
+  else if (_assets && _assets.hasShirt(_code)) _file = `shirt_${_code}.png`;
+  else if (_assets && _assets.hasBadge(_code)) { _file = `t${_code}.png`; _kind = 'badge'; }
+%>
+<span class="shirt shirt--<%= _kind %>"><% if (_file) { %><img class="shirt-img" src="/img/clubs/<%= _file %>?v=<%= _assets.version %>" width="<%= _kind === 'badge' ? 70 : 110 %>" height="<%= _kind === 'badge' ? 70 : 145 %>" alt="" loading="lazy" decoding="async"><% } else { %><span class="club-fallback club-fallback--shirt" aria-hidden="true"></span><% } %></span>

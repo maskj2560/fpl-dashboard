@@ -39,17 +39,21 @@ src/services/
                    hvis-analyse av egne transfers), assembleTransferAnalysis
                    (henter — maks 38 live-kall, aldri element-summary)
   leagues.js       hvilke ligaer som vises; knownLeagueCount() for /health
+  clubAssets.js    hvilke klubbbilder som finnes i public/img/clubs/. Leses én
+                   gang ved oppstart til app.locals.clubAssets; partialene spør
+                   hasBadge/hasShirt/hasKeeper og skriver aldri <img> i blinde.
+                   Versjonen (IMG_VERSION) kommer fra middleware.js
   ai.js            felles Claude API-service: lazy init, modell fra config,
                    cache med minimumsintervall per funksjon
   news.js          RSS-nyheter + valgfri AI-oppsummering (via ai.js, cachet)
   notify.js        deadline-scheduler + Discord-webhook for auto-brief (valgfri)
-views/             EJS: layout.ejs + én fil per side. views/partials/ opprettes
-                   i v1.3.0 (theme-toggle) og v1.3.1 (club-badge, club-shirt) —
-                   fram til da finnes ingen partials
+views/             EJS: layout.ejs + én fil per side. views/partials/:
+                   theme-toggle (v1.3.0), club-badge og club-shirt (v1.3.1)
 public/            style.css (alle farger som tokens: :root = mørkt tema,
                    :root[data-theme="light"] = lyst), app.js (vanilla JS),
-                   fonts/ (lokal Archivo), img/clubs/ (klubbgrafikk fra v1.3.1)
-scripts/           fetch-club-assets.mjs (fra v1.3.1): henter klubbmerker og
+                   fonts/ (lokal Archivo), img/clubs/ (klubbgrafikk fra v1.3.1:
+                   60 filer, t{code}/shirt_{code}/shirt_{code}_1, ~560 KB)
+scripts/           fetch-club-assets.mjs (v1.3.1): henter klubbmerker og
                    drakter fra FPL én gang per sesong — CLI-verktøy, aldri
                    kjøretid. Eneste nettverkskall utenfor fplClient.js
 test/              node:test — ingen nettverkskall. Fakes injiseres via små

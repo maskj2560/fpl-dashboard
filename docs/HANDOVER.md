@@ -6,47 +6,48 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-24 (økt 31, Opus: v1.3.0 released og deployet)
+**Sist oppdatert:** 2026-08-24 (økt 32, Opus: v1.3.1 released og deployet)
 
 ## Status akkurat nå
 
-- **v1.3.0 ETAPPE 1 FERDIG OG UTE (økt 31, Opus, 24. aug).** Hele etappe 1
-  av UI-overhalingen utført (Task 1.0-0…1.0-7), merget til `main`, tagget
-  `v1.3.0` og deployet. **282/282 tester, lint 0, 0 AI-kall.**
-  - Task 1.0-1…1.0-5 utført etter `docs/plan-v130-ui-overhaul.md`:
-    `test/style.test.js` (tokenparitet + forbud mot hardkodede farger +
-    35 kontrastpar i begge temaer), tokenblokkene i `public/style.css`
-    (:root = mørkt, `:root[data-theme="light"]` = lyst, 48 fargetokens i
-    hver), temafunksjonene + Modul 5 i `public/app.js`, inline-tema-script
-    i `layout.ejs`, `views/partials/theme-toggle.ejs` (første partial),
-    lilla topbar og re-toning av alle komponenter.
-  - TDD-tallene: 272 → rødt 273/1 feilende fil (style.test.js kaster i
-    modul-scope — planens alternative form) → 276 → rødt 280/4 → 280 →
-    rødt 282/2 → **282**. Alle tall som planlagt.
-  - Røyk uten nøkler (port 3011, `ai:false, discord:false`): alle 11 ruter
-    200, ukjent sti 404. **Playwright (scratchpad, Vedlegg A): OK 332/332.**
-    Ekstra verifisert: auto-modus følger systemet live uten reload, låst
-    valg gjør det ikke, aria-label oppdateres.
-  - **To avvik fra planens bokstav**, begge for å holde kontrastkravet i
-    §8 (heroen er MØRK lilla i BEGGE temaer, så flate-tokens virker ikke
-    inni den): `.eyebrow` fikk `--hero-dim` (som i mockupen) i stedet for
-    `--accent-text` (3,02:1 i lyst tema), og `.deadline-passed` fikk
-    `--hero-text` etter beslutning fra Marius (`--accent-2-text` ga
-    2,74:1). Begge rapportert og bekreftet.
-- **Plan for UI-overhalingen godkjent (økt 30, Fable, 24. aug).**
-  `docs/plan-v130-ui-overhaul.md` (~1900 linjer): 20 verifiserte fakta,
-  15 beslutninger fra Marius + 9 implementasjonsvalg, palett med 41 målte
-  kontrastpar, fire etapper v1.3.0–v1.3.3 task for task med kode og
-  testtall (272 → 282 → 296 → 299). Mockup (begge temaer, 390 px,
-  designsystem): https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849.
-  **Neste: Opus-økt for v1.3.0** på branch `feat/ui-v130-fundament`.
-  0 AI-kall brukt i planøkten, ingenting pushet.
-- **Prod kjører v1.2.5 på https://fpl.marsk.no — verifisert 24. aug 01:43.**
-  `/health` → 200, `ai:true, discord:true, leagues:1`; footer `v1.2.5`.
+- **v1.3.1 ETAPPE 2 FERDIG OG UTE (økt 32, Opus, 24. aug).** Task
+  1.1-0…1.1-7 utført, merget til `main`, tagget `v1.3.1` og deployet.
+  **296/296 tester, lint 0, 0 AI-kall.**
+  - `IMG_VERSION = '2627'` i `middleware.js` (immutable-regelen), ny
+    `src/services/clubAssets.js` (leser `public/img/clubs/` én gang til
+    `app.locals`), `/health` teller bildene, `scripts/fetch-club-assets.mjs`
+    + 60 committede bildefiler (561 KB), `teamCode`/`homeCode`/`awayCode` i
+    brief-, live- og transfers-payloadene, partialene `club-badge` og
+    `club-shirt` tatt i bruk i alle views, `clubBadgeHtml` + error-lytter i
+    `public/app.js`, klubb-CSS, footer-kreditering.
+  - TDD-tallene: 282 → rødt 277/1 (ESM-linkfeil tar hele fila) → 283 →
+    rødt 284/1 (modul mangler) → 287 → rødt **290/5 som planlagt** → 290 →
+    rødt **296/6 som planlagt** → **296**.
+  - Røyk uten nøkler (port 3011): `ai:false, discord:false`,
+    `clubImages {badges:20, shirts:20, keepers:20}`, 8 ruter 200, 404 på
+    ukjent sti, alle klubb-URL-er versjonert, bilde → `immutable`.
+    **Playwright: 332/332** + eget klubbskript **22/22** (0 brutte bilder
+    også når lazy tvinges, 609 merker på /spillere, 15 drakter + 4
+    keeperdrakter på /lag, Lag-kolonnen sorterer alfabetisk begge veier).
+  - **Ett avvik fra planens bokstav:** assertionen «uversjonert bilde-URL» i
+    dashboard-testen var en selvmotsigende regex (flagget korrekte URL-er).
+    Rettet til `/\/img\/clubs\/[^"?]+"/`. Markupen er som i planen.
+- **v1.3.0 ute i prod siden 24. aug** (tag `v1.3.0`): tokenpalett i to
+  temaer med kontrast låst av `test/style.test.js`, inline-tema-script,
+  temabryter, lilla topbar, `views/partials/`. Detaljene fra økt 31 er
+  rotert til `docs/arkiv/HANDOVER-historikk.md`.
+- **Plan for UI-overhalingen:** `docs/plan-v130-ui-overhaul.md` (~1900
+  linjer, godkjent 24. aug) — fire etapper v1.3.0–v1.3.3 med kode og
+  testtall (272 → 282 → 296 → 299). Mockup:
+  https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849.
+  **Neste etter release av v1.3.1: etappe 3 (v1.3.2 Finpuss).**
+- **Prod kjører v1.3.0 på https://fpl.marsk.no** (deployet og verifisert
+  24. aug): `/health` → 200, `ai:true, discord:true, leagues:1`.
 - Kostnad målt 23. aug: **$0,94/uke** — under terskelen, ingen tiltak. Ny
   måling i uken etter 31. aug (prisskiftet), se kø-punkt 1.
-- `main` = `origin/main` etter push 24. aug, rent tre, **282/282 tester,
-  lint 0**. Ingen åpne feature-brancher.
+- `main` ligger **1 docs-commit foran `origin/main`** (loggføringen fra
+  slutten av økt 31 — ikke pushet). Aktiv branch:
+  `feat/ui-v131-klubbgrafikk`, rent tre, **296/296 tester, lint 0**.
 - Eldre status (v1.2.3-deploy, doks-opprydning økt 24, versjonsplan økt 25,
   v1.2.4 økt 27): rotert til `docs/arkiv/HANDOVER-historikk.md` 24. aug.
 
@@ -58,15 +59,22 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 2. P1 `[Marius]`: bekreft auto-briefen 20. aug i Discord-kanalen.
 3. P3: etter GW2, transfers-skjema mot ekte data + `/overganger` på mobil.
 4. P2 `[Marius]`: README-skjermbilder + mobil-QA.
-5. v1.3.0–v1.3.3: UI-overhaling i fire etapper — **plan godkjent, neste
-   utviklingsjobb** (`docs/plan-v130-ui-overhaul.md`) → deretter
-   robusthetskandidatene.
+5. v1.3.2 (etappe 3, finpuss): neste utviklingsjobb i
+   `docs/plan-v130-ui-overhaul.md` — venter på klarsignal fra Marius.
+   Deretter v1.3.3, så robusthetskandidatene.
 
 ## Driftslærdommer (ikke glem disse)
 
 - **Sjekk `git status -sb`, ikke anta at `main` = `origin/main`:** ved
   starten av økt 30 lå `main` 2 docs-commits foran origin (loggføring fra
   økt 29) selv om prompten sa «main = origin/main».
+- **Klubbgrafikken må hentes på nytt hver sesong:** `npm run fetch-clubs` +
+  bump `IMG_VERSION` i `src/middleware.js` i SAMME commit — ellers serverer
+  Cloudflare fjorårets drakter som `immutable`. Rutinen står i DEPLOY.md
+  («Klubbgrafikk (ny sesong)»).
+- **Skriv `\r\n` i node-patchskript mot docs/kildefiler** — repoets filer er
+  CRLF, og en enkelt `\n` gir en fil med blandede linjeskift (skjedde i
+  `docs/VIDERE.md` i økt 32, normalisert med en regex på `(?<!\r)\n`).
 - **Bash-heredoc med apostrofer i innholdet feiler** i dette verktøyet
   (wrapperen bruker enkle anførselstegn) — bruk Write/Edit for filer med
   `'` i teksten (CSS, norsk prosa).
@@ -135,49 +143,25 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
-- 2026-08-24 (økt 31, Opus): kjøreprompt «Oppdrag (Opus 5,
-  utførelsesøkt): utfør ETAPPE 1 — v1.3.0 Fundament» med
+- 2026-08-24 (økt 32, Opus): kjøreprompt «Oppdrag (Opus 5,
+  utførelsesøkt): utfør ETAPPE 2 — v1.3.1 Klubbgrafikk» med
   `superpowers:executing-plans` mot `docs/plan-v130-ui-overhaul.md` og
-  mockupen som fasit for utseendet (ved avvik vinner planen). Harde
-  rammer: Task 1.0-0…1.0-6 nå, Task 1.0-7 kun på eksplisitt klarsignal,
-  ingen designbeslutninger (mangler noe → stopp og spør), aldri push uten
-  klarsignal (heller ikke docs), aldri to. 19–21 eller mens kamper pågår,
-  **0 AI-kall** (`/brief` og `/nyheter` kun med tomme nøkler, `/health` →
-  `ai:false` FØRST), TDD med observert rødt ført inn i planfila, ingen nye
-  avhengigheter, Playwright kun i scratchpad, docs i samme commit som
-  endringen, branch `feat/ui-v130-fundament` fra rent og grønt `main`.
-  Handling: alle seks tasks utført, 5 commits, 282/282 + lint 0,
-  Playwright 332/332, 0 AI-kall, ingenting pushet. Underveis ett spørsmål
-  stilt (kontrastkonflikt på `.deadline-passed` inne i heroen) —
-  Marius valgte anbefalingen `--hero-text` (hvit). Deretter klarsignal:
-  **«Kjør»** (mandag 24. aug ~03:10). Handling: Task 1.0-7 utført — bump
-  1.3.0, docs, merge til `main`, tag `v1.3.0`, push, Coolify-deploy,
-  prod-verifisering uten `/brief` og `/nyheter`. Tidsvindu sjekket før
-  push: mandag 03:09, 0 kamper i gang, neste avspark 28. aug 19:00 UTC.
-  Til slutt: «lag en prompt for å starte på etappe 2 til en ny opus chat».
-  Handling: kjøreprompt for ETAPPE 2 (v1.3.1 Klubbgrafikk) levert i chatten,
-  ikke som fil — med testtallene 282 → 283 → 287 → 290 → 296, rødfasene,
-  0 AI-kall, GW2-kampvinduet som pushregel, og lærdommene fra etappe 1
-  (CRLF-normalisering i node-skript, heredoc/apostrof, Playwright-cache,
-  hero-tokens, les asset-hash fra prod-HTML).
-
-- 2026-08-24 (økt 30, Fable): kjøreprompt «Oppdrag (Fable 5): planlegg
-  v1.3.0 — full UI-overhaling. KUN PLANLEGGING» med krav: brainstorming
-  FØR plan mode (ett sett om gangen, anbefaling først, Marius beslutter),
-  verifiser alle fakta selv, klikkbar mockup som Artifact i begge temaer,
-  ett definert sluttprodukt (palett/typografi/spacing/komponenter per side),
-  fire åpne spørsmål avgjort (klubbgrafikk-kilde/lisens, tema/FOUC,
-  FPL-nærhet/kontrast, etapper), plan etter v1.2.5-malen, oppdater
-  ROADMAP/VIDERE/HANDOVER/CLAUDE.md, slett `prompt-ui-overhaul-plan.md`,
-  ikke rør CHANGELOG, 0 AI-kall, aldri push, Opus-prompt i chatten.
-  Underveis: «Klarer du å skrive planfila?» / «Okay da kan du fortsette»
-  (bekreftelse etter avbrudd). Handling: 4 spørsmålssett (15 beslutninger,
-  alle = anbefalingen), 20 fakta verifisert (bl.a. 140 bilde-URL-er med
-  curl, PNG-dimensjoner, 41 kontrastpar), plan skrevet til
-  `docs/plan-v130-ui-overhaul.md`, mockup publisert
-  (https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849),
-  ROADMAP/VIDERE/HANDOVER/CLAUDE.md oppdatert, prompt-fila slettet,
-  loggpost økt 28 + eldre status rotert til arkivet, committet lokalt på
-  `main` uten push, Opus-prompt levert i chatten. 0 AI-kall.
+  mockupen som fasit (ved avvik vinner planen). Harde rammer: Task
+  1.1-0…1.1-6 nå, 1.1-7 kun på klarsignal, ingen designbeslutninger,
+  aldri push uten klarsignal (heller ikke docs), sjekk `fixtures/?event=N`
+  og aldri to. 19–21, **0 AI-kall** (`/health` → `ai:false` FØRST),
+  `npm run fetch-clubs` eneste tillatte nettverkskall, TDD med observert
+  rødt i planfila (282 → 283 → 287 → 290 → 296), ingen nye avhengigheter,
+  Playwright kun i scratchpad, docs i samme commit, branch
+  `feat/ui-v131-klubbgrafikk` fra rent og grønt `main`.
+  Handling: alle sju tasks (1.1-0…1.1-6) utført, 5 commits, **296/296 +
+  lint 0**, Playwright 332/332 + 22/22 klubbsjekker, 60 bildefiler
+  (561 KB) committet, 0 AI-kall, ingenting pushet. Ett avvik rapportert:
+  planens regex for «uversjonert bilde-URL» flagget korrekte URL-er og ble
+  rettet (markupen står som planlagt). Rødfasene 1.1-1 og 1.1-2 ga færre
+  tester enn planen anslo fordi ESM-linkfeil tar hele testfila — årsak
+  dokumentert i planfila.
+- Loggposter fra økt 30–31: rotert til
+  `docs/arkiv/HANDOVER-historikk.md` 2026-08-24 (200-linjerstaket).
 - Eldre loggposter (økt 22–28): rotert til
   `docs/arkiv/HANDOVER-historikk.md` 2026-08-24 (200-linjerstaket).

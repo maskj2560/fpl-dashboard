@@ -35,7 +35,7 @@
                   <strong><%= p.web_name %></strong>
                   <% if (p.news) { %><span class="news"><%= translateFplNews(p.news) %></span><% } %>
                 </td>
-                <td><%= teamsById.get(p.team)?.short_name ?? '?' %></td>
+                <td><%- include('partials/club-badge', { team: teamsById.get(p.team) }) %></td>
                 <td class="num"><%= p.selected_by_percent %> %</td>
                 <td>
                   <span class="status status-<%= p.status %>"><%= STATUS_LABELS[p.status] ?? p.status %></span>
@@ -65,7 +65,7 @@
             <% for (const p of inForm) { %>
               <tr>
                 <td><strong><%= p.web_name %></strong></td>
-                <td><%= teamsById.get(p.team)?.short_name ?? '?' %></td>
+                <td><%- include('partials/club-badge', { team: teamsById.get(p.team) }) %></td>
                 <td><%= POSITIONS_SHORT[p.element_type] %></td>
                 <td class="num accent"><%= p.form %></td>
                 <td class="num"><%= p.total_points %></td>
@@ -90,7 +90,7 @@
           <tbody>
             <% for (const p of boughtMost) { %>
               <tr>
-                <td><strong><%= p.web_name %></strong> <span class="dim"><%= teamsById.get(p.team)?.short_name ?? '' %></span></td>
+                <td><strong><%= p.web_name %></strong> <%- include('partials/club-badge', { team: teamsById.get(p.team) }) %></td>
                 <td class="num"><%= formatPrice(p.now_cost) %></td>
                 <td class="num accent">+<%= formatNumber(p.transfers_in_event) %></td>
               </tr>
@@ -114,7 +114,7 @@
           <tbody>
             <% for (const p of soldMost) { %>
               <tr>
-                <td><strong><%= p.web_name %></strong> <span class="dim"><%= teamsById.get(p.team)?.short_name ?? '' %></span></td>
+                <td><strong><%= p.web_name %></strong> <%- include('partials/club-badge', { team: teamsById.get(p.team) }) %></td>
                 <td class="num"><%= formatPrice(p.now_cost) %></td>
                 <td class="num negative">−<%= formatNumber(p.transfers_out_event) %></td>
               </tr>
@@ -147,7 +147,7 @@
       <tbody>
         <% for (const row of matrix.rows) { %>
           <tr>
-            <td><strong><%= row.team.short_name %></strong> <span class="dim team-name-full"><%= row.team.name %></span></td>
+            <td class="fdr-team"><%- include('partials/club-badge', { team: row.team, size: 'md' }) %> <span class="dim team-name-full"><%= row.team.name %></span></td>
             <% for (const cell of row.cells) { %>
               <td class="fdr-cell">
                 <% if (cell.length === 0) { %>

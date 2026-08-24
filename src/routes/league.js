@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import config from '../config.js';
 import { getBootstrap, getLeagueStandings, getPicks, FplError } from '../services/fplClient.js';
-import { resolvedGw, differentials } from '../services/analysis.js';
+import { resolvedGw, differentials, byId } from '../services/analysis.js';
 import { formatNumber } from '../services/format.js';
 import { resolveLeagueIds } from '../services/leagues.js';
 
@@ -56,6 +56,7 @@ router.get('/', async (req, res, next) => {
       diff,
       myEntry: config.fplTeamId,
       firstLeague,
+      teamsById: byId(bootstrap.teams),
       formatNumber,
     });
   } catch (err) {

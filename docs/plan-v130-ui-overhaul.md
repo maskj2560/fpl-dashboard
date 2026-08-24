@@ -1093,9 +1093,11 @@ banen, kreditering i footer, `/health` teller bildene.
 
 ## Task 1.1-0 — Oppstart
 
-- [ ] `git checkout main`, rent tre, `npm test` → **282/282**, lint 0.
-      Observert: ______
-- [ ] `git checkout -b feat/ui-v131-klubbgrafikk`
+- [x] `git checkout main`, rent tre, `npm test` → **282/282**, lint 0.
+      Observert: **282/282, fail 0**, `npm run lint` uten utskrift (0).
+      (`main` lå 1 docs-commit foran `origin/main` — loggføringen fra økt 31,
+      ikke pushet.)
+- [x] `git checkout -b feat/ui-v131-klubbgrafikk`
 
 ## Task 1.1-1 — `IMG_VERSION` i middleware (TDD)
 
@@ -1112,7 +1114,12 @@ test('cacheControlFor gir immutable for bildeversjonen (klubbgrafikk)', () => {
 });
 ```
 
-- [ ] Rødt: **283 tester, 1 feiler** (import gir `undefined`). Observert: ______
+- [x] Rødt: **283 tester, 1 feiler** (import gir `undefined`).
+      Observert: **277 tester, 1 feilende fil** — ESM gir link-feil, ikke
+      `undefined`: `SyntaxError: The requested module '../src/middleware.js'
+      does not provide an export named 'IMG_VERSION'`. Hele fila (6 tester)
+      kjører derfor ikke: 276 pass + 1 feilende fil. Samme alternative form
+      som style.test.js i etappe 1, og som planen selv godtar i 1.1-2.
 
 Implementasjon (`src/middleware.js`, under `FONT_VERSION`):
 
@@ -1126,8 +1133,9 @@ export const IMG_VERSION = '2627';
 
 og i `cacheControlFor`: `(v === assetVersion || v === FONT_VERSION || v === IMG_VERSION)`.
 
-- [ ] Grønt: **283/283**, lint 0. Observert: ______
-- [ ] Commit: `feat(assets): IMG_VERSION for klubbgrafikk i cache-reglene`
+- [x] Grønt: **283/283**, lint 0. Observert: **283/283, fail 0**, lint uten
+      utskrift.
+- [x] Commit: `feat(assets): IMG_VERSION for klubbgrafikk i cache-reglene`
 
 ## Task 1.1-2 — `src/services/clubAssets.js` (TDD) + app.locals + /health
 
@@ -1176,8 +1184,10 @@ test('loadClubAssets tåler at mappa mangler — alt faller tilbake på tekst', 
 });
 ```
 
-- [ ] Rødt: **287 tester, 4 feiler** (modul finnes ikke → importfeil = 1
-      feilende fil; godta). Observert: ______
+- [x] Rødt: **287 tester, 4 feiler** (modul finnes ikke → importfeil = 1
+      feilende fil; godta). Observert: **284 tester, 1 feilende fil**
+      (`ERR_MODULE_NOT_FOUND: Cannot find module …/src/services/clubAssets.js`)
+      — den godtatte formen.
 
 ### 2b. Implementasjon
 
@@ -1239,8 +1249,9 @@ app.locals.clubAssets = loadClubAssets(path.join(rootDir, 'public', 'img', 'club
 `clubImages: req.app.locals.clubAssets?.count ?? null,` — og handleren
 må ta `(req, res)` i stedet for `(_req, res)`.
 
-- [ ] Grønt: **287/287**, lint 0. Observert: ______
-- [ ] Commit: `feat(assets): clubAssets-service, app.locals og /health-telling`
+- [x] Grønt: **287/287**, lint 0. Observert: **287/287, fail 0**, lint uten
+      utskrift.
+- [x] Commit: `feat(assets): clubAssets-service, app.locals og /health-telling`
 
 ## Task 1.1-3 — Nedlastingsskript + bildene
 
@@ -1301,16 +1312,21 @@ if (failed.length) {
 `package.json` scripts: `"fetch-clubs": "node scripts/fetch-club-assets.mjs"`.
 `eslint.config.js`: første `files`-liste får `'scripts/**/*.mjs'`.
 
-- [ ] `npm run fetch-clubs` → «Lagret 60 av 60 filer». `ls public/img/clubs | wc -l`
-      → 60. Sum ≈ 560 KB (`du -sh`). Observert: ______
-- [ ] `npm run lint` → 0 (skriptet lintes nå). `npm test` → 287/287.
-- [ ] Start serveren lokalt (tomme nøkler) → `/health` viser
-      `clubImages: {badges: 20, shirts: 20, keepers: 20}`. Observert: ______
-- [ ] `DEPLOY.md`: ny seksjon «Klubbgrafikk (ny sesong)»: kjør
+- [x] `npm run fetch-clubs` → «Lagret 60 av 60 filer». `ls public/img/clubs | wc -l`
+      → 60. Sum ≈ 560 KB (`du -sh`). Observert: **«Lagret 60 av 60 filer»**,
+      60 filer, **561 KB** (`du -sh --apparent-size`; `du -sh` = 692 K disk).
+- [x] `npm run lint` → 0 (skriptet lintes nå). `npm test` → 287/287.
+      Observert: lint uten utskrift, **287/287**.
+- [x] Start serveren lokalt (tomme nøkler) → `/health` viser
+      `clubImages: {badges: 20, shirts: 20, keepers: 20}`. Observert:
+      `{"status":"ok","features":{"ai":false,"aiModel":null,"discord":false,`
+      `"teamId":true,"leagues":0,"clubImages":{"badges":20,"shirts":20,`
+      `"keepers":20}}}` (port 3011, scratchpad-.env med tomme nøkler).
+- [x] `DEPLOY.md`: ny seksjon «Klubbgrafikk (ny sesong)»: kjør
       `npm run fetch-clubs`, bump `IMG_VERSION` i `src/middleware.js`,
       commit begge sammen; URL-ene i tabellen får raden
       `/img/clubs/*.png?v=<IMG_VERSION>` → immutable.
-- [ ] Commit: `feat(assets): nedlastingsskript og klubbgrafikk for 2026/27 (60 filer)`
+- [x] Commit: `feat(assets): nedlastingsskript og klubbgrafikk for 2026/27 (60 filer)`
 
 ## Task 1.1-4 — `teamCode` i brief/live/transfers-payloadene + liga-route (TDD)
 
@@ -1374,8 +1390,15 @@ test('buildTransferAnalysis legger teamShort og teamCode på inn og ut', () => {
 });
 ```
 
-- [ ] Rødt: **290 tester, forventet 5 feiler** (3 nye + live.test 183 +
-      live.test nøkkelliste). Observert: ______
+- [x] Rødt: **290 tester, forventet 5 feiler** (3 nye + live.test 183 +
+      live.test nøkkelliste). Observert: **290 tester, 5 feiler** — nøyaktig
+      de forventede (brief-, live- og transfers-testen, «matches speiler
+      stilling og status fra fixtures», «payloaden har ingen døde felter»).
+      Fixture-notat: `spiller(1, 1, { status: 'd', news: 'Knock' })` treffer
+      `flaggedPlayers` uendret, og 20 % eierskap holder både ≥ 5 %-kravet i
+      `injuries` og ≥ 15 %-kravet i `globalCaptains` — ingen justering
+      trengtes. `test/transfers.test.js` manglet `teams` helt: la til tre lag
+      (MCI 43, AVL 7, LIV 14) og `team` på alle fem elementene.
 
 ### 4b. Implementasjon
 
@@ -1412,8 +1435,9 @@ Eksisterende asserts på `.inn.name`/`.ut.name` består.
 `src/routes/league.js`: `teamsById: byId(bootstrap.teams),` i locals
 (importer `byId` fra analysis.js hvis ikke alt importert).
 
-- [ ] Grønt: **290/290**, lint 0. Observert: ______
-- [ ] Commit: `feat(data): klubbkode i brief-, live- og transfers-payloadene`
+- [x] Grønt: **290/290**, lint 0. Observert: **290/290, fail 0**, lint uten
+      utskrift.
+- [x] Commit: `feat(data): klubbkode i brief-, live- og transfers-payloadene`
 
 ## Task 1.1-5 — Partials + integrasjon i viewene + live-JS + footer (TDD)
 
@@ -1510,9 +1534,9 @@ test('clubBadgeHtml escaper kortnavnet og skriver versjonert bilde eller plassho
 });
 ```
 
-- [ ] Rødt: **296 tester, 6 feiler** (partialene finnes ikke → 3;
+- [x] Rødt: **296 tester, 6 feiler** (partialene finnes ikke → 3;
       dashboard uten merker → 1; footer → 1; `clubBadgeHtml` → 1).
-      Observert: ______
+      Observert: **296 tester, 6 feiler** — nøyaktig de forventede.
 
 ### 5c. Implementasjon
 
@@ -1684,26 +1708,56 @@ tilsvarende for `m.away`.
 
 ≤ 480 px: `.shirt { width: 40px; height: 53px; }`.
 
-- [ ] Grønt: **296/296**, lint 0. Observert: ______
-- [ ] Røyk lokalt (tomme nøkler): åpne `/`, `/spillere`, `/lag`, `/liga`,
+- [x] Grønt: **296/296**, lint 0. Observert: **296/296, fail 0**, lint uten
+      utskrift. Ett avvik i planens testkode rettet: assertionen
+      «uversjonert bilde-URL» i dashboard-testen brukte
+      `/\/img\/clubs\/[^"]+"(?![^>]*\?v=)/`, som slukte `?v=2627` inn i
+      `[^"]+` og deretter lette etter en ny `?v=` i resten av taggen — den
+      flagget altså korrekt versjonerte URL-er. Erstattet med
+      `/\/img\/clubs\/[^"?]+"/` (en klubb-URL som lukkes uten spørrestreng),
+      som er det meldingen sier. Markupen står som i planen.
+- [x] Røyk lokalt (tomme nøkler): åpne `/`, `/spillere`, `/lag`, `/liga`,
       `/brief`, `/overganger`, `/live` — merker og drakter synlige, ingen
       brutte bilder i DevTools (Network: alle `/img/clubs/*` 200). Sortér
-      «Lag»-kolonnen på /spillere begge veier → alfabetisk. Observert: ______
-- [ ] CHANGELOG `[Unreleased]` `### Added`: «Klubbmerker i alle tabeller og
+      «Lag»-kolonnen på /spillere begge veier → alfabetisk. Observert:
+      alle åtte ruter 200, `/health` `ai:false, discord:false`. Unike
+      klubb-URL-er per side: `/` 20, `/spillere` 20, `/lag` 19, `/brief` 20,
+      `/liga` 0, `/overganger` 0, `/live` 0 — de tre siste fordi datagrunnlaget
+      er tomt akkurat nå: ligaen har kun ett medlem (ingen rival → ingen
+      differensialtabell, som er der merkene sitter), ingen transfers er
+      gjort ennå («Ingen overganger registrert ennå»), og /live rendres av
+      klienten (`data-img-version="2627"` er på plass). Alle klubb-URL-er er
+      versjonert; `/img/clubs/t3.png?v=2627` → 200 +
+      `Cache-Control: public, max-age=31536000, immutable`. Sorteringen leser
+      `cells[i].textContent.trim()`, og cellene inneholder nå kun kortnavnet
+      («BHA») — verifisert i Playwright-kjøringen i 1.1-6.
+- [x] CHANGELOG `[Unreleased]` `### Added`: «Klubbmerker i alle tabeller og
       lister, og klubbdrakter på banen på lagsiden — som på FPL. Bildene er
       selvhostet; mangler et bilde, vises kortnavnet i stedet. Footeren
       krediterer klubbene og Premier League.»
-- [ ] Commit: `feat(ui): klubbmerker og drakter i alle views via partials`
+- [x] Commit: `feat(ui): klubbmerker og drakter i alle views via partials`
 
 ## Task 1.1-6 — Røyk, Playwright, docs — STOPP
 
-- [ ] Røyk uten nøkler: `/health` `ai:false, discord:false, clubImages 20/20/20`;
-      11 ruter 200; 404. Observert: ______
-- [ ] Playwright (Vedlegg A): 0 feil, «brutte bilder = 0» på alle sider.
-      Observert: ______
-- [ ] ROADMAP/HANDOVER/VIDERE/CLAUDE.md (arkitekturkart: `views/partials/`,
+- [x] Røyk uten nøkler: `/health` `ai:false, discord:false, clubImages 20/20/20`;
+      11 ruter 200; 404. Observert: `/health` →
+      `ai:false, discord:false, teamId:true, leagues:0,`
+      `clubImages {badges:20, shirts:20, keepers:20}`; åtte HTML-ruter 200
+      (/, /spillere, /lag, /liga, /brief, /overganger, /live, /nyheter),
+      ukjent sti → 404, `/img/clubs/t3.png?v=2627` → 200 +
+      `public, max-age=31536000, immutable`.
+- [x] Playwright (Vedlegg A): 0 feil, «brutte bilder = 0» på alle sider.
+      Observert: **OK 332/332**. I tillegg et eget klubbskript
+      (scratchpad, `qa-clubs.mjs`): **OK 22/22** — alle klubbbilder lastet
+      med `loading` tvunget til `eager` (60 på /, 609 på /spillere, 48 på
+      /lag, 25 på /brief), 0 brutte, 0 uversjonerte, 0 med bredde 0,
+      15 drakter + 4 keeperdrakter på /lag, og Lag-kolonnen sorterer
+      alfabetisk begge veier (første klikk er synkende — `sortBy`-adferd
+      fra før) med ren kortnavnstekst i cellene.
+- [x] ROADMAP/HANDOVER/VIDERE/CLAUDE.md (arkitekturkart: `views/partials/`,
       `clubAssets.js`, `scripts/`) oppdatert. Commit `docs: v1.3.1 klar`.
-      Rapporter, **STOPP.**
+      Rapporter, **STOPP.** Loggpostene fra økt 30–31 rotert til
+      `docs/arkiv/HANDOVER-historikk.md` (HANDOVER: 168 linjer).
 
 ## Task 1.1-7 — Release v1.3.1 (KUN på klarsignal)
 

@@ -26,7 +26,19 @@ function isValidTransfer(t) {
 export function buildTransferAnalysis({ transfers, history, bootstrap, liveByGw }) {
   const maxGw = resolvedGw(bootstrap.events);
   const elementsById = byId(bootstrap.elements);
-  const name = (id) => elementsById.get(id)?.web_name ?? `Ukjent (${id})`;
+  const teamsById = byId(bootstrap.teams ?? []);
+  // Navn + lag for Inn/Ut-cellene. Klubbkoden er det partialen trenger for
+  // merket; kortnavnet er teksten ved siden av.
+  const ref = (id) => {
+    const p = elementsById.get(id);
+    const t = p ? teamsById.get(p.team) : null;
+    return {
+      id,
+      name: p?.web_name ?? `Ukjent (${id})`,
+      teamShort: t?.short_name ?? null,
+      teamCode: t?.code ?? null,
+    };
+  };
 
   const pointsByGw = new Map(
     [...liveByGw].map(([gw, live]) => [
@@ -87,8 +99,8 @@ export function buildTransferAnalysis({ transfers, history, bootstrap, liveByGw 
     return {
       event: from,
       chip: chipName === 'wildcard' || chipName === 'freehit' ? chipName : null,
-      inn: { id: tr.element_in, name: name(tr.element_in), points: innPoints },
-      ut: { id: tr.element_out, name: name(tr.element_out), points: utPoints },
+      inn: { ...ref(tr.element_in), points: innPoints },
+      ut: { ...ref(tr.element_out), points: utPoints },
       diff,
       penaltyShare,
       netto: diff - penaltyShare,

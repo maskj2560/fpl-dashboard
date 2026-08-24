@@ -89,6 +89,7 @@ export function buildLive({ bootstrap, gw, fixtures = [], live = null, picks = n
       return {
         name: player.web_name,
         team: teamsById.get(player.team)?.short_name ?? '?',
+        teamCode: player.team_code ?? teamsById.get(player.team)?.code ?? null,
         isCaptain: pick.is_captain,
         onBench: pick.position >= 12,
         minutes: stats.minutes,
@@ -104,6 +105,8 @@ export function buildLive({ bootstrap, gw, fixtures = [], live = null, picks = n
   const matches = fixtures.map((f) => ({
     home: teamsById.get(f.team_h)?.short_name ?? '?',
     away: teamsById.get(f.team_a)?.short_name ?? '?',
+    homeCode: teamsById.get(f.team_h)?.code ?? null,
+    awayCode: teamsById.get(f.team_a)?.code ?? null,
     homeScore: f.team_h_score ?? null,
     awayScore: f.team_a_score ?? null,
     started: f.started,
