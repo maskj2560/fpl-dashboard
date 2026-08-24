@@ -27,6 +27,7 @@
         <div class="pitch-row">
           <% for (const s of squadView.byLine[line]) { %>
             <div class="chip<%= s.pick.is_captain ? ' chip-captain' : '' %>">
+              <%- include('partials/club-shirt', { team: teamsById.get(s.player.team), keeper: s.player.element_type === 1 }) %>
               <span class="chip-name"><%= s.player.web_name %><% if (s.pick.is_captain) { %> <b class="cap">C</b><% } else if (s.pick.is_vice_captain) { %> <b class="cap vice">V</b><% } %></span>
               <span class="chip-meta"><%= teamsById.get(s.player.team)?.short_name %> · <%= formatPrice(s.player.now_cost) %></span>
             </div>
@@ -38,6 +39,7 @@
       <span class="bench-label">Benk</span>
       <% for (const s of squadView.bench) { %>
         <div class="chip chip-bench">
+          <%- include('partials/club-shirt', { team: teamsById.get(s.player.team), keeper: s.player.element_type === 1 }) %>
           <span class="chip-name"><%= s.player.web_name %></span>
           <span class="chip-meta"><%= POSITIONS_SHORT[s.player.element_type] %> · <%= formatPrice(s.player.now_cost) %></span>
         </div>
@@ -80,7 +82,7 @@
         <ol class="rec-list">
           <% for (const c of recommendations.captains) { %>
             <li>
-              <strong><%= c.player.web_name %></strong> <span class="dim"><%= teamsById.get(c.player.team)?.short_name %></span>
+              <strong><%= c.player.web_name %></strong> <%- include('partials/club-badge', { team: teamsById.get(c.player.team) }) %>
               <ul class="reasons"><% for (const r of c.reasons) { %><li><%= r %></li><% } %></ul>
             </li>
           <% } %>
@@ -100,7 +102,7 @@
               <p class="dim">Erstattere innenfor budsjett:</p>
               <ul class="reasons">
                 <% for (const k of t.inn) { %>
-                  <li><strong><%= k.player.web_name %></strong> <%= teamsById.get(k.player.team)?.short_name %> · <%= formatPrice(k.player.now_cost) %> · form <%= k.player.form %></li>
+                  <li><strong><%= k.player.web_name %></strong> <%- include('partials/club-badge', { team: teamsById.get(k.player.team) }) %> · <%= formatPrice(k.player.now_cost) %> · form <%= k.player.form %></li>
                 <% } %>
               </ul>
             <% } %>

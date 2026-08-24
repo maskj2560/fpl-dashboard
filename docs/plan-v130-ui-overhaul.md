@@ -1534,9 +1534,9 @@ test('clubBadgeHtml escaper kortnavnet og skriver versjonert bilde eller plassho
 });
 ```
 
-- [ ] Rødt: **296 tester, 6 feiler** (partialene finnes ikke → 3;
+- [x] Rødt: **296 tester, 6 feiler** (partialene finnes ikke → 3;
       dashboard uten merker → 1; footer → 1; `clubBadgeHtml` → 1).
-      Observert: ______
+      Observert: **296 tester, 6 feiler** — nøyaktig de forventede.
 
 ### 5c. Implementasjon
 
@@ -1708,16 +1708,34 @@ tilsvarende for `m.away`.
 
 ≤ 480 px: `.shirt { width: 40px; height: 53px; }`.
 
-- [ ] Grønt: **296/296**, lint 0. Observert: ______
-- [ ] Røyk lokalt (tomme nøkler): åpne `/`, `/spillere`, `/lag`, `/liga`,
+- [x] Grønt: **296/296**, lint 0. Observert: **296/296, fail 0**, lint uten
+      utskrift. Ett avvik i planens testkode rettet: assertionen
+      «uversjonert bilde-URL» i dashboard-testen brukte
+      `/\/img\/clubs\/[^"]+"(?![^>]*\?v=)/`, som slukte `?v=2627` inn i
+      `[^"]+` og deretter lette etter en ny `?v=` i resten av taggen — den
+      flagget altså korrekt versjonerte URL-er. Erstattet med
+      `/\/img\/clubs\/[^"?]+"/` (en klubb-URL som lukkes uten spørrestreng),
+      som er det meldingen sier. Markupen står som i planen.
+- [x] Røyk lokalt (tomme nøkler): åpne `/`, `/spillere`, `/lag`, `/liga`,
       `/brief`, `/overganger`, `/live` — merker og drakter synlige, ingen
       brutte bilder i DevTools (Network: alle `/img/clubs/*` 200). Sortér
-      «Lag»-kolonnen på /spillere begge veier → alfabetisk. Observert: ______
-- [ ] CHANGELOG `[Unreleased]` `### Added`: «Klubbmerker i alle tabeller og
+      «Lag»-kolonnen på /spillere begge veier → alfabetisk. Observert:
+      alle åtte ruter 200, `/health` `ai:false, discord:false`. Unike
+      klubb-URL-er per side: `/` 20, `/spillere` 20, `/lag` 19, `/brief` 20,
+      `/liga` 0, `/overganger` 0, `/live` 0 — de tre siste fordi datagrunnlaget
+      er tomt akkurat nå: ligaen har kun ett medlem (ingen rival → ingen
+      differensialtabell, som er der merkene sitter), ingen transfers er
+      gjort ennå («Ingen overganger registrert ennå»), og /live rendres av
+      klienten (`data-img-version="2627"` er på plass). Alle klubb-URL-er er
+      versjonert; `/img/clubs/t3.png?v=2627` → 200 +
+      `Cache-Control: public, max-age=31536000, immutable`. Sorteringen leser
+      `cells[i].textContent.trim()`, og cellene inneholder nå kun kortnavnet
+      («BHA») — verifisert i Playwright-kjøringen i 1.1-6.
+- [x] CHANGELOG `[Unreleased]` `### Added`: «Klubbmerker i alle tabeller og
       lister, og klubbdrakter på banen på lagsiden — som på FPL. Bildene er
       selvhostet; mangler et bilde, vises kortnavnet i stedet. Footeren
       krediterer klubbene og Premier League.»
-- [ ] Commit: `feat(ui): klubbmerker og drakter i alle views via partials`
+- [x] Commit: `feat(ui): klubbmerker og drakter i alle views via partials`
 
 ## Task 1.1-6 — Røyk, Playwright, docs — STOPP
 

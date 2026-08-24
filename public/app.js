@@ -46,6 +46,19 @@ function nextMode(mode) {
   return THEME_MODES[(i + 1) % THEME_MODES.length];
 }
 
+// Klubbmerke i klientrendret markup (/live). Speiler partials/club-badge.ejs.
+// Klienten vet ikke hvilke bilder som finnes — feiler et bilde, bytter
+// error-lytteren i Modul 3 det til plassholderen.
+function clubBadgeHtml(shortName, code, version, size) {
+  const name = '<span class="club-name">' + escapeHtml(shortName == null ? '?' : shortName) + '</span>';
+  const img =
+    Number.isInteger(code) && version
+      ? '<img class="club-img" src="/img/clubs/t' + code + '.png?v=' + escapeHtml(version) +
+        '" width="70" height="70" alt="" loading="lazy" decoding="async">'
+      : '<span class="club-fallback" aria-hidden="true"></span>';
+  return '<span class="club club--' + (size || 'sm') + '">' + img + name + '</span>';
+}
+
 // Modul 0: Mobilmenyen. Scroller aktiv lenke inn i syne, og togglar
 // kantfade-klassene som viser at menyen har mer innhold sidelengs.
 (function () {
@@ -206,6 +219,20 @@ function nextMode(mode) {
   const statusEl = document.getElementById('live-status');
   const updatedEl = document.getElementById('live-updated');
   const pulseEl = document.getElementById('live-pulse');
+  const imgVersion = root.dataset.imgVersion || '';
+  // error bobler ikke — fanges i capture-fasen på rota.
+  root.addEventListener(
+    'error',
+    (e) => {
+      const img = e.target;
+      if (!img || !img.classList || !img.classList.contains('club-img')) return;
+      const ph = document.createElement('span');
+      ph.className = 'club-fallback';
+      ph.setAttribute('aria-hidden', 'true');
+      img.replaceWith(ph);
+    },
+    true,
+  );
 
 
   function render(live) {
@@ -224,7 +251,7 @@ function nextMode(mode) {
               : '';
         return (
           '<tr' + (p.onBench ? ' class="row-bench"' : '') + '><td><strong>' + escapeHtml(p.name) + '</strong>' +
-          (p.isCaptain ? ' <b class="cap">C</b>' : '') + ' <span class="dim">' + escapeHtml(p.team) + '</span></td>' +
+          (p.isCaptain ? ' <b class="cap">C</b>' : '') + ' ' + clubBadgeHtml(p.team, p.teamCode, imgVersion) + '</td>' +
           '<td class="num">' + p.minutes + "'</td>" +
           '<td class="num">' + p.points + '</td>' +
           '<td class="num' + (bonus > 0 ? ' accent' : '') + '"' + (title ? ' title="' + title + '"' : '') + '>' +
@@ -239,9 +266,9 @@ function nextMode(mode) {
         const live1 = m.started && !m.finished;
         return (
           '<div class="match' + (live1 ? ' match-live' : '') + '">' +
-          '<span class="match-team">' + escapeHtml(m.home) + '</span>' +
+          '<span class="match-team">' + clubBadgeHtml(m.home, m.homeCode, imgVersion, 'md') + '</span>' +
           '<span class="match-score">' + (m.homeScore == null ? '–' : m.homeScore + '–' + m.awayScore) + '</span>' +
-          '<span class="match-team">' + escapeHtml(m.away) + '</span>' +
+          '<span class="match-team">' + clubBadgeHtml(m.away, m.awayCode, imgVersion, 'md') + '</span>' +
           '<span class="match-status">' + status + '</span>' +
           '</div>'
         );

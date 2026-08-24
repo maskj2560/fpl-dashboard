@@ -7,6 +7,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+
+- Klubbmerker i alle tabeller og lister, og klubbdrakter på banen på
+  lagsiden — som på FPL. Bildene er selvhostet; mangler et bilde, vises
+  kortnavnet i stedet. Footeren krediterer klubbene og Premier League.
+
 ## [1.3.0] - 2026-08-24
 
 ### Added

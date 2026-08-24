@@ -61,7 +61,7 @@
             data-price="<%= p.now_cost / 10 %>"
           >
             <td><strong><%= p.web_name %></strong></td>
-            <td><%= teamsById.get(p.team)?.short_name ?? '?' %></td>
+            <td><%- include('partials/club-badge', { team: teamsById.get(p.team) }) %></td>
             <td><%= POSITIONS_SHORT[p.element_type] %></td>
             <td class="num"><%= formatPrice(p.now_cost) %></td>
             <td class="num"><%= p.form %></td>

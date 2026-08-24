@@ -60,7 +60,7 @@
         <div class="table-scroll"><table class="data">
           <thead><tr><th>Spiller</th><th class="num">Eid</th><th class="num">Form</th></tr></thead>
           <tbody><% for (const p of diff.theirs) { %>
-            <tr><td><strong><%= p.web_name %></strong></td><td class="num"><%= p.selected_by_percent %> %</td><td class="num"><%= p.form %></td></tr>
+            <tr><td><strong><%= p.web_name %></strong> <%- include('partials/club-badge', { team: teamsById.get(p.team) }) %></td><td class="num"><%= p.selected_by_percent %> %</td><td class="num"><%= p.form %></td></tr>
           <% } %></tbody>
         </table></div>
         <% } %>
@@ -71,7 +71,7 @@
         <div class="table-scroll"><table class="data">
           <thead><tr><th>Spiller</th><th class="num">Eid</th><th class="num">Form</th></tr></thead>
           <tbody><% for (const p of diff.mine) { %>
-            <tr><td><strong><%= p.web_name %></strong></td><td class="num"><%= p.selected_by_percent %> %</td><td class="num"><%= p.form %></td></tr>
+            <tr><td><strong><%= p.web_name %></strong> <%- include('partials/club-badge', { team: teamsById.get(p.team) }) %></td><td class="num"><%= p.selected_by_percent %> %</td><td class="num"><%= p.form %></td></tr>
           <% } %></tbody>
         </table></div>
         <% } %>

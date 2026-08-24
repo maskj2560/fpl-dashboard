@@ -1,0 +1,18 @@
+<%#
+  Klubbmerke + kortnavn. Locals: team ({ code, short_name, name }),
+  size ('sm' 18 px | 'md' 28 px | 'lg' 40 px, default 'sm'), showName (default true).
+  <img> skrives KUN når clubAssets sier fila finnes — ellers en nøytral
+  plassholder. Aldri et brutt bilde, heller ikke uten JS. Bildet er
+  dekorativt (alt=""): navnet står som tekst ved siden av, eller som
+  skjermlesertekst når showName er false.
+%>
+<%
+  const _size = typeof size === 'string' ? size : 'sm';
+  const _showName = typeof showName === 'boolean' ? showName : true;
+  const _assets = typeof clubAssets !== 'undefined' ? clubAssets : null;
+  const _code = team ? team.code : undefined;
+  const _has = Boolean(_assets && _assets.hasBadge(_code));
+  const _short = (team && team.short_name) || '?';
+  const _full = (team && team.name) || _short;
+%>
+<span class="club club--<%= _size %>"><% if (_has) { %><img class="club-img" src="/img/clubs/t<%= _code %>.png?v=<%= _assets.version %>" width="70" height="70" alt="" loading="lazy" decoding="async"><% } else { %><span class="club-fallback" aria-hidden="true"></span><% } %><% if (_showName) { %><span class="club-name"><%= _short %></span><% } else { %><span class="sr-only"><%= _full %></span><% } %></span>
