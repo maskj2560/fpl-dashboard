@@ -337,7 +337,7 @@ På https://fpl.marsk.no/live:
    «Slutt», prikken slutter å pulsere, og nettverksfanen viser INGEN nye
    `live.json`-kall i minst 5 min etterpå.
 3. **Noteres:** klokkeslett, de tre siste `live.json`-kallene, første
-   observerte fravær av kall. Resultatet føres i `docs/sjekkpunkt-c-live.md`.
+   observerte fravær av kall. Resultatet føres i `docs/arkiv/sjekkpunkt-c-live.md`.
 
 Faller observasjonen (ikke deployen) utenfor lørdag: søndagskampene
 (15:00/17:30, slutt ~19:20) eller mandag 21:00 dekker det samme.
@@ -348,7 +348,7 @@ Faller observasjonen (ikke deployen) utenfor lørdag: søndagskampene
   loggfør Marius' beskjeder fra øktene.
 - `ROADMAP.md`: huk av deploy-punktene; «Manuell verifisering under neste
   kampvindu» og stopp-testen hukes av KUN når port 9 faktisk er bestått.
-- `docs/sjekkpunkt-c-live.md`: stopp-test-resultatet.
+- `docs/arkiv/sjekkpunkt-c-live.md`: stopp-test-resultatet.
 - `git tag -d pre-deploy-main` — stillas-taggen fra port 0 har utspilt
   rollen sin når v1.2.3 er verifisert i prod.
 - NB: den utdaterte «BLOKKERER DEPLOY»-/«STOPPET I PORT 0»-teksten fra

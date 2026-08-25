@@ -27,7 +27,11 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.3.2**~~ | ~~UI-overhaling, etappe 3: finpuss per side~~ | **utført 24. aug** | — |
 | ~~**v1.3.3**~~ | ~~UI-overhaling, etappe 4: QA-rettelser~~ | **utført 24. aug — prod-QA grønn 25. aug** | — |
 | ~~**v1.3.4**~~ | ~~Ingen ventetid på AI-tekst: SWR + bakgrunnsoppfriskning~~ | **utført 25. aug — ute i prod, QA grønn** | — |
-| **v1.3.1+** | Robusthetskandidatene, én og én etter avtale | 4 | avtale per punkt |
+| **v1.3.5** | Ryddig avslutning (SIGTERM-handler) | 4 | — |
+| **v1.3.6** | gameUpdating-livssyklus + vennlig 503-side | 4 | v1.3.5 |
+| **v1.3.7** | Persistent «brief sendt»-markør (volum `/app/data`) | 4 | volum i Coolify |
+| **v1.3.8** | Genitiv-fiks i nyhetsfilteret | 4 | etter P4 |
+| **v1.4.0** | Alderstak på stale data + `dataAlder` i payload | 4 | etter P4 |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
 Kalenderlogikk: utviklingssporet (v1.3.0 → v1.3.1+) går uavbrutt;
@@ -70,33 +74,26 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
 - **Blokkert av:** Marius (nettleser + telefon).
 - **Størrelse:** liten.
 
-### 4. Robusthetskandidater (v1.3.1+, avtales én og én, uprioritert innbyrdes)
+### 4. Robusthetsreleasene (besluttet 25. aug — detaljene i `docs/plan-sluttspurt.md`)
 
-Reelle funn fra kvalitetspasset v1.1.3 (P3) og verifiseringen — ingen
-fikses uten avtale:
+Alle fem kandidatene fra kvalitetspasset er avgjort: fire bygges som egne
+releaser, den femte (filterSummaryPoints) får en gratis genitiv-fiks i
+stedet for den AI-kostende promptendringen (droppet). Rekkefølge:
 
-- **`gameUpdating`-livssyklus** (`src/services/fplClient.js`): globalt
-  flagg settes av 503 på ett endepunkt, nullstilles av suksess på et annet;
-  banner kan henge 15 min, kaldstart under oppdateringsvindu 500-er.
-  Redesign: tidsstemplet flagg eller status per endepunkt.
-- **Alderstak på stale data + `dataAlder` i payloaden** (rest av P3-2):
-  produktbeslutning + payload-kontraktsendring — tas separat med Marius.
-- ~~**SWR i `ai.js`**~~ — løftet ut av lista 24. aug og levert som **v1.3.4**
-  25. aug. NB: grepet endret semantikken «AI-kall skjer ved sidebesøk» —
-  tekstene er nå timer-styrte, og en sidevisning utløser aldri et kall.
-- **Ryddig avslutning (SIGTERM-handler)** (`src/server.js`): appen har ingen
-  `process.on('SIGTERM', …)`, så PID 1 ignorerer signalet (målt 25. aug —
-  `kill 1` hadde null effekt). Konsekvens i drift: Docker må vente ut
-  stopp-timeouten og SIGKILL-e ved hver deploy, og forespørsler under
-  utrulling kuttes midt i. En `server.close()`-handler gir renere
-  rullerende deploys — og som bieffekt lar den helsesjekk-beviset
-  (`kill 1`) faktisk kjøres. Liten endring, men rører oppstartsstien.
-- **`filterSummaryPoints`-dybde** (`src/services/news.js:158`): genitiv
-  bommer på substring-matchen. Robusthet ligger i promptendring
-  (kildeindeks per punkt) — koster AI-kall å teste, må avtales.
-- **Persistent «brief sendt»-markør** (P1-5b): `lastSentEvent` lever i
-  minnet; redeploy innenfor 15-min-vinduet re-poster briefen. Krever
-  tilstand som overlever containeren — arkitekturbeslutning.
+- [ ] **v1.3.5 Ryddig avslutning:** `createShutdown` i `middleware.js` +
+      SIGTERM/SIGINT-håndtering i `server.js`. Docker slipper å SIGKILL-e
+      ved deploy, og helsesjekk-beviset (`kill 1`) blir mulig.
+- [ ] **v1.3.6 gameUpdating-livssyklus:** tidsstemplet flagg med 5 min
+      utløp i `fplClient.js` + forklarende 503-side ved kaldstart i
+      oppdateringsvindu (`createErrorHandler`).
+- [ ] **v1.3.7 Persistent brief-markør:** `lastSentEvent` til
+      `data/brief-state.json` (`DATA_DIR`-env, volum `/app/data` i
+      Coolify) — redeploy i 15-min-vinduet kan ikke re-poste briefen.
+- [ ] **v1.3.8 Genitiv-fiks i nyhetsfilteret:** navnevarianter uten
+      genitiv-s i `filterSummaryPoints` (`news.js`). 0 AI-kall.
+- [ ] **v1.4.0 Alderstak + dataAlder:** stale data eldre enn 10 min
+      (live) / 60 min (resten) får banner «Viser data fra HH:MM …»;
+      `/api/brief.json` og `/api/live.json` får `dataAlder` (sekunder).
 
 ## Dokumentkart — hvor alt bor
 
@@ -110,11 +107,9 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 | `docs/VIDERE.md` | Marius' ikke-tekniske kortversjon |
 | `docs/arkiv/plan-v130-ui-overhaul.md` | godkjent plan for v1.3.0–v1.3.3 (UI-overhaling), utføres etappevis |
 | `docs/sjekkpunkt-d-kostnad.md` | metode + skript for P4-målingen |
-| `docs/sjekkpunkt-c-live.md` | bevismateriale v1.2.3 |
-| `docs/port9-chrome-prompt.md` | gjenbrukbar nettleser-QA-oppskrift |
-| `docs/plan-doks-opprydning.md` | utført ryddeplan (arkiveres ved neste rydding) |
+| `docs/plan-sluttspurt.md` | gjeldende plan: robusthetsreleasene, portene og docs-ryddingen |
 | `docs/arkiv/plan-v134-ai-swr.md` | utført plan for v1.3.4 (SWR + oppfrisker) |
-| `docs/arkiv/` (12 filer) | utførte planer + historikk — endres ikke |
+| `docs/arkiv/` (17 filer) | utførte planer + historikk (kun sti-referanser rettes ved rydding) |
 
 ## Senere / idéer (ikke planlagt)
 
@@ -328,7 +323,7 @@ Deploy-plan: `docs/arkiv/plan-deploy-v122-v123.md`._
 
 ### v1.2.3 — bonuskolonnen på /live (funn fra sjekkpunkt C)
 
-_Full analyse med rådata: `docs/sjekkpunkt-c-live.md`. Plan:
+_Full analyse med rådata: `docs/arkiv/sjekkpunkt-c-live.md`. Plan:
 `docs/arkiv/plan-live-bonus.md`. Deploy-plan:
 `docs/arkiv/plan-deploy-v122-v123.md`._
 
@@ -348,11 +343,11 @@ i poengsummen). BPS-estimatet beholdes for vinduet før FPL publiserer.
       siste henting 20:25:33, «Sist oppdatert» frøs der gjennom 5 min. Bonus:
       Ødegaard +3 «Bekreftet av FPL», Effektivt 11 (ikke 14); BPS-estimat virket
       under HUL–MUN; 0 dobbelttellinger av 1621 sampler. Se
-      `docs/sjekkpunkt-c-live.md` → «Resultat fra kampvinduet».
+      `docs/arkiv/sjekkpunkt-c-live.md` → «Resultat fra kampvinduet».
 
 ### v1.2.4 — AI-rådgiverens promptstruktur på /lag (B-2)
 
-_Plan: `docs/plan-v124-radgiver-prompt.md`._
+_Plan: `docs/arkiv/plan-v124-radgiver-prompt.md`._
 
 Rådgiver-prompten sendte kun navn, lag, posisjon, pris, form og motstander,
 så modellen kunne ikke skille «ingen data» (0 minutter) fra «dårlig form» —
@@ -377,7 +372,7 @@ kun fikk `form`, så siden og rådgiveren resonnerte fra ulike signaler.
 
 ### v1.2.5 — Brief-kvalitetstrioen
 
-_Plan: `docs/plan-v125-brief-kvalitet.md`._
+_Plan: `docs/arkiv/plan-v125-brief-kvalitet.md`._
 
 Tre funn fra sjekkpunkt A, samme filfamilie, tatt som én release. GW1-briefen
 skrev «Alle stiller i utgangspunktet friske» mens `injuries` inneholdt Bruno G.,

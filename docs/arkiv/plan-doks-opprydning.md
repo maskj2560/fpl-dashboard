@@ -17,7 +17,7 @@ HANDOVER slanket til ≤200 linjer.
 - `npm test` 250/250, `npm run lint` exit 0 (kjørt i planøkten).
 - Referanser utenfor filene som røres: kun `ROADMAP.md` (6 stier til
   `docs/plan-*`). README/DEPLOY/CHANGELOG refererer ingenting som flyttes.
-- Interne referanser som må rettes: `docs/sjekkpunkt-c-live.md:224`
+- Interne referanser som må rettes: `docs/arkiv/sjekkpunkt-c-live.md:224`
   (peker på `docs/plan-deploy-v122-v123.md` som arkiveres) og
   `docs/sjekkpunkt-d-kostnad.md:3` (peker på
   `docs/neste-okt-prompt-sesongstart.md` som slettes).

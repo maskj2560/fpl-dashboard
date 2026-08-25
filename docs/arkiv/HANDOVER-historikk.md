@@ -5,6 +5,24 @@
 > sjekkpunkt-tabellen, versjonshistorikken, utdaterte åpne punkter og hele
 > loggen over brukerbeskjeder til og med økt 22. Nyere logg: HANDOVER.md.
 
+## Rotert 2026-08-25 (økt 40): loggposter økt 36–37 (verbatim fra HANDOVER.md)
+
+- 2026-08-25 (økt 37, Fable): plan for resten av v1.3 oppdatert etter
+  incidenten; A/B/C besluttet (QA én gang på v1.3.4; helsesjekk alt. a med
+  b-fallback, Marius, før release; release ons 26. aug). Planfil:
+  `.claude/plans/du-er-planleggings-kten-fable-jiggly-iverson.md`.
+  Handling: docs-rettelser + release utføres av økt 38 (denne).
+- 2026-08-25 (økt 36, etter incidenten): Marius fikk prod opp igjen —
+  401-en var «HTTP Basic Authentication» slått på i Coolify, IKKE en
+  manglende Traefik-rute. Ba om planleggingsprompt til Fable som oppdaterer
+  HELE resten av v1.3 og som avslutter med en kopierbar kjøreprompt til Opus.
+  Handling: prompt levert i chatten (planlegging, ingen kode/commit).
+- 2026-08-25 (økt 36, Opus): kjøreprompt «utfør kø-punkt 2 (v1.3.4) og
+  ferdigstill hele v1.3». Rammer: utfør, ikke re-planlegg; 0 ekte AI-kall
+  (tomme nøkler lokalt); prod-/brief og /nyheter lastes aldri før v1.3.4 er
+  ute; aldri push uten klarsignal. Målerapporten levert først → klarsignal
+  «Kjør». Handling: Task 0–6 utført, 6 commits, 350/350, lint 0.
+
 ## Rotert 2026-08-24 (økt 32): v1.3.1-statusblokka (verbatim fra HANDOVER.md)
 
 - **v1.3.1 ETAPPE 2 FERDIG OG UTE (økt 32, Opus, 24. aug).** Task
@@ -82,7 +100,7 @@
 Status-blokk (sto under «Status akkurat nå»):
 
 - **v1.2.5 ferdig og ute (økt 29, Opus).** Hele
-  `docs/plan-v125-brief-kvalitet.md` (Task 0–6) utført, tag `v1.2.5`.
+  `docs/arkiv/plan-v125-brief-kvalitet.md` (Task 0–6) utført, tag `v1.2.5`.
   **2 AI-kall brukt av 2 budsjetterte.**
   - Tre endringer: (1) `globalCaptains` faller tilbake på `ep_next` når
     all form er 0 og slipper minutes-kravet før sesongens første kamp,
@@ -115,7 +133,7 @@ Loggpost (sto under «Logg over brukerbeskjeder»):
 
 - 2026-08-24 (økt 29, Opus): kjøreprompt «Oppdrag (Opus 5, utførelsesøkt):
   utfør v1.2.5 — brief-kvalitetstrioen» med `superpowers:executing-plans`
-  mot `docs/plan-v125-brief-kvalitet.md`. Harde rammer: Task 0–5 nå, Task 6
+  mot `docs/arkiv/plan-v125-brief-kvalitet.md`. Harde rammer: Task 0–5 nå, Task 6
   kun på eksplisitt klarsignal, aldri push uten klarsignal (heller ikke
   docs), aldri push to. 19–21 eller mens kamper pågår, maks 2 AI-kall
   (1 lokal E2E + 1 prod-retest), `/brief` og `/nyheter` aldri med ekte
@@ -151,12 +169,12 @@ Status-blokker (sto under «Status akkurat nå»):
 - Eldre: v1.2.3-deployen (22.–23. aug). Deploy-planen
   (port 0–10) ble ferdig utført 22.–23. aug; sjekkpunkt B, C og D er lukket,
   A har ett restpunkt (auto-brief-verifisering, kø-punkt 3). Bevis og
-  detaljer: `docs/sjekkpunkt-c-live.md`, `docs/sjekkpunkt-d-kostnad.md` og
+  detaljer: `docs/arkiv/sjekkpunkt-c-live.md`, `docs/sjekkpunkt-d-kostnad.md` og
   `docs/arkiv/HANDOVER-historikk.md`.
 - **Doks-opprydning utført (økt 24):** docs/-rot fra 30 til 7 filer,
   utførte planer i `docs/arkiv/`, 19 konsumerte økt-prompter slettet,
   ROADMAP omskrevet med prioritert kø, denne fila slanket til ≤200 linjer.
-  Plan: `docs/plan-doks-opprydning.md`.
+  Plan: `docs/arkiv/plan-doks-opprydning.md`.
 - **Versjonsplan lagt (økt 25):** ROADMAP har nå versjonsplan-tabell øverst
   (v1.2.4 → v1.2.5 → v1.3.0 → v1.3.1+, porter P1–P4 for sjekker/målinger)
   og et dokumentkart. Kun kodereleaser får versjonsnummer (Marius' valg).
@@ -172,7 +190,7 @@ Loggpost:
   mode (spørsmål ett sett om gangen, anbefaling først, Marius beslutter),
   plan så detaljert som mulig (kopierbar kode, eksakte testnavn/asserts,
   testtall rødt→grønt, verifiseringstabell) til
-  `docs/plan-v125-brief-kvalitet.md` for Opus 5, TDD, ingen nye
+  `docs/arkiv/plan-v125-brief-kvalitet.md` for Opus 5, TDD, ingen nye
   avhengigheter, egen branch, aldri push uten klarsignal, release som eget
   task på klarsignal, aldri push to. 19–21/under kamper, eksplisitt lavt
   AI-tak, /brief og /nyheter aldri med ekte nøkkel utenfor budsjettet,
@@ -195,7 +213,7 @@ Loggpost:
   prompter, arkiver utførte planer; (2) målstruktur 7 filer i docs/-rot +
   arkiv; (3) promptstruktur-fiksen øverst i køen, foran UI-overhalingen;
   (4) HANDOVER-tak 200 linjer med historikk til arkiv. Handling: hele
-  ryddeplanen utført (`docs/plan-doks-opprydning.md`), ROADMAP omskrevet
+  ryddeplanen utført (`docs/arkiv/plan-doks-opprydning.md`), ROADMAP omskrevet
   med prioritert kø, HANDOVER slanket, VIDERE og CLAUDE.md oppdatert.
   0 AI-kall, ingen kodeendringer.
 - 2026-08-23 (økt 23, natt ~01:30): «vil ha en Fable-prompt som planlegger
@@ -308,7 +326,7 @@ Loggpost:
     **11**, ikke 14. BPS-estimatet virket i vinduet før publisering
     (MUN-trioen `pts1/est2/eff3` under HUL–MUN). **0 dobbelttellinger av
     1621 sampler** (automatisk flagg på `effective > points + bonusEst`).
-    Full dokumentasjon: `docs/sjekkpunkt-c-live.md` → «Resultat fra
+    Full dokumentasjon: `docs/arkiv/sjekkpunkt-c-live.md` → «Resultat fra
     kampvinduet». Nettleserrapporten ligger i
     `~/Downloads/live-test-bre-tot-2026-08-22.md`.
   - **PORT 10 FULLFØRT:** `pre-deploy-main` slettet, ROADMAP-punktet
@@ -417,7 +435,7 @@ Loggpost:
 
 - **Sjekkpunkt C: polling GRØNT, ett funn på bonuskolonnen.** (økt 17,
   2026-08-21 ~22:10, observert av Marius via Claude in Chrome på prod under
-  Arsenal–Coventry.) Full analyse med rådata: `docs/sjekkpunkt-c-live.md`.
+  Arsenal–Coventry.) Full analyse med rådata: `docs/arkiv/sjekkpunkt-c-live.md`.
   - Polling: tre kall til `/api/live.json`, nøyaktig 60 s mellom hvert, ingen
     duplikater. Cachen tar støyten (5 raske curl → identisk payload, ~90 ms,
     `cf-cache-status: DYNAMIC`). Statustekst, pulseprikk og kampstillinger
@@ -702,7 +720,7 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 - 2026-08-21 (økt 17, kveld): limte inn sjekkpunkt C-observasjonene fra
   Claude in Chrome, avbrøt påbegynt implementering med «jeg ønsker bare at du
   oppdaterer all denne informasjonen i fil eller noe». Handling: alt skrevet
-  til `docs/sjekkpunkt-c-live.md` + ROADMAP/HANDOVER, committet `30a8dab`.
+  til `docs/arkiv/sjekkpunkt-c-live.md` + ROADMAP/HANDOVER, committet `30a8dab`.
   Ingen kode endret.
 - 2026-08-21 (økt 18): «les gjennom hele chatten og lag en solid plan …
   du skal planlegge. opus skal gjennomføre» (byttet til Fable). Handling:
@@ -884,7 +902,7 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
   flyttes til prompts.js). Underveis: «Gjør planen så detaljert som mulig
   … lag en lett kopierbar prompt til opus … Ikke lag en fil for det …
   oppdater alle filene du trenger.» Handling: plan skrevet og godkjent
-  (`docs/plan-v124-radgiver-prompt.md`), HANDOVER/ROADMAP oppdatert,
+  (`docs/arkiv/plan-v124-radgiver-prompt.md`), HANDOVER/ROADMAP oppdatert,
   Opus-prompt levert i chatten. 0 AI-kall, ingen kodeendringer, ingen push.
 - 2026-08-24 (økt 25): «Lag en full plan over alt filene i docs og alle
   planene dette prosjektet har … i hvilke steg … med versjonsnummer …
@@ -897,7 +915,7 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
 ## v1.2.4-detaljer (rotert fra HANDOVER 2026-08-24, økt 29)
 
 - **v1.2.4 ferdig og ute (økt 27, Opus).** Hele
-  `docs/plan-v124-radgiver-prompt.md` (Task 1–3) utført, tag `v1.2.4`,
+  `docs/arkiv/plan-v124-radgiver-prompt.md` (Task 1–3) utført, tag `v1.2.4`,
   `main` = `origin/main` = `14cd91b`. **2 AI-kall brukt av 2 budsjetterte.**
   - Rådgiver-prompten bygges nå i `buildAdvicePrompt` (prompts.js) fra
     strukturerte spillerobjekter; `api.js` er ren datainnsamler. Fullt
@@ -950,7 +968,7 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
   planleggingsprompt for v1.2.5 (brief-kvalitetstrioen) levert i chatten,
   ikke som fil. To åpne ryddepunkter meldt til Marius, ikke utført:
   lokal branch `fix/radgiver-prompt` står igjen, og
-  `docs/plan-v124-radgiver-prompt.md` bør arkiveres til `docs/arkiv/`.
+  `docs/arkiv/plan-v124-radgiver-prompt.md` bør arkiveres til `docs/arkiv/`.
 
 ## Rotert 2026-08-24 (økt 33): loggposten fra økt 32 (verbatim fra HANDOVER.md)
 

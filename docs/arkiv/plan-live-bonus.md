@@ -4,7 +4,7 @@
 
 Sjekkpunkt C avdekket TO feil på /live, begge med rotårsak verifisert mot
 prod-API-et (ikke gjettet). Full analyse med rådata:
-`docs/sjekkpunkt-c-live.md`.
+`docs/arkiv/sjekkpunkt-c-live.md`.
 
 **Funn 1 — bonuskolonnen står tom hele kampen** (21. aug ~22:10, observert
 av Marius via Claude in Chrome under Arsenal–Coventry): FPL publiserer bonus
@@ -123,7 +123,7 @@ commit som feltet.
 - Kolonneoverskrift i `views/live.ejs` endres fra «Bonus-est.» til «Bonus».
 
 Rendringen er utenfor testharnessen (dokumentert i
-`docs/sjekkpunkt-c-live.md`: `test/app-client.test.js` kjører skriptet i en
+`docs/arkiv/sjekkpunkt-c-live.md`: `test/app-client.test.js` kjører skriptet i en
 vm der DOM-elementene er `null`, så `render()` returnerer tidlig; tabellen
 fylles klientside så view-testene dekker den ikke). Verifiseres manuelt
 under neste kampvindu.

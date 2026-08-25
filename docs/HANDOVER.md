@@ -25,6 +25,9 @@
   ai:true discord:true leagues:1, footer `v1.3.4`.
   **P0-funnet er bekreftet fikset i prod:** klistret tabellhode har 76,7 px
   klaring til toppmenyen på 390 px og 14,6 px på 1440, likt i begge temaer.
+- **Docs ryddet + restløpet planlagt 25. aug (økt 39/40):** fire utførte
+  filer flyttet til `docs/arkiv/` (nå 17 filer), alle stier rettet.
+  Gjeldende plan for ALT som gjenstår: `docs/plan-sluttspurt.md`.
 - **Asset-hashen i prod er `d508c47f` — og det er RIKTIG.** Den skiftet ved
   v1.3.3 (`style.css` + `app.js`), ikke ved v1.3.4 (kun `src/`). `000fa6f3`
   var v1.3.2-hashen. Regn den fra git-blobbene, ikke arbeidstreet — Windows
@@ -53,8 +56,8 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 3. P2 `[Marius]` (kø 3): README-skjermbilder + mobil-QA. Her hører også
    Marius' gamle åpne boks hjemme: «Visuell sjekk mot mockupen i begge
    temaer» (Task 1.0-5).
-4. Robusthetskandidatene (kø 4), én og én etter avtale — nå med ryddig
-   avslutning (SIGTERM-handler) som nytt punkt.
+4. Robusthetsreleasene v1.3.5–v1.4.0 (kø 4) — alle besluttet 25. aug,
+   detaljene i `docs/plan-sluttspurt.md`.
 **P1 er LUKKET 25. aug** (auto-briefen bekreftet i Discord), og dermed er
 sjekkpunkt A ferdig i sin helhet.
 
@@ -169,6 +172,12 @@ sjekkpunkt A ferdig i sin helhet.
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
+- 2026-08-25 (økt 39 Fable + økt 40 Opus): planøkt «sluttspurten». Marius
+  besluttet: alle fire robusthetskandidatene bygges (v1.3.5 SIGTERM →
+  v1.3.6 gameUpdating → v1.3.7 brief-markør → etter P4: v1.3.8 genitiv +
+  v1.4.0 alderstak/dataAlder), promptendringen i filterSummaryPoints
+  droppet, volum `/app/data` i Coolify, port9 + tre utførte filer
+  arkivert. Plan: `docs/plan-sluttspurt.md`. Handling: Task 0 utført.
 - 2026-08-25 (økt 38, Opus): kjøreprompt «ferdigstill v1.3.4-releasen +
   samlet prod-QA» etter planøkt 37. Rammer: 0 ekte AI-kall, prod-`/brief`
   og `/nyheter` røres ikke før v1.3.4 er ute, aldri push uten klarsignal.
@@ -179,20 +188,5 @@ sjekkpunkt A ferdig i sin helhet.
   pushet, prod-verifisert og QA-et: **402 sjekker, 0 feil**. Task 0–6
   fullført; hele v1.3 er dermed ute. Til slutt sendte Marius skjermbilde av
   auto-briefen fra 20. aug 19:30 i Discord → **P1 lukket**.
-- 2026-08-25 (økt 37, Fable): plan for resten av v1.3 oppdatert etter
-  incidenten; A/B/C besluttet (QA én gang på v1.3.4; helsesjekk alt. a med
-  b-fallback, Marius, før release; release ons 26. aug). Planfil:
-  `.claude/plans/du-er-planleggings-kten-fable-jiggly-iverson.md`.
-  Handling: docs-rettelser + release utføres av økt 38 (denne).
-- 2026-08-25 (økt 36, etter incidenten): Marius fikk prod opp igjen —
-  401-en var «HTTP Basic Authentication» slått på i Coolify, IKKE en
-  manglende Traefik-rute. Ba om planleggingsprompt til Fable som oppdaterer
-  HELE resten av v1.3 og som avslutter med en kopierbar kjøreprompt til Opus.
-  Handling: prompt levert i chatten (planlegging, ingen kode/commit).
-- 2026-08-25 (økt 36, Opus): kjøreprompt «utfør kø-punkt 2 (v1.3.4) og
-  ferdigstill hele v1.3». Rammer: utfør, ikke re-planlegg; 0 ekte AI-kall
-  (tomme nøkler lokalt); prod-/brief og /nyheter lastes aldri før v1.3.4 er
-  ute; aldri push uten klarsignal. Målerapporten levert først → klarsignal
-  «Kjør». Handling: Task 0–6 utført, 6 commits, 350/350, lint 0.
-- Loggposter fra økt 22–35: rotert til `docs/arkiv/HANDOVER-historikk.md`
+- Loggposter fra økt 22–37: rotert til `docs/arkiv/HANDOVER-historikk.md`
   (200-linjerstaket, sist 2026-08-25).

@@ -6,7 +6,7 @@ data av seg selv når siste kamp er over. Serversiden logges parallelt av
 samplerern (`port9-sampler.sh`).
 
 Resultatet føres inn under «Resultat fra kampvinduet» i
-`docs/sjekkpunkt-c-live.md`.
+`docs/arkiv/sjekkpunkt-c-live.md`.
 
 **Hvorfor «Sist oppdatert» brukes som måleinstrument:** `public/app.js:243`
 skriver `new Date()` ved hver render, og render kalles kun etter en vellykket

@@ -6,7 +6,7 @@
 > `superpowers:executing-plans` — utfør taskene i rekkefølge, følg planen
 > nøyaktig, avvik rapporteres eksplisitt. Steg bruker checkbox-syntaks for
 > sporing. Etter godkjenning kopieres planen til
-> `docs/plan-v124-radgiver-prompt.md` (Fable-øktens egne steg, nederst).
+> `docs/arkiv/plan-v124-radgiver-prompt.md` (Fable-øktens egne steg, nederst).
 
 **Mål:** Rådgiver-prompten (/lag → «Spør AI om råd») skal sende fullt
 datagrunnlag per spiller (form, `ep_next`, minutter, totalpoeng, skadestatus)
@@ -485,7 +485,7 @@ sanitize-testene, urørte og grønne.)
     promptstruktur på /lag (v1.2.4)» med kort status + sjekkliste:
 
     ```markdown
-    _Plan: `docs/plan-v124-radgiver-prompt.md`. På branch
+    _Plan: `docs/arkiv/plan-v124-radgiver-prompt.md`. På branch
     `fix/radgiver-prompt` — release etter klarsignal fra Marius._
 
     - [x] Fullt datagrunnlag + strukturert prompt + sidens beregninger (TDD, 6 nye tester)
@@ -632,20 +632,20 @@ git push origin main --follow-tags
 
 ## Etter godkjenning (Fable-øktens egne steg — ikke Opus)
 
-1. Kopier denne planen uendret til `docs/plan-v124-radgiver-prompt.md`.
+1. Kopier denne planen uendret til `docs/arkiv/plan-v124-radgiver-prompt.md`.
 2. Oppdater `docs/HANDOVER.md`: «Sist oppdatert»-linja, status-punktet om
    v1.2.4 (fra «Ikke påbegynt» til «plan klar og godkjent — neste:
    utførelsesøkt med Opus»), og loggfør Marius' to beskjeder fra planøkten
    (kjøreprompten + «gjør planen så detaljert som mulig, kopierbar
    Opus-prompt i chatten, ikke fil»).
 3. Oppdater `ROADMAP.md` kø-punkt 1: «Eier detaljene:
-   `docs/plan-v124-radgiver-prompt.md` (godkjent 24. aug)» i stedet for
+   `docs/arkiv/plan-v124-radgiver-prompt.md` (godkjent 24. aug)» i stedet for
    «plan mangler».
 4. Commit docs lokalt på `main` (`docs: plan for v1.2.4 radgiver-prompt`)
    — **ingen push**.
 5. Lever den kopierbare Opus-utførelsesprompten **i chatten, IKKE som fil**
    (Marius' beslutning 24. aug). Prompten skal peke på
-   `docs/plan-v124-radgiver-prompt.md`, kreve `superpowers:executing-plans`,
+   `docs/arkiv/plan-v124-radgiver-prompt.md`, kreve `superpowers:executing-plans`,
    lesing av `docs/HANDOVER.md` + `CLAUDE.md` først, checkbox-sporing i
    plandokumentet, og gjenta de harde rammene (aldri push uten klarsignal,
    Task 3 kun på klarsignal, maks 2 AI-kall, aldri /brief //nyheter med ekte
