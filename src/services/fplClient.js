@@ -12,10 +12,20 @@ const RETRY_DELAYS = [500, 1500];
 
 // Settes ved 503 «The game is being updated» — views viser da et banner.
 // Stale data serveres videre fra cachen (SWR), så siden krasjer ikke.
-let gameUpdating = false;
+// Tidsstemplet: banneret slukkes automatisk UPDATING_TTL_MS etter siste 503
+// selv om ingen kall lykkes i mellomtiden (før kunne det henge til neste
+// vellykkede henting, i praksis 15 min), og enhver suksess nullstiller det.
+const UPDATING_TTL_MS = 5 * 60_000;
+let updatingSince = null;
+let now = () => Date.now();
 
 export function isGameUpdating() {
-  return gameUpdating;
+  return updatingSince != null && now() - updatingSince < UPDATING_TTL_MS;
+}
+
+/** Overstyrer klokken (for tester). null = tilbake til Date.now. */
+export function _setNow(fn) {
+  now = fn ?? (() => Date.now());
 }
 
 export class FplError extends Error {
@@ -43,7 +53,7 @@ async function fplFetch(path) {
 
       if (res.status === 503) {
         // «The game is being updated» — løser seg ikke på sekunder, ikke retry.
-        gameUpdating = true;
+        updatingSince = now();
         throw new FplError('FPL-API-et oppdateres (503)', 503, { retryable: false });
       }
       if (res.status === 404) {
@@ -54,7 +64,7 @@ async function fplFetch(path) {
       }
 
       const data = await res.json();
-      gameUpdating = false;
+      updatingSince = null;
       return data;
     } catch (err) {
       if (err instanceof FplError && !err.retryable) throw err;

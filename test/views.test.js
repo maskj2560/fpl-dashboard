@@ -37,7 +37,8 @@ const cases = [
   ['transfers', fx.transfersPending, 'Venter på runde 2'],
   ['no-team', {}, 'FPL_TEAM_ID'],
   ['404', {}, '404'],
-  ['error', {}, 'Noe gikk galt'],
+  ['error', { code: 500, heading: 'Noe gikk galt', message: null }, 'Noe gikk galt'],
+  ['error', { code: 503, heading: 'FPL oppdaterer spillet', message: 'Prøv igjen om noen minutter.' }, 'FPL oppdaterer spillet'],
 ];
 
 let n = 0;
@@ -290,7 +291,10 @@ test('dashboard.ejs: heroen har rundeetikett, deadline-dato og nedtelling med da
 
 test('feilsidene (404, error, no-team) bruker empty-state og lenker tilbake til dashbordet', async () => {
   for (const name of ['404', 'error', 'no-team']) {
-    const html = await renderView(name, {});
+    const locals = name === 'error'
+      ? { code: 500, heading: 'Noe gikk galt', message: null }
+      : {};
+    const html = await renderView(name, locals);
     assert.ok(html.includes('class="empty-state"'), `${name}: mangler empty-state`);
     assert.match(html, /href="\/"[^>]*class="btn-link"/, `${name}: mangler knappelenke til /`);
   }

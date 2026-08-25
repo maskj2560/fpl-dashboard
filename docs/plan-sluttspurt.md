@@ -415,7 +415,7 @@ process.on('SIGINT', () => shutdown('SIGINT'));
   `fix: ryddig avslutning ved SIGTERM/SIGINT (v1.3.5)`, merge `--no-ff` til
   main, tag `v1.3.5`. **STOPP → rapport til Marius, vent på «push».**
   Push deployer Task 0 + Task 1 sammen (én deploy).
-- [ ] **Step 8: Prod-verifisering etter push:** footer viser `v1.3.5`,
+- [x] **Step 8: Prod-verifisering etter push:** footer viser `v1.3.5`,
   `/health` 200. (Det ENDELIGE beviset — graceful shutdown i drift — kommer
   automatisk ved NESTE deploy, se Task 2 Step 8. Alternativt kan Marius
   kjøre `kill 1` i containerterminalen: loggen skal vise de to
@@ -444,7 +444,7 @@ Testene må ikke kalle den ekte `process.exit` (alltid injiser `exit`).
 - `createErrorHandler` beholder signaturen; `error.ejs` får locals
   `{ code, heading, message }` (alltid satt av feilhandleren).
 
-- [ ] **Step 1: Feilende tester** i `test/fplClient.test.js` (bruk samme
+- [x] **Step 1: Feilende tester** i `test/fplClient.test.js` (bruk samme
   mockFetch/jsonResponse-hjelpere som filas eksisterende 503-test):
 
 ```js
@@ -480,8 +480,8 @@ test('suksess nullstiller gameUpdating med en gang', async () => {
   igjen om noen minutter.' }`; HTML-forespørsel får status 503 og siden
   inneholder «FPL oppdaterer spillet»; vanlig feil gir fortsatt 500.
 
-- [ ] **Step 2:** `npm test` → FAIL
-- [ ] **Step 3: Implementer.** `fplClient.js`:
+- [x] **Step 2:** `npm test` → FAIL
+- [x] **Step 3: Implementer.** `fplClient.js`:
 
 ```js
 // Settes ved 503 «The game is being updated». Tidsstemplet: banneret slukkes
@@ -553,11 +553,11 @@ return (err, req, res, next) => {
   locals (den rendrer i dag med `{}` — det vil nå kaste; send
   `{ code: 500, heading: 'Noe gikk galt', message: null }`).
 
-- [ ] **Step 4:** `npm test` → ~359/359, `npm run lint` → 0
-- [ ] **Step 5: Lokal røyktest** (tomme nøkler): alle 11 ruter 200, ukjent
+- [x] **Step 4:** `npm test` → ~359/359, `npm run lint` → 0
+- [x] **Step 5: Lokal røyktest** (tomme nøkler): alle 11 ruter 200, ukjent
   sti 404. (503-stien er dekket av testene — ikke prøv å fremprovosere den
   mot ekte FPL.)
-- [ ] **Step 6: Docs i samme commit** — `package.json` `1.3.6`; CHANGELOG:
+- [x] **Step 6: Docs i samme commit** — `package.json` `1.3.6`; CHANGELOG:
 
 ```
 ## [1.3.6] - 2026-08-XX
@@ -575,7 +575,7 @@ return (err, req, res, next) => {
   ROADMAP: huk av + stryk rad (mønster fra Task 1). CLAUDE.md
   FPL-API-punktet om 503 utvides med «flagget utløper av seg selv etter
   5 min». HANDOVER: status + logg.
-- [ ] **Step 7:** Branch `fix/game-updating-v136`, commit
+- [x] **Step 7:** Branch `fix/game-updating-v136`, commit
   `fix: tidsstemplet gameUpdating-flagg og forklarende 503-side (v1.3.6)`,
   merge `--no-ff`, tag `v1.3.6`. **STOPP → vent på «push».**
 - [ ] **Step 8: Prod-verifisering:** footer `v1.3.6`, `/health` 200 — og

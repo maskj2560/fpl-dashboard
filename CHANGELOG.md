@@ -7,6 +7,17 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.3.6] - 2026-08-25
+
+### Fixed
+
+- «FPL oppdaterer spillet»-banneret kan ikke lenger bli hengende: det
+  slukkes automatisk fem minutter etter siste 503 fra FPL, i tillegg til
+  ved første vellykkede svar.
+- Åpnes siden mens FPL oppdaterer spillet og ingenting ligger i cachen,
+  vises en forklarende side med råd om å prøve igjen — ikke en generisk
+  feilside. `/api/*` svarer 503 med egen feilmelding i samme situasjon.
+
 ## [1.3.5] - 2026-08-25
 
 ### Fixed

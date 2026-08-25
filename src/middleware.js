@@ -35,16 +35,30 @@ function wantsJson(req) {
 export function createErrorHandler({ version, assetVersion, startedAt }) {
   // eslint-disable-next-line no-unused-vars -- Express krever 4 argumenter for feil-middleware
   return (err, req, res, next) => {
-    console.error('Uventet feil:', err);
+    // FPLs oppdateringsvindu er en normal driftstilstand, ikke en feil hos
+    // oss — den skal verken logge stacktrace eller vise den generiske siden.
+    const updating = err?.status === 503;
+    if (!updating) console.error('Uventet feil:', err);
     if (res.headersSent) return;
 
     if (wantsJson(req)) {
-      res.status(500).json({ error: 'Noe gikk galt.' });
+      res.status(updating ? 503 : 500).json({
+        error: updating
+          ? 'FPL-API-et oppdateres — prøv igjen om noen minutter.'
+          : 'Noe gikk galt.',
+      });
       return;
     }
 
-    res.status(500);
-    res.render('error', {}, (renderErr, body) => {
+    res.status(updating ? 503 : 500);
+    const locals = updating
+      ? {
+          code: 503,
+          heading: 'FPL oppdaterer spillet',
+          message: 'Dataene er ikke tilgjengelige riktig ennå — prøv igjen om noen minutter.',
+        }
+      : { code: 500, heading: 'Noe gikk galt', message: null };
+    res.render('error', locals, (renderErr, body) => {
       if (renderErr) return res.type('text/plain').send('Noe gikk galt.');
       res.render(
         'layout',

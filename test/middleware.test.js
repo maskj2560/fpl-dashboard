@@ -44,6 +44,7 @@ function fakeRes() {
     headersSent: false,
     body: null,
     rendered: null,
+    renderCalls: [],
     status(code) {
       res.statusCode = code;
       return res;
@@ -61,6 +62,7 @@ function fakeRes() {
     },
     render(view, locals, cb) {
       res.rendered = view;
+      res.renderCalls.push({ view, locals });
       cb(null, `<${view}>`);
     },
   };
@@ -156,4 +158,48 @@ test('createShutdown tvinger avslutning når forbindelser henger', (t) => {
   handler('SIGTERM');
   t.mock.timers.tick(10_000);
   assert.deepEqual(exits, [1]);
+});
+
+// ---- v1.3.6: FPLs oppdateringsvindu får sin egen 503-side ----------------
+
+function updatingError() {
+  const err = new Error('FPL-API-et oppdateres (503)');
+  err.status = 503;
+  return err;
+}
+
+test('503 fra FPL gir 503 og egen feilmelding på /api-sti', () => {
+  const res = fakeRes();
+  handler(updatingError(), { path: '/', originalUrl: '/api/brief.json' }, res, () => {});
+  assert.equal(res.statusCode, 503);
+  assert.deepEqual(res.body, {
+    error: 'FPL-API-et oppdateres — prøv igjen om noen minutter.',
+  });
+});
+
+test('503 fra FPL gir 503 og forklarende side i nettleseren', () => {
+  const res = fakeRes();
+  handler(updatingError(), { path: '/', originalUrl: '/' }, res, () => {});
+  assert.equal(res.statusCode, 503);
+  const errorView = res.renderCalls.find((c) => c.view === 'error');
+  assert.ok(errorView, 'error-viewet ble ikke rendret');
+  assert.equal(errorView.locals.code, 503);
+  assert.equal(errorView.locals.heading, 'FPL oppdaterer spillet');
+  assert.match(errorView.locals.message, /prøv igjen om noen minutter/);
+});
+
+test('en vanlig feil gir fortsatt 500 og den generiske feilsiden', () => {
+  const res = fakeRes();
+  const originalError = console.error;
+  console.error = quiet;
+  try {
+    handler(new Error('boom'), { path: '/', originalUrl: '/' }, res, () => {});
+  } finally {
+    console.error = originalError;
+  }
+  assert.equal(res.statusCode, 500);
+  const errorView = res.renderCalls.find((c) => c.view === 'error');
+  assert.equal(errorView.locals.code, 500);
+  assert.equal(errorView.locals.heading, 'Noe gikk galt');
+  assert.equal(errorView.locals.message, null);
 });
