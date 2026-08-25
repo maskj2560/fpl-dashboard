@@ -26,7 +26,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.3.1**~~ | ~~UI-overhaling, etappe 2: klubbgrafikk (merker + drakter, selvhostet)~~ | **utført 24. aug** | — |
 | ~~**v1.3.2**~~ | ~~UI-overhaling, etappe 3: finpuss per side~~ | **utført 24. aug** | — |
 | ~~**v1.3.3**~~ | ~~UI-overhaling, etappe 4: QA-rettelser~~ | **kode utført 24. aug — QA kjøres samlet på v1.3.4, se kø-punkt 2** | — |
-| **v1.3.4** | Ingen ventetid på AI-tekst: SWR + bakgrunnsoppfriskning | 2 | **kode utført 25. aug — release ons 26. aug + samlet prod-QA** |
+| **v1.3.4** | Ingen ventetid på AI-tekst: SWR + bakgrunnsoppfriskning | 2 | **release klargjort (merge + tag lokalt) — venter på helsesjekk-bevis + klarsignal** |
 | **v1.3.1+** | Robusthetskandidatene, én og én etter avtale | 7 | avtale per punkt |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
@@ -60,11 +60,14 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
 
 ### 2. (v1.3.4) Release + prod-verifisering + hele QA-en i ett
 
-- **Status:** koden FERDIG 25. aug på `feat/ai-swr-v134` (upushet):
+- **Status:** koden FERDIG 25. aug på `feat/ai-swr-v134`:
   350/350, lint 0, målt med fake klient: kald `/brief` 10 023 ms →
   17 ms, forsiden 10 038 ms → 35 ms, 0 AI-kall fra sidevisninger.
   Design og takt: `docs/plan-v134-ai-swr.md` (~41–45 kall/uke,
-  godkjent — ikke re-planlegg).
+  godkjent — ikke re-planlegg). **Releasen er klargjort lokalt**
+  (1.3.4 i `package.json`, CHANGELOG flyttet til `[1.3.4] - 2026-08-26`,
+  merge `--no-ff` til `main` + tag `v1.3.4`) — **ingenting pushet.**
+  Pushen venter på helsesjekk-beviset (kø-punkt 1) og Marius' klarsignal.
 - **Gjenstår, i rekkefølge:** (1) docs-rettelser etter incidenten,
   (2) versjonbump 1.3.4 + CHANGELOG-flytt, (3) merge `--no-ff` + tag,
   (4) push KUN på klarsignal — onsdag 26. aug, aldri to 19–21, aldri

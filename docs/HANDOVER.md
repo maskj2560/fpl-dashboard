@@ -6,12 +6,17 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-25 (økt 38, Opus: v1.3.4 klar for release)
+**Sist oppdatert:** 2026-08-25 (økt 38, Opus: v1.3.4 klargjort, venter på push)
 
 ## Status akkurat nå
 
-- **v1.3.4 KODEFERDIG (økt 36, Opus), branch `feat/ai-swr-v134`, upushet:
-  350/350, lint 0** (baseline 322). Plan: `docs/plan-v134-ai-swr.md`.
+- **v1.3.4 KLARGJORT FOR RELEASE (økt 38), ingenting pushet:
+  350/350, lint 0** (baseline 322). `package.json` = 1.3.4, CHANGELOG
+  flyttet til `[1.3.4] - 2026-08-26`, merge `--no-ff` av
+  `feat/ai-swr-v134` til `main` + tag `v1.3.4` gjort LOKALT.
+  **Pushen er sperret** til (a) helsesjekk-beviset i kø-punkt 1 er grønt og
+  (b) Marius sier «push» — i vinduet ons 26. aug (reserve tor 27. før
+  19:00), aldri to 19–21, aldri under kamper. Plan: `docs/plan-v134-ai-swr.md`.
   Rotårsaken ble MÅLT, ikke gjettet — med fake Claude-klient (10 s
   forsinkelse) falt KALD `/brief` fra **10 023 ms → 17 ms** og forsiden fra
   **10 038 ms → 35 ms**, og **0 AI-kall utløses av sidevisninger** i noen
@@ -27,14 +32,10 @@
   11 ruter 200 + 404, Playwright 332 + 22 + 56, 0 AI-kall. Prod-
   verifiseringen (plan-steg 8 og 9 i `docs/arkiv/plan-v133-qa.md`) er
   IKKE utført — den kjøres ÉN gang mot prod på v1.3.4, se kø-punkt 2.
-- **v1.3.2 (etappe 3) RELEASET 24. aug (økt 33):** finpuss per side +
-  kontraktstester for markupen `app.js` avhenger av. 299/299, lint 0.
-  Detaljene (inkl. de manuelt målte pillekontrastene) er rotert til
-  `docs/arkiv/HANDOVER-historikk.md`.
-- **v1.3.1 og v1.3.0 (etappe 2 og 1) ute siden 24. aug:** klubbgrafikk
-  (`clubAssets.js`, `IMG_VERSION`, `npm run fetch-clubs`, 60 bildefiler)
-  og tokenpaletten i to temaer med temabryter. Detaljene er rotert til
-  `docs/arkiv/HANDOVER-historikk.md`.
+- **v1.3.0–v1.3.2 (etappe 1–3) ute siden 24. aug:** tokenpalett i to temaer
+  med temabryter, klubbgrafikk (`clubAssets.js`, `IMG_VERSION`,
+  `npm run fetch-clubs`, 60 bildefiler) og finpuss per side. Detaljene er
+  rotert til `docs/arkiv/HANDOVER-historikk.md`.
 - **Plan for UI-overhalingen:** `docs/arkiv/plan-v130-ui-overhaul.md` (etappe 1–3,
   godkjent 24. aug) + `docs/arkiv/plan-v133-qa.md` (etappe 4). Mockup:
   https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849
@@ -47,10 +48,10 @@
   v1.3.3 er sett kjøre, men aldri QA-et.
 - Kostnad målt 23. aug: **$0,94/uke** — under terskelen, ingen tiltak. Ny
   måling i uken etter 31. aug (prisskiftet), se kø-punkt 3.
-- **Git akkurat nå:** arbeidstreet står på **`feat/ai-swr-v134`** (rent,
-  v1.3.4-koden). `main` ligger **2 docs-commits foran `origin/main`**
-  (kjent og riktig — de blir med i release-pushen); siste pushede tag er
-  `v1.3.3` (`edc372b`).
+- **Git akkurat nå:** `main` har v1.3.4 merget inn (`--no-ff`) og tag
+  `v1.3.4` satt, men ligger **upushet foran `origin/main`** (de 2 gamle
+  docs-commitene + docs-rettelsene fra økt 38 + release-merge). Siste
+  PUSHEDE tag er `v1.3.3` (`edc372b`) — det er fortsatt den prod kjører.
 - Eldre status (v1.2.3, doks-opprydning, versjonsplan, v1.2.4): arkivert.
 
 ## Åpne punkter

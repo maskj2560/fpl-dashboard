@@ -7,6 +7,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.3.4] - 2026-08-26
+
 ### Added
 
 - Serveren frisker opp AI-tekstene selv, på klokka: rundebriefen én gang i
