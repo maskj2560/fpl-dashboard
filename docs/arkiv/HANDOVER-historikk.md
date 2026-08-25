@@ -1135,3 +1135,12 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
   (4) rådgiveren `swr: true` + kildekontrakt i `test/routes.test.js`
   ✅ 339/339, (5) `refresh.js` + `startAiRefresher()` i `server.js`
   ✅ **350/350, lint 0** (baseline 322).
+
+## Rotert 2026-08-25 (økt 38): loggposten fra økt 35 (verbatim fra HANDOVER.md)
+
+- 2026-08-24 (økt 35, Fable): Marius sendte kø-punkt 2-oppdraget hit for
+  planlegging + kjøreprompt til Opus som også ferdigstiller HELE v1.3.
+  Rotårsak bekreftet i kode: `ai.js:39-44` blokkerer også FORSIDEN
+  (`routes/index.js:26-30` awaiter `getNews()`). Beslutning: deadlinevindu
+  **6 timer** → ~41–45 kall/uke. Handling: takt-porten i ROADMAP lukket,
+  kjøreprompt levert; utførelsesøkten skriver `docs/plan-v134-ai-swr.md`.

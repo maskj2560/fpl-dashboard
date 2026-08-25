@@ -174,6 +174,12 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
+- 2026-08-25 (økt 38, Opus): kjøreprompt «ferdigstill v1.3.4-releasen +
+  samlet prod-QA» etter planøkt 37. Rammer: 0 ekte AI-kall, prod-`/brief`
+  og `/nyheter` røres ikke før v1.3.4 er ute, aldri push uten klarsignal.
+  Handling: Task 1 (docs-rettelser, 3 commits) + Task 3a–e (1.3.4,
+  CHANGELOG-flytt, merge `--no-ff` + tag lokalt), 350/350 + lint 0.
+  **Stoppet før push** — venter på helsesjekk-beviset (Task 2) + «push».
 - 2026-08-25 (økt 37, Fable): plan for resten av v1.3 oppdatert etter
   incidenten; A/B/C besluttet (QA én gang på v1.3.4; helsesjekk alt. a med
   b-fallback, Marius, før release; release ons 26. aug). Planfil:
@@ -189,11 +195,5 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
   (tomme nøkler lokalt); prod-/brief og /nyheter lastes aldri før v1.3.4 er
   ute; aldri push uten klarsignal. Målerapporten levert først → klarsignal
   «Kjør». Handling: Task 0–6 utført, 6 commits, 350/350, lint 0.
-- 2026-08-24 (økt 35, Fable): Marius sendte kø-punkt 2-oppdraget hit for
-  planlegging + kjøreprompt til Opus som også ferdigstiller HELE v1.3.
-  Rotårsak bekreftet i kode: `ai.js:39-44` blokkerer også FORSIDEN
-  (`routes/index.js:26-30` awaiter `getNews()`). Beslutning: deadlinevindu
-  **6 timer** → ~41–45 kall/uke. Handling: takt-porten i ROADMAP lukket,
-  kjøreprompt levert; utførelsesøkten skriver `docs/plan-v134-ai-swr.md`.
-- Loggposter fra økt 22–34: rotert til `docs/arkiv/HANDOVER-historikk.md`
+- Loggposter fra økt 22–35: rotert til `docs/arkiv/HANDOVER-historikk.md`
   (200-linjerstaket, sist 2026-08-25).
