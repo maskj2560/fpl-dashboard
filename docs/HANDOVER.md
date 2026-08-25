@@ -14,17 +14,13 @@
   350/350, lint 0** (baseline 322). `package.json` = 1.3.4, CHANGELOG
   flyttet til `[1.3.4] - 2026-08-26`, merge `--no-ff` av
   `feat/ai-swr-v134` til `main` + tag `v1.3.4` gjort LOKALT.
-  **Pushen er sperret** til (a) helsesjekk-beviset i kø-punkt 1 er grønt og
-  (b) Marius sier «push» — i vinduet ons 26. aug (reserve tor 27. før
-  19:00), aldri to 19–21, aldri under kamper. Plan: `docs/plan-v134-ai-swr.md`.
-  Rotårsaken ble MÅLT, ikke gjettet — med fake Claude-klient (10 s
-  forsinkelse) falt KALD `/brief` fra **10 023 ms → 17 ms** og forsiden fra
-  **10 038 ms → 35 ms**, og **0 AI-kall utløses av sidevisninger** i noen
-  cachetilstand. `refresh._tick()` varmer begge tekstene (2 kall ved
-  oppstart), andre tikk 0. Rådgiverklikket venter kun på helt kald cache
-  (10 150 ms — som avtalt), fersk 2 ms, stale 1 ms + fornying i bakgrunnen.
-  Fulle før/etter-tall og delfunksjon-for-delfunksjon-loggen:
-  `docs/arkiv/HANDOVER-historikk.md`.
+  **Pushen venter kun på Marius' «push»** — helsesjekken ble lukket 25. aug.
+  Vindu: ons 26. aug (reserve tor 27. før 19:00), aldri to 19–21, aldri
+  under kamper. Plan: `docs/plan-v134-ai-swr.md`.
+  MÅLT (fake klient, 10 s forsinkelse): KALD `/brief` **10 023 → 17 ms**,
+  forsiden **10 038 → 35 ms**, **0 AI-kall fra sidevisninger** i alle
+  cachetilstander; `refresh._tick()` varmer begge tekstene (2 kall ved
+  oppstart), andre tikk 0. Fulle før/etter-tall: `docs/arkiv/HANDOVER-historikk.md`.
 
 - **v1.3.3 (ETAPPE 4): kode og git FERDIG 24. aug, prod-QA gjenstår.**
   `main` = `origin/main` = `edc372b` (merge `--no-ff` av `fix/ui-v133-qa`),
@@ -39,13 +35,11 @@
 - **Plan for UI-overhalingen:** `docs/arkiv/plan-v130-ui-overhaul.md` (etappe 1–3,
   godkjent 24. aug) + `docs/arkiv/plan-v133-qa.md` (etappe 4). Mockup:
   https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849
-- **Prod er OPPE igjen siden 25. aug.** Marius fjernet «HTTP Basic
-  Authentication»-haken i Coolify + Redeploy; 401-en forsvant. Prod kjører
-  **v1.3.3** (image bygget fra `1082833`, samme `src/` som `edc372b`),
-  `/health` → `ai:true, discord:true, leagues:1`. Siste bekreftet grønne
-  prod-VERIFISERING er fortsatt v1.3.2, 24. aug 13:22 (footer `v1.3.2`,
-  assets `?v=000fa6f3`, 9 ruter 200 + 404, Playwright 240/240 + 14/14) —
-  v1.3.3 er sett kjøre, men aldri QA-et.
+- **Prod er OPPE igjen siden 25. aug** (Marius fjernet «HTTP Basic
+  Authentication»-haken + Redeploy). Kjører **v1.3.3**, `/health` →
+  `ai:true, discord:true, leagues:1` (bekreftet på nytt 25. aug 02:28).
+  Siste grønne prod-VERIFISERING er fortsatt v1.3.2 24. aug 13:22 — v1.3.3
+  er sett kjøre, men aldri QA-et.
 - Kostnad målt 23. aug: **$0,94/uke** — under terskelen, ingen tiltak. Ny
   måling i uken etter 31. aug (prisskiftet), se kø-punkt 3.
 - **Git akkurat nå:** `main` har v1.3.4 merget inn (`--no-ff`) og tag
@@ -58,9 +52,8 @@
 
 Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 
-1. **P0 `[Marius]`: Coolify-helsesjekken er en no-op — slå av Coolifys
-   egen sjekk (Dockerfilens HEALTHCHECK gjelder) + bevis.** Blokkerer
-   pushen i kø-punkt 2: deploy-signalet må være til å stole på først.
+1. **v1.3.4: alt klart, venter kun på Marius' «push»** (kø-punkt 2).
+   P0-helsesjekken er lukket 25. aug — alternativ a står aktivt.
 2. P4: kostnadsmåling uken etter 31. aug (metode i `docs/sjekkpunkt-d-kostnad.md`).
 3. P1 `[Marius]`: bekreft auto-briefen 20. aug i Discord-kanalen.
 4. P3: etter GW2, transfers-skjema mot ekte data + `/overganger` på mobil.
@@ -80,12 +73,19 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
   normalt 404, ikke 401. Redeploy hjelper ikke (tre forsøk 24. aug);
   fjern haken + Redeploy løste det (25. aug). Routeren pekte riktig på
   port 3000 hele tiden.
-- **Coolifys «Running (healthy)» er ikke bevis på at appen svarer.**
-  Coolifys egen HTTP-helsesjekk overstyrer Dockerfilens HEALTHCHECK,
-  og kommandoen brukte `curl` som ikke finnes i `node:22-alpine`:
-  `Healthcheck logs: /bin/sh: curl: not found | Return code: 0` →
-  «New container is healthy» — gjennom hele perioden prod svarte 401
-  på alt. Fiks + bevis-krav: ROADMAP kø-punkt 1 og DEPLOY.md.
+- **Coolifys «Running (healthy)» sier bare at appen svarer INNE i
+  containeren.** Coolifys egen HTTP-sjekk overstyrer Dockerfilens
+  HEALTHCHECK, og den genererte kommandoen brukte `curl`, som ikke finnes i
+  `node:22-alpine`: `curl: not found | Return code: 0` → «healthy» mens prod
+  svarte 401 på alt. Fikset 25. aug (Coolifys sjekk AV). **MEN:** også den
+  riktige sjekken kaller `localhost:3000` utenom Traefik — den ville meldt
+  «healthy» gjennom hele 401-incidenten også. «Prod svarer rart» feilsøkes
+  ALLTID utenfra først. Detaljer + bevis-krav: DEPLOY.md.
+- **`kill 1` stopper ikke appen i containeren** (målt 25. aug: null effekt,
+  containeren restartet aldri). PID 1 i et container-namespace mottar kun
+  signaler den har egen handler for, og appen har ingen SIGTERM-handler.
+  Trygg måte å teste helsesjekken på: `docker pause` + `docker unpause`.
+  Aldri `docker stop`/`kill` på prod — `unless-stopped` lar den bli nede.
 - **Sjekk at fila ikke finnes før du «oppretter» den:** planen sa
   «Create `test/format.test.js`», men fila fantes med 3 tester fra
   v1.2.0. Write overskrev dem stille, og det ble bare synlig fordi
@@ -179,7 +179,8 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
   og `/nyheter` røres ikke før v1.3.4 er ute, aldri push uten klarsignal.
   Handling: Task 1 (docs-rettelser, 3 commits) + Task 3a–e (1.3.4,
   CHANGELOG-flytt, merge `--no-ff` + tag lokalt), 350/350 + lint 0.
-  **Stoppet før push** — venter på helsesjekk-beviset (Task 2) + «push».
+  Deretter lukket Marius helsesjekken via Claude in Chrome (alt. a, bevis
+  (i) grønt; `kill 1` virket ikke, se lærdom). **Stoppet før push.**
 - 2026-08-25 (økt 37, Fable): plan for resten av v1.3 oppdatert etter
   incidenten; A/B/C besluttet (QA én gang på v1.3.4; helsesjekk alt. a med
   b-fallback, Marius, før release; release ons 26. aug). Planfil:

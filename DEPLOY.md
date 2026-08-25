@@ -40,17 +40,59 @@ busybox-`wget`:
 wget -qO- http://localhost:3000/health
 ```
 
+**Slik ser det ut i Coolify-UI-et:** helsesjekken har et `Type`-felt med to
+valg, `HTTP` og `CMD`. Med `Type: HTTP` GENERERER Coolify kommandoen selv —
+og det var den genererte kommandoen som brukte `curl`. Ordet «curl» sto
+derfor aldri noe sted i UI-et, hvilket er hovedgrunnen til at feilen var
+usynlig. `CMD` er feltet man ville limt wget-fallbacken inn i.
+
+Slår du Coolifys sjekk av, plukker Coolify automatisk opp Dockerfilens egen —
+deployloggen sier da `Custom healthcheck found in Dockerfile.` — og bruker
+Dockerfilens verdier (start period 10 s, 3 forsøk), ikke Coolifys egne.
+Innstillingene i UI-et blir stående urørt, så å angre er ett klikk på
+`Enable Healthcheck` + Redeploy.
+
+**Status (verifisert 25. aug 02:14–02:28):** alternativ a står aktivt.
+Deployloggen gikk fra `Healthcheck logs: /bin/sh: curl: not found | Return
+code: 0` til `Custom healthcheck found in Dockerfile` +
+`Attempt 1 of 3 | Healthcheck status: "healthy"`.
+
 **Bevis-krav (obligatorisk etter enhver endring av helsesjekken):**
 
-1. Container-health-loggen viser ekte sjekker med exit 0 — ikke
-   «command not found» med return code 0:
+1. **Kjører sjekken, og er den Dockerfilens?**
    ```
    docker inspect --format '{{json .State.Health}}' <container>
    ```
-2. Stopp appen inne i containeren (`kill 1` fra container-terminalen;
-   restart-policyen starter den igjen) og se at Coolify melder **unhealthy**
-   mens appen er nede. Melder den fortsatt «Running (healthy)», er sjekken
-   fortsatt en no-op.
+   Skal gi `"Status":"healthy"`, `"FailingStreak":0` og loggoppføringer med
+   `"ExitCode":0` og tom `Output` — ikke «not found» sammen med exit 0.
+   Kontroller samtidig at kommandoen er Dockerfilens:
+   ```
+   docker inspect --format '{{json .Config.Healthcheck}}' <container>
+   ```
+2. **Kan sjekken i det hele tatt feile?** Kjør Dockerfilens kommando manuelt,
+   én gang mot riktig port og én gang mot en død port. Den skal gi exit 0 mot
+   3000 og exit 1 mot f.eks. 9999. Dette er det egentlige beviset mot
+   no-op-feilen, og det rører ikke appen.
+
+**`kill 1` VIRKER IKKE for å teste dette — ikke kast tid på det.** Målt
+25. aug: kommandoen kjører uten feilmelding, men appen dør ikke og containeren
+restarter aldri. Årsaken er at PID 1 i et container-namespace kun mottar
+signaler den selv har registrert en handler for, og appen har ingen
+SIGTERM-handler (`src/server.js` avslutter med `app.listen`, ingen
+`process.on('SIGTERM', …)`). Kjernen forkaster signalet. Vil du likevel se
+statusfeltet slå om, er `docker pause <container>` + `docker unpause` den
+trygge veien (sjekken timer ut, containeren exiter aldri, restart-policyen
+utløses ikke) — `docker stop`/`docker kill` er det IKKE, fordi
+restart-policyen `unless-stopped` da kan la appen bli liggende nede.
+
+**VIKTIG BEGRENSNING — hva helsesjekken IKKE fanger.** Den kaller
+`http://localhost:3000/health` INNE i containeren og går dermed utenom
+Traefik og Cloudflare. Under 401-incidenten svarte appen helt normalt på
+localhost:3000 — det var Traefiks basicauth-middleware som avviste alt
+utenfra. **Den nye helsesjekken ville altså meldt «healthy» gjennom hele den
+incidenten også.** Den beviser at appen startet og svarer, ikke at brukerne
+når den. Feilsøking av «prod svarer rart» starter derfor fortsatt utenfra:
+`curl -I https://fpl.marsk.no/health` fra egen maskin.
 
 Ingen kodeendring → dette får ikke eget versjonsnummer.
 

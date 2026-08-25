@@ -16,7 +16,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | Nr | Hva | Kø-punkt | Blokkert av |
 | --- | --- | --- | --- |
 | ~~**v1.2.4**~~ | ~~AI-rådgiverens promptstruktur på /lag~~ | **utført 24. aug** | — |
-| **P0** | Marius: Coolify-helsesjekk fiks + bevis | 1 | Marius (~30 min i Coolify) |
+| ~~**P0**~~ | ~~Coolify-helsesjekk fiks + bevis~~ | **utført 25. aug — alt. a aktiv** | — |
 | **P1** | Marius: bekreft auto-briefen 20. aug i Discord | 4 | Marius (minutter) |
 | **P2** | Marius: README-skjermbilder + mobil-QA | 6 | Marius |
 | **P3** | Etter GW2: transfers-skjema mot ekte data | 5 | GW2 spilt (~29.–31. aug) |
@@ -35,7 +35,7 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
 
 ## Kø — hva gjøres videre, i rekkefølge
 
-### 1. Coolify-helsesjekken er en no-op — fiks + bevis `[Marius]`
+### 1. ~~Coolify-helsesjekken er en no-op~~ — LUKKET 25. aug
 
 - **Hva:** under 401-incidenten 24.–25. aug meldte Coolify «Running
   (healthy)» hele tiden appen svarte 401 på alt. Deployloggen viste
@@ -54,9 +54,21 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
   (i) container-health-loggen viser ekte sjekker med exit 0,
   (ii) stopp appen inne i containeren og se at Coolify melder
   unhealthy, ikke «Running (healthy)».
-- **Blokkerer:** pushen i kø-punkt 2 — deploy-signalet må være til å
-  stole på før neste deploy.
-- **Størrelse:** ~30 min i Coolify.
+- **Resultat (25. aug 02:14–02:28, utført av Marius via Claude in Chrome):**
+  alternativ a er aktivt. Deployloggen gikk fra `curl: not found | Return
+  code: 0` til `Custom healthcheck found in Dockerfile` +
+  `Attempt 1 of 3 | Healthcheck status: "healthy"`, og
+  `docker inspect` viser ekte sjekker hvert 30. s med exit 0 og tom output.
+  Kommandoen ble kjørt manuelt mot død port og ga **exit 1** — den kan altså
+  faktisk feile, som var hele poenget. Bevis (ii) (`kill 1`) lot seg IKKE
+  kjøre: PID 1 uten SIGTERM-handler ignorerer signalet, så appen døde aldri.
+  Den underliggende risikoen bevis (ii) skulle avdekke — «Coolify leser ikke
+  Docker-health når egen sjekk er av» — er likevel motbevist direkte av
+  deployloggen. Fallback b ble derfor IKKE tatt i bruk.
+- **Funn å huske:** helsesjekken kaller `localhost:3000` inne i containeren
+  og går utenom Traefik — den ville meldt «healthy» gjennom hele
+  401-incidenten også. Se DEPLOY.md.
+- **Størrelse:** ~30 min i Coolify. Brukt: ~15 min.
 
 ### 2. (v1.3.4) Release + prod-verifisering + hele QA-en i ett
 
@@ -78,7 +90,7 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
   (240 + 14 + ~56 sjekker) kjøres ÉN gang mot prod på v1.3.4 — dekker
   både v1.3.3-funnene (P0: klistret tabellhode 390 px) og v1.3.4.
   Asset-hashen er uendret (v1.3.4 rører kun `src/`).
-- **Blokkert av:** kø-punkt 1 (helsesjekk-beviset).
+- **Blokkert av:** ~~kø-punkt 1~~ (lukket 25. aug) — nå kun Marius' «push».
 - **Størrelse:** én utførelsesøkt + Coolify-steg hos Marius.
 
 ### 3. (P4) Kostnadskontroll etter prisskiftet
@@ -139,6 +151,13 @@ fikses uten avtale:
 - ~~**SWR i `ai.js`**~~ — løftet ut av lista 24. aug på Marius’ melding om
   lange lastetider. Se kø-punkt 2 (v1.3.4). NB derfra: grepet endrer
   semantikken «AI-kall skjer ved sidebesøk» som verifiseringen bygger på.
+- **Ryddig avslutning (SIGTERM-handler)** (`src/server.js`): appen har ingen
+  `process.on('SIGTERM', …)`, så PID 1 ignorerer signalet (målt 25. aug —
+  `kill 1` hadde null effekt). Konsekvens i drift: Docker må vente ut
+  stopp-timeouten og SIGKILL-e ved hver deploy, og forespørsler under
+  utrulling kuttes midt i. En `server.close()`-handler gir renere
+  rullerende deploys — og som bieffekt lar den helsesjekk-beviset
+  (`kill 1`) faktisk kjøres. Liten endring, men rører oppstartsstien.
 - **`filterSummaryPoints`-dybde** (`src/services/news.js:158`): genitiv
   bommer på substring-matchen. Robusthet ligger i promptendring
   (kildeindeks per punkt) — koster AI-kall å teste, må avtales.
