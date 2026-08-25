@@ -7,6 +7,16 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.3.7] - 2026-08-25
+
+### Fixed
+
+- Auto-briefen kan ikke lenger postes to ganger til Discord når appen
+  deployes i kvarteret etter sendetidspunktet: «brief sendt»-markøren
+  lagres i `data/brief-state.json` og overlever omstart og redeploy.
+  Krever et persistent volum på `/app/data` i Coolify; uten volum
+  oppfører appen seg som før.
+
 ## [1.3.6] - 2026-08-25
 
 ### Fixed

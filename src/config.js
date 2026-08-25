@@ -33,6 +33,9 @@ const config = Object.freeze({
   aiModel: process.env.AI_MODEL || 'claude-sonnet-5',
   discordWebhookUrl: process.env.DISCORD_WEBHOOK_URL || null,
   briefHoursBeforeDeadline: toNumber(process.env.BRIEF_HOURS_BEFORE_DEADLINE, 24),
+  // Mappe for tilstand som skal overleve omstart (auto-briefens markør).
+  // I prod er dette et persistent volum på /app/data.
+  dataDir: process.env.DATA_DIR || 'data',
   tz: process.env.TZ,
 });
 

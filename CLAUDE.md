@@ -23,6 +23,7 @@ src/middleware.js  rene middleware-byggere: cacheControlFor, createErrorHandler,
 src/config.js      env-variabler: PORT, FPL_TEAM_ID, LEAGUE_IDS, TZ,
                    NEWS_FEEDS, ANTHROPIC_API_KEY (valgfri), AI_MODEL,
                    DISCORD_WEBHOOK_URL (valgfri), BRIEF_HOURS_BEFORE_DEADLINE
+                   DATA_DIR (default `data`)
 src/routes/        tynne ruter: én fil per side + api.js
 src/services/
   fplClient.js     ENESTE modul med nettverkskall til FPL-API-et
@@ -47,6 +48,8 @@ src/services/
                    cache med minimumsintervall per funksjon
   news.js          RSS-nyheter + valgfri AI-oppsummering (via ai.js, cachet)
   notify.js        deadline-scheduler + Discord-webhook for auto-brief (valgfri)
+                   «Brief sendt»-markøren lagres i DATA_DIR/brief-state.json
+                   så en redeploy i sendevinduet ikke re-poster briefen
   refresh.js       (v1.3.4) timer-styrt oppfrisking av AI-tekstene:
                    refreshDecision (ren beslutning) + startAiRefresher
                    (ett tikk ved oppstart, så hver 30. min). Sender aldri

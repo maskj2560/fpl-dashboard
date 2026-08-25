@@ -10,6 +10,10 @@ COPY src ./src
 COPY views ./views
 COPY public ./public
 
+# Tilstand som skal overleve en deploy (auto-briefens sendt-markør). I prod
+# monteres et volum her; eierskapet arves fra imaget, derfor chown.
+RUN mkdir -p /app/data && chown node:node /app/data
+
 USER node
 EXPOSE 3000
 

@@ -118,6 +118,19 @@ manuelt. **Endres fontfilen, må `?v=` bumpes to steder samtidig:**
 
 URL-ene må være identiske, ellers laster nettleseren fonten to ganger.
 
+## Volum for brief-markøren
+
+Auto-briefen skriver `brief-state.json` til `DATA_DIR` (default `data`,
+i containeren `/app/data`) så en redeploy i kvarteret etter sendetidspunktet
+ikke re-poster briefen til Discord. Uten volum tømmes fila ved hver deploy,
+og appen oppfører seg som før v1.3.7 — den krasjer aldri.
+
+Oppsett i Coolify (én gang): **Storages → Add → destination path**
+`/app/data`.
+
+Verifisering: etter en deploy som følger et sendt brief skal loggen vise
+`Brief-markør lastet: runde N er alt sendt`.
+
 ## Klubbgrafikk (ny sesong)
 
 Klubbmerkene og draktene i `public/img/clubs/` er selvhostet og committet i
