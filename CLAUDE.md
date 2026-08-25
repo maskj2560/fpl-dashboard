@@ -18,8 +18,8 @@ npm run fetch-clubs  # (fra v1.3.1) last ned klubbgrafikk, én gang per sesong
 
 ```
 src/server.js      oppstart og montering (starter lytteren ved import)
-src/middleware.js  rene middleware-byggere: cacheControlFor, createErrorHandler
-                   (ligger utenfor server.js så de kan testes)
+src/middleware.js  rene middleware-byggere: cacheControlFor, createErrorHandler,
+                   createShutdown (ligger utenfor server.js så de kan testes)
 src/config.js      env-variabler: PORT, FPL_TEAM_ID, LEAGUE_IDS, TZ,
                    NEWS_FEEDS, ANTHROPIC_API_KEY (valgfri), AI_MODEL,
                    DISCORD_WEBHOOK_URL (valgfri), BRIEF_HOURS_BEFORE_DEADLINE

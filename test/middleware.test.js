@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   cacheControlFor,
   createErrorHandler,
+  createShutdown,
   FONT_VERSION,
   IMG_VERSION,
 } from '../src/middleware.js';
@@ -109,4 +110,50 @@ test('feilhandleren gjør ingenting når svaret alt er sendt', () => {
   }
   assert.equal(res.statusCode, null);
   assert.equal(res.body, null);
+});
+
+// ---- v1.3.5: ryddig avslutning ------------------------------------------
+
+function fakeServer() {
+  return {
+    closed: false,
+    cb: null,
+    close(cb) {
+      this.closed = true;
+      this.cb = cb;
+    },
+  };
+}
+
+test('createShutdown lukker serveren og avslutter med kode 0', () => {
+  const server = fakeServer();
+  const exits = [];
+  const handler = createShutdown({ server, exit: (c) => exits.push(c), log: () => {} });
+  handler('SIGTERM');
+  assert.equal(server.closed, true);
+  server.cb();
+  assert.deepEqual(exits, [0]);
+});
+
+test('createShutdown ignorerer signal nummer to', () => {
+  const server = fakeServer();
+  let closeCalls = 0;
+  server.close = (cb) => {
+    closeCalls += 1;
+    server.cb = cb;
+  };
+  const handler = createShutdown({ server, exit: () => {}, log: () => {} });
+  handler('SIGTERM');
+  handler('SIGINT');
+  assert.equal(closeCalls, 1);
+});
+
+test('createShutdown tvinger avslutning når forbindelser henger', (t) => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const server = fakeServer(); // close-callbacken kalles aldri
+  const exits = [];
+  const handler = createShutdown({ server, exit: (c) => exits.push(c), log: () => {} });
+  handler('SIGTERM');
+  t.mock.timers.tick(10_000);
+  assert.deepEqual(exits, [1]);
 });

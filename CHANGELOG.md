@@ -7,6 +7,14 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.3.5] - 2026-08-25
+
+### Fixed
+
+- Serveren avslutter ryddig ved deploy og omstart: aktive forespørsler
+  fullføres før prosessen stopper, i stedet for at Docker må drepe den
+  etter stopp-timeouten (SIGTERM/SIGINT-handler med 10 s nødutgang).
+
 ## [1.3.4] - 2026-08-25
 
 ### Added

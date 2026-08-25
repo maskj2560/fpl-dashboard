@@ -27,7 +27,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.3.2**~~ | ~~UI-overhaling, etappe 3: finpuss per side~~ | **utført 24. aug** | — |
 | ~~**v1.3.3**~~ | ~~UI-overhaling, etappe 4: QA-rettelser~~ | **utført 24. aug — prod-QA grønn 25. aug** | — |
 | ~~**v1.3.4**~~ | ~~Ingen ventetid på AI-tekst: SWR + bakgrunnsoppfriskning~~ | **utført 25. aug — ute i prod, QA grønn** | — |
-| **v1.3.5** | Ryddig avslutning (SIGTERM-handler) | 4 | — |
+| ~~**v1.3.5**~~ | ~~Ryddig avslutning (SIGTERM-handler)~~ | **utført 25. aug** | — |
 | **v1.3.6** | gameUpdating-livssyklus + vennlig 503-side | 4 | v1.3.5 |
 | **v1.3.7** | Persistent «brief sendt»-markør (volum `/app/data`) | 4 | volum i Coolify |
 | **v1.3.8** | Genitiv-fiks i nyhetsfilteret | 4 | etter P4 |
@@ -80,7 +80,7 @@ Alle fem kandidatene fra kvalitetspasset er avgjort: fire bygges som egne
 releaser, den femte (filterSummaryPoints) får en gratis genitiv-fiks i
 stedet for den AI-kostende promptendringen (droppet). Rekkefølge:
 
-- [ ] **v1.3.5 Ryddig avslutning:** `createShutdown` i `middleware.js` +
+- [x] **v1.3.5 Ryddig avslutning:** `createShutdown` i `middleware.js` +
       SIGTERM/SIGINT-håndtering i `server.js`. Docker slipper å SIGKILL-e
       ved deploy, og helsesjekk-beviset (`kill 1`) blir mulig.
 - [ ] **v1.3.6 gameUpdating-livssyklus:** tidsstemplet flagg med 5 min

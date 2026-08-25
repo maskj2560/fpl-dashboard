@@ -304,7 +304,7 @@ Ikke rør `CHANGELOG.md` — ryddingen er ikke brukersynlig.
   serveren, `exit(0)` når close-callbacken kommer, `exit(1)` etter
   `timeoutMs` hvis forbindelser henger. Brukes kun av `server.js`.
 
-- [ ] **Step 1: Skriv feilende tester** i `test/middleware.test.js`:
+- [x] **Step 1: Skriv feilende tester** i `test/middleware.test.js`:
 
 ```js
 import { createShutdown } from '../src/middleware.js';
@@ -347,8 +347,8 @@ test('createShutdown tvinger avslutning når forbindelser henger', (t) => {
 (Tilpass import/`test`-signatur til filas eksisterende stil. `t.mock.timers`
 er node:test sitt innebygde — Node 22 har det.)
 
-- [ ] **Step 2:** `npm test` → FAIL («createShutdown is not a function»)
-- [ ] **Step 3: Implementer** i `src/middleware.js`:
+- [x] **Step 2:** `npm test` → FAIL («createShutdown is not a function»)
+- [x] **Step 3: Implementer** i `src/middleware.js`:
 
 ```js
 /**
@@ -389,11 +389,11 @@ process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdown('SIGINT'));
 ```
 
-- [ ] **Step 4:** `npm test` → ~353/353, `npm run lint` → 0
-- [ ] **Step 5: Lokal røyktest** (tomme nøkler): start appen, `GET /` → 200,
+- [x] **Step 4:** `npm test` → ~353/353, `npm run lint` → 0
+- [x] **Step 5: Lokal røyktest** (tomme nøkler): start appen, `GET /` → 200,
   send `Ctrl+C`/SIGINT → loggen viser «SIGINT mottatt — lukker serveren» +
   «Serveren lukket ryddig», exit-kode 0.
-- [ ] **Step 6: Docs i samme commit** — `package.json` version `1.3.5`;
+- [x] **Step 6: Docs i samme commit** — `package.json` version `1.3.5`;
   CHANGELOG (flytt fra `[Unreleased]`, sett dagens dato):
 
 ```
@@ -411,7 +411,7 @@ process.on('SIGINT', () => shutdown('SIGINT'));
   **utført XX. aug** | — |`). CLAUDE.md: `src/middleware.js`-linjen i
   arkitekturkartet utvides med `createShutdown`. HANDOVER: statuspunkt +
   loggpost etter malen fra Task 0.
-- [ ] **Step 7:** Branch `fix/sigterm-v135`, commit
+- [x] **Step 7:** Branch `fix/sigterm-v135`, commit
   `fix: ryddig avslutning ved SIGTERM/SIGINT (v1.3.5)`, merge `--no-ff` til
   main, tag `v1.3.5`. **STOPP → rapport til Marius, vent på «push».**
   Push deployer Task 0 + Task 1 sammen (én deploy).

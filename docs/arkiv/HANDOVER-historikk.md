@@ -5,6 +5,19 @@
 > sjekkpunkt-tabellen, versjonshistorikken, utdaterte åpne punkter og hele
 > loggen over brukerbeskjeder til og med økt 22. Nyere logg: HANDOVER.md.
 
+## Rotert 2026-08-25 (økt 40): loggpost økt 38 (verbatim fra HANDOVER.md)
+
+- 2026-08-25 (økt 38, Opus): kjøreprompt «ferdigstill v1.3.4-releasen +
+  samlet prod-QA» etter planøkt 37. Rammer: 0 ekte AI-kall, prod-`/brief`
+  og `/nyheter` røres ikke før v1.3.4 er ute, aldri push uten klarsignal.
+  Handling: Task 1 (docs-rettelser, 3 commits) + Task 3a–e (1.3.4,
+  CHANGELOG-flytt, merge `--no-ff` + tag lokalt), 350/350 + lint 0.
+  Deretter lukket Marius helsesjekken via Claude in Chrome (alt. a, bevis
+  (i) grønt; `kill 1` virket ikke, se lærdom). Klarsignal «push» 02:47 →
+  pushet, prod-verifisert og QA-et: **402 sjekker, 0 feil**. Task 0–6
+  fullført; hele v1.3 er dermed ute. Til slutt sendte Marius skjermbilde av
+  auto-briefen fra 20. aug 19:30 i Discord → **P1 lukket**.
+
 ## Rotert 2026-08-25 (økt 40): loggposter økt 36–37 (verbatim fra HANDOVER.md)
 
 - 2026-08-25 (økt 37, Fable): plan for resten av v1.3 oppdatert etter
