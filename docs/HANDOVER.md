@@ -6,9 +6,15 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-25 (økt 38, Opus: v1.3.4 ute, QA grønn, P1 lukket)
+**Sist oppdatert:** 2026-08-25 (økt 40, Opus: docs ryddet, v1.3.5 klar lokalt)
 
 ## Status akkurat nå
+- **v1.3.5 (ryddig avslutning) klar lokalt 25. aug — IKKE pushet ennå.**
+  `createShutdown` i `middleware.js` + SIGTERM/SIGINT i `server.js`;
+  353/353, lint 0. Røyktest lokalt (tomme nøkler, `process.emit('SIGINT')`
+  — Windows leverer ikke ekte signaler til node): «SIGINT mottatt — lukker
+  serveren» + «Serveren lukket ryddig», exit 0. Ekte SIGTERM-bevis hentes
+  fra forrige containers logg ved NESTE deploy (v1.3.6).
 - **v1.3.4 UTE I PROD siden 25. aug 02:5x — hele v1.3 er dermed ferdig.**
   350/350, lint 0 (baseline 322), tag `v1.3.4` = `f61aae2` pushet. Ingen
   sidevisning venter på en AI-tekst: `ai.js` har SWR + `getCached()`, de tre
@@ -172,21 +178,15 @@ sjekkpunkt A ferdig i sin helhet.
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
+- 2026-08-25 (økt 40, Opus): kjøreprompt «SLUTTSPURTEN» — utfør
+  `docs/plan-sluttspurt.md` task for task, aldri push uten klarsignal,
+  0 ekte AI-kall. Handling: Task 0 (docs-rydding) + Task 1 (v1.3.5)
+  utført lokalt, 353/353 + lint 0.
 - 2026-08-25 (økt 39 Fable + økt 40 Opus): planøkt «sluttspurten». Marius
   besluttet: alle fire robusthetskandidatene bygges (v1.3.5 SIGTERM →
   v1.3.6 gameUpdating → v1.3.7 brief-markør → etter P4: v1.3.8 genitiv +
   v1.4.0 alderstak/dataAlder), promptendringen i filterSummaryPoints
   droppet, volum `/app/data` i Coolify, port9 + tre utførte filer
   arkivert. Plan: `docs/plan-sluttspurt.md`. Handling: Task 0 utført.
-- 2026-08-25 (økt 38, Opus): kjøreprompt «ferdigstill v1.3.4-releasen +
-  samlet prod-QA» etter planøkt 37. Rammer: 0 ekte AI-kall, prod-`/brief`
-  og `/nyheter` røres ikke før v1.3.4 er ute, aldri push uten klarsignal.
-  Handling: Task 1 (docs-rettelser, 3 commits) + Task 3a–e (1.3.4,
-  CHANGELOG-flytt, merge `--no-ff` + tag lokalt), 350/350 + lint 0.
-  Deretter lukket Marius helsesjekken via Claude in Chrome (alt. a, bevis
-  (i) grønt; `kill 1` virket ikke, se lærdom). Klarsignal «push» 02:47 →
-  pushet, prod-verifisert og QA-et: **402 sjekker, 0 feil**. Task 0–6
-  fullført; hele v1.3 er dermed ute. Til slutt sendte Marius skjermbilde av
-  auto-briefen fra 20. aug 19:30 i Discord → **P1 lukket**.
-- Loggposter fra økt 22–37: rotert til `docs/arkiv/HANDOVER-historikk.md`
+- Loggposter fra økt 22–38: rotert til `docs/arkiv/HANDOVER-historikk.md`
   (200-linjerstaket, sist 2026-08-25).

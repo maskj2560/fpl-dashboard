@@ -8,7 +8,7 @@ import config from './config.js';
 import { isGameUpdating } from './services/fplClient.js';
 import { loadClubAssets } from './services/clubAssets.js';
 import { formatDateTime } from './services/format.js';
-import { cacheControlFor, createErrorHandler } from './middleware.js';
+import { cacheControlFor, createErrorHandler, createShutdown } from './middleware.js';
 import indexRouter from './routes/index.js';
 import healthRouter from './routes/health.js';
 import playersRouter from './routes/players.js';
@@ -100,9 +100,14 @@ app.use((req, res) => {
 
 app.use(createErrorHandler({ version, assetVersion, startedAt }));
 
-app.listen(config.port, () => {
+const server = app.listen(config.port, () => {
   console.log(`FPL-dashboard lytter på http://localhost:${config.port}`);
 });
+
+// Ryddig avslutning ved deploy/omstart — uten dette må Docker SIGKILL-e.
+const shutdown = createShutdown({ server });
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));
 
 // Inaktiv uten DISCORD_WEBHOOK_URL.
 startScheduler();

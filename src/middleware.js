@@ -65,3 +65,32 @@ export function createErrorHandler({ version, assetVersion, startedAt }) {
     });
   };
 }
+
+/**
+ * Ryddig avslutning: lukker HTTP-serveren på SIGTERM/SIGINT slik at aktive
+ * forespørsler fullføres og Docker slipper å SIGKILL-e etter stopp-timeouten
+ * (målt 25. aug: PID 1 uten handler ignorerer signalet). Nødutgang etter
+ * timeoutMs hvis åpne forbindelser henger igjen.
+ */
+export function createShutdown({
+  server,
+  exit = process.exit,
+  log = console.log,
+  timeoutMs = 10_000,
+}) {
+  let shuttingDown = false;
+  return (signal) => {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    log(`${signal} mottatt — lukker serveren`);
+    const force = setTimeout(() => {
+      log('Åpne forbindelser henger igjen — tvinger avslutning');
+      exit(1);
+    }, timeoutMs);
+    force.unref?.();
+    server.close(() => {
+      log('Serveren lukket ryddig');
+      exit(0);
+    });
+  };
+}
