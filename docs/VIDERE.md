@@ -3,12 +3,9 @@
 > Enkel oversikt for Marius — oppdateres når noe blir ferdig eller planlagt.
 > (Tekniske detaljer bor i ROADMAP.md; dette er kortversjonen.)
 
-**Sist oppdatert:** 24. august 2026
+**Sist oppdatert:** 25. august 2026
 
-## Dette har du nå (v1.3.3, sluppet 24. august)
-
-> **NB 24. aug 18:20:** fpl.marsk.no svarer 401 etter utrullingen — v1.3.3 er
-> pushet, men ikke sett kjøre. Se kø-punkt 1 i ROADMAP.md.
+## Dette har du nå (v1.3.4, sluppet 25. august)
 
 Dashbord med nedtelling og skader · spillertabell med søk og filter · laget
 ditt med kapteinsråd · miniligaen · rundebrief (AI skriver den på norsk) ·
@@ -16,7 +13,22 @@ live-poeng mens kampene går · nyheter med AI-oppsummering · auto-brief til
 Discord kvelden før hver deadline · «Overganger» som viser om byttene dine
 ga eller kostet poeng.
 
-**Nytt siden sist (v1.3.3): QA-rettelsene etter gjennomgangen din.**
+**Nytt siden sist (v1.3.4): sidene venter aldri på AI-en lenger.**
+Før denne versjonen kunne rundebriefen og nyhetene ta 10–60 sekunder å
+laste, fordi siden sto og ventet mens AI-en skrev teksten. Nå skriver
+serveren tekstene på forhånd, etter klokka: rundebriefen én gang i døgnet
+og hver time de siste seks timene før deadline, nyhetene hver sjette time.
+Siden viser det som ligger klart, med en gang. Målt i drift: rundebriefen
+laster på 0,13 sekunder mot 10 sekunder før. Er en tekst ikke laget ennå,
+får du data-briefen med tallene i stedet — akkurat som før. Det eneste
+stedet du fortsatt kan bli sittende å vente, er første klikk på AI-rådet
+på Lag-siden, og det er med vilje: den knappen kan ikke svare med
+ingenting.
+
+Det gjør også at appen bruker AI-en jevnere: rundt 41–45 kall i uka i
+stedet for ett per sidevisning.
+
+**Før det (v1.3.3): QA-rettelsene etter gjennomgangen din.**
 Tabellhodet på Spillere blir ikke lenger liggende bak toppmenyen når du
 scroller på telefonen. Ligatabellen viser en pil på hver rad — også i
 runde 1, der ingen har flyttet på seg ennå — og hele raden er klikkbar,
@@ -75,9 +87,9 @@ Live-siden viser bonuspoeng underveis i kampene og skjønner at kampen er
 ferdig ved fløyta. Kapteinsrådene på lagsiden gir mening også før noen har
 spilt. Kostnaden for AI-en er målt: under 1 dollar i uka.
 
-## Neste oppgave — ny drakt på hele siden, i fire etapper
+## Ferdig: ny drakt på hele siden, i fire etapper
 
-**Planen er godkjent (24. august), og du kan se resultatet før noe bygges:**
+**Alle fire etappene er ute (24.–25. august).** Mockupen som ble godkjent:
 https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849
 (klikk deg rundt: dashbord, spillere, lag, brief — knappen øverst til
 høyre bytter mellom automatisk, lyst og mørkt tema, og «390 px» nederst
@@ -115,11 +127,13 @@ er «porter» — de skjer når datoen eller du er klar, uten å stoppe utviklin
 - ~~**v1.2.5** — rundebriefen blir ærligere.~~ **Ferdig 24. august.**
 - ~~**v1.3.0** — nye farger og temavalg.~~ **Ferdig 24. august.**
 - ~~**v1.3.1** — klubbmerker og drakter.~~ **Ferdig 24. august.**
-- **v1.3.2** — finpuss på alle sider. **Bygget 24. august, klar til
-  utlegging når du sier fra.**
-- **v1.3.3** — rettelser fra din gjennomgang.
-- **v1.3.4 og utover** — små robusthetsfikser fra kvalitetsgjennomgangen,
-  én og én etter avtale.
+- ~~**v1.3.2** — finpuss på alle sider.~~ **Ferdig 24. august.**
+- ~~**v1.3.3** — rettelser fra din gjennomgang.~~ **Ferdig 24. august**
+  (kontrollert i drift 25. august).
+- ~~**v1.3.4** — ingen venting på AI-tekstene.~~ **Ferdig 25. august.**
+- **Deretter** — små robusthetsfikser fra kvalitetsgjennomgangen, én og én
+  etter avtale. Først i køen: at appen avslutter ryddig når den startes på
+  nytt, slik at utrullinger blir jevnere.
 
 ## Ting bare du kan gjøre
 

@@ -17,17 +17,17 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | --- | --- | --- | --- |
 | ~~**v1.2.4**~~ | ~~AI-rådgiverens promptstruktur på /lag~~ | **utført 24. aug** | — |
 | ~~**P0**~~ | ~~Coolify-helsesjekk fiks + bevis~~ | **utført 25. aug — alt. a aktiv** | — |
-| **P1** | Marius: bekreft auto-briefen 20. aug i Discord | 4 | Marius (minutter) |
-| **P2** | Marius: README-skjermbilder + mobil-QA | 6 | Marius |
-| **P3** | Etter GW2: transfers-skjema mot ekte data | 5 | GW2 spilt (~29.–31. aug) |
-| **P4** | Kostnadsmåling uken etter 1. sep | 3 | dato |
+| **P1** | Marius: bekreft auto-briefen 20. aug i Discord | 2 | Marius (minutter) |
+| **P2** | Marius: README-skjermbilder + mobil-QA | 4 | Marius |
+| **P3** | Etter GW2: transfers-skjema mot ekte data | 3 | GW2 spilt (~29.–31. aug) |
+| **P4** | Kostnadsmåling uken etter 1. sep | 1 | dato |
 | ~~**v1.2.5**~~ | ~~Brief-kvalitetstrioen~~ | **utført 24. aug** | — |
 | ~~**v1.3.0**~~ | ~~UI-overhaling, etappe 1: fundament (tokens i to temaer, temabryter, lilla topbar)~~ | **utført 24. aug** | — |
 | ~~**v1.3.1**~~ | ~~UI-overhaling, etappe 2: klubbgrafikk (merker + drakter, selvhostet)~~ | **utført 24. aug** | — |
 | ~~**v1.3.2**~~ | ~~UI-overhaling, etappe 3: finpuss per side~~ | **utført 24. aug** | — |
-| ~~**v1.3.3**~~ | ~~UI-overhaling, etappe 4: QA-rettelser~~ | **kode utført 24. aug — QA kjøres samlet på v1.3.4, se kø-punkt 2** | — |
-| **v1.3.4** | Ingen ventetid på AI-tekst: SWR + bakgrunnsoppfriskning | 2 | **release klargjort (merge + tag lokalt) — venter på helsesjekk-bevis + klarsignal** |
-| **v1.3.1+** | Robusthetskandidatene, én og én etter avtale | 7 | avtale per punkt |
+| ~~**v1.3.3**~~ | ~~UI-overhaling, etappe 4: QA-rettelser~~ | **utført 24. aug — prod-QA grønn 25. aug** | — |
+| ~~**v1.3.4**~~ | ~~Ingen ventetid på AI-tekst: SWR + bakgrunnsoppfriskning~~ | **utført 25. aug — ute i prod, QA grønn** | — |
+| **v1.3.1+** | Robusthetskandidatene, én og én etter avtale | 5 | avtale per punkt |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
 Kalenderlogikk: utviklingssporet (v1.3.0 → v1.3.1+) går uavbrutt;
@@ -35,65 +35,7 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
 
 ## Kø — hva gjøres videre, i rekkefølge
 
-### 1. ~~Coolify-helsesjekken er en no-op~~ — LUKKET 25. aug
-
-- **Hva:** under 401-incidenten 24.–25. aug meldte Coolify «Running
-  (healthy)» hele tiden appen svarte 401 på alt. Deployloggen viste
-  `Healthcheck logs: /bin/sh: curl: not found | Return code: 0` →
-  «New container is healthy». Coolifys egen HTTP-helsesjekk overstyrer
-  Dockerfilens HEALTHCHECK (som er korrekt: node-fetch mot
-  `/health`, Dockerfile linje 16–17), og `curl` finnes ikke i
-  `node:22-alpine`.
-- **Fiks (besluttet 25. aug):** alternativ a — skru av Coolifys egen
-  helsesjekk så Dockerfilens gjelder (null kodeendring, fasiten blir
-  versjonskontrollert). Fallback b hvis beviset feiler: sett Coolifys
-  kommando til `wget -qO- http://localhost:3000/health` (busybox-wget
-  finnes i imaget). Ingen kodeendring → ingen versjonsnummer;
-  dokumenteres i DEPLOY.md.
-- **Bevis (obligatorisk — uten dette er vi like blinde som før):**
-  (i) container-health-loggen viser ekte sjekker med exit 0,
-  (ii) stopp appen inne i containeren og se at Coolify melder
-  unhealthy, ikke «Running (healthy)».
-- **Resultat (25. aug 02:14–02:28, utført av Marius via Claude in Chrome):**
-  alternativ a er aktivt. Deployloggen gikk fra `curl: not found | Return
-  code: 0` til `Custom healthcheck found in Dockerfile` +
-  `Attempt 1 of 3 | Healthcheck status: "healthy"`, og
-  `docker inspect` viser ekte sjekker hvert 30. s med exit 0 og tom output.
-  Kommandoen ble kjørt manuelt mot død port og ga **exit 1** — den kan altså
-  faktisk feile, som var hele poenget. Bevis (ii) (`kill 1`) lot seg IKKE
-  kjøre: PID 1 uten SIGTERM-handler ignorerer signalet, så appen døde aldri.
-  Den underliggende risikoen bevis (ii) skulle avdekke — «Coolify leser ikke
-  Docker-health når egen sjekk er av» — er likevel motbevist direkte av
-  deployloggen. Fallback b ble derfor IKKE tatt i bruk.
-- **Funn å huske:** helsesjekken kaller `localhost:3000` inne i containeren
-  og går utenom Traefik — den ville meldt «healthy» gjennom hele
-  401-incidenten også. Se DEPLOY.md.
-- **Størrelse:** ~30 min i Coolify. Brukt: ~15 min.
-
-### 2. (v1.3.4) Release + prod-verifisering + hele QA-en i ett
-
-- **Status:** koden FERDIG 25. aug på `feat/ai-swr-v134`:
-  350/350, lint 0, målt med fake klient: kald `/brief` 10 023 ms →
-  17 ms, forsiden 10 038 ms → 35 ms, 0 AI-kall fra sidevisninger.
-  Design og takt: `docs/plan-v134-ai-swr.md` (~41–45 kall/uke,
-  godkjent — ikke re-planlegg). **Releasen er klargjort lokalt**
-  (1.3.4 i `package.json`, CHANGELOG flyttet til `[1.3.4] - 2026-08-25`,
-  merge `--no-ff` til `main` + tag `v1.3.4`) — **ingenting pushet.**
-  Pushen venter på helsesjekk-beviset (kø-punkt 1) og Marius' klarsignal.
-- **Gjenstår, i rekkefølge:** (1) docs-rettelser etter incidenten,
-  (2) versjonbump 1.3.4 + CHANGELOG-flytt, (3) merge `--no-ff` + tag,
-  (4) push — klarsignal gitt av Marius natt til 25. aug (02:47, utenfor
-  kampvindu og torsdagsvinduet), (5) prod-verifisering: footer v1.3.4, 11 ruter 200 +
-  404 INKL. `/brief` og `/nyheter` (gratis fra v1.3.4), 2
-  oppstartskall i loggen (budsjettert), 0 `AI-kall:` ved
-  sidevisninger, (6) QA-steg 8+9 fra `docs/arkiv/plan-v133-qa.md`
-  (240 + 14 + ~56 sjekker) kjøres ÉN gang mot prod på v1.3.4 — dekker
-  både v1.3.3-funnene (P0: klistret tabellhode 390 px) og v1.3.4.
-  Asset-hashen er uendret (v1.3.4 rører kun `src/`).
-- **Blokkert av:** ~~kø-punkt 1~~ (lukket 25. aug) — nå kun Marius' «push».
-- **Størrelse:** én utførelsesøkt + Coolify-steg hos Marius.
-
-### 3. (P4) Kostnadskontroll etter prisskiftet
+### 1. (P4) Kostnadskontroll etter prisskiftet
 
 - **Hva:** Sonnet 5 går fra intropris $2/$10 til ordinær $3/$15 per 1M
   tokens 1. september. Målingen 23. aug ga $0,94/uke (under terskelen);
@@ -106,7 +48,7 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
   organisk trafikk uten utviklingsstøy.
 - **Størrelse:** liten.
 
-### 4. (P1) Verifiser auto-briefen 20. august `[Marius]`
+### 2. (P1) Verifiser auto-briefen 20. august `[Marius]`
 
 - **Hva:** eneste gjenstående punkt fra sjekkpunkt A: at den naturlige
   auto-briefen torsdag 20. aug ~19:30 faktisk kom. Coolify-loggen er
@@ -115,7 +57,7 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
 - **Blokkert av:** Marius (sjekker Discord-kanalen).
 - **Størrelse:** minutter.
 
-### 5. (P3) Etter GW2: verifiser transfers-skjemaet mot ekte data
+### 3. (P3) Etter GW2: verifiser transfers-skjemaet mot ekte data
 
 - **Hva:** feltnavnene i `entry/5330646/transfers/` (`element_in`,
   `element_out`, `event`, `time`, `event_transfers_cost`) er antatt og lest
@@ -128,7 +70,7 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
   28. aug 19:30).
 - **Størrelse:** liten.
 
-### 6. (P2) README-skjermbilder + mobil-QA `[Marius]`
+### 4. (P2) README-skjermbilder + mobil-QA `[Marius]`
 
 - **Hva:** Del 6-restene fra sesongstart-verifiseringen: skjermbilder til
   README (dashbord, /spillere, /lag i desktop + 390 px), og mobilvisning på
@@ -137,7 +79,7 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
 - **Blokkert av:** Marius (nettleser + telefon).
 - **Størrelse:** liten.
 
-### 7. Robusthetskandidater (v1.3.1+, avtales én og én, uprioritert innbyrdes)
+### 5. Robusthetskandidater (v1.3.1+, avtales én og én, uprioritert innbyrdes)
 
 Reelle funn fra kvalitetspasset v1.1.3 (P3) og verifiseringen — ingen
 fikses uten avtale:
@@ -148,9 +90,9 @@ fikses uten avtale:
   Redesign: tidsstemplet flagg eller status per endepunkt.
 - **Alderstak på stale data + `dataAlder` i payloaden** (rest av P3-2):
   produktbeslutning + payload-kontraktsendring — tas separat med Marius.
-- ~~**SWR i `ai.js`**~~ — løftet ut av lista 24. aug på Marius’ melding om
-  lange lastetider. Se kø-punkt 2 (v1.3.4). NB derfra: grepet endrer
-  semantikken «AI-kall skjer ved sidebesøk» som verifiseringen bygger på.
+- ~~**SWR i `ai.js`**~~ — løftet ut av lista 24. aug og levert som **v1.3.4**
+  25. aug. NB: grepet endret semantikken «AI-kall skjer ved sidebesøk» —
+  tekstene er nå timer-styrte, og en sidevisning utløser aldri et kall.
 - **Ryddig avslutning (SIGTERM-handler)** (`src/server.js`): appen har ingen
   `process.on('SIGTERM', …)`, så PID 1 ignorerer signalet (målt 25. aug —
   `kill 1` hadde null effekt). Konsekvens i drift: Docker må vente ut
@@ -180,7 +122,8 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 | `docs/sjekkpunkt-c-live.md` | bevismateriale v1.2.3 |
 | `docs/port9-chrome-prompt.md` | gjenbrukbar nettleser-QA-oppskrift |
 | `docs/plan-doks-opprydning.md` | utført ryddeplan (arkiveres ved neste rydding) |
-| `docs/arkiv/` (11 filer) | utførte planer + historikk — endres ikke |
+| `docs/arkiv/plan-v134-ai-swr.md` | utført plan for v1.3.4 (SWR + oppfrisker) |
+| `docs/arkiv/` (12 filer) | utførte planer + historikk — endres ikke |
 
 ## Senere / idéer (ikke planlagt)
 
@@ -193,7 +136,7 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 
 ---
 
-## Utført (v0.1.0 → v1.3.3)
+## Utført (v0.1.0 → v1.3.4)
 
 ### v0.1.0 — Deploybart skjelett (MVP)
 
@@ -274,12 +217,12 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 - [x] Lokal pre-flight av alle fire AI-funksjonene mot ekte API
 - [x] Auto-briefen verifisert mot ekte Discord-webhook (inkl. anti-spam-guard)
 - [x] `ANTHROPIC_API_KEY` + `DISCORD_WEBHOOK_URL` + `FPL_TEAM_ID` i Coolify
-- [ ] Naturlig auto-brief torsdag 20. aug ~19:30 verifisert → **kø-punkt 3**
+- [ ] Naturlig auto-brief torsdag 20. aug ~19:30 verifisert → **kø-punkt 2**
 - [x] Kostnadskontroll etter 2–3 dager i drift — **målt 23. aug: $0,94/uke,
       under planens $1-terskel, ingen tiltak.** Ut-tokens står for 78 % av
       kostnaden; introprisen på sonnet-5 er bekreftet av fakturaen. Samme bruk
       koster $1,48/uke etter 31. aug, så målingen gjentas i uken etter — se
-      `docs/sjekkpunkt-d-kostnad.md` (→ **kø-punkt 2**)
+      `docs/sjekkpunkt-d-kostnad.md` (→ **kø-punkt 1**)
 
 ### v1.1.0 — UI-makeover «Matchday» (Milepæl 2 + 3)
 
@@ -349,7 +292,7 @@ _Plan: `docs/arkiv/plan-hva-hvis-transfers.md`._
 - [x] `assembleTransferAnalysis` — henting via cache, maks 38 live-kall
 - [x] /overganger: view, rute, nav, tomtilstander, view-tester
 - [x] Røyktest lokalt (alle ruter 200, AI/Discord av) + docs
-- [ ] Etter GW2: verifiser transfers-skjemaet mot ekte data → **kø-punkt 4**
+- [ ] Etter GW2: verifiser transfers-skjemaet mot ekte data → **kø-punkt 3**
 
 ### v1.2.1 — failure-backoff i cache.js (P3-2)
 
@@ -498,3 +441,29 @@ _Planer: `docs/arkiv/plan-v130-ui-overhaul.md` (etappe 1–3) og
         0 AI-kall, tag `v1.3.3` i prod.**
 - **Størrelse:** stor — fire utførelsesøkter (Opus), Playwright-QA i
   scratchpad etter hver, QA-runder hos Marius etter v1.3.2.
+
+### v1.3.4 — Ingen ventetid på AI-tekst (SWR + bakgrunnsoppfriskning)
+
+- [x] `ai.js`: stale-while-revalidate + `getCached()` som aldri gjør nettverkskall
+- [x] `/brief`, forsiden og `/nyheter` leser cachen i stedet for å generere
+- [x] AI-rådgiveren på `/lag` blokkerer aldri på en utgått tekst (kald cache venter fortsatt — knappen kan ikke svare med ingenting)
+- [x] `refresh.js`: timer-styrt oppfrisking — briefen 1×/døgn + hver time i et 6-timersvindu før deadline, nyhetene hver 6. time, pluss ett tikk ved oppstart
+- [x] **Målt lokalt (fake klient, 10 s forsinkelse):** kald `/brief`
+      **10 023 → 17 ms**, forsiden **10 038 → 35 ms**, `/nyheter` 4 ms.
+      0 AI-kall utløst av sidevisninger i noen cachetilstand.
+- [x] **Utført 25. aug: 350/350 (baseline 322), lint 0, tag `v1.3.4` i prod.**
+      Prod-verifisering: 11 ruter 200 + 404 **inkludert `/brief` og
+      `/nyheter`** (gratis fra denne versjonen), `/health` ai:true
+      discord:true leagues:1, footer `v1.3.4`, asset-hash `d508c47f`
+      **uendret fra v1.3.3** (v1.3.4 rører kun `src/`). Målt i prod rett
+      etter deploy med tom AI-cache: `/brief` 127 ms, `/nyheter` 92 ms,
+      forsiden 117 ms; gjentatte besøk 89–99 ms. Begge AI-kortene til stede,
+      så oppstartstikket varmet tekstene (2 budsjetterte kall).
+- [x] **Samlet prod-QA 25. aug (dekker også v1.3.3, som aldri ble QA-et):**
+      `qa-prod.mjs` **332/332** (8 sider × 4 bredder × 2 temaer — full
+      variant, ikke den reduserte 240-varianten, siden `/brief` og
+      `/nyheter` nå er gratis), `qa-clubs-prod.mjs` **14/14** (60 + 610 +
+      48 klubbbilder, 0 brutte, 0 uversjonerte), `qa-v133.mjs` **56/56**.
+      **P0-funnet bekreftet fikset i prod:** klistret tabellhode har 76,7 px
+      klaring til toppmenyen på 390 px og 14,6 px på 1440, likt i begge temaer.
+- **Størrelse:** én utførelsesøkt (Opus) + planøkt (Fable).

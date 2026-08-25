@@ -1144,3 +1144,42 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
   (`routes/index.js:26-30` awaiter `getNews()`). Beslutning: deadlinevindu
   **6 timer** → ~41–45 kall/uke. Handling: takt-porten i ROADMAP lukket,
   kjøreprompt levert; utførelsesøkten skriver `docs/plan-v134-ai-swr.md`.
+
+## Rotert 2026-08-25 (økt 38): statusblokka før v1.3.4-releasen (verbatim fra HANDOVER.md)
+
+- **v1.3.4 KLARGJORT FOR RELEASE (økt 38), ingenting pushet:
+  350/350, lint 0** (baseline 322). `package.json` = 1.3.4, CHANGELOG
+  flyttet til `[1.3.4] - 2026-08-25`, merge `--no-ff` av
+  `feat/ai-swr-v134` til `main` + tag `v1.3.4` gjort LOKALT.
+  **Pushen venter kun på Marius' «push»** — helsesjekken ble lukket 25. aug.
+  Vindu: ons 26. aug (reserve tor 27. før 19:00), aldri to 19–21, aldri
+  under kamper. Plan: `docs/plan-v134-ai-swr.md`.
+  MÅLT (fake klient, 10 s forsinkelse): KALD `/brief` **10 023 → 17 ms**,
+  forsiden **10 038 → 35 ms**, **0 AI-kall fra sidevisninger** i alle
+  cachetilstander; `refresh._tick()` varmer begge tekstene (2 kall ved
+  oppstart), andre tikk 0. Fulle før/etter-tall: `docs/arkiv/HANDOVER-historikk.md`.
+
+- **v1.3.3 (ETAPPE 4): kode og git FERDIG 24. aug, prod-QA gjenstår.**
+  `main` = `origin/main` = `edc372b` (merge `--no-ff` av `fix/ui-v133-qa`),
+  tag `v1.3.3` pushet 24. aug 18:00. Målt før push: 322/322, lint 0,
+  11 ruter 200 + 404, Playwright 332 + 22 + 56, 0 AI-kall. Prod-
+  verifiseringen (plan-steg 8 og 9 i `docs/arkiv/plan-v133-qa.md`) er
+  IKKE utført — den kjøres ÉN gang mot prod på v1.3.4, se kø-punkt 2.
+- **v1.3.0–v1.3.2 (etappe 1–3) ute siden 24. aug:** tokenpalett i to temaer
+  med temabryter, klubbgrafikk (`clubAssets.js`, `IMG_VERSION`,
+  `npm run fetch-clubs`, 60 bildefiler) og finpuss per side. Detaljene er
+  rotert til `docs/arkiv/HANDOVER-historikk.md`.
+- **Plan for UI-overhalingen:** `docs/arkiv/plan-v130-ui-overhaul.md` (etappe 1–3,
+  godkjent 24. aug) + `docs/arkiv/plan-v133-qa.md` (etappe 4). Mockup:
+  https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849
+- **Prod er OPPE igjen siden 25. aug** (Marius fjernet «HTTP Basic
+  Authentication»-haken + Redeploy). Kjører **v1.3.3**, `/health` →
+  `ai:true, discord:true, leagues:1` (bekreftet på nytt 25. aug 02:28).
+  Siste grønne prod-VERIFISERING er fortsatt v1.3.2 24. aug 13:22 — v1.3.3
+  er sett kjøre, men aldri QA-et.
+- Kostnad målt 23. aug: **$0,94/uke** — under terskelen, ingen tiltak. Ny
+  måling i uken etter 31. aug (prisskiftet), se kø-punkt 3.
+- **Git akkurat nå:** `main` har v1.3.4 merget inn (`--no-ff`) og tag
+  `v1.3.4` satt, men ligger **upushet foran `origin/main`** (de 2 gamle
+  docs-commitene + docs-rettelsene fra økt 38 + release-merge). Siste
+  PUSHEDE tag er `v1.3.3` (`edc372b`) — det er fortsatt den prod kjører.

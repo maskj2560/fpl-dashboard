@@ -6,62 +6,56 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-25 (økt 38, Opus: v1.3.4 klargjort, venter på push)
+**Sist oppdatert:** 2026-08-25 (økt 38, Opus: v1.3.4 ute i prod, QA grønn)
 
 ## Status akkurat nå
-
-- **v1.3.4 KLARGJORT FOR RELEASE (økt 38), ingenting pushet:
-  350/350, lint 0** (baseline 322). `package.json` = 1.3.4, CHANGELOG
-  flyttet til `[1.3.4] - 2026-08-25`, merge `--no-ff` av
-  `feat/ai-swr-v134` til `main` + tag `v1.3.4` gjort LOKALT.
-  **Pushen venter kun på Marius' «push»** — helsesjekken ble lukket 25. aug.
-  Vindu: ons 26. aug (reserve tor 27. før 19:00), aldri to 19–21, aldri
-  under kamper. Plan: `docs/plan-v134-ai-swr.md`.
-  MÅLT (fake klient, 10 s forsinkelse): KALD `/brief` **10 023 → 17 ms**,
-  forsiden **10 038 → 35 ms**, **0 AI-kall fra sidevisninger** i alle
-  cachetilstander; `refresh._tick()` varmer begge tekstene (2 kall ved
-  oppstart), andre tikk 0. Fulle før/etter-tall: `docs/arkiv/HANDOVER-historikk.md`.
-
-- **v1.3.3 (ETAPPE 4): kode og git FERDIG 24. aug, prod-QA gjenstår.**
-  `main` = `origin/main` = `edc372b` (merge `--no-ff` av `fix/ui-v133-qa`),
-  tag `v1.3.3` pushet 24. aug 18:00. Målt før push: 322/322, lint 0,
-  11 ruter 200 + 404, Playwright 332 + 22 + 56, 0 AI-kall. Prod-
-  verifiseringen (plan-steg 8 og 9 i `docs/arkiv/plan-v133-qa.md`) er
-  IKKE utført — den kjøres ÉN gang mot prod på v1.3.4, se kø-punkt 2.
-- **v1.3.0–v1.3.2 (etappe 1–3) ute siden 24. aug:** tokenpalett i to temaer
-  med temabryter, klubbgrafikk (`clubAssets.js`, `IMG_VERSION`,
-  `npm run fetch-clubs`, 60 bildefiler) og finpuss per side. Detaljene er
-  rotert til `docs/arkiv/HANDOVER-historikk.md`.
-- **Plan for UI-overhalingen:** `docs/arkiv/plan-v130-ui-overhaul.md` (etappe 1–3,
-  godkjent 24. aug) + `docs/arkiv/plan-v133-qa.md` (etappe 4). Mockup:
+- **v1.3.4 UTE I PROD siden 25. aug 02:5x — hele v1.3 er dermed ferdig.**
+  350/350, lint 0 (baseline 322), tag `v1.3.4` = `f61aae2` pushet. Ingen
+  sidevisning venter på en AI-tekst: `ai.js` har SWR + `getCached()`, de tre
+  sidene leser cachen, `refresh.js` frisker opp på klokka. **Målt i prod rett
+  etter deploy med TOM AI-cache:** `/brief` 127 ms, `/nyheter` 92 ms, forsiden
+  117 ms, gjentatte besøk 89–99 ms (mot 10 023 ms på v1.3.3-adferden). Begge
+  AI-kortene til stede → oppstartstikket varmet tekstene (2 budsjetterte kall).
+  Plan arkivert: `docs/arkiv/plan-v134-ai-swr.md`.
+- **Prod-QA 25. aug: 402 sjekker, 0 feil** — kjørt ÉN gang mot v1.3.4 og
+  dekker dermed også v1.3.3, som aldri ble QA-et. `qa-prod.mjs` **332/332**
+  (full 8-siders variant — `/brief` og `/nyheter` er gratis fra v1.3.4, så
+  den reduserte 240-varianten var ikke nødvendig), `qa-clubs-prod.mjs`
+  **14/14**, `qa-v133.mjs` **56/56**. 11 ruter 200 + 404, `/health`
+  ai:true discord:true leagues:1, footer `v1.3.4`.
+  **P0-funnet er bekreftet fikset i prod:** klistret tabellhode har 76,7 px
+  klaring til toppmenyen på 390 px og 14,6 px på 1440, likt i begge temaer.
+- **Asset-hashen i prod er `d508c47f` — og det er RIKTIG.** Den skiftet ved
+  v1.3.3 (`style.css` + `app.js`), ikke ved v1.3.4 (kun `src/`). `000fa6f3`
+  var v1.3.2-hashen. Regn den fra git-blobbene, ikke arbeidstreet — Windows
+  har CRLF på disk og gir et annet tall enn containeren.
+- **Helsesjekken:** alt. a aktiv (Coolifys sjekk AV, Dockerfilens gjelder).
+  Se lærdommene under for hva den IKKE fanger.
+- **v1.3.0–v1.3.3 ute siden 24. aug:** tokenpalett i to temaer, temabryter,
+  klubbgrafikk, finpuss per side og QA-rettelsene. Detaljer rotert til
+  `docs/arkiv/HANDOVER-historikk.md`; planer i `docs/arkiv/`. Mockup:
   https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849
-- **Prod er OPPE igjen siden 25. aug** (Marius fjernet «HTTP Basic
-  Authentication»-haken + Redeploy). Kjører **v1.3.3**, `/health` →
-  `ai:true, discord:true, leagues:1` (bekreftet på nytt 25. aug 02:28).
-  Siste grønne prod-VERIFISERING er fortsatt v1.3.2 24. aug 13:22 — v1.3.3
-  er sett kjøre, men aldri QA-et.
-- Kostnad målt 23. aug: **$0,94/uke** — under terskelen, ingen tiltak. Ny
-  måling i uken etter 31. aug (prisskiftet), se kø-punkt 3.
-- **Git akkurat nå:** `main` har v1.3.4 merget inn (`--no-ff`) og tag
-  `v1.3.4` satt, men ligger **upushet foran `origin/main`** (de 2 gamle
-  docs-commitene + docs-rettelsene fra økt 38 + release-merge). Siste
-  PUSHEDE tag er `v1.3.3` (`edc372b`) — det er fortsatt den prod kjører.
+- Kostnad målt 23. aug: **$0,94/uke** — under terskelen. Ny måling i uken
+  etter 31. aug (prisskiftet), nå mot taktbudsjettet ~41–45 kall/uke, kø-punkt 1.
+- **Git akkurat nå:** `main` = `origin/main` = `f61aae2`, tag `v1.3.4`
+  pushet. Featurebranchen `feat/ai-swr-v134` er merget (`--no-ff`) og kan
+  slettes lokalt. Rent tre.
 - Eldre status (v1.2.3, doks-opprydning, versjonsplan, v1.2.4): arkivert.
 
 ## Åpne punkter
 
 Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 
-1. **v1.3.4: alt klart, venter kun på Marius' «push»** (kø-punkt 2).
-   P0-helsesjekken er lukket 25. aug — alternativ a står aktivt.
-2. P4: kostnadsmåling uken etter 31. aug (metode i `docs/sjekkpunkt-d-kostnad.md`).
-3. P1 `[Marius]`: bekreft auto-briefen 20. aug i Discord-kanalen.
-4. P3: etter GW2, transfers-skjema mot ekte data + `/overganger` på mobil.
-5. P2 `[Marius]`: README-skjermbilder + mobil-QA.
-6. v1.3.3-QA-en (plan-steg 8 og 9 i `docs/arkiv/plan-v133-qa.md`) kjøres
-   sammen med v1.3.4-verifiseringen — kø-punkt 2. Deretter
-   robusthetskandidatene. Gammel åpen boks som er Marius' (Task 1.0-5):
-   «Visuell sjekk mot mockupen i begge temaer».
+1. P4 (kø 1): kostnadsmåling uken etter 31. aug — nå mot taktbudsjettet
+   ~41–45 kall/uke (metode i `docs/sjekkpunkt-d-kostnad.md`).
+2. P1 `[Marius]` (kø 2): bekreft auto-briefen 20. aug i Discord-kanalen.
+3. P3 (kø 3): etter GW2, transfers-skjema mot ekte data + `/overganger`
+   på mobil.
+4. P2 `[Marius]` (kø 4): README-skjermbilder + mobil-QA. Her hører også
+   Marius' gamle åpne boks hjemme: «Visuell sjekk mot mockupen i begge
+   temaer» (Task 1.0-5).
+5. Robusthetskandidatene (kø 5), én og én etter avtale — nå med ryddig
+   avslutning (SIGTERM-handler) som nytt punkt.
 
 ## Driftslærdommer (ikke glem disse)
 
@@ -180,7 +174,9 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
   Handling: Task 1 (docs-rettelser, 3 commits) + Task 3a–e (1.3.4,
   CHANGELOG-flytt, merge `--no-ff` + tag lokalt), 350/350 + lint 0.
   Deretter lukket Marius helsesjekken via Claude in Chrome (alt. a, bevis
-  (i) grønt; `kill 1` virket ikke, se lærdom). **Stoppet før push.**
+  (i) grønt; `kill 1` virket ikke, se lærdom). Klarsignal «push» 02:47 →
+  pushet, prod-verifisert og QA-et: **402 sjekker, 0 feil**. Task 0–6
+  fullført; hele v1.3 er dermed ute.
 - 2026-08-25 (økt 37, Fable): plan for resten av v1.3 oppdatert etter
   incidenten; A/B/C besluttet (QA én gang på v1.3.4; helsesjekk alt. a med
   b-fallback, Marius, før release; release ons 26. aug). Planfil:
