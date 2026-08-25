@@ -17,9 +17,9 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | --- | --- | --- | --- |
 | ~~**v1.2.4**~~ | ~~AI-rådgiverens promptstruktur på /lag~~ | **utført 24. aug** | — |
 | ~~**P0**~~ | ~~Coolify-helsesjekk fiks + bevis~~ | **utført 25. aug — alt. a aktiv** | — |
-| **P1** | Marius: bekreft auto-briefen 20. aug i Discord | 2 | Marius (minutter) |
-| **P2** | Marius: README-skjermbilder + mobil-QA | 4 | Marius |
-| **P3** | Etter GW2: transfers-skjema mot ekte data | 3 | GW2 spilt (~29.–31. aug) |
+| ~~**P1**~~ | ~~Marius: bekreft auto-briefen 20. aug i Discord~~ | **utført 25. aug — brief bekreftet i kanalen** | — |
+| **P2** | Marius: README-skjermbilder + mobil-QA | 3 | Marius |
+| **P3** | Etter GW2: transfers-skjema mot ekte data | 2 | GW2 spilt (~29.–31. aug) |
 | **P4** | Kostnadsmåling uken etter 1. sep | 1 | dato |
 | ~~**v1.2.5**~~ | ~~Brief-kvalitetstrioen~~ | **utført 24. aug** | — |
 | ~~**v1.3.0**~~ | ~~UI-overhaling, etappe 1: fundament (tokens i to temaer, temabryter, lilla topbar)~~ | **utført 24. aug** | — |
@@ -27,7 +27,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.3.2**~~ | ~~UI-overhaling, etappe 3: finpuss per side~~ | **utført 24. aug** | — |
 | ~~**v1.3.3**~~ | ~~UI-overhaling, etappe 4: QA-rettelser~~ | **utført 24. aug — prod-QA grønn 25. aug** | — |
 | ~~**v1.3.4**~~ | ~~Ingen ventetid på AI-tekst: SWR + bakgrunnsoppfriskning~~ | **utført 25. aug — ute i prod, QA grønn** | — |
-| **v1.3.1+** | Robusthetskandidatene, én og én etter avtale | 5 | avtale per punkt |
+| **v1.3.1+** | Robusthetskandidatene, én og én etter avtale | 4 | avtale per punkt |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
 Kalenderlogikk: utviklingssporet (v1.3.0 → v1.3.1+) går uavbrutt;
@@ -48,16 +48,7 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
   organisk trafikk uten utviklingsstøy.
 - **Størrelse:** liten.
 
-### 2. (P1) Verifiser auto-briefen 20. august `[Marius]`
-
-- **Hva:** eneste gjenstående punkt fra sjekkpunkt A: at den naturlige
-  auto-briefen torsdag 20. aug ~19:30 faktisk kom. Coolify-loggen er
-  overskrevet, så Discord-kanalen er beviset.
-- **Eier detaljene:** dette punktet (+ avhukingen i v1.0.1-historikken).
-- **Blokkert av:** Marius (sjekker Discord-kanalen).
-- **Størrelse:** minutter.
-
-### 3. (P3) Etter GW2: verifiser transfers-skjemaet mot ekte data
+### 2. (P3) Etter GW2: verifiser transfers-skjemaet mot ekte data
 
 - **Hva:** feltnavnene i `entry/5330646/transfers/` (`element_in`,
   `element_out`, `event`, `time`, `event_transfers_cost`) er antatt og lest
@@ -70,7 +61,7 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
   28. aug 19:30).
 - **Størrelse:** liten.
 
-### 4. (P2) README-skjermbilder + mobil-QA `[Marius]`
+### 3. (P2) README-skjermbilder + mobil-QA `[Marius]`
 
 - **Hva:** Del 6-restene fra sesongstart-verifiseringen: skjermbilder til
   README (dashbord, /spillere, /lag i desktop + 390 px), og mobilvisning på
@@ -79,7 +70,7 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
 - **Blokkert av:** Marius (nettleser + telefon).
 - **Størrelse:** liten.
 
-### 5. Robusthetskandidater (v1.3.1+, avtales én og én, uprioritert innbyrdes)
+### 4. Robusthetskandidater (v1.3.1+, avtales én og én, uprioritert innbyrdes)
 
 Reelle funn fra kvalitetspasset v1.1.3 (P3) og verifiseringen — ingen
 fikses uten avtale:
@@ -217,7 +208,13 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 - [x] Lokal pre-flight av alle fire AI-funksjonene mot ekte API
 - [x] Auto-briefen verifisert mot ekte Discord-webhook (inkl. anti-spam-guard)
 - [x] `ANTHROPIC_API_KEY` + `DISCORD_WEBHOOK_URL` + `FPL_TEAM_ID` i Coolify
-- [ ] Naturlig auto-brief torsdag 20. aug ~19:30 verifisert → **kø-punkt 2**
+- [x] Naturlig auto-brief torsdag 20. aug ~19:30 verifisert. **Bekreftet
+      25. aug** med skjermbilde fra Discord-kanalen: «FPL Bot» postet
+      «Rundebrief — Runde 1» 20.08.2026 kl. 19:30, altså nøyaktig 24 t før
+      deadline (fre 21. aug 19:30) — `BRIEF_HOURS_BEFORE_DEADLINE` = 24.
+      Briefen var komplett på norsk (Deadline, Skadenytt, Kapteinsvalg,
+      Kamper å følge med på) med lenke til `/brief`. Dermed er sjekkpunkt A
+      lukket i sin helhet.
 - [x] Kostnadskontroll etter 2–3 dager i drift — **målt 23. aug: $0,94/uke,
       under planens $1-terskel, ingen tiltak.** Ut-tokens står for 78 % av
       kostnaden; introprisen på sonnet-5 er bekreftet av fakturaen. Samme bruk
@@ -292,7 +289,7 @@ _Plan: `docs/arkiv/plan-hva-hvis-transfers.md`._
 - [x] `assembleTransferAnalysis` — henting via cache, maks 38 live-kall
 - [x] /overganger: view, rute, nav, tomtilstander, view-tester
 - [x] Røyktest lokalt (alle ruter 200, AI/Discord av) + docs
-- [ ] Etter GW2: verifiser transfers-skjemaet mot ekte data → **kø-punkt 3**
+- [ ] Etter GW2: verifiser transfers-skjemaet mot ekte data → **kø-punkt 2**
 
 ### v1.2.1 — failure-backoff i cache.js (P3-2)
 

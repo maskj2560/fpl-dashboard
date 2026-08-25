@@ -6,7 +6,7 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-25 (økt 38, Opus: v1.3.4 ute i prod, QA grønn)
+**Sist oppdatert:** 2026-08-25 (økt 38, Opus: v1.3.4 ute, QA grønn, P1 lukket)
 
 ## Status akkurat nå
 - **v1.3.4 UTE I PROD siden 25. aug 02:5x — hele v1.3 er dermed ferdig.**
@@ -48,14 +48,15 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
 
 1. P4 (kø 1): kostnadsmåling uken etter 31. aug — nå mot taktbudsjettet
    ~41–45 kall/uke (metode i `docs/sjekkpunkt-d-kostnad.md`).
-2. P1 `[Marius]` (kø 2): bekreft auto-briefen 20. aug i Discord-kanalen.
-3. P3 (kø 3): etter GW2, transfers-skjema mot ekte data + `/overganger`
+2. P3 (kø 2): etter GW2, transfers-skjema mot ekte data + `/overganger`
    på mobil.
-4. P2 `[Marius]` (kø 4): README-skjermbilder + mobil-QA. Her hører også
+3. P2 `[Marius]` (kø 3): README-skjermbilder + mobil-QA. Her hører også
    Marius' gamle åpne boks hjemme: «Visuell sjekk mot mockupen i begge
    temaer» (Task 1.0-5).
-5. Robusthetskandidatene (kø 5), én og én etter avtale — nå med ryddig
+4. Robusthetskandidatene (kø 4), én og én etter avtale — nå med ryddig
    avslutning (SIGTERM-handler) som nytt punkt.
+**P1 er LUKKET 25. aug** (auto-briefen bekreftet i Discord), og dermed er
+sjekkpunkt A ferdig i sin helhet.
 
 ## Driftslærdommer (ikke glem disse)
 
@@ -176,7 +177,8 @@ Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
   Deretter lukket Marius helsesjekken via Claude in Chrome (alt. a, bevis
   (i) grønt; `kill 1` virket ikke, se lærdom). Klarsignal «push» 02:47 →
   pushet, prod-verifisert og QA-et: **402 sjekker, 0 feil**. Task 0–6
-  fullført; hele v1.3 er dermed ute.
+  fullført; hele v1.3 er dermed ute. Til slutt sendte Marius skjermbilde av
+  auto-briefen fra 20. aug 19:30 i Discord → **P1 lukket**.
 - 2026-08-25 (økt 37, Fable): plan for resten av v1.3 oppdatert etter
   incidenten; A/B/C besluttet (QA én gang på v1.3.4; helsesjekk alt. a med
   b-fallback, Marius, før release; release ons 26. aug). Planfil:

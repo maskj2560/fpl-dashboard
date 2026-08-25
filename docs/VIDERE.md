@@ -137,8 +137,9 @@ er «porter» — de skjer når datoen eller du er klar, uten å stoppe utviklin
 
 ## Ting bare du kan gjøre
 
-- Sjekke i Discord-kanalen at auto-briefen faktisk kom torsdag 20. august
-  ~19:30 (loggen på serveren er borte, så kanalen er beviset).
+- ~~Sjekke i Discord-kanalen at auto-briefen faktisk kom torsdag 20. august
+  ~19:30.~~ **Gjort 25. august** — den kom presis, 24 timer før deadline,
+  med hele briefen på norsk. Ingenting mer å sjekke der.
 - Se appen på telefonen din og si fra om noe ser rart ut.
 - Skjermbilder til README (når du har tid — helt uviktig for driften).
 
