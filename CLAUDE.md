@@ -65,7 +65,7 @@ scripts/           fetch-club-assets.mjs (v1.3.1): henter klubbmerker og
                    kjøretid. Eneste nettverkskall utenfor fplClient.js
 test/              node:test — ingen nettverkskall. Fakes injiseres via små
                    test-hooks (_setNow/_flush/clear i cache.js, _setClient/
-                   _setNow/_reset i ai.js, _send/_setHooks/_reset i notify.js)
+                   _setNow/_reset i ai.js, _send/_setHooks/_reset/_initState i notify.js)
                    eller ved å mocke global fetch (test/fplClient.test.js)
 ```
 

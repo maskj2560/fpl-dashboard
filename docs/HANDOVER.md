@@ -6,7 +6,7 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-25 (økt 40, Opus: v1.3.5 + v1.3.6 ute, v1.3.7 klar)
+**Sist oppdatert:** 2026-08-25 (økt 40, Opus: v1.3.5+v1.3.6 ute, v1.3.7 venter på volum)
 
 ## Status akkurat nå
 - **v1.3.5 og v1.3.6 UTE I PROD 25. aug** (footer `v1.3.6`, `/health` 200).
@@ -28,122 +28,116 @@
   sendt», ingen Discord-poster.
 - **v1.3.4 (AI-SWR) ute siden 25. aug** — målingene og detaljene er rotert
   til `docs/arkiv/HANDOVER-historikk.md`; plan: `docs/arkiv/plan-v134-ai-swr.md`.
-- **Prod-QA 25. aug: 402 sjekker, 0 feil** — kjørt ÉN gang mot v1.3.4 og
-  dekker dermed også v1.3.3, som aldri ble QA-et. `qa-prod.mjs` **332/332**
-  (full 8-siders variant — `/brief` og `/nyheter` er gratis fra v1.3.4, så
-  den reduserte 240-varianten var ikke nødvendig), `qa-clubs-prod.mjs`
-  **14/14**, `qa-v133.mjs` **56/56**. 11 ruter 200 + 404, `/health`
-  ai:true discord:true leagues:1, footer `v1.3.4`.
-  **P0-funnet er bekreftet fikset i prod:** klistret tabellhode har 76,7 px
-  klaring til toppmenyen på 390 px og 14,6 px på 1440, likt i begge temaer.
-- **Docs ryddet + restløpet planlagt 25. aug (økt 39/40):** fire utførte
-  filer flyttet til `docs/arkiv/` (nå 17 filer), alle stier rettet.
-  Gjeldende plan for ALT som gjenstår: `docs/plan-sluttspurt.md`.
-- **Asset-hashen i prod er `d508c47f` — og det er RIKTIG.** Den skiftet ved
-  v1.3.3 (`style.css` + `app.js`), ikke ved v1.3.4 (kun `src/`). `000fa6f3`
-  var v1.3.2-hashen. Regn den fra git-blobbene, ikke arbeidstreet — Windows
+- **Prod-QA 25. aug: 402 sjekker, 0 feil** mot v1.3.4 (dekker også v1.3.3);
+  detaljene er rotert til historikken. v1.3.5–v1.3.7 rører kun `src/`, så
+  QA-en står — ingen ny full QA er planlagt.
+- **Asset-hashen i prod er `d508c47f`, og den er RIKTIG.** Den skiftet ved
+  v1.3.3 (`style.css` + `app.js`) og skal IKKE endres av v1.3.4–v1.3.7, som
+  kun rører `src/`. Regn den fra git-blobbene, ikke arbeidstreet — Windows
   har CRLF på disk og gir et annet tall enn containeren.
 - **Helsesjekken:** alt. a aktiv (Coolifys sjekk AV, Dockerfilens gjelder).
   Se lærdommene under for hva den IKKE fanger.
-- **v1.3.0–v1.3.3 ute siden 24. aug:** tokenpalett i to temaer, temabryter,
-  klubbgrafikk, finpuss per side og QA-rettelsene. Detaljer rotert til
-  `docs/arkiv/HANDOVER-historikk.md`; planer i `docs/arkiv/`. Mockup:
-  https://claude.ai/code/artifact/87b6dfa8-fa5e-417e-8b63-113799a27849
+- **v1.3.0–v1.3.3 ute siden 24. aug** (tokenpalett, temabryter, klubbgrafikk,
+  finpuss, QA-rettelser). Detaljer i `docs/arkiv/HANDOVER-historikk.md`.
 - Kostnad målt 23. aug: **$0,94/uke** — under terskelen. Ny måling i uken
   etter 31. aug (prisskiftet), nå mot taktbudsjettet ~41–45 kall/uke, kø-punkt 1.
-- **Git akkurat nå:** `main` = `origin/main` = `f61aae2`, tag `v1.3.4`
-  pushet. Featurebranchen `feat/ai-swr-v134` er merget (`--no-ff`) og kan
-  slettes lokalt. Rent tre.
+- **Git akkurat nå:** `main` ligger **3 commits foran `origin/main`** —
+  merge-commiten for v1.3.7 (`7413e2d`) og denne overleveringen. Tagene
+  `v1.3.5` og `v1.3.6` er pushet; **`v1.3.7` er kun lokal.** Alle
+  featurebranchene er merget `--no-ff` og slettet. Rent arbeidstre.
+  Neste push deployer v1.3.7 — se «Neste steg».
 - Eldre status (v1.2.3, doks-opprydning, versjonsplan, v1.2.4): arkivert.
 
-## Åpne punkter
+## Neste steg (start her)
 
-Køen i `ROADMAP.md` er fasiten — den dupliseres ikke her. Kortversjon:
+Fasiten for alt som gjenstår er `docs/plan-sluttspurt.md` — den har kode,
+tester, ordrett dokumenttekst, kalender og bevis-krav per task. Køen i
+`ROADMAP.md` er den langsiktige prioriteringen og sier det samme.
+**Punkt 1–4 kan bare Marius gjøre; en agent kommer ikke videre uten dem.**
 
-1. P4 (kø 1): kostnadsmåling uken etter 31. aug — nå mot taktbudsjettet
-   ~41–45 kall/uke (metode i `docs/sjekkpunkt-d-kostnad.md`).
-2. P3 (kø 2): etter GW2, transfers-skjema mot ekte data + `/overganger`
-   på mobil.
-3. P2 `[Marius]` (kø 3): README-skjermbilder + mobil-QA. Her hører også
-   Marius' gamle åpne boks hjemme: «Visuell sjekk mot mockupen i begge
-   temaer» (Task 1.0-5).
-4. Robusthetsreleasene v1.3.5–v1.4.0 (kø 4) — alle besluttet 25. aug,
-   detaljene i `docs/plan-sluttspurt.md`.
-**P1 er LUKKET 25. aug** (auto-briefen bekreftet i Discord), og dermed er
-sjekkpunkt A ferdig i sin helhet.
+1. `[Marius]` **Volum `/app/data` i Coolify** (Storages → Add → destination
+   path `/app/data`). Låser opp pushen av v1.3.7.
+2. `[Marius]` **Klarsignal «push»** → push `main` + tag `v1.3.7`, deretter
+   prod-verifisering (footer `v1.3.7`, `/health` 200) = plan Task 3 Step 8.
+   Deploy senest to 27. før 12:00, ellers vent til ma 31.: auto-brief
+   to ~19:30, GW2 i helgen 29.–31., stille måleuke 1.–6. sept.
+3. `[Marius]` **`kill 1` i containerterminalen** → de to avslutningslinjene
+   er det siste beviset for v1.3.5. Føres i status her; huker av Task 2
+   Step 8, som står åpen nettopp fordi beviset mangler.
+4. `[Marius]` **Én transfer før fr 28. kl. 19:30** — uten den har P3 ingen
+   ekte data å verifisere feltnavnene mot.
+5. **Task 4 (P3), tidligst ma 31. aug:** feltnavnene i
+   `entry/5330646/transfers/` mot ekte API + `/overganger` på 390 px.
+6. **Task 5 (P2), Marius når som helst:** README-skjermbilder + mobil-QA.
+   Her hører også «visuell sjekk mot mockupen i begge temaer» hjemme.
+7. **Task 6 (P4), ~ma 7. sept:** kostnadsmåling etter prisskiftet, mot
+   $-tersklene OG taktbudsjettet ~41–45 kall/uke.
+8. **Task 7–8 etter P4:** v1.3.8 genitiv-fiks, v1.4.0 alderstak +
+   `dataAlder`. Til slutt Task 9: arkiver planfila.
+
+**P1 er LUKKET 25. aug** (auto-briefen bekreftet i Discord) — sjekkpunkt A
+er dermed ferdig i sin helhet. P0 ble lukket samme dag.
 
 ## Driftslærdommer (ikke glem disse)
 
 - **401 med `Basic realm="traefik"`: sjekk FØRST om «HTTP Basic
-  Authentication» er slått på for appen i Coolify.** Haken henger en
-  Traefik basicauth-middleware på HTTPS-routeren og rammer ALLE stier,
-  også `/health` — og `realm="traefik"` er Traefiks standardrealm for
-  BasicAuth, ikke et tegn på manglende rute. En manglende app-rute gir
-  normalt 404, ikke 401. Redeploy hjelper ikke (tre forsøk 24. aug);
-  fjern haken + Redeploy løste det (25. aug). Routeren pekte riktig på
-  port 3000 hele tiden.
+  Authentication» er huket av for appen i Coolify.** Haken henger en
+  basicauth-middleware på HTTPS-routeren og rammer ALLE stier, også
+  `/health`; realmnavnet er Traefiks standard, ikke tegn på manglende rute
+  (som ville gitt 404). Redeploy hjelper ikke — fjern haken (løst 25. aug).
 - **Coolifys «Running (healthy)» sier bare at appen svarer INNE i
-  containeren.** Coolifys egen HTTP-sjekk overstyrer Dockerfilens
-  HEALTHCHECK, og den genererte kommandoen brukte `curl`, som ikke finnes i
-  `node:22-alpine`: `curl: not found | Return code: 0` → «healthy» mens prod
-  svarte 401 på alt. Fikset 25. aug (Coolifys sjekk AV). **MEN:** også den
-  riktige sjekken kaller `localhost:3000` utenom Traefik — den ville meldt
-  «healthy» gjennom hele 401-incidenten også. «Prod svarer rart» feilsøkes
-  ALLTID utenfra først. Detaljer + bevis-krav: DEPLOY.md.
-- **`kill 1` stopper ikke appen i containeren** (målt 25. aug: null effekt,
-  containeren restartet aldri). PID 1 i et container-namespace mottar kun
-  signaler den har egen handler for, og appen har ingen SIGTERM-handler.
-  Trygg måte å teste helsesjekken på: `docker pause` + `docker unpause`.
-  Aldri `docker stop`/`kill` på prod — `unless-stopped` lar den bli nede.
+  containeren.** Coolifys egen HTTP-sjekk overstyrte Dockerfilens og brukte
+  `curl`, som ikke finnes i `node:22-alpine` → «healthy» mens prod svarte
+  401 på alt (fikset 25. aug: Coolifys sjekk AV). Også den riktige sjekken
+  går utenom Traefik — «prod svarer rart» feilsøkes ALLTID utenfra først.
+- **`kill 1` virker FRA v1.3.5 — før det gjorde det ingenting** (målt
+  25. aug: null effekt, containeren restartet aldri). PID 1 i et
+  container-namespace mottar kun signaler den har egen handler for, og
+  appen hadde ingen. Med `createShutdown` på plass er `kill 1` i
+  containerterminalen den trygge måten å bevise ryddig avslutning:
+  containeren restartes av `unless-stopped` og BEHOLDER loggen.
+  Aldri `docker stop`/`kill` på prod — da blir den liggende nede.
 - **Sjekk at fila ikke finnes før du «oppretter» den:** planen sa
   «Create `test/format.test.js`», men fila fantes med 3 tester fra
   v1.2.0. Write overskrev dem stille, og det ble bare synlig fordi
   testtallet ble 302 i stedet for 305. Gjenopprettet med `git checkout`.
-- **Restart serveren etter endringer i `src/`:** ESM-moduler lastes én
-  gang ved oppstart, så en Playwright-kjøring mot en gammel prosess gir
-  falske funn (CSS og views slo gjennom med én gang, `format.js` ikke).
-- **En CSS-overstyring må stå ETTER regelen den overstyrer:** en
-  medieblokk lenger oppe i fila har lik spesifisitet og taper cascaden.
-  `.table-scroll--pinned`-reserven lå i ≤640-blokka på linje 307, mens
-  basisregelen står på ~577 — reserven hadde null effekt (målt: boksen ble
-  502 px, ikke 406 px). Oppdaget i økt 34.
+- **Restart serveren etter endringer i `src/`:** ESM lastes én gang ved
+  oppstart, så en Playwright-kjøring mot en gammel prosess gir falske funn.
+- **En CSS-overstyring må stå ETTER regelen den overstyrer** — en medieblokk
+  lenger oppe har lik spesifisitet og taper cascaden. `.table-scroll--pinned`
+  lå i ≤640-blokka over basisregelen og hadde null effekt (økt 34).
 - **Sjekk `git status -sb`, ikke anta at `main` = `origin/main`:** ved
   starten av økt 30 lå `main` 2 docs-commits foran origin (loggføring fra
   økt 29) selv om prompten sa «main = origin/main».
-- **Klubbgrafikken må hentes på nytt hver sesong:** `npm run fetch-clubs` +
-  bump `IMG_VERSION` i `src/middleware.js` i SAMME commit — ellers serverer
-  Cloudflare fjorårets drakter som `immutable`. Rutinen står i DEPLOY.md
-  («Klubbgrafikk (ny sesong)»).
-- **Skriv `\r\n` i node-patchskript mot docs/kildefiler** — repoets filer er
-  CRLF, og en enkelt `\n` gir en fil med blandede linjeskift (skjedde i
-  `docs/VIDERE.md` i økt 32, normalisert med en regex på `(?<!\r)\n`).
+- **Klubbgrafikken hentes på nytt hver sesong:** `npm run fetch-clubs` + bump
+  `IMG_VERSION` i `src/middleware.js` i SAMME commit, ellers serverer
+  Cloudflare fjorårets drakter som `immutable`. Rutine: DEPLOY.md.
+- **Skriv `\r\n` i node-patchskript mot repo-filer** — de er CRLF (ROADMAP
+  har i tillegg BOM), og en enkelt `\n` gir blandede linjeskift. `sed -i` er
+  forbudt på docs; bruk Edit eller et skript med `split('\r\n')/join`.
 - **Bash-heredoc med apostrofer i innholdet feiler** i dette verktøyet
   (wrapperen bruker enkle anførselstegn) — bruk Write/Edit for filer med
   `'` i teksten (CSS, norsk prosa).
 - **Lokal røyktest med prod-nøkler i repoets `.env`:** `config.js` kjører
-  `process.loadEnvFile()` som leser repoets `.env` UANSETT `--env-file`.
-  Riktig teknikk: sett `ANTHROPIC_API_KEY=` og `DISCORD_WEBHOOK_URL=` som
-  TOMME i en scratchpad-.env — `--env-file` setter dem først, `loadEnvFile`
-  overskriver ikke. Verifiser med `/health` → `ai:false, discord:false`.
+  `process.loadEnvFile()` som leser `.env` UANSETT `--env-file`. Sett
+  `ANTHROPIC_API_KEY=` og `DISCORD_WEBHOOK_URL=` TOMME i en scratchpad-.env
+  (eller i `process.env` før import) — de settes først og overskrives ikke.
+  Verifiser med `/health` → `ai:false, discord:false`.
 - **Aldri push/deploy torsdag 19:00–21:00** — auto-briefen sendes ~19:30.
   Aldri push mens kamper pågår.
 - **`/health` først** ved «virker lokalt, ikke i prod» — viser hvilke
   valgfrie funksjoner som er på, aldri verdiene.
-- **Prod-rutesveip koster penger — GJELDER KUN T.O.M. v1.3.3:** `GET /brief`
-  og `/nyheter` genererte AI-tekst per besøk. Deploy-/verifiseringsplaner
-  måtte utelate dem fra sveip eller budsjettere (~6 kall / ~$0,07 sist).
-  Fra v1.3.4 leser rutene kun cachen, og et besøk koster ingenting — de kan
-  inngå i sveip igjen så snart v1.3.4 er verifisert i prod.
-  `/api/brief.json` har alltid vært ren data og trygg.
+- **Prod-rutesveip er GRATIS fra v1.3.4** (verifisert i prod 25. aug):
+  `/brief` og `/nyheter` leser kun cachen. T.o.m. v1.3.3 kostet hvert besøk
+  et AI-kall. Unntaket består: klikk ALDRI «Spør AI om råd» på `/lag` i en
+  verifisering — det er det eneste stedet et klikk kan utløse et kall.
 - **Per-funksjon-AI-kostnad kan ikke måles retroaktivt:** Coolify-loggen er
   100 linjer og nullstilles ved hver deploy. Skal fordelingen måles, må
   `AI-kall:`-linjene samles løpende (f.eks. før hver deploy).
 - **En ren merge er ikke bevis på en riktig merge:** git plasserte
-  v1.2.3-punkter inni `[1.2.2]`-seksjonen i CHANGELOG uten konflikt — 
-  plasseringen må inspiseres, ikke antas.
+  v1.2.3-punkter inni `[1.2.2]`-seksjonen i CHANGELOG uten konflikt.
 - Cloudflare overstyrer origins `no-cache` med `max-age=14400` på
-  uversjonerte assets (Browser Cache TTL 4 t). Ufarlig — all HTML refererer
-  versjonerte URL-er (`?v=<hash>`); hash endres bare når CSS/JS endres.
+  uversjonerte assets. Ufarlig — all HTML refererer versjonerte URL-er.
 - `ai.js` sender bevisst ikke `thinking`/`effort` (feiler på Haiku 4.5);
   `max_tokens` er romslig fordi adaptiv tenkning på Sonnet 5 trekker fra
   samme budsjett.
@@ -163,14 +157,12 @@ sjekkpunkt A ferdig i sin helhet.
 - Alle beskjeder fra Marius loggføres i loggen nederst.
 - ROADMAP/CHANGELOG/CLAUDE.md/HANDOVER oppdateres løpende, i samme commit
   som endringen.
-- UI-overhalingen (24. aug, økt 30): alle 15 designbeslutninger står i
-  `docs/arkiv/plan-v130-ui-overhaul.md` §2. Brainstorming-formen: ett
-  spørsmålssett om gangen, anbefaling først — Marius valgte anbefalingen
-  på alle 15. Den formen gjelder videre.
-- Doks-opprydningen (23. aug, økt 24): konsumerte prompter slettes, utførte
-  planer arkiveres til `docs/arkiv/`; docs/-rot holdes på ~7 filer;
-  ROADMAP-køen har promptstruktur-fiksen øverst; HANDOVER-tak 200 linjer
-  med rotering til `docs/arkiv/HANDOVER-historikk.md`.
+- UI-overhalingen (økt 30): de 15 designbeslutningene står i
+  `docs/arkiv/plan-v130-ui-overhaul.md` §2. Brainstorming-formen gjelder
+  videre: ett spørsmålssett om gangen, anbefaling først.
+- Doks-opprydningen (økt 24): konsumerte prompter slettes, utførte planer
+  arkiveres til `docs/arkiv/`, docs/-rot holdes lav (nå 4 filer + arkiv),
+  HANDOVER-tak 200 linjer med rotering til historikkfila.
 
 ## Miljø
 
@@ -187,8 +179,11 @@ sjekkpunkt A ferdig i sin helhet.
   `docs/plan-sluttspurt.md` task for task, aldri push uten klarsignal,
   0 ekte AI-kall. Klarsignal «push og fortsett» → v1.3.5 ut; «push» →
   v1.3.6 ut. Marius limte inn Coolifys deploy-logg for v1.3.6 (bygg, ikke
-  app-logg — SIGTERM-linjene sto ikke der). Handling: Task 0, Task 1
-  (v1.3.5) og Task 2 (v1.3.6) verifisert i prod; Task 3 (v1.3.7) klar
-  lokalt i påvente av volumet. 364/364 + lint 0.
+  app-logg — SIGTERM-linjene sto ikke der) og ba til slutt om «en skikkelig
+  god handover til neste agent». Handling: Task 0–2 utført og verifisert i
+  prod, Task 3 (v1.3.7) klar lokalt i påvente av volumet, 364/364 + lint 0,
+  og overleveringen ryddet: denne fila har «Neste steg» øverst, planfila har
+  en §0-statusblokk, ROADMAP viser v1.3.7 som «kode klar, ikke deployet», og
+  VIDERE.md er ajour (den lå tre versjoner bak).
 - Loggposter fra økt 22–39: rotert til `docs/arkiv/HANDOVER-historikk.md`
   (200-linjerstaket, sist 2026-08-25).

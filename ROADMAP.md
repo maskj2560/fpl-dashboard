@@ -29,7 +29,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.3.4**~~ | ~~Ingen ventetid på AI-tekst: SWR + bakgrunnsoppfriskning~~ | **utført 25. aug — ute i prod, QA grønn** | — |
 | ~~**v1.3.5**~~ | ~~Ryddig avslutning (SIGTERM-handler)~~ | **utført 25. aug** | — |
 | ~~**v1.3.6**~~ | ~~gameUpdating-livssyklus + vennlig 503-side~~ | **utført 25. aug** | — |
-| ~~**v1.3.7**~~ | ~~Persistent «brief sendt»-markør (volum `/app/data`)~~ | **utført 25. aug** | — |
+| **v1.3.7** | Persistent «brief sendt»-markør (volum `/app/data`) | 4 | **kode klar + tagget lokalt** — venter på volum i Coolify + push |
 | **v1.3.8** | Genitiv-fiks i nyhetsfilteret | 4 | etter P4 |
 | **v1.4.0** | Alderstak på stale data + `dataAlder` i payload | 4 | etter P4 |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
@@ -86,9 +86,11 @@ stedet for den AI-kostende promptendringen (droppet). Rekkefølge:
 - [x] **v1.3.6 gameUpdating-livssyklus:** tidsstemplet flagg med 5 min
       utløp i `fplClient.js` + forklarende 503-side ved kaldstart i
       oppdateringsvindu (`createErrorHandler`).
-- [x] **v1.3.7 Persistent brief-markør:** `lastSentEvent` til
+- [ ] **v1.3.7 Persistent brief-markør:** `lastSentEvent` til
       `data/brief-state.json` (`DATA_DIR`-env, volum `/app/data` i
       Coolify) — redeploy i 15-min-vinduet kan ikke re-poste briefen.
+      **Kode klar 25. aug** (tag `v1.3.7` lokalt, 364/364) — venter på at
+      volumet legges til i Coolify, så push.
 - [ ] **v1.3.8 Genitiv-fiks i nyhetsfilteret:** navnevarianter uten
       genitiv-s i `filterSummaryPoints` (`news.js`). 0 AI-kall.
 - [ ] **v1.4.0 Alderstak + dataAlder:** stale data eldre enn 10 min

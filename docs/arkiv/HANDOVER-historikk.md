@@ -5,6 +5,17 @@
 > sjekkpunkt-tabellen, versjonshistorikken, utdaterte åpne punkter og hele
 > loggen over brukerbeskjeder til og med økt 22. Nyere logg: HANDOVER.md.
 
+## Rotert 2026-08-25 (økt 40): prod-QA-blokka for v1.3.4 (verbatim fra HANDOVER.md)
+
+- **Prod-QA 25. aug: 402 sjekker, 0 feil** — kjørt ÉN gang mot v1.3.4 og
+  dekker dermed også v1.3.3, som aldri ble QA-et. `qa-prod.mjs` **332/332**
+  (full 8-siders variant — `/brief` og `/nyheter` er gratis fra v1.3.4, så
+  den reduserte 240-varianten var ikke nødvendig), `qa-clubs-prod.mjs`
+  **14/14**, `qa-v133.mjs` **56/56**. 11 ruter 200 + 404, `/health`
+  ai:true discord:true leagues:1, footer `v1.3.4`.
+  **P0-funnet er bekreftet fikset i prod:** klistret tabellhode har 76,7 px
+  klaring til toppmenyen på 390 px og 14,6 px på 1440, likt i begge temaer.
+
 ## Rotert 2026-08-25 (økt 40): loggpost økt 39 (verbatim fra HANDOVER.md)
 
 - 2026-08-25 (økt 39 Fable + økt 40 Opus): planøkt «sluttspurten». Marius

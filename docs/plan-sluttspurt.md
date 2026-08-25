@@ -19,6 +19,22 @@ Denne fila ER planen og spec-en — det finnes ingen andre planfiler.
 
 ---
 
+## §0 Status — hvor står vi (oppdateres av hver økt)
+
+**Per 25. aug 2026, økt 40 (Opus):**
+
+- Task 0 (docs-rydding), Task 1 (v1.3.5) og Task 2 (v1.3.6): **utført og
+  verifisert i prod.** Prod-footer viser `v1.3.6`.
+- Task 3 (v1.3.7): **kode klar, merget til `main`, tagget lokalt** — Step 0
+  (volum `/app/data` i Coolify) og Step 8 (prod-verifisering) gjenstår.
+  `main` ligger 3 commits foran `origin/main`.
+- Task 2 Step 8 står åpen med vilje: prod-verifiseringen er gjort
+  (footer + `/health`), men graceful-shutdown-beviset mangler. Coolifys
+  deploy-logg inneholder det ikke — det må hentes med `kill 1` i
+  containerterminalen.
+- Task 4–9: blokkert av dato eller Marius. Se §3-kalenderen.
+- **Test-baseline nå: 364/364, lint 0.**
+
 ## §1 Beslutninger (Marius, 25. aug — IKKE re-spør)
 
 1. **Alle fire robusthetskandidatene bygges:** SIGTERM-handler,

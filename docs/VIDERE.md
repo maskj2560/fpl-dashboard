@@ -5,7 +5,7 @@
 
 **Sist oppdatert:** 25. august 2026
 
-## Dette har du nå (v1.3.4, sluppet 25. august)
+## Dette har du nå (v1.3.6, sluppet 25. august)
 
 Dashbord med nedtelling og skader · spillertabell med søk og filter · laget
 ditt med kapteinsråd · miniligaen · rundebrief (AI skriver den på norsk) ·
@@ -13,7 +13,21 @@ live-poeng mens kampene går · nyheter med AI-oppsummering · auto-brief til
 Discord kvelden før hver deadline · «Overganger» som viser om byttene dine
 ga eller kostet poeng.
 
-**Nytt siden sist (v1.3.4): sidene venter aldri på AI-en lenger.**
+**Nytt siden sist (v1.3.5 og v1.3.6): to fikser du forhåpentligvis aldri
+merker.** Den første handler om utrullinger: når appen legges ut på nytt,
+får den nå beskjed om å avslutte pent, og gjør ferdig sidene som er
+underveis før den stopper. Før måtte serveren drepe den etter en
+ventetid, og en side du lastet akkurat da kunne bli kuttet på midten.
+
+Den andre handler om FPLs eget vedlikeholdsvindu. Når FPL oppdaterer
+spillet sitt, svarer de ikke på data, og appen viser et banner om det.
+Det banneret kunne før bli hengende i et kvarter etter at FPL var
+tilbake; nå slukker det av seg selv etter fem minutter. Og skjer det rett
+etter at appen er startet på nytt — så den ikke har noen tall å vise fra
+før — får du nå en side som sier «FPL oppdaterer spillet, prøv igjen om
+noen minutter» i stedet for en generisk feilmelding.
+
+**Før det (v1.3.4): sidene venter aldri på AI-en lenger.**
 Før denne versjonen kunne rundebriefen og nyhetene ta 10–60 sekunder å
 laste, fordi siden sto og ventet mens AI-en skrev teksten. Nå skriver
 serveren tekstene på forhånd, etter klokka: rundebriefen én gang i døgnet
@@ -105,13 +119,11 @@ siden er aldri halvferdig:
    Merker i alle tabeller og lister, drakter på banen på lagsiden
    (keeperen får keeperdrakt). Bildene ligger på vår egen server;
    mangler et bilde, vises kortnavnet.
-3. **v1.3.2 — finpuss.** **Bygget ferdig 24. august — venter på at du
-   sier fra før den legges ut.** Rundeetiketten i nedtellingen, kampliste med
-   klokkeslett i briefen, tydeligere feilsider, mobilpuss. Etterpå én
-   AI-visning av briefen i prod for å se at teksten sitter i det nye
-   designet (eneste AI-kall i hele løpet).
-4. **v1.3.3 — rettelser** fra din egen gjennomgang i nettleser og på
-   telefon.
+3. ~~**v1.3.2 — finpuss.**~~ **Ferdig og ute 24. august.** Rundeetiketten i
+   nedtellingen, kampliste med klokkeslett i briefen, tydeligere feilsider,
+   mobilpuss.
+4. ~~**v1.3.3 — rettelser**~~ fra din egen gjennomgang i nettleser og på
+   telefon. **Ferdig og ute 24. august**, kontrollert i drift 25. august.
 
 ## Deretter, i rekkefølge (nummerert plan, 24. august)
 
@@ -131,11 +143,31 @@ er «porter» — de skjer når datoen eller du er klar, uten å stoppe utviklin
 - ~~**v1.3.3** — rettelser fra din gjennomgang.~~ **Ferdig 24. august**
   (kontrollert i drift 25. august).
 - ~~**v1.3.4** — ingen venting på AI-tekstene.~~ **Ferdig 25. august.**
-- **Deretter** — små robusthetsfikser fra kvalitetsgjennomgangen, én og én
-  etter avtale. Først i køen: at appen avslutter ryddig når den startes på
-  nytt, slik at utrullinger blir jevnere.
+- ~~**v1.3.5** — appen avslutter ryddig ved utrulling.~~ **Ferdig 25. august.**
+- ~~**v1.3.6** — vedlikeholdsbanneret henger ikke, og du får en forklarende
+  side hvis FPL oppdaterer akkurat da.~~ **Ferdig 25. august.**
+- **v1.3.7 — auto-briefen kan ikke sendes to ganger.** Bygget ferdig
+  25. august, men **venter på deg**: appen trenger en liten lagringsplass i
+  Coolify (se under) før den kan legges ut.
+- **Etter prissjekken:** to siste småfikser — nyhetsfilteret slutter å kaste
+  gyldige punkter der et navn står i eieform («Haalands»), og sidene sier
+  fra hvis tallene de viser er blitt gamle fordi FPL ikke svarer.
 
 ## Ting bare du kan gjøre
+
+De fire første står i kø akkurat nå — uten dem kommer ikke neste
+oppdatering ut:
+
+1. **Legg til lagringsplass i Coolify:** Storages → Add → destination path
+   `/app/data`. Det er her appen husker at briefen alt er sendt.
+2. **Si «push»** når det er gjort, så legges v1.3.7 ut. Helst før torsdag
+   klokka 12 — torsdag kveld går auto-briefen, og i helgen spilles runde 2.
+3. **Kjør `kill 1`** i Coolifys terminal for appen. Det er den siste
+   kontrollen på at v1.3.5 gjør jobben: loggen skal si «SIGTERM mottatt —
+   lukker serveren» og «Serveren lukket ryddig», og appen skal starte igjen
+   av seg selv.
+4. **Gjør minst ett bytte før fredag 19:30.** Uten et ekte bytte har vi
+   ingenting å sjekke «Overganger» mot etter runde 2.
 
 - ~~Sjekke i Discord-kanalen at auto-briefen faktisk kom torsdag 20. august
   ~19:30.~~ **Gjort 25. august** — den kom presis, 24 timer før deadline,
