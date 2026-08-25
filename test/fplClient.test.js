@@ -9,6 +9,7 @@ import {
   getEntryTransfers,
   isGameUpdating,
   FplError,
+  _setNow as _setFplNow,
 } from '../src/services/fplClient.js';
 
 // Mocker global fetch — ingen nettverkskall i tester.
@@ -163,4 +164,42 @@ test('getLiveHistoric deler nøkkel med getLive og lever lenger enn 1 min', asyn
   } finally {
     _setNow(null);
   }
+});
+
+// ---- v1.3.6: gameUpdating-flagget er tidsstemplet ------------------------
+
+test('gameUpdating utløper av seg selv 5 min etter siste 503', async () => {
+  let t = 1_000_000;
+  _setFplNow(() => t);
+  try {
+    mockFetch(() => jsonResponse('', 503));
+    await assert.rejects(() => getBootstrap());
+    assert.equal(isGameUpdating(), true);
+
+    t += 5 * 60_000;
+    assert.equal(isGameUpdating(), false, 'banneret skal slukke selv om ingen kall lykkes');
+  } finally {
+    _setFplNow(null);
+  }
+});
+
+test('en vellykket henting nullstiller gameUpdating med en gang', async () => {
+  const t = 1_000_000;
+  _setFplNow(() => t);
+  try {
+    mockFetch(() => jsonResponse('', 503));
+    await assert.rejects(() => getBootstrap());
+    assert.equal(isGameUpdating(), true);
+
+    clear();
+    mockFetch(() => jsonResponse({ events: [] }));
+    await getBootstrap();
+    assert.equal(isGameUpdating(), false);
+  } finally {
+    _setFplNow(null);
+  }
+});
+
+test('gameUpdating er falskt før noe 503 har skjedd', () => {
+  assert.equal(isGameUpdating(), false);
 });

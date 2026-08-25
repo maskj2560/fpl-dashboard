@@ -79,7 +79,9 @@ Base `https://fantasy.premierleague.com/api/` — åpent, ingen nøkkel. Viktig:
 - Priser (`now_cost`) er i tideler: 55 = £5.5m
 - `bootstrap-static/` er hovedkilden (events/teams/elements) — cache 15 min
 - Under kampoppdateringer kan API-et gi 503 «The game is being updated»:
-  server cachet data med banner, ikke krasj
+  server cachet data med banner, ikke krasj. Flagget er tidsstemplet og
+  utløper av seg selv 5 min etter siste 503; uten cache viser feilhandleren
+  en forklarende 503-side i stedet for den generiske feilsiden
 - Live-data (`event/{gw}/live/`) caches maks 1 min; entry/picks/transfers
   5 min. Ferdige runder hentes via `getLiveHistoric(gw)` — samme endepunkt
   og cache-nøkkel, 6 t TTL (poengene er i praksis immutable); kalles kun
