@@ -16,7 +16,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | Nr | Hva | Kø-punkt | Blokkert av |
 | --- | --- | --- | --- |
 | ~~**v1.2.4**~~ | ~~AI-rådgiverens promptstruktur på /lag~~ | **utført 24. aug** | — |
-| **P0** | Marius: prod svarer 401 etter v1.3.3-deployen | 1 | Coolify-deployloggen |
+| **P0** | Marius: Coolify-helsesjekk fiks + bevis | 1 | Marius (~30 min i Coolify) |
 | **P1** | Marius: bekreft auto-briefen 20. aug i Discord | 4 | Marius (minutter) |
 | **P2** | Marius: README-skjermbilder + mobil-QA | 6 | Marius |
 | **P3** | Etter GW2: transfers-skjema mot ekte data | 5 | GW2 spilt (~29.–31. aug) |
@@ -25,8 +25,8 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.3.0**~~ | ~~UI-overhaling, etappe 1: fundament (tokens i to temaer, temabryter, lilla topbar)~~ | **utført 24. aug** | — |
 | ~~**v1.3.1**~~ | ~~UI-overhaling, etappe 2: klubbgrafikk (merker + drakter, selvhostet)~~ | **utført 24. aug** | — |
 | ~~**v1.3.2**~~ | ~~UI-overhaling, etappe 3: finpuss per side~~ | **utført 24. aug** | — |
-| ~~**v1.3.3**~~ | ~~UI-overhaling, etappe 4: QA-rettelser~~ | **kode utført 24. aug — prod uverifisert, se kø-punkt 1** | — |
-| **v1.3.4** | Ingen ventetid på AI-tekst: SWR + bakgrunnsoppfriskning | 2 | **kode utført 25. aug — release + prod-verifisering gjenstår** |
+| ~~**v1.3.3**~~ | ~~UI-overhaling, etappe 4: QA-rettelser~~ | **kode utført 24. aug — QA kjøres samlet på v1.3.4, se kø-punkt 2** | — |
+| **v1.3.4** | Ingen ventetid på AI-tekst: SWR + bakgrunnsoppfriskning | 2 | **kode utført 25. aug — release ons 26. aug + samlet prod-QA** |
 | **v1.3.1+** | Robusthetskandidatene, én og én etter avtale | 7 | avtale per punkt |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
@@ -35,60 +35,48 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
 
 ## Kø — hva gjøres videre, i rekkefølge
 
-### 1. (P0) Prod svarer 401 — v1.3.3 er pushet, men aldri sett kjøre `[Marius]`
+### 1. Coolify-helsesjekken er en no-op — fiks + bevis `[Marius]`
 
-- **Hva:** etter pushen av `edc372b` (tag `v1.3.3`) mandag 24. aug 18:00
-  svarer https://fpl.marsk.no `401 Unauthorized` på ALLE stier — `/`,
-  `/health`, `/spillere`, `/style.css` — med
-  `www-authenticate: Basic realm="traefik"`. Appen sender aldri 401 selv,
-  så dette er origin-Traefik uten rute for domenet. Cloudflare slipper
-  gjennom (`cf-cache-status: DYNAMIC`), og `dash.marsk.no` svarer 302,
-  så serveren og proxyen lever — det er appruten som mangler.
-  90 forespurte forsøk over 15 min (18:02–18:17) ga 401 hele veien;
-  ny sjekk 18:20 ga fortsatt 401.
-- **Utelukket lokalt:** `package.json`/`package-lock.json` er i synk på
-  1.3.3 (`npm ci` skal gå), Dockerfile er urørt og kopierer kun `src/`,
-  `views/`, `public/`. `npm test` 322/322 og lint 0 på `main`.
-- **Neste steg:** Marius åpner Coolify-deployloggen for `edc372b`.
-  Går deployen gjennom, gjenstår plan-steg 8 og 9 i
-  `docs/arkiv/plan-v133-qa.md`: 9 ruter + `/health` + footer `v1.3.3` +
-  ny asset-hash (UTEN `/brief` og `/nyheter`), så `qa-prod.mjs` (240),
-  `qa-clubs-prod.mjs` (14) og `qa-v133.mjs` (~56).
-- **Størrelse:** ukjent — avhenger av hva loggen sier.
+- **Hva:** under 401-incidenten 24.–25. aug meldte Coolify «Running
+  (healthy)» hele tiden appen svarte 401 på alt. Deployloggen viste
+  `Healthcheck logs: /bin/sh: curl: not found | Return code: 0` →
+  «New container is healthy». Coolifys egen HTTP-helsesjekk overstyrer
+  Dockerfilens HEALTHCHECK (som er korrekt: node-fetch mot
+  `/health`, Dockerfile linje 16–17), og `curl` finnes ikke i
+  `node:22-alpine`.
+- **Fiks (besluttet 25. aug):** alternativ a — skru av Coolifys egen
+  helsesjekk så Dockerfilens gjelder (null kodeendring, fasiten blir
+  versjonskontrollert). Fallback b hvis beviset feiler: sett Coolifys
+  kommando til `wget -qO- http://localhost:3000/health` (busybox-wget
+  finnes i imaget). Ingen kodeendring → ingen versjonsnummer;
+  dokumenteres i DEPLOY.md.
+- **Bevis (obligatorisk — uten dette er vi like blinde som før):**
+  (i) container-health-loggen viser ekte sjekker med exit 0,
+  (ii) stopp appen inne i containeren og se at Coolify melder
+  unhealthy, ikke «Running (healthy)».
+- **Blokkerer:** pushen i kø-punkt 2 — deploy-signalet må være til å
+  stole på før neste deploy.
+- **Størrelse:** ~30 min i Coolify.
 
-### 2. (v1.3.4) Ingen skal vente på en AI-tekst — SWR + bakgrunnsoppfriskning
+### 2. (v1.3.4) Release + prod-verifisering + hele QA-en i ett
 
-- **Hva:** Marius melder 24. aug at deler av siden bruker ekstremt lang tid
-  på å laste, og mistenker briefene. Koden støtter mistanken:
-  `ai.js:38-40` serverer cachen KUN mens den er ferskere enn
-  `minIntervalMs`. Er den eldre, venter den besøkende på hele
-  Claude-rundturen (brief: `max_tokens` 4000 + adaptiv tenkning).
-  `cache.js` har stale-while-revalidate; `ai.js` har det ikke. I tillegg
-  bor AI-cachen i minnet, så den er TOM etter hver deploy — første
-  besøkende etter en utrulling betaler alltid full ventetid.
-- **Mål:** en sidevisning skal aldri blokkere på et AI-kall. Cachet tekst
-  serveres umiddelbart og fornyes i bakgrunnen; er cachen kald, vises
-  data-briefen (som allerede er den dokumenterte fallbacken) mens teksten
-  genereres. Serveren frisker opp på timer, ikke ved sidebesøk.
-- **Omfang (Marius 24. aug):** alle tre AI-tekstene — briefen (`/brief`),
-  nyhetsoppsummeringen (`/nyheter`) og rådgiveren på `/lag`. Rådgiveren
-  utløses av et klikk, så der må kald cache fortsatt vente — knappen kan
-  ikke svare med ingenting. Stale cache skal aldri blokkere noe sted.
-- **Takt (BEKREFTET av Marius 24. aug, planøkt 35):** briefen friskes opp
-  én gang i døgnet PLUSS hver time i et 6-timersvindu før deadline;
-  nyhetene hver 6. time. Utregnet ~41–45 kall/uke (28 nyheter + ~13 brief
-  + rådgiverklikk + 2 per deploy); måles mot `AI-kall:`-linjene før og
-  etter. Auto-briefen i `notify.js` bruker ALLEREDE samme `cacheKey` som
-  `/brief`, så det kallet varmer cachen gratis — gjenbruk det i stedet
-  for å legge et nytt oppå. Design + kjøreprompt: Fable-planøkt 35 —
-  utførelsesøkten skriver `docs/plan-v134-ai-swr.md` som Task 0.
-- **Mål først, ikke gjett:** økten starter med å tidfeste hver rute
-  server-side (AI-kall vs. FPL-kall vs. rendring) og rapportere tallene.
-  `/overganger` gjør opptil 38 live-kall og `/liga` henter rival-picks —
-  de kan være en egen kilde til ventetid enn AI.
-- **Eier detaljene:** dette punktet. Erstatter robusthetskandidaten
-  «SWR i `ai.js`» i kø-punkt 7.
-- **Størrelse:** middels — én planleggings-/utførelsesøkt.
+- **Status:** koden FERDIG 25. aug på `feat/ai-swr-v134` (upushet):
+  350/350, lint 0, målt med fake klient: kald `/brief` 10 023 ms →
+  17 ms, forsiden 10 038 ms → 35 ms, 0 AI-kall fra sidevisninger.
+  Design og takt: `docs/plan-v134-ai-swr.md` (~41–45 kall/uke,
+  godkjent — ikke re-planlegg).
+- **Gjenstår, i rekkefølge:** (1) docs-rettelser etter incidenten,
+  (2) versjonbump 1.3.4 + CHANGELOG-flytt, (3) merge `--no-ff` + tag,
+  (4) push KUN på klarsignal — onsdag 26. aug, aldri to 19–21, aldri
+  under kamper, (5) prod-verifisering: footer v1.3.4, 11 ruter 200 +
+  404 INKL. `/brief` og `/nyheter` (gratis fra v1.3.4), 2
+  oppstartskall i loggen (budsjettert), 0 `AI-kall:` ved
+  sidevisninger, (6) QA-steg 8+9 fra `docs/arkiv/plan-v133-qa.md`
+  (240 + 14 + ~56 sjekker) kjøres ÉN gang mot prod på v1.3.4 — dekker
+  både v1.3.3-funnene (P0: klistret tabellhode 390 px) og v1.3.4.
+  Asset-hashen er uendret (v1.3.4 rører kun `src/`).
+- **Blokkert av:** kø-punkt 1 (helsesjekk-beviset).
+- **Størrelse:** én utførelsesøkt + Coolify-steg hos Marius.
 
 ### 3. (P4) Kostnadskontroll etter prisskiftet
 
