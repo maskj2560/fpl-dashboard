@@ -12,7 +12,7 @@
 
 - **v1.3.4 KLARGJORT FOR RELEASE (økt 38), ingenting pushet:
   350/350, lint 0** (baseline 322). `package.json` = 1.3.4, CHANGELOG
-  flyttet til `[1.3.4] - 2026-08-26`, merge `--no-ff` av
+  flyttet til `[1.3.4] - 2026-08-25`, merge `--no-ff` av
   `feat/ai-swr-v134` til `main` + tag `v1.3.4` gjort LOKALT.
   **Pushen venter kun på Marius' «push»** — helsesjekken ble lukket 25. aug.
   Vindu: ons 26. aug (reserve tor 27. før 19:00), aldri to 19–21, aldri

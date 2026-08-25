@@ -77,13 +77,13 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
   17 ms, forsiden 10 038 ms → 35 ms, 0 AI-kall fra sidevisninger.
   Design og takt: `docs/plan-v134-ai-swr.md` (~41–45 kall/uke,
   godkjent — ikke re-planlegg). **Releasen er klargjort lokalt**
-  (1.3.4 i `package.json`, CHANGELOG flyttet til `[1.3.4] - 2026-08-26`,
+  (1.3.4 i `package.json`, CHANGELOG flyttet til `[1.3.4] - 2026-08-25`,
   merge `--no-ff` til `main` + tag `v1.3.4`) — **ingenting pushet.**
   Pushen venter på helsesjekk-beviset (kø-punkt 1) og Marius' klarsignal.
 - **Gjenstår, i rekkefølge:** (1) docs-rettelser etter incidenten,
   (2) versjonbump 1.3.4 + CHANGELOG-flytt, (3) merge `--no-ff` + tag,
-  (4) push KUN på klarsignal — onsdag 26. aug, aldri to 19–21, aldri
-  under kamper, (5) prod-verifisering: footer v1.3.4, 11 ruter 200 +
+  (4) push — klarsignal gitt av Marius natt til 25. aug (02:47, utenfor
+  kampvindu og torsdagsvinduet), (5) prod-verifisering: footer v1.3.4, 11 ruter 200 +
   404 INKL. `/brief` og `/nyheter` (gratis fra v1.3.4), 2
   oppstartskall i loggen (budsjettert), 0 `AI-kall:` ved
   sidevisninger, (6) QA-steg 8+9 fra `docs/arkiv/plan-v133-qa.md`
