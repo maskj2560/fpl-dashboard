@@ -5,6 +5,26 @@
 > sjekkpunkt-tabellen, versjonshistorikken, utdaterte åpne punkter og hele
 > loggen over brukerbeskjeder til og med økt 22. Nyere logg: HANDOVER.md.
 
+## Rotert 2026-08-25 (økt 40): loggpost økt 39 (verbatim fra HANDOVER.md)
+
+- 2026-08-25 (økt 39 Fable + økt 40 Opus): planøkt «sluttspurten». Marius
+  besluttet: alle fire robusthetskandidatene bygges (v1.3.5 SIGTERM →
+  v1.3.6 gameUpdating → v1.3.7 brief-markør → etter P4: v1.3.8 genitiv +
+  v1.4.0 alderstak/dataAlder), promptendringen i filterSummaryPoints
+  droppet, volum `/app/data` i Coolify, port9 + tre utførte filer
+  arkivert. Plan: `docs/plan-sluttspurt.md`. Handling: Task 0 utført.
+
+## Rotert 2026-08-25 (økt 40): v1.3.4-statusblokka (verbatim fra HANDOVER.md)
+
+- **v1.3.4 UTE I PROD siden 25. aug 02:5x — hele v1.3 er dermed ferdig.**
+  350/350, lint 0 (baseline 322), tag `v1.3.4` = `f61aae2` pushet. Ingen
+  sidevisning venter på en AI-tekst: `ai.js` har SWR + `getCached()`, de tre
+  sidene leser cachen, `refresh.js` frisker opp på klokka. **Målt i prod rett
+  etter deploy med TOM AI-cache:** `/brief` 127 ms, `/nyheter` 92 ms, forsiden
+  117 ms, gjentatte besøk 89–99 ms (mot 10 023 ms på v1.3.3-adferden). Begge
+  AI-kortene til stede → oppstartstikket varmet tekstene (2 budsjetterte kall).
+  Plan arkivert: `docs/arkiv/plan-v134-ai-swr.md`.
+
 ## Rotert 2026-08-25 (økt 40): loggpost økt 38 (verbatim fra HANDOVER.md)
 
 - 2026-08-25 (økt 38, Opus): kjøreprompt «ferdigstill v1.3.4-releasen +

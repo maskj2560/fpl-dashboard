@@ -1,6 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { sendDecision, chunkDiscordText, _send, _setHooks, _reset } from '../src/services/notify.js';
+import {
+  sendDecision,
+  chunkDiscordText,
+  _send,
+  _setHooks,
+  _reset,
+  _initState,
+} from '../src/services/notify.js';
 
 const H = 60 * 60_000;
 const CHECK = 6 * H;
@@ -128,6 +135,84 @@ test('send hopper over runde som allerede er sendt', async () => {
   try {
     await _send({ id: 7, name: 'Runde 7' });
     await _send({ id: 7, name: 'Runde 7' });
+    assert.equal(posts.length, 1);
+  } finally {
+    _reset();
+  }
+});
+
+// ---- v1.3.7: «brief sendt»-markøren overlever redeploy -------------------
+
+test('brief-markøren leses ved oppstart og hindrer re-sending', async () => {
+  const posts = [];
+  _reset();
+  _setHooks({
+    loadState: () => 2,
+    compose: async () => 'melding',
+    post: async (m) => posts.push(m),
+  });
+  try {
+    _initState();
+    await _send({ id: 2, name: 'Gameweek 2' });
+    assert.equal(posts.length, 0, 'runde 2 var alt sendt før omstarten');
+  } finally {
+    _reset();
+  }
+});
+
+test('vellykket sending lagrer markøren', async () => {
+  const saved = [];
+  _reset();
+  _setHooks({
+    loadState: () => null,
+    compose: async () => 'melding',
+    post: async () => {},
+    saveState: (id) => saved.push(id),
+  });
+  try {
+    _initState();
+    await _send({ id: 3, name: 'Gameweek 3' });
+    assert.deepEqual(saved, [3]);
+  } finally {
+    _reset();
+  }
+});
+
+test('feil ved lagring stopper ikke sendingen', async () => {
+  const posts = [];
+  const originalError = console.error;
+  console.error = () => {};
+  _reset();
+  _setHooks({
+    loadState: () => null,
+    compose: async () => 'melding',
+    post: async (m) => posts.push(m),
+    saveState: () => {
+      throw new Error('disk borte');
+    },
+  });
+  try {
+    _initState();
+    await _send({ id: 3, name: 'Gameweek 3' });
+    assert.equal(posts.length, 1);
+  } finally {
+    console.error = originalError;
+    _reset();
+  }
+});
+
+test('en tom markør lar briefen gå ut som normalt', async () => {
+  const posts = [];
+  _reset();
+  _setHooks({
+    loadState: () => null,
+    compose: async () => 'melding',
+    post: async (m) => posts.push(m),
+    saveState: () => {},
+  });
+  try {
+    _initState();
+    await _send({ id: 4, name: 'Gameweek 4' });
     assert.equal(posts.length, 1);
   } finally {
     _reset();

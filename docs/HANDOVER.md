@@ -6,26 +6,28 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-25 (økt 40, Opus: v1.3.5 ute, v1.3.6 klar lokalt)
+**Sist oppdatert:** 2026-08-25 (økt 40, Opus: v1.3.5 + v1.3.6 ute, v1.3.7 klar)
 
 ## Status akkurat nå
-- **v1.3.5 UTE I PROD 25. aug** (footer `v1.3.5`, `/health` 200): serveren
-  har SIGTERM/SIGINT-handler (`createShutdown` i `middleware.js`). Lokalt
-  bevis: «SIGINT mottatt — lukker serveren» + «Serveren lukket ryddig»,
-  exit 0 — fyrt med `process.emit('SIGINT')`, for Windows leverer ikke
-  ekte signaler til node. **Ekte SIGTERM-bevis mangler fortsatt:** hentes
-  fra forrige containers logg ved v1.3.6-deployen.
-- **v1.3.6 (gameUpdating + vennlig 503-side) klar lokalt — IKKE pushet.**
-  Flagget er tidsstemplet (5 min utløp) og feilhandleren har egen
-  503-gren; 360/360, lint 0. Røyktest: 11 ruter 200 + 404, tomme nøkler.
-- **v1.3.4 UTE I PROD siden 25. aug 02:5x — hele v1.3 er dermed ferdig.**
-  350/350, lint 0 (baseline 322), tag `v1.3.4` = `f61aae2` pushet. Ingen
-  sidevisning venter på en AI-tekst: `ai.js` har SWR + `getCached()`, de tre
-  sidene leser cachen, `refresh.js` frisker opp på klokka. **Målt i prod rett
-  etter deploy med TOM AI-cache:** `/brief` 127 ms, `/nyheter` 92 ms, forsiden
-  117 ms, gjentatte besøk 89–99 ms (mot 10 023 ms på v1.3.3-adferden). Begge
-  AI-kortene til stede → oppstartstikket varmet tekstene (2 budsjetterte kall).
-  Plan arkivert: `docs/arkiv/plan-v134-ai-swr.md`.
+- **v1.3.5 og v1.3.6 UTE I PROD 25. aug** (footer `v1.3.6`, `/health` 200).
+  v1.3.5: SIGTERM/SIGINT-handler (`createShutdown`). v1.3.6: tidsstemplet
+  gameUpdating (5 min utløp) + egen 503-side ved kaldstart i FPLs
+  oppdateringsvindu. 360/360, lint 0.
+- **Ekte SIGTERM-bevis mangler — og Coolifys DEPLOY-logg er feil sted å
+  lete.** Deploy-loggen (25. aug 02:04, v1.3.6) viser build + «Removing
+  old containers»; appens stdout lever i den gamle containerens logg, som
+  slettes med containeren. Sirkumstansielt: fjerningen tok 0,5 s — uten
+  handler venter Docker ut stopp-timeouten (10 s) og SIGKILL-er. Ekte
+  bevis: `kill 1` i containerterminalen (samme container restartes, loggen
+  beholdes) — de to linjene skal stå der. Lokalt er handleren bevist med
+  `process.emit('SIGINT')`: «SIGINT mottatt — lukker serveren» +
+  «Serveren lukket ryddig», exit 0.
+- **v1.3.7 (persistent brief-markør) klar lokalt — IKKE pushet.** Venter
+  på at volumet `/app/data` er lagt til i Coolify (Storages). 364/364,
+  lint 0. Røyktest med ekte fs: «Brief-markør lastet: runde 2 er alt
+  sendt», ingen Discord-poster.
+- **v1.3.4 (AI-SWR) ute siden 25. aug** — målingene og detaljene er rotert
+  til `docs/arkiv/HANDOVER-historikk.md`; plan: `docs/arkiv/plan-v134-ai-swr.md`.
 - **Prod-QA 25. aug: 402 sjekker, 0 feil** — kjørt ÉN gang mot v1.3.4 og
   dekker dermed også v1.3.3, som aldri ble QA-et. `qa-prod.mjs` **332/332**
   (full 8-siders variant — `/brief` og `/nyheter` er gratis fra v1.3.4, så
@@ -183,14 +185,10 @@ sjekkpunkt A ferdig i sin helhet.
 
 - 2026-08-25 (økt 40, Opus): kjøreprompt «SLUTTSPURTEN» — utfør
   `docs/plan-sluttspurt.md` task for task, aldri push uten klarsignal,
-  0 ekte AI-kall. Handling: Task 0 (docs-rydding) + Task 1 (v1.3.5,
-  pushet etter klarsignal «push og fortsett» — ute i prod) + Task 2
-  (v1.3.6, klar lokalt), 360/360 + lint 0.
-- 2026-08-25 (økt 39 Fable + økt 40 Opus): planøkt «sluttspurten». Marius
-  besluttet: alle fire robusthetskandidatene bygges (v1.3.5 SIGTERM →
-  v1.3.6 gameUpdating → v1.3.7 brief-markør → etter P4: v1.3.8 genitiv +
-  v1.4.0 alderstak/dataAlder), promptendringen i filterSummaryPoints
-  droppet, volum `/app/data` i Coolify, port9 + tre utførte filer
-  arkivert. Plan: `docs/plan-sluttspurt.md`. Handling: Task 0 utført.
-- Loggposter fra økt 22–38: rotert til `docs/arkiv/HANDOVER-historikk.md`
+  0 ekte AI-kall. Klarsignal «push og fortsett» → v1.3.5 ut; «push» →
+  v1.3.6 ut. Marius limte inn Coolifys deploy-logg for v1.3.6 (bygg, ikke
+  app-logg — SIGTERM-linjene sto ikke der). Handling: Task 0, Task 1
+  (v1.3.5) og Task 2 (v1.3.6) verifisert i prod; Task 3 (v1.3.7) klar
+  lokalt i påvente av volumet. 364/364 + lint 0.
+- Loggposter fra økt 22–39: rotert til `docs/arkiv/HANDOVER-historikk.md`
   (200-linjerstaket, sist 2026-08-25).

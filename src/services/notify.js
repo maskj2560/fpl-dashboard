@@ -1,20 +1,58 @@
 // Sender gameweek-briefen til Discord-webhook X timer før deadline.
 // Enkel deadline-scheduler uten cron-avhengighet: sjekker hver 6. time og
 // setter en presis timer når send-tidspunktet er innenfor vinduet.
+import fs from 'node:fs';
+import path from 'node:path';
 import config from '../config.js';
 import { getBootstrap } from './fplClient.js';
 import { nextEvent } from './analysis.js';
 import { assembleBrief, generateAiBrief } from './brief.js';
 
 const CHECK_INTERVAL = 6 * 60 * 60_000;
-// Sender ikke mer enn 15 min etter planlagt tid. `lastSentEvent` lever bare i
-// minnet, så en redeploy innenfor dette vinduet re-poster briefen. Vinduet er
-// holdt kort for å begrense sjansen, og loggen sier fra når det inntreffer.
-// Varig løsning krever persistens på tvers av containere — se ROADMAP.
+// Sender ikke mer enn 15 min etter planlagt tid. `lastSentEvent` speiles til
+// DATA_DIR/brief-state.json og lastes ved oppstart, så en redeploy innenfor
+// vinduet kan ikke re-poste briefen. Uten skrivbar mappe faller vi tilbake til
+// ren minne-oppførsel, og loggen sier fra når et sent tilfelle inntreffer.
 const MAX_LATE_MS = 15 * 60_000;
 let timer = null;
 let lastSentEvent = null;
 let sending = false;
+
+// Markøren overlever redeploy: uten den re-poster en deploy innenfor
+// 15-min-vinduet briefen til Discord (P1-5b). Fila ligger i DATA_DIR (volum
+// i prod); mangler den eller er den uskrivbar, oppfører appen seg som før —
+// aldri krasj.
+const stateFile = () => path.join(config.dataDir, 'brief-state.json');
+
+function loadState() {
+  try {
+    const raw = JSON.parse(fs.readFileSync(stateFile(), 'utf8'));
+    return Number.isInteger(raw.lastSentEvent) ? raw.lastSentEvent : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveState(eventId) {
+  fs.mkdirSync(config.dataDir, { recursive: true });
+  fs.writeFileSync(stateFile(), JSON.stringify({ lastSentEvent: eventId }));
+}
+
+function persistState(eventId) {
+  try {
+    (hooks.saveState ?? saveState)(eventId);
+  } catch (err) {
+    console.error('Klarte ikke å lagre brief-markøren:', err.message);
+  }
+}
+
+/** Leser markøren fra disk. Kalles av startScheduler og av testene. */
+export function _initState() {
+  lastSentEvent = (hooks.loadState ?? loadState)();
+  if (lastSentEvent != null) {
+    console.log(`Brief-markør lastet: runde ${lastSentEvent} er alt sendt`);
+  }
+}
 
 /**
  * Ren beslutning om auto-brief: vent, planlegg timer, eller hopp over.
@@ -31,6 +69,7 @@ export function sendDecision({ deadlineTime, hoursBefore, nowMs, checkIntervalMs
 
 export function startScheduler() {
   if (!config.discordWebhookUrl) return;
+  _initState();
   check();
   setInterval(check, CHECK_INTERVAL).unref?.();
   console.log(`Auto-brief aktiv: sender ${config.briefHoursBeforeDeadline} t før deadline`);
@@ -53,6 +92,7 @@ async function check() {
       // Typisk en deploy/restart i sendevinduet — briefen er alt sendt (eller
       // toget har gått). Marker som håndtert så vi ikke spammer kanalen.
       lastSentEvent = upcoming.id;
+      persistState(upcoming.id);
       console.log(`Auto-brief hoppet over for ${upcoming.name}: send-tidspunktet er passert`);
       return;
     }
@@ -81,6 +121,7 @@ async function send(event) {
     const message = await (hooks.compose ?? composeMessage)();
     await (hooks.post ?? postToDiscord)(message);
     lastSentEvent = event.id;
+    persistState(event.id);
     console.log(`Auto-brief sendt for ${event.name}`);
   } catch (err) {
     console.error('Auto-brief-sending feilet:', err.message);
@@ -100,7 +141,7 @@ async function composeMessage() {
 
 // Test-hooks (samme mønster som _setNow i cache.js): lar send-stien kjøres
 // uten nettverk. Aldri satt i produksjon.
-const hooks = { compose: null, post: null };
+const hooks = { compose: null, post: null, loadState: null, saveState: null };
 
 export const _send = send;
 
@@ -115,6 +156,8 @@ export function _reset() {
   sending = false;
   hooks.compose = null;
   hooks.post = null;
+  hooks.loadState = null;
+  hooks.saveState = null;
 }
 
 function dataBriefText(brief) {

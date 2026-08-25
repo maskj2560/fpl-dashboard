@@ -608,7 +608,7 @@ cache + 503 → ruta kaster → feilhandleren viser den nye siden.
 
 - [ ] **Step 0 (Marius, FØR push):** legg til persistent volum i Coolify:
   Storages → destination path `/app/data`. Bekreft i chatten.
-- [ ] **Step 1: Feilende tester** i `test/notify.test.js` (bruk filas
+- [x] **Step 1: Feilende tester** i `test/notify.test.js` (bruk filas
   `_setHooks`/`_send`/`_reset`-mønster):
 
 ```js
@@ -642,8 +642,8 @@ test('feil ved lagring stopper ikke sendingen', async () => {
 });
 ```
 
-- [ ] **Step 2:** `npm test` → FAIL («_initState is not a function»)
-- [ ] **Step 3: Implementer** i `notify.js` (+ `import fs from 'node:fs'`,
+- [x] **Step 2:** `npm test` → FAIL («_initState is not a function»)
+- [x] **Step 3: Implementer** i `notify.js` (+ `import fs from 'node:fs'`,
   `import path from 'node:path'`):
 
 ```js
@@ -702,15 +702,15 @@ RUN mkdir -p /app/data && chown node:node /app/data
 # DATA_DIR=data
 ```
 
-- [ ] **Step 4:** `npm test` → ~363/363, `npm run lint` → 0
-- [ ] **Step 5: Lokal røyktest med ekte fs** (0 nettverkskall til
+- [x] **Step 4:** `npm test` → ~363/363, `npm run lint` → 0
+- [x] **Step 5: Lokal røyktest med ekte fs** (0 nettverkskall til
   AI/Discord): skriv `{"lastSentEvent":2}` til
   `<scratchpad>/data/brief-state.json`, start appen med scratchpad-.env der
   `DATA_DIR=<scratchpad>/data`, `DISCORD_WEBHOOK_URL=http://localhost:9/`
   (dummy — GW2 er runde 2, markøren matcher, så check() returnerer før noe
   sendes) og TOM `ANTHROPIC_API_KEY=`. Bevis: logglinjen «Brief-markør
   lastet: runde 2 er alt sendt» + ingen Discord-feil i loggen.
-- [ ] **Step 6: Docs i samme commit** — `package.json` `1.3.7`; CHANGELOG:
+- [x] **Step 6: Docs i samme commit** — `package.json` `1.3.7`; CHANGELOG:
 
 ```
 ## [1.3.7] - 2026-08-XX
@@ -729,7 +729,7 @@ RUN mkdir -p /app/data && chown node:node /app/data
   config-lista + én setning i notify-beskrivelsen. ROADMAP: huk av + stryk
   rad. HANDOVER: status + logg. Fjern/juster den utdaterte kommentaren
   øverst i notify.js («Varig løsning krever persistens … se ROADMAP»).
-- [ ] **Step 7:** Branch `fix/brief-markor-v137`, commit
+- [x] **Step 7:** Branch `fix/brief-markor-v137`, commit
   `fix: brief sendt-markøren overlever redeploy (v1.3.7)`, merge `--no-ff`,
   tag `v1.3.7`. **STOPP → volumet MÅ være bekreftet (Step 0), så vent på
   «push».** Deploy senest torsdag 27. før 12:00, ellers mandag 31.
