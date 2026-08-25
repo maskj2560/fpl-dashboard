@@ -7,6 +7,33 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.3.4] - 2026-08-26
+
+### Added
+
+- Serveren frisker opp AI-tekstene selv, på klokka: rundebriefen én gang i
+  døgnet og hver time de siste seks timene før deadline, nyhetene hver
+  sjette time — pluss én gang like etter en oppdatering av appen. Tekstene
+  er dermed klare før noen ser på siden.
+
+### Fixed
+
+- `/brief` vises med en gang: siden leser AI-teksten fra cachen i stedet for
+  å generere den mens du venter. Er teksten ikke laget ennå, vises
+  data-briefen som før.
+- Forsiden og `/nyheter` vises med en gang: nyhetsoppsummeringen leses fra
+  cachen i stedet for å genereres mens du venter. Forsiden ventet på den
+  samme teksten som `/nyheter`, uten at det var synlig noe sted.
+- AI-rådgiveren på `/lag` svarer med en gang når det finnes et tidligere
+  råd, og henter et nytt i bakgrunnen. Første klikk i en runde venter som før.
+
+### Changed
+
+- `ai.js` kan servere en utgått AI-tekst med en gang og fornye den i
+  bakgrunnen (stale-while-revalidate), og har fått `getCached()` som leser
+  cachen uten noen gang å gjøre et nettverkskall. Grunnlaget for at ingen
+  sidevisning skal vente på en AI-tekst.
+
 ## [1.3.3] - 2026-08-24
 
 ### Added

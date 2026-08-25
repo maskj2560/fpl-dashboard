@@ -47,6 +47,10 @@ src/services/
                    cache med minimumsintervall per funksjon
   news.js          RSS-nyheter + valgfri AI-oppsummering (via ai.js, cachet)
   notify.js        deadline-scheduler + Discord-webhook for auto-brief (valgfri)
+  refresh.js       (v1.3.4) timer-styrt oppfrisking av AI-tekstene:
+                   refreshDecision (ren beslutning) + startAiRefresher
+                   (ett tikk ved oppstart, så hver 30. min). Sender aldri
+                   noe til Discord — det er notify.js sin sak
 views/             EJS: layout.ejs + én fil per side. views/partials/:
                    theme-toggle (v1.3.0), club-badge og club-shirt (v1.3.1)
 public/            style.css (alle farger som tokens: :root = mørkt tema,
@@ -91,11 +95,14 @@ Fire funksjoner, alle kun aktive når `ANTHROPIC_API_KEY` er satt:
 
 1. **Nyhetsoppsummering** (`news.js`): RSS-titler + ingresser oppsummeres til
    korte norske FPL-punkter. Maks én generering per 30 min, `max_tokens` 2000.
+   `getNews()` leser kun cachen; `refreshNewsSummary()` genererer.
 2. **AI-gameweek-brief** (/brief): modellen skriver hele briefen på norsk fra
    data-briefens JSON. Maks én generering per time, `max_tokens` 4000.
-   Data-briefen er alltid fallback.
+   Ruten bruker `getCachedAiBrief()`; `generateAiBrief()` kalles kun av
+   `refresh.js` og auto-briefen. Data-briefen er alltid fallback.
 3. **AI transfer-rådgiver** (/lag): kun ved klikk, cachet 1 time,
-   `max_tokens` 4000.
+   `max_tokens` 4000. Eneste sted et brukerklikk kan vente på et AI-kall —
+   og bare når cachen er helt kald (`swr: true`).
 
 `max_tokens` er satt romsligere enn svarlengden tilsier fordi adaptiv tenkning
 på Sonnet 5 trekker fra samme budsjett — taket hindrer avkortede svar, og
@@ -108,9 +115,15 @@ Ved feil eller tomt svar venter `ai.js` 5 minutter før nytt forsøk på samme
 nøkkel (`FAILURE_BACKOFF_MS`), slik at en ugyldig nøkkel ikke gir ett betalt
 kall per sidebesøk.
 
-Kostnadsregler: alt on-demand + cachet for alle besøkende, korte prompts.
-Uten nøkkel vises rå data (feed-liste, data-brief) — AI er alltid et tillegg,
-aldri et krav.
+Kostnadsregler (fra v1.3.4): tekstene er **timer-styrt**, ikke besøks-styrt.
+En sidevisning blokkerer aldri på et AI-kall og utløser aldri et — den leser
+cachen (`ai.getCached`). Eneste unntak: rådgiverklikket på /lag venter når
+cachen er helt kald. Utgått tekst serveres umiddelbart og fornyes i
+bakgrunnen (`swr: true` i `ai.generate`). Takt: briefen 1x/døgn + hver time
+i et 6-timersvindu før deadline, nyhetene hver 6. time, pluss ett tikk ved
+oppstart (AI-cachen bor i minnet og er tom etter hver deploy) — til sammen
+~41–45 kall/uke. Prompts holdes korte. Uten nøkkel vises rå data
+(feed-liste, data-brief) — AI er alltid et tillegg, aldri et krav.
 
 ## Konvensjoner
 

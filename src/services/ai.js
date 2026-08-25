@@ -17,6 +17,15 @@ export function isEnabled() {
   return Boolean(config.anthropicApiKey || injectedClient);
 }
 
+/**
+ * Teksten som ligger i cachen for nøkkelen, uansett alder — eller null.
+ * Gjør aldri nettverkskall: sidevisninger bruker denne, oppfriskeren
+ * generate(). Slik kan ingen sidevisning blokkere på en Claude-rundtur.
+ */
+export function getCached(cacheKey) {
+  return store.get(cacheKey) ?? null;
+}
+
 function getClient() {
   if (injectedClient) return injectedClient;
   if (!client) client = new Anthropic({ apiKey: config.anthropicApiKey });
@@ -28,20 +37,51 @@ function getClient() {
  * minIntervalMs uansett antall besøkende. Returnerer {text, generatedAt}
  * eller null (AI av / første kall feilet).
  *
+ * Med `swr: true` blokkerer en utgått cache ikke: den gamle teksten
+ * returneres med en gang og fornyes i bakgrunnen (som cache.js). Er cachen
+ * kald, ventes det som før — da finnes det ingenting å svare med.
+ *
  * Merk om max_tokens: på Sonnet 5 er adaptiv tenkning på som standard, og
  * tenketokens trekkes fra max_tokens. Taket er derfor satt romslig nok til at
  * svaret ikke blir avkortet — lengden styres av instruksjonene i prompten, og
  * ubrukte tokens koster ingenting. Kallet holdes ellers minimalt (ingen
  * `thinking`/`effort`) så det virker likt på både Sonnet 5 og Haiku 4.5.
  */
-export async function generate({ cacheKey, minIntervalMs, system, prompt, maxTokens = 2000 }) {
+export async function generate({
+  cacheKey,
+  minIntervalMs,
+  system,
+  prompt,
+  maxTokens = 2000,
+  swr = false,
+}) {
   if (!isEnabled()) return null;
   const cached = store.get(cacheKey);
   if (cached && now() - cached.generatedAt < minIntervalMs) return cached;
-  if (inFlight.has(cacheKey)) return inFlight.get(cacheKey);
 
+  if (cached && swr) {
+    // Stale: svar med gammel tekst nå, forny i bakgrunnen — men ikke før
+    // backoff-vinduet etter forrige feil er over.
+    if (!inFailureBackoff(cacheKey)) {
+      startGeneration({ cacheKey, system, prompt, maxTokens, cached });
+    }
+    return cached;
+  }
+
+  if (inFlight.has(cacheKey)) return inFlight.get(cacheKey);
+  if (inFailureBackoff(cacheKey)) return cached ?? null;
+  return startGeneration({ cacheKey, system, prompt, maxTokens, cached });
+}
+
+function inFailureBackoff(cacheKey) {
   const failedAt = lastFailureAt.get(cacheKey);
-  if (failedAt != null && now() - failedAt < FAILURE_BACKOFF_MS) return cached ?? null;
+  return failedAt != null && now() - failedAt < FAILURE_BACKOFF_MS;
+}
+
+/** Selve API-kallet, med in-flight dedup. Kaster aldri. */
+function startGeneration({ cacheKey, system, prompt, maxTokens, cached }) {
+  const existing = inFlight.get(cacheKey);
+  if (existing) return existing;
 
   const p = (async () => {
     try {
@@ -85,6 +125,11 @@ export async function generate({ cacheKey, minIntervalMs, system, prompt, maxTok
 /** Injiserer en fake Anthropic-klient. null = tilbake til den ekte. */
 export function _setClient(fake) {
   injectedClient = fake;
+}
+
+/** Venter på alle pågående bakgrunnsgenereringer (for tester). */
+export async function _flush() {
+  await Promise.allSettled([...inFlight.values()]);
 }
 
 /** Overstyrer klokken. null = tilbake til Date.now. */

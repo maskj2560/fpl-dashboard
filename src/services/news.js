@@ -65,20 +65,35 @@ export function buildNewsPrompt(items) {
   return `Her er dagens fotballnyheter fra britiske kilder:\n\n${lines.join('\n')}\n\nOppsummer det som er relevant for Fantasy Premier League på norsk, som maks 8 korte punkter. Start hvert punkt med «- ». Sett spillernavn i fet med **navn**. Fokuser på skader, form, overganger og startplass-nytt. Bruk kun personer, klubber og hendelser som står i sakene over — ingen overgangstype, beløp, kontraktslengde eller andre detaljer som ikke er nevnt der. Er du usikker på et navn, utelat punktet. Ingen innledning eller avslutning — kun punktene.`;
 }
 
+export const NEWS_CACHE_KEY = 'news-summary';
+
+const newsSummaryRequest = (items) => ({
+  cacheKey: NEWS_CACHE_KEY,
+  minIntervalMs: 30 * MIN,
+  system: 'Du er en norsk Fantasy Premier League-ekspert. Svar kort og presist.',
+  prompt: buildNewsPrompt(items),
+  maxTokens: 2000,
+});
+
+/**
+ * Sakene + oppsummeringen slik en sidevisning skal lese dem: RSS hentes som
+ * før (billig og raskt), men AI-teksten tas KUN fra cachen. Uten cachet tekst
+ * vises den rå feed-lista. Oppfriskingen gjøres av refresh.js på timer —
+ * ellers ville forsiden og /nyheter ventet på en Claude-rundtur.
+ */
 export async function getNews() {
   const items = await getNewsItems();
-  let summary = null;
-  if (ai.isEnabled() && items.length > 0) {
-    summary = await ai.generate({
-      cacheKey: 'news-summary',
-      minIntervalMs: 30 * MIN,
-      system: 'Du er en norsk Fantasy Premier League-ekspert. Svar kort og presist.',
-      prompt: buildNewsPrompt(items),
-      maxTokens: 2000,
-    });
-  }
+  const summary = items.length > 0 ? ai.getCached(NEWS_CACHE_KEY) : null;
   const points = filterSummaryPoints(summaryPoints(summary), items);
   return { items, summary, points };
+}
+
+/** Genererer nyhetsoppsummeringen. Kalles kun av refresh.js. */
+export async function refreshNewsSummary() {
+  if (!ai.isEnabled()) return null;
+  const items = await getNewsItems();
+  if (items.length === 0) return null;
+  return ai.generate(newsSummaryRequest(items));
 }
 
 /** '- **Haaland** er tilbake' → [{html-sikre segmenter}] gjøres i view; her: del i punkter. */

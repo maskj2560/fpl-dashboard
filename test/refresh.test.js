@@ -1,0 +1,174 @@
+import { test, beforeEach, afterEach } from 'node:test';
+import assert from 'node:assert/strict';
+import { refreshDecision, startAiRefresher, _tick, _setNow, _reset } from '../src/services/refresh.js';
+import * as ai from '../src/services/ai.js';
+import { clear as cacheClear } from '../src/services/cache.js';
+
+const MIN = 60_000;
+const HOUR = 60 * MIN;
+const NOW = Date.UTC(2026, 7, 25, 12, 0, 0);
+
+// --- Den rene beslutningen ---------------------------------------------------
+
+test('nyhetene friskes opp når de aldri er laget', () => {
+  const d = refreshDecision({ nowMs: NOW, hasUpcoming: true, briefGeneratedAt: NOW });
+  assert.equal(d.news, true);
+});
+
+test('nyhetene friskes opp hver 6. time, ikke oftere', () => {
+  const base = { nowMs: NOW, hasUpcoming: true, briefGeneratedAt: NOW };
+  assert.equal(refreshDecision({ ...base, newsGeneratedAt: NOW - 5 * HOUR }).news, false);
+  assert.equal(refreshDecision({ ...base, newsGeneratedAt: NOW - 6 * HOUR }).news, true);
+});
+
+test('briefen friskes aldri opp etter siste runde', () => {
+  const d = refreshDecision({ nowMs: NOW, hasUpcoming: false, briefGeneratedAt: null });
+  assert.equal(d.brief, false, 'sesongslutt skal ikke koste ett kall i døgnet');
+});
+
+test('briefen friskes opp når den aldri er laget (kald cache etter deploy)', () => {
+  const d = refreshDecision({
+    nowMs: NOW,
+    hasUpcoming: true,
+    deadlineTime: new Date(NOW + 5 * 24 * HOUR).toISOString(),
+  });
+  assert.equal(d.brief, true);
+});
+
+test('briefen friskes opp én gang i døgnet utenfor deadlinevinduet', () => {
+  const base = {
+    nowMs: NOW,
+    hasUpcoming: true,
+    deadlineTime: new Date(NOW + 5 * 24 * HOUR).toISOString(),
+  };
+  assert.equal(refreshDecision({ ...base, briefGeneratedAt: NOW - 23 * HOUR }).brief, false);
+  assert.equal(refreshDecision({ ...base, briefGeneratedAt: NOW - 24 * HOUR }).brief, true);
+});
+
+test('briefen friskes opp i hele 6-timersvinduet før deadline', () => {
+  const inWindow = (hoursToDeadline) =>
+    refreshDecision({
+      nowMs: NOW,
+      hasUpcoming: true,
+      briefGeneratedAt: NOW - 5 * MIN, // helt fersk
+      deadlineTime: new Date(NOW + hoursToDeadline * HOUR).toISOString(),
+    }).brief;
+  assert.equal(inWindow(7), false, 'utenfor vinduet gjelder døgnregelen');
+  assert.equal(inWindow(6), true);
+  assert.equal(inWindow(1), true);
+  // 60-minutters-gulvet i ai.js hindrer at 30-minutters-tikken dobler kallene.
+});
+
+test('en passert deadline faller tilbake til døgnregelen', () => {
+  const base = {
+    nowMs: NOW,
+    hasUpcoming: true,
+    deadlineTime: new Date(NOW - 2 * HOUR).toISOString(), // kampene er i gang
+  };
+  assert.equal(refreshDecision({ ...base, briefGeneratedAt: NOW - 2 * HOUR }).brief, false);
+  assert.equal(refreshDecision({ ...base, briefGeneratedAt: NOW - 25 * HOUR }).brief, true);
+});
+
+// --- Tikken ------------------------------------------------------------------
+
+const BOOTSTRAP = {
+  events: [
+    {
+      id: 2,
+      name: 'Gameweek 2',
+      is_next: true,
+      finished: false,
+      deadline_time: new Date(NOW + 5 * 24 * HOUR).toISOString(),
+    },
+  ],
+  teams: [],
+  elements: [],
+};
+
+const originalFetch = globalThis.fetch;
+const quiet = { log: console.log, warn: console.warn, error: console.error };
+let aiCalls;
+
+function stubEnv() {
+  aiCalls = [];
+  globalThis.fetch = async (url) => {
+    const path = String(url);
+    if (path.includes('bootstrap-static')) {
+      return { ok: true, status: 200, json: async () => BOOTSTRAP };
+    }
+    if (path.includes('/fixtures/')) return { ok: true, status: 200, json: async () => [] };
+    if (path.includes('/picks/')) return { ok: false, status: 404, json: async () => ({}) };
+    // Nyhetsfeeden: én sak, nok til at oppsummeringen har noe å jobbe med.
+    return {
+      ok: true,
+      status: 200,
+      text: async () =>
+        '<?xml version="1.0"?><rss><channel><title>Test</title><item><title>Haaland ute</title><link>https://eksempel.no/1</link><description>d</description></item></channel></rss>',
+    };
+  };
+  ai._setClient({
+    messages: {
+      create: async () => {
+        aiCalls.push(Date.now());
+        return { model: 'fake', usage: {}, content: [{ type: 'text', text: '- **Haaland** er ute.' }] };
+      },
+    },
+  });
+}
+
+beforeEach(() => {
+  cacheClear();
+  ai._reset();
+  _reset();
+  _setNow(() => NOW);
+  console.log = () => {};
+  console.warn = () => {};
+  console.error = () => {};
+  stubEnv();
+});
+
+afterEach(() => {
+  globalThis.fetch = originalFetch;
+  ai._setClient(null);
+  ai._setNow(null);
+  ai._reset();
+  _reset();
+  _setNow(null);
+  cacheClear();
+  cacheClear();
+  console.log = quiet.log;
+  console.warn = quiet.warn;
+  console.error = quiet.error;
+});
+
+test('_tick varmer begge tekstene når cachen er tom', async () => {
+  await _tick();
+  assert.equal(aiCalls.length, 2, 'én brief + én nyhetsoppsummering');
+});
+
+test('to tikk etter hverandre gir én generering per nøkkel', async () => {
+  await _tick();
+  await _tick();
+  await ai._flush();
+  assert.equal(aiCalls.length, 2, 'ingenting er utgått ved andre tikk');
+});
+
+// Oppstartsvarmingen er hele poenget med det første tikket: AI-cachen bor i
+// minnet, så den er tom etter hver deploy. (At startAiRefresher er en no-op
+// uten nøkkel kan ikke testes her — `npm test` kjøres med utviklerens `.env`,
+// der nøkkelen finnes. Røyktesten med tomme nøkler dekker det.)
+test('startAiRefresher varmer begge tekstene med en gang', async () => {
+  startAiRefresher();
+  for (let i = 0; i < 100 && aiCalls.length < 2; i++) {
+    await new Promise((r) => setTimeout(r, 5));
+  }
+  assert.equal(aiCalls.length, 2, 'ett tikk kjøres ved oppstart, ikke først etter 30 min');
+});
+
+test('_tick kaster ikke når FPL-kallet feiler', async () => {
+  globalThis.fetch = async () => {
+    throw new Error('nede');
+  };
+  await _tick();
+  assert.equal(aiCalls.length, 0);
+});

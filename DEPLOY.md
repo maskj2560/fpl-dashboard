@@ -11,6 +11,49 @@ en deploy faktisk blir synlig for brukerne.
 3. Footeren viser `v<versjon> · sist oppdatert <starttid>` — starttiden er i
    praksis deploy-tidspunktet, siden hver deploy gir en ny container
 
+## Helsesjekk i Coolify
+
+**Coolifys egen helsesjekk for appen skal stå AV.** Da er det Dockerfilens
+`HEALTHCHECK` (linje 16–17) som gjelder, og den er allerede riktig: den
+kjører `node -e "fetch('http://localhost:3000/health')…"` og exit-koden
+følger `r.ok`. Fasiten blir dermed versjonskontrollert i repoet i stedet
+for å ligge i et Coolify-felt.
+
+**Hvorfor (incident 24.–25. aug):** Coolifys egen HTTP-helsesjekk
+OVERSTYRER Dockerfilens `HEALTHCHECK`, og kommandoen den var satt opp med
+brukte `curl` — som ikke finnes i `node:22-alpine`. Deployloggen viste
+
+```
+Healthcheck logs: /bin/sh: curl: not found | Return code: 0
+```
+
+og Coolify konkluderte «New container is healthy». Sjekken var altså en
+no-op: Coolify meldte «Running (healthy)» gjennom hele perioden prod svarte
+`401` på alle stier. En helsesjekk som ikke kan feile er verre enn ingen —
+den gjør deploy-signalet verdiløst.
+
+**Fallback hvis Coolify ikke leser Docker-health når egen sjekk er av:**
+slå på Coolifys sjekk igjen, men med en kommando som finnes i imaget —
+busybox-`wget`:
+
+```
+wget -qO- http://localhost:3000/health
+```
+
+**Bevis-krav (obligatorisk etter enhver endring av helsesjekken):**
+
+1. Container-health-loggen viser ekte sjekker med exit 0 — ikke
+   «command not found» med return code 0:
+   ```
+   docker inspect --format '{{json .State.Health}}' <container>
+   ```
+2. Stopp appen inne i containeren (`kill 1` fra container-terminalen;
+   restart-policyen starter den igjen) og se at Coolify melder **unhealthy**
+   mens appen er nede. Melder den fortsatt «Running (healthy)», er sjekken
+   fortsatt en no-op.
+
+Ingen kodeendring → dette får ikke eget versjonsnummer.
+
 ## Asset-cache (viktig — årsaken til QA-funn P0-1)
 
 `style.css` og `app.js` refereres med en innholdshash: `/style.css?v=<hash>`.

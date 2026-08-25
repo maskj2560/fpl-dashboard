@@ -7,7 +7,11 @@ import {
   filterSummaryPoints,
   properNames,
   parseFeedItems,
+  getNews,
+  refreshNewsSummary,
 } from '../src/services/news.js';
+import * as ai from '../src/services/ai.js';
+import { clear as cacheClear } from '../src/services/cache.js';
 
 test('buildNewsPrompt tar med titler og krav om norsk + fete navn', () => {
   const prompt = buildNewsPrompt([
@@ -142,4 +146,96 @@ test('parseFeedItems takler manglende pubDate og enkeltstående item', () => {
   const items = parseFeedItems({ title: 'Sky', item: { title: 'Alene', link: 'https://c' } }, 'https://feed');
   assert.deepEqual(items.map((i) => [i.title, i.published, i.source]), [['Alene', null, 'Sky']]);
   assert.deepEqual(parseFeedItems(null, 'https://feed'), []);
+});
+
+// --- v1.3.4: /nyheter og dashbordet leser cachen, oppfriskeren genererer ----
+
+const RSS = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel><title>Testkilden</title>
+<item><title>Haaland ute med skade</title><link>https://eksempel.no/1</link>
+<description>Spissen står over runden.</description>
+<pubDate>Mon, 24 Aug 2026 10:00:00 GMT</pubDate></item>
+</channel></rss>`;
+
+/** Kjører fn med mocket RSS-fetch, fake Claude-klient og styrt AI-klokke. */
+async function withNewsEnv(fn) {
+  const realFetch = global.fetch;
+  const quiet = { log: console.log, warn: console.warn, error: console.error };
+  const state = { calls: 0, clock: 1_000_000 };
+  global.fetch = async () => ({ ok: true, status: 200, text: async () => RSS });
+  console.log = () => {};
+  console.warn = () => {};
+  console.error = () => {};
+  cacheClear();
+  ai._reset();
+  ai._setNow(() => state.clock);
+  ai._setClient({
+    messages: {
+      create: async () => {
+        state.calls++;
+        return {
+          model: 'fake',
+          usage: {},
+          content: [{ type: 'text', text: `- **Haaland** er ute (nr ${state.calls}).` }],
+        };
+      },
+    },
+  });
+  try {
+    await fn(state);
+  } finally {
+    global.fetch = realFetch;
+    ai._setClient(null);
+    ai._setNow(null);
+    ai._reset();
+    cacheClear();
+    console.log = quiet.log;
+    console.warn = quiet.warn;
+    console.error = quiet.error;
+  }
+}
+
+test('getNews gjør aldri et AI-kall — kald cache gir bare rå saker', async () => {
+  await withNewsEnv(async (state) => {
+    const news = await getNews();
+    assert.equal(state.calls, 0, 'en sidevisning skal aldri utløse et AI-kall');
+    assert.equal(news.summary, null);
+    assert.deepEqual(news.points, []);
+    assert.equal(news.items.length, 1, 'sakene vises som før');
+  });
+});
+
+test('getNews serverer cachet oppsummering uansett alder', async () => {
+  await withNewsEnv(async (state) => {
+    await refreshNewsSummary();
+    assert.equal(state.calls, 1);
+
+    state.clock += 24 * 60 * 60_000; // ett døgn senere
+    const news = await getNews();
+    assert.equal(state.calls, 1, 'ingen regenerering fra sidevisningen');
+    assert.match(news.summary.text, /Haaland/);
+    assert.equal(news.points.length, 1);
+  });
+});
+
+test('refreshNewsSummary genererer og legger teksten i cachen', async () => {
+  await withNewsEnv(async (state) => {
+    const entry = await refreshNewsSummary();
+    assert.equal(state.calls, 1);
+    assert.match(entry.text, /Haaland/);
+    assert.equal(ai.getCached('news-summary').text, entry.text);
+  });
+});
+
+test('refreshNewsSummary genererer ikke oftere enn hver 30. minutt', async () => {
+  await withNewsEnv(async (state) => {
+    await refreshNewsSummary();
+    state.clock += 29 * 60_000;
+    await refreshNewsSummary();
+    assert.equal(state.calls, 1, 'innenfor minimumsintervallet');
+
+    state.clock += 2 * 60_000; // 31 min etter første
+    await refreshNewsSummary();
+    assert.equal(state.calls, 2);
+  });
 });

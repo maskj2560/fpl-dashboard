@@ -20,6 +20,7 @@ import apiRouter from './routes/api.js';
 import liveRouter from './routes/live.js';
 import newsRouter from './routes/news.js';
 import { startScheduler } from './services/notify.js';
+import { startAiRefresher } from './services/refresh.js';
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const app = express();
@@ -105,5 +106,9 @@ app.listen(config.port, () => {
 
 // Inaktiv uten DISCORD_WEBHOOK_URL.
 startScheduler();
+
+// Inaktiv uten ANTHROPIC_API_KEY. Holder AI-tekstene varme på timer, slik at
+// ingen sidevisning venter på en Claude-rundtur.
+startAiRefresher();
 
 export default app;
