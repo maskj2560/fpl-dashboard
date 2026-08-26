@@ -165,6 +165,13 @@ export function properNames(text) {
     .filter((w) => w.length > 2 && !NOT_A_NAME.has(w));
 }
 
+/** Navnet i småbokstaver + varianten uten genitiv-s («haalands» → «haaland»). */
+function nameVariants(name) {
+  const n = name.toLowerCase();
+  const stripped = n.replace(/(?:['’]s|['’]|s)$/u, '');
+  return stripped !== n && stripped.length > 2 ? [n, stripped] : [n];
+}
+
 /**
  * Beholder bare punkter som er etterprøvbare mot sakene på siden: minst ett
  * egennavn i punktet må forekomme i en tittel eller ingress. Punkter uten
@@ -176,7 +183,7 @@ export function filterSummaryPoints(points, items) {
   const dropped = [];
   const kept = points.filter((point) => {
     const names = properNames(point);
-    if (names.some((n) => corpus.includes(n.toLowerCase()))) return true;
+    if (names.some((n) => nameVariants(n).some((v) => corpus.includes(v)))) return true;
     dropped.push(point);
     return false;
   });
