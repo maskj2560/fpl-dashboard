@@ -234,6 +234,15 @@ export const transfers = {
   clubAssets,
   formatSigned: (n) => String(n),
   formatPrice: (n) => (n / 10).toFixed(1),
+  baseline: {
+    simTotal: 118,
+    actualTotal: 131,
+    diff: 13,
+    perGw: [
+      { gw: 1, points: 60, captainId: 10, captainName: 'Haaland', viceUsed: false, autosubs: [] },
+      { gw: 2, points: 58, captainId: 12, captainName: 'Salah', viceUsed: true, autosubs: [{ outId: 11, inId: 12 }] },
+    ],
+  },
   priceReport: {
     holdings: [
       { id: 10, name: 'Haaland', teamShort: 'MCI', teamCode: 43, buyCost: 140, nowCost: 145, sellPrice: 142, gain: 2, ukjent: false },
@@ -263,6 +272,7 @@ export const transfersEmpty = {
   formatSigned: (n) => String(n),
   formatPrice: (n) => (n / 10).toFixed(1),
   priceReport: null,
+  baseline: null,
   analysis: {
     rows: [],
     season: { played: 0, wins: 0, hitRate: null, hitsPaid: 0 },
@@ -279,6 +289,7 @@ export const transfersPending = {
   formatSigned: (n) => String(n),
   formatPrice: (n) => (n / 10).toFixed(1),
   priceReport: null,
+  baseline: null,
   analysis: {
     rows: [
       { event: 2, chip: null, inn: { id: 10, name: 'Haaland', teamShort: 'MCI', teamCode: 43, points: 0 }, ut: { id: 11, name: 'Watkins', teamShort: 'AVL', teamCode: 7, points: 0 }, diff: 0, penaltyShare: 0, netto: 0, window: null, played: false, pending: true, perGw: [], after5: null },

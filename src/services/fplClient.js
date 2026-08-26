@@ -136,6 +136,18 @@ export function getPicks(teamId, gw) {
   });
 }
 
+/**
+ * Lagoppstillingen i en FERDIG runde. Samme endepunkt og cache-nøkkel som
+ * getPicks(), men 6 t TTL: oppstillingen i en ferdigspilt runde endres
+ * aldri. Delt nøkkel betyr at første skriver setter TTL-en — derfor skal
+ * denne KUN kalles for runder bootstrap melder `finished`.
+ */
+export function getPicksHistoric(teamId, gw) {
+  return getOrFetch(`picks:${teamId}:${gw}`, () => fplFetch(`entry/${teamId}/event/${gw}/picks/`), {
+    ttl: 360 * MIN,
+  });
+}
+
 export function getLive(gw) {
   return getOrFetch(`live:${gw}`, () => fplFetch(`event/${gw}/live/`), { ttl: 1 * MIN });
 }

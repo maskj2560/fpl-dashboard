@@ -88,6 +88,39 @@
   </section>
 <% } %>
 
+<% if (baseline) { %>
+  <section class="card">
+    <h2>Laget uten bytter</h2>
+    <p>Hadde du latt GW1-laget stå urørt hele sesongen, ville det gitt
+    <strong><%= baseline.simTotal %></strong> poeng. Du står med
+    <strong><%= baseline.actualTotal !== null ? baseline.actualTotal : '–' %></strong><% if (baseline.diff !== null) { %> —
+    byttene (med straff) har altså <%= baseline.diff >= 0 ? 'gitt deg' : 'kostet deg' %>
+    <strong class="<%= baseline.diff > 0 ? 'accent' : (baseline.diff < 0 ? 'negative' : '') %>"><%= formatSigned(baseline.diff) %></strong> poeng<% } %>.</p>
+    <details>
+      <summary>Runde for runde</summary>
+      <div class="table-scroll">
+        <table class="data">
+          <thead><tr><th>Runde</th><th class="num">Poeng</th><th>Kaptein</th><th class="num">Autosubs</th></tr></thead>
+          <tbody>
+            <% for (const g of baseline.perGw) { %>
+              <tr>
+                <td>R<%= g.gw %></td>
+                <td class="num"><%= g.points %></td>
+                <td><%= g.captainName ?? '–' %><%= g.viceUsed ? ' (vise)' : '' %></td>
+                <td class="num"><%= g.autosubs.length %></td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </details>
+    <p class="dim">Simulering: startere uten spilleminutter byttes automatisk
+    mot benken i benkerekkefølge under formasjonskravene (keeper kun mot
+    keeper). Kaptein er rundens faktiske kaptein når han står i GW1-laget,
+    ellers visekapteinen; dobling er alltid ×2.</p>
+  </section>
+<% } %>
+
 <% if (priceReport) { %>
   <section class="card card-wide">
     <h2>Prisgevinst</h2>

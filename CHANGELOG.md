@@ -18,6 +18,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Ny «Prisgevinst»-seksjon på «Overganger»: kjøpspris mot dagens pris og
   salgspris per spiller (FPLs halveringsregel), sum for troppen, og salg
   der prisen siden har steget.
+- Ny «Laget uten bytter»-seksjon på «Overganger»: GW1-laget simuleres
+  urørt gjennom sesongen (med autosubs og kapteinsregler) og sammenlignes
+  med faktisk poengsum — svaret på om byttene har lønt seg totalt.
 
 ## [1.4.0] - 2026-09-XX
 

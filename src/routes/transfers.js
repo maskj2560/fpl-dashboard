@@ -16,6 +16,7 @@ router.get('/', async (req, res, next) => {
       title: 'Overganger',
       analysis: page.analysis,
       priceReport: page.priceReport,
+      baseline: page.baseline,
       formatSigned,
       formatPrice,
     });

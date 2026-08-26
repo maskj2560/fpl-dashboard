@@ -15,6 +15,7 @@ import {
 } from './fplClient.js';
 import { byId, resolvedGw } from './analysis.js';
 import { buildPurchases, buildPriceReport } from './pricing.js';
+import { assembleBaseline } from './baseline.js';
 
 // Skjemaet for entry/{id}/transfers/ er uverifisert før sesongstart —
 // records uten disse feltene hoppes over og telles som «ukjente».
@@ -246,5 +247,12 @@ export async function assembleTransfersPage({ teamId = config.fplTeamId } = {}) 
     priceReport = null; // picks kan mangle (404 før sesongstart) — aldri krasj
   }
 
-  return { analysis, priceReport, baseline: null, scenarios: [], aiComment: null };
+  let baseline = null;
+  try {
+    baseline = await assembleBaseline({ teamId, bootstrap, history, analysis });
+  } catch {
+    baseline = null;
+  }
+
+  return { analysis, priceReport, baseline, scenarios: [], aiComment: null };
 }

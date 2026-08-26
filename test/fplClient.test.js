@@ -7,6 +7,8 @@ import {
   getLive,
   getLiveHistoric,
   getEntryTransfers,
+  getPicks,
+  getPicksHistoric,
   isGameUpdating,
   staleInfo,
   FplError,
@@ -168,6 +170,15 @@ test('getLiveHistoric deler nøkkel med getLive og lever lenger enn 1 min', asyn
 });
 
 // ---- v1.3.6: gameUpdating-flagget er tidsstemplet ------------------------
+
+test('getPicksHistoric deler nøkkel med getPicks og cacher lenge', async () => {
+  mockFetch(() => jsonResponse({ picks: [{ element: 10 }] }));
+
+  await getPicksHistoric(42, 1);
+  await getPicks(42, 1); // samme nøkkel → cache-treff, ikke nytt fetch
+  assert.equal(fetchCalls.length, 1);
+  assert.match(fetchCalls[0].url, /entry\/42\/event\/1\/picks\/$/);
+});
 
 test('gameUpdating utløper av seg selv 5 min etter siste 503', async () => {
   let t = 1_000_000;
