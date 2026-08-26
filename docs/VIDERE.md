@@ -158,6 +158,17 @@ er «porter» — de skjer når datoen eller du er klar, uten å stoppe utviklin
   gyldige punkter der et navn står i eieform («Haalands»), og sidene sier
   fra hvis tallene de viser er blitt gamle fordi FPL ikke svarer. **Begge
   er alt ferdigbygget (26. august)** og venter bare på målingen.
+- **Deretter: helt ny «Overganger»-side (bestilt av deg 26. august, alt
+  ferdigbygget samme dag).** Alt du ba om: hvert bytte kan brettes ut runde
+  for runde så du ser NÅR det snudde, med en dom «etter 5 runder»;
+  sesongkort med treffprosent og antall trekk; en hva hvis-planlegger som
+  sjekker FPL-reglene (posisjon, budsjett med ekte salgspriser, maks 3 fra
+  samme klubb); lagrede planer som følges opp etterpå («planen din ville
+  gitt X, du fikk Y» — appen regner til og med ut gratisbyttene dine);
+  «hva om jeg kjøpte Z i stedet»-forslag per bytte; hva GW1-laget ditt
+  ville scoret urørt hele sesongen; prisgevinst per spiller; og en
+  AI-kommentar til byttene dine én gang i døgnet. Du kan teste alt lokalt
+  når du vil — ute i drift etter måleuka.
 
 ## Ting bare du kan gjøre
 

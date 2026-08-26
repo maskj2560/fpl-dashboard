@@ -1,5 +1,7 @@
 # Plan v1.5.0 — «Overganger» total: analyse + planlegger + scenarier
 
+> UTFØRT 26. aug 2026: T0–T13 bygget på feat/overganger-v150 (454/454, lint 0, røyktest grønn). Gjenstår: P3-verifisering av transfer-feltene mot ekte data, Marius-test lokalt, merge + tag + push etter P4.
+>
 > Fasit for byggingen. Vedtatt 26. aug 2026 etter tre spørsmålsrunder med
 > Marius. Bygges på branch `feat/overganger-v150` (stablet oppå
 > `feat/alderstak-v140`), deployes ETTER måleuka (7. sept+) som v1.5.0,
@@ -115,66 +117,66 @@ alt-i-troppen, posisjon, budsjett (salgspris+bank, IKKE nåpris), klubbtak
 
 - [x] **T0 Oppstart:** denne fila + HANDOVER/ROADMAP ajour (main),
       branch `feat/overganger-v150` fra `feat/alderstak-v140`.
-- [ ] **T1 Per-runde + milepæl + sesongtall (ren):** transfers.js. Per rad:
+- [x] **T1 Per-runde + milepæl + sesongtall (ren):** transfers.js. Per rad:
       `perGw: [{gw, inn, ut, diff, cum}]` (tom når `!played`),
       `after5: {diff, gws, complete}|null`; toppnivå `season: {played,
       wins, hitRate, hitsPaid}` (hitRate null ved 0 spilte, hitsPaid =
       cost/4). Tester: perGw dekker vinduet m/løpende sum; tom for
       pending/angret; after5 komplett/ukomplett/terminert; treffprosent
       kun over spilte; eksisterende grønne.
-- [ ] **T2 UI sesongkort + utvidbare rader:** transfers.ejs, app.js
+- [x] **T2 UI sesongkort + utvidbare rader:** transfers.ejs, app.js
       (Modul 7: toggle), style.css (`.row-detail`, `.btn-expand`,
       `.milestone`), views-test + fixtures (ADDITIVE felter,
       `locals.`-guards — markørtestene består). Kantfade re-init.
-- [ ] **T3 pricing.js (NY, ren):** `sellingPrice`, `buildPurchases`,
+- [x] **T3 pricing.js (NY, ren):** `sellingPrice`, `buildPurchases`,
       `buildPriceReport` → `{holdings, totals, missed, bank, value}`.
       test/pricing.test.js: halvering rundes ned; prisfall → nåpris;
       gjenkjøp; FH ignoreres; WC teller; GW1-startpris; manglende felt →
       ukjent, aldri NaN; missed kun ved prisstigning; gjenkjøpt ikke i missed.
-- [ ] **T4 `assembleTransfersPage()` + prisgevinst-seksjon:** transfers.js
+- [x] **T4 `assembleTransfersPage()` + prisgevinst-seksjon:** transfers.js
       (myk feil per del som assembleLive), routes/transfers.js bytter,
       viewet seksjon 7. Test: picks-404 → analyse vises, prisgevinst
       skjules; assembleTransferAnalysis-kalladferd uendret.
-- [ ] **T5 baseline.js (NY) + `getPicksHistoric`:** fplClient (delt nøkkel,
+- [x] **T5 baseline.js (NY) + `getPicksHistoric`:** fplClient (delt nøkkel,
       360 min, kun ferdige runder), `simulateNoTransferSeason` →
       `{perGw: [{gw, points, captainId, viceUsed, autosubs}], total}`,
       `assembleBaseline` → null ved 0 bytter/manglende GW1-picks. Viewet
       seksjon 6 (details/summary per-runde). Tester: autosub-rekkefølge;
       formasjonskrav; keeper↔keeper; kapteinsregler ×3; 0 bytter henter
       ingenting; delt cache-nøkkel.
-- [ ] **T6 planlegger-data + GET /api/planlegger.json:** scenarios.js
+- [x] **T6 planlegger-data + GET /api/planlegger.json:** scenarios.js
       (`buildPlannerData`), api.js. Tester: salgspris per tropp-spiller;
       fdr3 fra teamFdrMap; null aldri undefined; 400 uten team-id.
-- [ ] **T7 regelvalidering + planlegger-UI:** scenarios.js
+- [x] **T7 regelvalidering + planlegger-UI:** scenarios.js
       (`validateScenario` → `{ok, errors}`), viewet seksjon 4, app.js
       Modul 8 (lazy fetch, søk, klient-speil av reglene), style.css
       (`.compare`, `.rule-check`). Tester: posisjonsmismatch; budsjett =
       salgspris+bank; klubbtak inkl. frigjort plass; alt-i-troppen;
       gyldig → tom feilliste.
-- [ ] **T8 FT-ledger + persistens + CRUD:** scenarios.js (`buildFtLedger`
+- [x] **T8 FT-ledger + persistens + CRUD:** scenarios.js (`buildFtLedger`
       per B8; load/persist/list/add/remove + `_setHooks`/`_reset` etter
       notify.js-mønsteret), api.js POST/DELETE. Tester: FT bygger til
       maks 5; WC/FH bruker ikke FT; validerer mot event_transfers_cost;
       mismatch → valid false; manglende/korrupt fil → tom liste; ukjent
       versjon; tak 20; DELETE ukjent → 404; POST regelbrudd → 400 uten
       lagring; uskrivbar disk → 503.
-- [ ] **T9 scenario-evaluering + seksjon:** scenarios.js
+- [x] **T9 scenario-evaluering + seksjon:** scenarios.js
       (`evaluateScenario` → `{plan: {diff, cost, after5}, actual: {…},
       perMove, pending, ftEstimert}`), assemble utvider liveByGw-spennet
       til min(førsteTransfer, minste scenario-event), viewet seksjon 5
       (+slett-knapp). Tester: plan måles fra scenariorunden; faktisk = 0
       ved ingen bytter; FT-kost begge sider; milepæl; framtidig runde →
       pending m/forventet kost; spiller borte fra bootstrap → plassholder.
-- [ ] **T10 alternativ-analyse (ren + topp 3 i detaljraden):** transfers.js
+- [x] **T10 alternativ-analyse (ren + topp 3 i detaljraden):** transfers.js
       (`buildAlternatives({…, limit: 3, tolerance: 5})`, delt
       `candidatePoints`). Tester: samme posisjon + ±0.5m startpris;
       rangert på poeng i byttets vindu; egne spillere aldri kandidater;
       manglende buyCost → tom liste; pending → ingen.
-- [ ] **T11 egne kandidater: GET /api/alternativ.json + UI:** api.js
+- [x] **T11 egne kandidater: GET /api/alternativ.json + UI:** api.js
       (1 ≤ fra ≤ til ≤ maxGw, kun cachede runder), app.js («legg til
       kandidat»). Tester: ugyldig id → 400; til > maxGw → 400; gyldig →
       sum + perGw.
-- [ ] **T12 AI-kommentar:** prompts.js (`buildTransferCommentPrompt` —
+- [x] **T12 AI-kommentar:** prompts.js (`buildTransferCommentPrompt` —
       kompakt grunnlag, REGLER-blokk som briefen, maks ~120 ord),
       transfers.js (`generateTransferComment` → null ved 0 spilte bytter,
       `ai.generate` minInterval 24 t, maxTokens 1500), refresh.js
@@ -183,7 +185,7 @@ alt-i-troppen, posisjon, budsjett (salgspris+bank, IKKE nåpris), klubbtak
       prompt har sesongnetto + hvert spilte bytte, utelater pending;
       ingen generering uten spilte bytter; 24-timersregel; ruta kaller
       aldri generate; tikk overlever feil.
-- [ ] **T13 ferdigstilling:** package.json 1.5.0; CHANGELOG [1.5.0];
+- [x] **T13 ferdigstilling:** package.json 1.5.0; CHANGELOG [1.5.0];
       ROADMAP; CLAUDE.md (pricing/baseline/scenarios i tabellen,
       AI-funksjon 5, scenarios.json i DATA_DIR); HANDOVER (status + RETT
       beslutningslista om AI-kommentar). Full røyktest med tomme nøkler:

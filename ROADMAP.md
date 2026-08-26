@@ -32,7 +32,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.3.7**~~ | ~~Persistent «brief sendt»-markør (volum `/app/data`)~~ | **utført 26. aug — ute i prod** | — |
 | **v1.3.8** | Genitiv-fiks i nyhetsfilteret | 4 | **kode klar på branch 26. aug** — merge/deploy etter P4 |
 | **v1.4.0** | Alderstak på stale data + `dataAlder` i payload | 4 | **kode klar på branch 26. aug** — merge/deploy etter P4 |
-| **v1.5.0** | «Overganger» total: planlegger, scenarier, analyse, AI-kommentar | 4 | under bygging på branch fra 26. aug — deploy etter P4 |
+| **v1.5.0** | «Overganger» total: planlegger, scenarier, analyse, AI-kommentar | 4 | **kode klar på branch 26. aug** — merge/deploy etter P4, etter v1.3.8/v1.4.0 |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
 Kalenderlogikk: utviklingssporet (v1.3.0 → v1.3.1+) går uavbrutt;
@@ -106,7 +106,8 @@ stedet for den AI-kostende promptendringen (droppet). Rekkefølge:
       scenarier med FT-regnskap og oppfølging, alternativ-analyse,
       sesongkort, «laget uten bytter»-simulering, prisgevinst og
       AI-kommentar (1x/døgn). Fasit: `docs/plan-overganger-v150.md`.
-      Bygges på `feat/overganger-v150` (stablet) — deploy etter P4,
+      **Kode klar 26. aug** på `feat/overganger-v150` (stablet, T1–T13,
+      454/454, røyktest grønn) — merge + tag + push etter P4,
       etter v1.3.8 og v1.4.0.
 
 ## Dokumentkart — hvor alt bor

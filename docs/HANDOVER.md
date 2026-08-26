@@ -6,7 +6,7 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-26 (økt 41, Fable: v1.3.7 UTE I PROD, v1.3.8+v1.4.0 klare på brancher)
+**Sist oppdatert:** 2026-08-26 (økt 41, Fable: v1.3.7 i prod; v1.3.8, v1.4.0 og v1.5.0 klare på brancher)
 
 ## Status akkurat nå
 - **v1.3.5 og v1.3.6 UTE I PROD 25. aug** (footer `v1.3.6`, `/health` 200).
@@ -30,9 +30,12 @@
 - **v1.3.8 og v1.4.0 forhåndsbygget 26. aug** på `fix/genitiv-nyhetsfilter-v138`
   og `feat/alderstak-v140` (stablet oppå førstnevnte) — 375/375, lint 0,
   røyktest OK. IKKE merget: merge `--no-ff` + tag + push først etter P4.
-- **v1.5.0 «Overganger» total UNDER BYGGING** fra 26. aug på
-  `feat/overganger-v150` (stablet oppå v1.4.0-branchen). Fasit med tasks
-  T0–T13: `docs/plan-overganger-v150.md`. Merge/deploy etter P4, sist i køen.
+- **v1.5.0 «Overganger» total FERDIGBYGGET 26. aug** på
+  `feat/overganger-v150` (stablet oppå v1.4.0-branchen): T1–T13 utført,
+  454/454, lint 0, røyktest grønn (alle ruter, planlegger-payload,
+  scenario-POST/DELETE mot ekte data — klubbtaket avviste korrekt).
+  Fasit: `docs/plan-overganger-v150.md`. Marius tester lokalt
+  (`npm run dev`) når han vil; merge/deploy etter P4, etter v1.3.8/v1.4.0.
 - **P2-skjermbildene tatt og committet 26. aug** (Playwright mot prod,
   mørkt tema, `docs/img/`, lenket fra README). Rest: ekte telefon.
 - **v1.3.4 (AI-SWR) ute siden 25. aug** — målingene og detaljene er rotert
@@ -51,8 +54,9 @@
 - Kostnad målt 23. aug: **$0,94/uke** — under terskelen. Ny måling i uken
   etter 31. aug (prisskiftet), nå mot taktbudsjettet ~41–45 kall/uke, kø-punkt 1.
 - **Git akkurat nå:** `main` pushet t.o.m. `98377e0` 26. aug (v1.3.7 +
-  docs + P2-skjermbilder), tag `v1.3.7` pushet. Lokale brancher:
-  `fix/genitiv-nyhetsfilter-v138` og `feat/alderstak-v140` (umerget).
+  docs + P2-skjermbilder), tag `v1.3.7` pushet. Lokale brancher (umerget,
+  stablet): `fix/genitiv-nyhetsfilter-v138` → `feat/alderstak-v140` →
+  `feat/overganger-v150`.
   Docs-commits etter dette kan ligge lokalt til neste release-push —
   måleuken 1.–6. sept skal være deploy-fri.
 - Eldre status (v1.2.3, doks-opprydning, versjonsplan, v1.2.4): arkivert.
@@ -180,20 +184,13 @@ er dermed ferdig i sin helhet. P0 ble lukket samme dag.
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
-- 2026-08-26 (økt 41, Fable): «full oversikt over alt gjenværende», så
-  «planlegg og gjennomfør alt som kan gjøres nå». Handling: v1.3.8 og
-  v1.4.0 TDD-bygget på egne brancher uten merge/push (375/375, lint 0,
-  røyktest), status ført her + ROADMAP + planens §0. Deretter: «alle
-  Chrome-handlinger via Claude in Chrome, du kan pushe» → P2-skjermbilder
-  tatt med Playwright og committet. Volum-rapporten kom (Claude in
-  Chrome, navngitt volum) → push: v1.3.7 + docs ut 26. aug, prod
-  verifisert utenfra (footer, `/health`, uendret asset-hash).
 - 2026-08-26 (økt 41, senere): «planlegg hele Overganger-siden perfekt fram
   til testing — hva hvis, all transfer-tracking, masse kul info, still meg
   masse spørsmål». Handling: 3 spørsmålsrunder (alle valg i planens
   Beslutninger-liste; Marius krevde FT-rekonstruksjon i stedet for rå
-  poeng), fasit skrevet til `docs/plan-overganger-v150.md`, bygging
-  startet på `feat/overganger-v150`. NB: valget «AI-kommentar JA»
-  overstyrer beslutningen «uten AI-kommentar i v1» over — lista rettes i T13.
-- Loggposter fra økt 22–40: rotert til `docs/arkiv/HANDOVER-historikk.md`
-  (200-linjerstaket, sist 2026-08-26).
+  poeng), fasit i `docs/plan-overganger-v150.md`, og hele v1.5.0
+  TDD-bygget ferdig på `feat/overganger-v150` (T1–T13, 454/454, lint 0,
+  røyktest med tomme nøkler + scenario-syklus mot ekte data). Valget
+  «AI-kommentar JA» overstyrer «uten AI-kommentar i v1» i beslutningslista.
+- Loggposter fra økt 22–41 (første del): rotert til
+  `docs/arkiv/HANDOVER-historikk.md` (200-linjerstaket, sist 2026-08-26).

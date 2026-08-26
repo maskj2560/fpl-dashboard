@@ -1258,3 +1258,14 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
   og overleveringen ryddet: HANDOVER fikk «Neste steg» øverst, planfila en
   §0-statusblokk, ROADMAP viser v1.3.7 som «kode klar, ikke deployet», og
   VIDERE.md ble ajour (den lå tre versjoner bak).
+
+## Loggpost rotert 26. aug 2026 (økt 41 første del, fra HANDOVER)
+
+- 2026-08-26 (økt 41, Fable): «full oversikt over alt gjenværende», så
+  «planlegg og gjennomfør alt som kan gjøres nå». Handling: v1.3.8 og
+  v1.4.0 TDD-bygget på egne brancher uten merge/push (375/375, lint 0,
+  røyktest), status ført her + ROADMAP + planens §0. Deretter: «alle
+  Chrome-handlinger via Claude in Chrome, du kan pushe» → P2-skjermbilder
+  tatt med Playwright og committet. Volum-rapporten kom (Claude in
+  Chrome, navngitt volum) → push: v1.3.7 + docs ut 26. aug, prod
+  verifisert utenfra (footer, /health, uendret asset-hash).
