@@ -30,6 +30,9 @@
 - **v1.3.8 og v1.4.0 forhåndsbygget 26. aug** på `fix/genitiv-nyhetsfilter-v138`
   og `feat/alderstak-v140` (stablet oppå førstnevnte) — 375/375, lint 0,
   røyktest OK. IKKE merget: merge `--no-ff` + tag + push først etter P4.
+- **v1.5.0 «Overganger» total UNDER BYGGING** fra 26. aug på
+  `feat/overganger-v150` (stablet oppå v1.4.0-branchen). Fasit med tasks
+  T0–T13: `docs/plan-overganger-v150.md`. Merge/deploy etter P4, sist i køen.
 - **P2-skjermbildene tatt og committet 26. aug** (Playwright mot prod,
   mørkt tema, `docs/img/`, lenket fra README). Rest: ekte telefon.
 - **v1.3.4 (AI-SWR) ute siden 25. aug** — målingene og detaljene er rotert
@@ -74,7 +77,8 @@ i økt 41 og kan gjenbrukes fra chatloggen.**
    $-tersklene OG taktbudsjettet ~41–45 kall/uke.
 6. **Task 7–8 etter P4:** koden er FERDIG på branchene (se status) — kun
    merge `--no-ff` + tag + push gjenstår (P3-avvik → renummerer mekanisk
-   først). Til slutt Task 9: arkiver planfila.
+   først). Deretter v1.5.0 (`docs/plan-overganger-v150.md`), til slutt
+   Task 9: arkiver planfilene.
 
 **P1 er LUKKET 25. aug** (auto-briefen bekreftet i Discord) — sjekkpunkt A
 er dermed ferdig i sin helhet. P0 ble lukket samme dag.
@@ -184,5 +188,12 @@ er dermed ferdig i sin helhet. P0 ble lukket samme dag.
   tatt med Playwright og committet. Volum-rapporten kom (Claude in
   Chrome, navngitt volum) → push: v1.3.7 + docs ut 26. aug, prod
   verifisert utenfra (footer, `/health`, uendret asset-hash).
+- 2026-08-26 (økt 41, senere): «planlegg hele Overganger-siden perfekt fram
+  til testing — hva hvis, all transfer-tracking, masse kul info, still meg
+  masse spørsmål». Handling: 3 spørsmålsrunder (alle valg i planens
+  Beslutninger-liste; Marius krevde FT-rekonstruksjon i stedet for rå
+  poeng), fasit skrevet til `docs/plan-overganger-v150.md`, bygging
+  startet på `feat/overganger-v150`. NB: valget «AI-kommentar JA»
+  overstyrer beslutningen «uten AI-kommentar i v1» over — lista rettes i T13.
 - Loggposter fra økt 22–40: rotert til `docs/arkiv/HANDOVER-historikk.md`
   (200-linjerstaket, sist 2026-08-26).
