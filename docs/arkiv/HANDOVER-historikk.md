@@ -1245,3 +1245,16 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
   `v1.3.4` satt, men ligger **upushet foran `origin/main`** (de 2 gamle
   docs-commitene + docs-rettelsene fra økt 38 + release-merge). Siste
   PUSHEDE tag er `v1.3.3` (`edc372b`) — det er fortsatt den prod kjører.
+
+## Loggpost rotert 26. aug 2026 (økt 40, fra HANDOVER)
+
+- 2026-08-25 (økt 40, Opus): kjøreprompt «SLUTTSPURTEN» — utfør
+  `docs/plan-sluttspurt.md` task for task, aldri push uten klarsignal,
+  0 ekte AI-kall. Klarsignal «push og fortsett» → v1.3.5 ut; «push» →
+  v1.3.6 ut. Marius limte inn Coolifys deploy-logg for v1.3.6 (bygg, ikke
+  app-logg — SIGTERM-linjene sto ikke der) og ba til slutt om «en skikkelig
+  god handover til neste agent». Handling: Task 0–2 utført og verifisert i
+  prod, Task 3 (v1.3.7) klar lokalt i påvente av volumet, 364/364 + lint 0,
+  og overleveringen ryddet: HANDOVER fikk «Neste steg» øverst, planfila en
+  §0-statusblokk, ROADMAP viser v1.3.7 som «kode klar, ikke deployet», og
+  VIDERE.md ble ajour (den lå tre versjoner bak).

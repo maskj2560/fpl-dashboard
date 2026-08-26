@@ -181,21 +181,11 @@ er dermed ferdig i sin helhet. P0 ble lukket samme dag.
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
-- 2026-08-25 (økt 40, Opus): kjøreprompt «SLUTTSPURTEN» — utfør
-  `docs/plan-sluttspurt.md` task for task, aldri push uten klarsignal,
-  0 ekte AI-kall. Klarsignal «push og fortsett» → v1.3.5 ut; «push» →
-  v1.3.6 ut. Marius limte inn Coolifys deploy-logg for v1.3.6 (bygg, ikke
-  app-logg — SIGTERM-linjene sto ikke der) og ba til slutt om «en skikkelig
-  god handover til neste agent». Handling: Task 0–2 utført og verifisert i
-  prod, Task 3 (v1.3.7) klar lokalt i påvente av volumet, 364/364 + lint 0,
-  og overleveringen ryddet: denne fila har «Neste steg» øverst, planfila har
-  en §0-statusblokk, ROADMAP viser v1.3.7 som «kode klar, ikke deployet», og
-  VIDERE.md er ajour (den lå tre versjoner bak).
 - 2026-08-26 (økt 41, Fable): «full oversikt over alt gjenværende», så
   «planlegg og gjennomfør alt som kan gjøres nå». Handling: v1.3.8 og
   v1.4.0 TDD-bygget på egne brancher uten merge/push (375/375, lint 0,
   røyktest), status ført her + ROADMAP + planens §0. Deretter: «alle
   Chrome-handlinger via Claude in Chrome, du kan pushe» → P2-skjermbilder
   tatt med Playwright og committet; push av v1.3.7 etter volum-rapporten.
-- Loggposter fra økt 22–39: rotert til `docs/arkiv/HANDOVER-historikk.md`
-  (200-linjerstaket, sist 2026-08-25).
+- Loggposter fra økt 22–40: rotert til `docs/arkiv/HANDOVER-historikk.md`
+  (200-linjerstaket, sist 2026-08-26).
