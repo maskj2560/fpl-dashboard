@@ -6,7 +6,7 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-26 (økt 41, Fable: v1.3.8+v1.4.0 forhåndsbygget på brancher)
+**Sist oppdatert:** 2026-08-26 (økt 41, Fable: v1.3.7 UTE I PROD, v1.3.8+v1.4.0 klare på brancher)
 
 ## Status akkurat nå
 - **v1.3.5 og v1.3.6 UTE I PROD 25. aug** (footer `v1.3.6`, `/health` 200).
@@ -22,10 +22,11 @@
   beholdes) — de to linjene skal stå der. Lokalt er handleren bevist med
   `process.emit('SIGINT')`: «SIGINT mottatt — lukker serveren» +
   «Serveren lukket ryddig», exit 0.
-- **v1.3.7 (persistent brief-markør) klar lokalt — IKKE pushet.** Venter
-  på at volumet `/app/data` er lagt til i Coolify (Storages). 364/364,
-  lint 0. Røyktest med ekte fs: «Brief-markør lastet: runde 2 er alt
-  sendt», ingen Discord-poster.
+- **v1.3.7 UTE I PROD 26. aug** (footer `v1.3.7`, `/health` 200, hash
+  `d508c47f` uendret). Volumet `/app/data` lagt til i Coolify FØR pushen
+  (navngitt volum `…-fpl-data`, via Claude in Chrome) — aktivt fra denne
+  deployen. Gjenstående markør-bevis: «Brief-markør lastet: runde 2 er
+  alt sendt» i loggen ved første omstart ETTER torsdagens auto-brief.
 - **v1.3.8 og v1.4.0 forhåndsbygget 26. aug** på `fix/genitiv-nyhetsfilter-v138`
   og `feat/alderstak-v140` (stablet oppå førstnevnte) — 375/375, lint 0,
   røyktest OK. IKKE merget: merge `--no-ff` + tag + push først etter P4.
@@ -46,11 +47,11 @@
   finpuss, QA-rettelser). Detaljer i `docs/arkiv/HANDOVER-historikk.md`.
 - Kostnad målt 23. aug: **$0,94/uke** — under terskelen. Ny måling i uken
   etter 31. aug (prisskiftet), nå mot taktbudsjettet ~41–45 kall/uke, kø-punkt 1.
-- **Git akkurat nå:** `main` ligger **3 commits foran `origin/main`** —
-  merge-commiten for v1.3.7 (`7413e2d`) og denne overleveringen. Tagene
-  `v1.3.5` og `v1.3.6` er pushet; **`v1.3.7` er kun lokal.** Alle
-  featurebranchene er merget `--no-ff` og slettet. Rent arbeidstre.
-  Neste push deployer v1.3.7 — se «Neste steg».
+- **Git akkurat nå:** `main` pushet t.o.m. `98377e0` 26. aug (v1.3.7 +
+  docs + P2-skjermbilder), tag `v1.3.7` pushet. Lokale brancher:
+  `fix/genitiv-nyhetsfilter-v138` og `feat/alderstak-v140` (umerget).
+  Docs-commits etter dette kan ligge lokalt til neste release-push —
+  måleuken 1.–6. sept skal være deploy-fri.
 - Eldre status (v1.2.3, doks-opprydning, versjonsplan, v1.2.4): arkivert.
 
 ## Neste steg (start her)
@@ -58,26 +59,20 @@
 Fasiten for alt som gjenstår er `docs/plan-sluttspurt.md` — den har kode,
 tester, ordrett dokumenttekst, kalender og bevis-krav per task. Køen i
 `ROADMAP.md` er den langsiktige prioriteringen og sier det samme.
-**Punkt 1–4 kan bare Marius gjøre; en agent kommer ikke videre uten dem.**
+**Punkt 1–2 kan bare Marius gjøre — Claude in Chrome-promptene er levert
+i økt 41 og kan gjenbrukes fra chatloggen.**
 
-1. `[Marius]` **Volum `/app/data` i Coolify** (Storages → Add → destination
-   path `/app/data`). Låser opp pushen av v1.3.7.
-2. `[Marius]` **Klarsignal «push»** → push `main` + tag `v1.3.7`, deretter
-   prod-verifisering (footer `v1.3.7`, `/health` 200) = plan Task 3 Step 8.
-   Deploy senest to 27. før 12:00, ellers vent til ma 31.: auto-brief
-   to ~19:30, GW2 i helgen 29.–31., stille måleuke 1.–6. sept.
-3. `[Marius]` **`kill 1` i containerterminalen** → de to avslutningslinjene
-   er det siste beviset for v1.3.5. Føres i status her; huker av Task 2
-   Step 8, som står åpen nettopp fordi beviset mangler.
-4. `[Marius]` **Én transfer før fr 28. kl. 19:30** — uten den har P3 ingen
-   ekte data å verifisere feltnavnene mot.
-5. **Task 4 (P3), tidligst ma 31. aug:** feltnavnene i
+1. `[Marius]` **`kill 1` i containerterminalen** (Chrome-prompt 2) → de to
+   avslutningslinjene er siste bevis for v1.3.5; huker av Task 2 Step 8.
+2. `[Marius]` **Én transfer før fr 28. kl. 19:30** (Chrome-prompt 3) —
+   uten den har P3 ingen ekte data å verifisere feltnavnene mot.
+3. **Task 4 (P3), tidligst ma 31. aug:** feltnavnene i
    `entry/5330646/transfers/` mot ekte API + `/overganger` på 390 px.
-6. **Task 5 (P2), delvis utført 26. aug:** skjermbildene er committet —
-   gjenstår mobil-QA på ekte telefon + mockup-sjekk i begge temaer.
-7. **Task 6 (P4), ~ma 7. sept:** kostnadsmåling etter prisskiftet, mot
+4. **Task 5 (P2), delvis utført 26. aug:** skjermbildene er committet —
+   gjenstår mobil-QA på ekte telefon + mockup-sjekk (Chrome-prompt 4).
+5. **Task 6 (P4), ~ma 7. sept:** kostnadsmåling etter prisskiftet, mot
    $-tersklene OG taktbudsjettet ~41–45 kall/uke.
-8. **Task 7–8 etter P4:** koden er FERDIG på branchene (se status) — kun
+6. **Task 7–8 etter P4:** koden er FERDIG på branchene (se status) — kun
    merge `--no-ff` + tag + push gjenstår (P3-avvik → renummerer mekanisk
    først). Til slutt Task 9: arkiver planfila.
 
@@ -186,6 +181,8 @@ er dermed ferdig i sin helhet. P0 ble lukket samme dag.
   v1.4.0 TDD-bygget på egne brancher uten merge/push (375/375, lint 0,
   røyktest), status ført her + ROADMAP + planens §0. Deretter: «alle
   Chrome-handlinger via Claude in Chrome, du kan pushe» → P2-skjermbilder
-  tatt med Playwright og committet; push av v1.3.7 etter volum-rapporten.
+  tatt med Playwright og committet. Volum-rapporten kom (Claude in
+  Chrome, navngitt volum) → push: v1.3.7 + docs ut 26. aug, prod
+  verifisert utenfra (footer, `/health`, uendret asset-hash).
 - Loggposter fra økt 22–40: rotert til `docs/arkiv/HANDOVER-historikk.md`
   (200-linjerstaket, sist 2026-08-26).

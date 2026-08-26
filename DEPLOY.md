@@ -126,7 +126,8 @@ ikke re-poster briefen til Discord. Uten volum tømmes fila ved hver deploy,
 og appen oppfører seg som før v1.3.7 — den krasjer aldri.
 
 Oppsett i Coolify (én gang): **Storages → Add → destination path**
-`/app/data`.
+`/app/data`. Satt opp 26. aug 2026 — navngitt volum
+`liq9mdauin1nj74631t37aaz-fpl-data` (Coolify prefikser med app-UUID).
 
 Verifisering: etter en deploy som følger et sendt brief skal loggen vise
 `Brief-markør lastet: runde N er alt sendt`.

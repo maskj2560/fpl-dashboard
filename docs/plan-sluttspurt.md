@@ -25,9 +25,10 @@ Denne fila ER planen og spec-en — det finnes ingen andre planfiler.
 
 - Task 0 (docs-rydding), Task 1 (v1.3.5) og Task 2 (v1.3.6): **utført og
   verifisert i prod.** Prod-footer viser `v1.3.6`.
-- Task 3 (v1.3.7): **kode klar, merget til `main`, tagget lokalt** — Step 0
-  (volum `/app/data` i Coolify) og Step 8 (prod-verifisering) gjenstår.
-  `main` ligger 3 commits foran `origin/main`.
+- Task 3 (v1.3.7): **utført — UTE I PROD 26. aug.** Volumet `/app/data`
+  lagt til via Claude in Chrome, push samme dag; footer `v1.3.7`,
+  `/health` 200. Markør-beviset («Brief-markør lastet») observeres ved
+  første omstart etter torsdagens auto-brief.
 - Task 2 Step 8 står åpen med vilje: prod-verifiseringen er gjort
   (footer + `/health`), men graceful-shutdown-beviset mangler. Coolifys
   deploy-logg inneholder det ikke — det må hentes med `kill 1` i
@@ -754,11 +755,11 @@ RUN mkdir -p /app/data && chown node:node /app/data
   `fix: brief sendt-markøren overlever redeploy (v1.3.7)`, merge `--no-ff`,
   tag `v1.3.7`. **STOPP → volumet MÅ være bekreftet (Step 0), så vent på
   «push».** Deploy senest torsdag 27. før 12:00, ellers mandag 31.
-- [ ] **Step 8: Prod-verifisering:** footer `v1.3.7`, `/health` 200.
-  Naturlig sluttbevis: torsdag 27. ~19:30 sendes GW2-briefen og fila
-  skrives; ved NESTE deploy/omstart skal loggen vise «Brief-markør lastet:
-  runde 2 er alt sendt». Føres i HANDOVER når det observeres (typisk ved
-  Task 4-fix eller Task 7-deployen).
+- [x] **Step 8: Prod-verifisering:** footer `v1.3.7`, `/health` 200 —
+  **utført 26. aug** (hash `d508c47f` uendret, volumet aktivt fra denne
+  deployen). Naturlig sluttbevis gjenstår å OBSERVERE: torsdag 27. ~19:30
+  sendes GW2-briefen og fila skrives; ved NESTE deploy/omstart skal loggen
+  vise «Brief-markør lastet: runde 2 er alt sendt». Føres i HANDOVER.
 
 **NB / kan gå galt:** navngitte Docker-volum arver eierskapet fra imaget
 (`chown node:node` i Dockerfile er derfor nok); blir fila likevel uskrivbar
