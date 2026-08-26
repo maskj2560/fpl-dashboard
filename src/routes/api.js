@@ -25,7 +25,7 @@ import {
   transferOutCandidates,
 } from '../services/analysis.js';
 import { buildPurchases } from '../services/pricing.js';
-import { buildPlannerData } from '../services/scenarios.js';
+import { buildPlannerData, addScenario, removeScenario } from '../services/scenarios.js';
 import { formatDateTime } from '../services/format.js';
 import * as ai from '../services/ai.js';
 import { buildAdvicePrompt } from '../services/prompts.js';
@@ -41,34 +41,68 @@ router.get('/brief.json', async (req, res, next) => {
   }
 });
 
-// Datagrunnlaget for hva hvis-planleggeren på /overganger. Leser kun
-// serverens cacher/fplClient — hentes lazy av klienten ved første åpning.
+// Datagrunnlaget for hva hvis-planleggeren på /overganger: min tropp med
+// salgspriser + alle spillere. Deles av GET-en (klienten henter lazy) og
+// POST-en (server-side validering mot samme fasit). Kun cachede kall.
+async function assemblePlanner() {
+  const teamId = config.fplTeamId;
+  const [bootstrap, fixtures, transfers, history] = await Promise.all([
+    getBootstrap(),
+    getFixtures(),
+    getEntryTransfers(teamId),
+    getEntryHistory(teamId),
+  ]);
+  const gw = Math.max(1, resolvedGw(bootstrap.events));
+  const picks = await getPicks(teamId, gw);
+  const gw1Picks = gw === 1 ? picks : await getPicksHistoric(teamId, 1);
+  const purchases = buildPurchases({
+    transfers,
+    chips: history?.chips,
+    gw1Picks,
+    elements: bootstrap.elements,
+  });
+  const fromGw = nextEvent(bootstrap.events)?.id ?? gw;
+  return buildPlannerData({ bootstrap, fixtures, picks, purchases, fromGw });
+}
+
 router.get('/planlegger.json', async (req, res, next) => {
   if (!config.hasTeamId) {
     return res.status(400).json({ error: 'FPL_TEAM_ID er ikke satt' });
   }
   try {
-    const teamId = config.fplTeamId;
-    const [bootstrap, fixtures, transfers, history] = await Promise.all([
-      getBootstrap(),
-      getFixtures(),
-      getEntryTransfers(teamId),
-      getEntryHistory(teamId),
-    ]);
-    const gw = Math.max(1, resolvedGw(bootstrap.events));
-    const picks = await getPicks(teamId, gw);
-    const gw1Picks = gw === 1 ? picks : await getPicksHistoric(teamId, 1);
-    const purchases = buildPurchases({
-      transfers,
-      chips: history?.chips,
-      gw1Picks,
-      elements: bootstrap.elements,
-    });
-    const fromGw = nextEvent(bootstrap.events)?.id ?? gw;
-    res.json(buildPlannerData({ bootstrap, fixtures, picks, purchases, fromGw }));
+    res.json(await assemblePlanner());
   } catch (err) {
     next(err);
   }
+});
+
+// Scenario-CRUD. Server-valideringen (validateScenario via addScenario) er
+// autoritativ — klientens regelsjekk er bare UX. Persistens i DATA_DIR.
+router.post('/scenarier', async (req, res, next) => {
+  if (!config.hasTeamId) {
+    return res.status(400).json({ error: 'FPL_TEAM_ID er ikke satt' });
+  }
+  try {
+    const body = req.body ?? {};
+    const input = {
+      name: typeof body.name === 'string' ? body.name : '',
+      event: Number(body.event),
+      moves: Array.isArray(body.moves)
+        ? body.moves.map((m) => ({ out: Number(m?.out), in: Number(m?.in) }))
+        : [],
+    };
+    const planner = await assemblePlanner();
+    const result = addScenario(input, planner);
+    if (!result.ok) return res.status(result.status).json({ errors: result.errors });
+    res.status(201).json({ scenario: result.scenario });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.delete('/scenarier/:id', (req, res) => {
+  const result = removeScenario(String(req.params.id));
+  res.status(result.status).end();
 });
 
 router.get('/live.json', async (req, res, next) => {

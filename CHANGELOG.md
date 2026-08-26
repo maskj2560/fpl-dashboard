@@ -26,6 +26,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   eierandel, status) og få FPL-reglene sjekket — posisjon, budsjett med
   salgspris + bank, maks 3 fra samme klubb. Datagrunnlaget hentes først
   når planleggeren åpnes.
+- Scenarier kan lagres (maks 20, navngitte, med prissnapshot) og slettes —
+  de overlever redeploy i samme lagringsplass som brief-markøren.
+  Gratisbyttene rekonstrueres fra historikken (1 per runde, bank opptil 5,
+  wildcard/free hit bruker ingen) og selvvalideres mot FPLs faktiske trekk.
 
 ## [1.4.0] - 2026-09-XX
 

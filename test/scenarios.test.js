@@ -1,6 +1,16 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildPlannerData, validateScenario } from '../src/services/scenarios.js';
+import {
+  buildPlannerData,
+  validateScenario,
+  buildFtLedger,
+  parseScenarioFile,
+  listScenarios,
+  addScenario,
+  removeScenario,
+  _setHooks,
+  _reset,
+} from '../src/services/scenarios.js';
 
 // Priser i tideler. Runde 3 er neste — FDR regnes for runde 3–5.
 const bootstrap = {
@@ -141,4 +151,130 @@ test('ukjente spillere, duplikater og ugyldig navn/runde gir egne koder', () => 
   assert.ok(codes(validateScenario(scenario([{ out: 10, in: 30 }], { name: '' }), plannerFx)).includes('navn'));
   assert.ok(codes(validateScenario(scenario([{ out: 10, in: 30 }], { event: 0 }), plannerFx)).includes('runde'));
   assert.ok(codes(validateScenario(scenario([], {}), plannerFx)).includes('bytter'));
+});
+
+// --- buildFtLedger (T8): gratisbyttene rekonstrueres og selvvalideres ---
+
+const hist = (rows) => ({
+  current: rows.map(([event, event_transfers, event_transfers_cost]) => ({
+    event, event_transfers, event_transfers_cost,
+  })),
+});
+
+test('FT-beholdningen bygger seg opp med 1 per runde, maks 5', () => {
+  const ledger = buildFtLedger({
+    history: hist([[1, 0, 0], [2, 0, 0], [3, 0, 0], [4, 0, 0], [5, 0, 0], [6, 0, 0], [7, 0, 0]]),
+    chips: [],
+  });
+  assert.equal(ledger.valid, true);
+  assert.equal(ledger.byGw.get(2).ftBefore, 1);
+  assert.equal(ledger.byGw.get(6).ftBefore, 5);
+  assert.equal(ledger.byGw.get(7).ftBefore, 5); // taket
+});
+
+test('trekk beregnes som transfers utover beholdningen ganger 4 — og valideres mot history', () => {
+  const ledger = buildFtLedger({
+    history: hist([[1, 0, 0], [2, 1, 0], [3, 3, 8], [4, 0, 0], [5, 2, 0]]),
+    chips: [],
+  });
+  assert.equal(ledger.valid, true);
+  assert.equal(ledger.byGw.get(3).ftBefore, 1);
+  assert.equal(ledger.byGw.get(3).paid, 8); // 3 bytter, 1 gratis
+  assert.equal(ledger.byGw.get(5).ftBefore, 2); // 1 + 1 banket fra r4
+});
+
+test('wildcard og free hit bruker ingen gratisbytter', () => {
+  const ledger = buildFtLedger({
+    history: hist([[1, 0, 0], [2, 8, 0], [3, 1, 0]]),
+    chips: [{ name: 'wildcard', event: 2 }],
+  });
+  assert.equal(ledger.valid, true);
+  assert.equal(ledger.byGw.get(2).paid, 0);
+  assert.equal(ledger.byGw.get(3).ftBefore, 2); // 1 bevart gjennom WC + 1 ny
+});
+
+test('avvik mellom modellen og faktisk kost gir valid false', () => {
+  const ledger = buildFtLedger({
+    history: hist([[1, 0, 0], [2, 1, 4]]), // 1 bytte med 1 FT skulle kostet 0
+    chips: [],
+  });
+  assert.equal(ledger.valid, false);
+});
+
+// --- persistens + CRUD (T8): hooks-mønsteret fra notify.js, ingen fs ---
+
+test('parseScenarioFile: gyldig fil rundtur, korrupt og ukjent versjon gir tom liste', () => {
+  const scenarioObj = { id: 'abc', name: 'Plan A', event: 4, createdAt: 'x', moves: [{ out: 10, in: 30 }], snapshot: { bank: 15, prices: {} } };
+  assert.deepEqual(parseScenarioFile(JSON.stringify({ version: 1, scenarios: [scenarioObj] })), [scenarioObj]);
+  assert.deepEqual(parseScenarioFile('{korrupt'), []);
+  assert.deepEqual(parseScenarioFile(JSON.stringify({ version: 99, scenarios: [scenarioObj] })), []);
+});
+
+test('addScenario validerer, lagrer og returnerer scenarioet med id og prissnapshot', () => {
+  const saved = [];
+  _setHooks({ load: () => [], save: (list) => saved.push(list) });
+  try {
+    const r = addScenario({ name: ' Plan A ', event: 4, moves: [{ out: 10, in: 30 }] }, plannerFx);
+    assert.equal(r.ok, true);
+    assert.equal(r.status, 201);
+    assert.equal(r.scenario.name, 'Plan A');
+    assert.ok(r.scenario.id.length > 10);
+    assert.deepEqual(r.scenario.snapshot, { bank: 15, prices: { 10: 142, 30: 155 } });
+    assert.equal(saved.length, 1);
+    assert.deepEqual(listScenarios(), [r.scenario]);
+  } finally {
+    _reset();
+  }
+});
+
+test('addScenario med regelbrudd gir 400 og lagrer ingenting', () => {
+  const saved = [];
+  _setHooks({ load: () => [], save: (list) => saved.push(list) });
+  try {
+    const r = addScenario({ name: 'X', event: 4, moves: [{ out: 10, in: 32 }] }, plannerFx);
+    assert.equal(r.ok, false);
+    assert.equal(r.status, 400);
+    assert.deepEqual(r.errors.map((e) => e.code), ['posisjon']);
+    assert.equal(saved.length, 0);
+  } finally {
+    _reset();
+  }
+});
+
+test('tak på 20 scenarier', () => {
+  const mange = Array.from({ length: 20 }, (_, i) => ({ id: `s${i}`, name: `P${i}`, event: 4, moves: [] }));
+  _setHooks({ load: () => mange, save: () => {} });
+  try {
+    const r = addScenario({ name: 'En til', event: 4, moves: [{ out: 10, in: 30 }] }, plannerFx);
+    assert.equal(r.status, 400);
+    assert.ok(r.errors.some((e) => e.code === 'tak'));
+  } finally {
+    _reset();
+  }
+});
+
+test('removeScenario: ukjent id gir 404, kjent id lagrer resten', () => {
+  const saved = [];
+  _setHooks({ load: () => [{ id: 'a' }, { id: 'b' }], save: (list) => saved.push(list) });
+  try {
+    assert.equal(removeScenario('finnes-ikke').status, 404);
+    assert.equal(saved.length, 0);
+    const r = removeScenario('a');
+    assert.equal(r.status, 204);
+    assert.deepEqual(saved[0].map((s) => s.id), ['b']);
+    assert.deepEqual(listScenarios().map((s) => s.id), ['b']);
+  } finally {
+    _reset();
+  }
+});
+
+test('uskrivbar disk gir 503, aldri krasj — og lista i minnet er uendret', () => {
+  _setHooks({ load: () => [], save: () => { throw new Error('EACCES'); } });
+  try {
+    const r = addScenario({ name: 'Plan A', event: 4, moves: [{ out: 10, in: 30 }] }, plannerFx);
+    assert.equal(r.status, 503);
+    assert.deepEqual(listScenarios(), []);
+  } finally {
+    _reset();
+  }
 });
