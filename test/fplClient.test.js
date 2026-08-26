@@ -8,6 +8,7 @@ import {
   getLiveHistoric,
   getEntryTransfers,
   isGameUpdating,
+  staleInfo,
   FplError,
   _setNow as _setFplNow,
 } from '../src/services/fplClient.js';
@@ -202,4 +203,63 @@ test('en vellykket henting nullstiller gameUpdating med en gang', async () => {
 
 test('gameUpdating er falskt før noe 503 har skjedd', () => {
   assert.equal(isGameUpdating(), false);
+});
+
+// ---- v1.4.0: staleInfo — alderstak på stale data --------------------------
+
+test('staleInfo er null når ingenting ligger i cachen', () => {
+  assert.equal(staleInfo(), null);
+});
+
+test('staleInfo: 30 min gammel bootstrap er innenfor taket', async () => {
+  let t = 1_000_000;
+  _setNow(() => t);
+  _setFplNow(() => t);
+  try {
+    mockFetch(() => jsonResponse({ events: [] }));
+    await getBootstrap();
+    t += 30 * 60_000;
+
+    const info = staleInfo();
+    assert.equal(info.tooOld, false);
+    assert.equal(info.ageSec, 1800);
+  } finally {
+    _setNow(null);
+    _setFplNow(null);
+  }
+});
+
+test('staleInfo: 61 min gammel bootstrap er for gammel', async () => {
+  let t = 1_000_000;
+  _setNow(() => t);
+  _setFplNow(() => t);
+  try {
+    mockFetch(() => jsonResponse({ events: [] }));
+    await getBootstrap();
+    t += 61 * 60_000;
+
+    const info = staleInfo();
+    assert.equal(info.tooOld, true);
+    assert.equal(info.fetchedIso, new Date(1_000_000).toISOString());
+  } finally {
+    _setNow(null);
+    _setFplNow(null);
+  }
+});
+
+test('staleInfo(gw): 11 min gamle live-data er for gamle', async () => {
+  let t = 1_000_000;
+  _setNow(() => t);
+  _setFplNow(() => t);
+  try {
+    mockFetch(() => jsonResponse({ elements: [] }));
+    await getLive(2);
+    t += 11 * 60_000;
+
+    assert.equal(staleInfo(2).tooOld, true);
+    assert.equal(staleInfo(2).ageSec, 660);
+  } finally {
+    _setNow(null);
+    _setFplNow(null);
+  }
 });

@@ -40,7 +40,7 @@ function fetchDeduped(key, fetcher, ttl) {
     promise = (async () => {
       try {
         const value = await fetcher();
-        store.set(key, { value, expiresAt: now() + ttl });
+        store.set(key, { value, expiresAt: now() + ttl, fetchedAt: now() });
         lastFailedAt.delete(key);
         return value;
       } catch (err) {
@@ -69,4 +69,10 @@ export function clear() {
   store.clear();
   inFlight.clear();
   lastFailedAt.clear();
+}
+
+/** Alder i ms på cachet verdi for nøkkelen, null når den ikke finnes. */
+export function ageOf(key) {
+  const entry = store.get(key);
+  return entry ? now() - entry.fetchedAt : null;
 }

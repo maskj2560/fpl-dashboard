@@ -1,5 +1,5 @@
 // ENESTE modul med nettverkskall mot FPL-API-et. Alt går via cache.js.
-import { getOrFetch } from './cache.js';
+import { getOrFetch, ageOf } from './cache.js';
 
 const BASE = 'https://fantasy.premierleague.com/api/';
 // FPL-API-et kan avvise kall uten nettleser-lignende User-Agent.
@@ -26,6 +26,23 @@ export function isGameUpdating() {
 /** Overstyrer klokken (for tester). null = tilbake til Date.now. */
 export function _setNow(fn) {
   now = fn ?? (() => Date.now());
+}
+
+// Alderstak (v1.4.0): eldre stale-data enn dette vises fortsatt, men med
+// banner — «usynlig gammelt» finnes ikke lenger. Live foreldes raskere.
+const STALE_BANNER_MS = 60 * 60_000;
+const STALE_BANNER_LIVE_MS = 10 * 60_000;
+
+export function staleInfo(gw = null) {
+  const key = gw == null ? 'bootstrap' : `live:${gw}`;
+  const cap = gw == null ? STALE_BANNER_MS : STALE_BANNER_LIVE_MS;
+  const age = ageOf(key);
+  if (age == null) return null;
+  return {
+    ageSec: Math.round(age / 1000),
+    tooOld: age > cap,
+    fetchedIso: new Date(now() - age).toISOString(),
+  };
 }
 
 export class FplError extends Error {

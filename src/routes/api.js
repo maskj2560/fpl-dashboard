@@ -2,7 +2,7 @@ import { Router } from 'express';
 import config from '../config.js';
 import { assembleBrief } from '../services/brief.js';
 import { assembleLive } from '../services/live.js';
-import { getBootstrap, getFixtures, getPicks, getEntry } from '../services/fplClient.js';
+import { getBootstrap, getFixtures, getPicks, getEntry, staleInfo } from '../services/fplClient.js';
 import {
   byId,
   captainSuggestions,
@@ -22,7 +22,8 @@ const router = Router();
 
 router.get('/brief.json', async (req, res, next) => {
   try {
-    res.json(await assembleBrief());
+    const brief = await assembleBrief();
+    res.json({ ...brief, dataAlder: staleInfo()?.ageSec ?? null });
   } catch (err) {
     next(err);
   }
@@ -30,7 +31,8 @@ router.get('/brief.json', async (req, res, next) => {
 
 router.get('/live.json', async (req, res, next) => {
   try {
-    res.json(await assembleLive());
+    const live = await assembleLive();
+    res.json({ ...live, dataAlder: staleInfo(live.gameweek)?.ageSec ?? null });
   } catch (err) {
     next(err);
   }

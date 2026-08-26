@@ -1,6 +1,6 @@
 import { test, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { getOrFetch, clear, _setNow, _flush } from '../src/services/cache.js';
+import { getOrFetch, clear, _setNow, _flush, ageOf } from '../src/services/cache.js';
 
 let clock;
 beforeEach(() => {
@@ -274,4 +274,26 @@ test('clear() nullstiller backoff-tilstanden', async () => {
   await _flush();
 
   assert.equal(calls, 4, 'gammel backoff overlever ikke clear()');
+});
+
+// ---- v1.4.0: ageOf — alderen på cachede verdier ---------------------------
+
+test('ageOf gir alderen på en cachet verdi', async () => {
+  await getOrFetch('nokkel', async () => 'verdi', { ttl: 1000 });
+  clock = 400;
+
+  assert.equal(ageOf('nokkel'), 400);
+});
+
+test('ageOf er null for ukjent nøkkel', () => {
+  assert.equal(ageOf('finnes-ikke'), null);
+});
+
+test('ageOf nullstilles når verdien revalideres', async () => {
+  await getOrFetch('n2', async () => 'a', { ttl: 100 });
+  clock = 200; // utløpt → SWR-henting i bakgrunnen
+  await getOrFetch('n2', async () => 'b', { ttl: 100 });
+  await _flush();
+
+  assert.equal(ageOf('n2'), 0);
 });

@@ -47,6 +47,11 @@
       FPL oppdaterer spillet akkurat nå — viser sist kjente data.
     </div>
   <% } %>
+  <% if (staleSince) { %>
+    <div class="banner" role="status">
+      Viser data fra <%= staleSince %> — får ikke kontakt med FPL akkurat nå.
+    </div>
+  <% } %>
 
   <main>
     <%- body %>

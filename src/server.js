@@ -5,9 +5,9 @@ import { fileURLToPath } from 'node:url';
 import express from 'express';
 import compression from 'compression';
 import config from './config.js';
-import { isGameUpdating } from './services/fplClient.js';
+import { isGameUpdating, staleInfo } from './services/fplClient.js';
 import { loadClubAssets } from './services/clubAssets.js';
-import { formatDateTime } from './services/format.js';
+import { formatDateTime, formatTime } from './services/format.js';
 import { cacheControlFor, createErrorHandler, createShutdown } from './middleware.js';
 import indexRouter from './routes/index.js';
 import healthRouter from './routes/health.js';
@@ -67,6 +67,9 @@ app.use((req, res, next) => {
   res.renderPage = (view, data = {}) => {
     res.render(view, data, (err, body) => {
       if (err) return next(err);
+      // Alderstak (v1.4.0): alle sider måles mot bootstrap-taket; ruter med
+      // strengere krav (live) sender sin egen staleSince i data.
+      const stale = staleInfo();
       res.render('layout', {
         body,
         title: data.title ?? 'FPL-dashboard',
@@ -74,6 +77,9 @@ app.use((req, res, next) => {
         // /spillere), så nav-markeringen må bruke hele stien.
         path: req.originalUrl.split('?')[0],
         gameUpdating: isGameUpdating(),
+        staleSince: data.staleSince !== undefined
+          ? data.staleSince
+          : stale?.tooOld ? formatTime(stale.fetchedIso) : null,
         version,
         assetVersion,
         startedAt,

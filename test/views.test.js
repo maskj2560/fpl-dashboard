@@ -54,7 +54,7 @@ for (const [name, locals, marker] of cases) {
 // ødelagt aria-current slapp gjennom. Den rendres derfor her også.
 const layoutLocals = (path) => ({
   body: '<p>innhold</p>', title: 'Test', path,
-  gameUpdating: false, version: '1.0.1', assetVersion: 'a1b2c3d4',
+  gameUpdating: false, staleSince: null, version: '1.0.1', assetVersion: 'a1b2c3d4',
   startedAt: '19.08.2026, 21:00',
 });
 
@@ -83,6 +83,13 @@ test('layout.ejs viser 503-banneret bare når spillet oppdateres', async () => {
   const med = await renderView('layout', { ...layoutLocals('/'), gameUpdating: true });
   assert.ok(!uten.includes('FPL oppdaterer spillet'));
   assert.ok(med.includes('FPL oppdaterer spillet'));
+});
+
+test('layout.ejs viser alderstak-banneret bare når staleSince er satt', async () => {
+  const uten = await renderView('layout', layoutLocals('/'));
+  const med = await renderView('layout', { ...layoutLocals('/'), staleSince: '14:05' });
+  assert.ok(!uten.includes('Viser data fra'));
+  assert.ok(med.includes('Viser data fra 14:05'));
 });
 
 // P0-1: uversjonerte asset-URL-er lot Cloudflare servere gammel CSS/JS etter

@@ -28,7 +28,8 @@ src/routes/        tynne ruter: én fil per side + api.js
 src/services/
   fplClient.js     ENESTE modul med nettverkskall til FPL-API-et
   cache.js         TTL-cache med stale-while-revalidate, in-flight dedup
-                   og 30 s backoff per nøkkel etter mislykket revalidering
+                   og 30 s backoff per nøkkel etter mislykket revalidering;
+                   ageOf(key) gir alderen på en cachet verdi (alderstaket)
   analysis.js      rene funksjoner: kaptein-/transferanbefalinger, FDR, differensialer
   brief.js         gameweek-briefen: buildBrief (ren data), assembleBrief
                    (henter fra FPL), generateAiBrief (AI-teksten, delt av
@@ -91,6 +92,10 @@ Base `https://fantasy.premierleague.com/api/` — åpent, ingen nøkkel. Viktig:
   når bootstrap sier runden er `finished`
 - Frontend poller live-data kun mens kamper pågår — aldri poll utenfor
   kampvinduer, og all polling går via serverens cache (aldri rett mot FPL)
+- Alderstak (v1.4.0): stale data eldre enn 60 min (10 min for live) vises
+  fortsatt, men med banneret «Viser data fra HH:MM — får ikke kontakt med
+  FPL akkurat nå» (`staleInfo` i fplClient). `/api/brief.json` og
+  `/api/live.json` oppgir `dataAlder` (sekunder siden forrige henting)
 
 ## AI-funksjoner (valgfrie — appen krever aldri nøkkel)
 
