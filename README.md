@@ -4,6 +4,17 @@ Selvhostet Fantasy Premier League-dashboard på norsk. Server-rendret
 Express 5 + EJS, ingen database, ingen byggesteg. All data hentes fra det
 åpne FPL-API-et — ingen innlogging eller API-nøkkel trengs for kjernen.
 
+## Skjermbilder
+
+Mørkt tema er standard; lyst tema og auto følger systemvalget.
+
+| Dashbord | Spillere | Mitt lag |
+| --- | --- | --- |
+| ![Dashbord](docs/img/dashbord-desktop.png) | ![Spillere](docs/img/spillere-desktop.png) | ![Mitt lag](docs/img/lag-desktop.png) |
+
+Mobil (390 px): [dashbord](docs/img/dashbord-mobil.png) ·
+[spillere](docs/img/spillere-mobil.png) · [lag](docs/img/lag-mobil.png)
+
 ## Sider
 
 | Side | Innhold | Status |

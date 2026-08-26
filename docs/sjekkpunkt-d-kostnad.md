@@ -150,8 +150,9 @@ env-endring unna; mellom $1 og $4 er kortere svar den billigere knappen.
 
 ## Restpunkter i Del 6
 
-- [ ] **[Marius]** Skjermbilder til README (dashbord, /spillere, /lag i
-      desktop + 390 px) — legges der README forventer dem.
+- [x] Skjermbilder til README (dashbord, /spillere, /lag i desktop +
+      390 px) — **utført 26. aug** med Playwright mot prod (mørkt tema),
+      committet i `docs/img/` og lenket fra README.
 - [ ] **[Marius]** Mobilvisning på ekte telefon: de fem QA-sjekkene
       (vannrett scroll, sticky hode, footer, norsk, AI-merke).
 - [x] «v1.2.0-kandidater» samlet under «Senere / idéer» i ROADMAP.md.

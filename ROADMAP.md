@@ -18,7 +18,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.2.4**~~ | ~~AI-rådgiverens promptstruktur på /lag~~ | **utført 24. aug** | — |
 | ~~**P0**~~ | ~~Coolify-helsesjekk fiks + bevis~~ | **utført 25. aug — alt. a aktiv** | — |
 | ~~**P1**~~ | ~~Marius: bekreft auto-briefen 20. aug i Discord~~ | **utført 25. aug — brief bekreftet i kanalen** | — |
-| **P2** | Marius: README-skjermbilder + mobil-QA | 3 | Marius |
+| **P2** | Marius: README-skjermbilder + mobil-QA | 3 | **skjermbilder utført 26. aug** — gjenstår mobil-QA på ekte telefon |
 | **P3** | Etter GW2: transfers-skjema mot ekte data | 2 | GW2 spilt (~29.–31. aug) |
 | **P4** | Kostnadsmåling uken etter 1. sep | 1 | dato |
 | ~~**v1.2.5**~~ | ~~Brief-kvalitetstrioen~~ | **utført 24. aug** | — |
@@ -67,9 +67,10 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
 
 ### 3. (P2) README-skjermbilder + mobil-QA `[Marius]`
 
-- **Hva:** Del 6-restene fra sesongstart-verifiseringen: skjermbilder til
-  README (dashbord, /spillere, /lag i desktop + 390 px), og mobilvisning på
-  ekte telefon (vannrett scroll, sticky hode, footer, norsk, AI-merke).
+- **Hva:** Del 6-restene fra sesongstart-verifiseringen: ~~skjermbilder til
+  README~~ (**utført 26. aug** — Playwright mot prod, `docs/img/`), og
+  mobilvisning på ekte telefon (vannrett scroll, sticky hode, footer,
+  norsk, AI-merke).
 - **Eier detaljene:** restpunkt-listen i `docs/sjekkpunkt-d-kostnad.md`.
 - **Blokkert av:** Marius (nettleser + telefon).
 - **Størrelse:** liten.

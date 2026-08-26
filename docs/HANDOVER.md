@@ -29,6 +29,8 @@
 - **v1.3.8 og v1.4.0 forhåndsbygget 26. aug** på `fix/genitiv-nyhetsfilter-v138`
   og `feat/alderstak-v140` (stablet oppå førstnevnte) — 375/375, lint 0,
   røyktest OK. IKKE merget: merge `--no-ff` + tag + push først etter P4.
+- **P2-skjermbildene tatt og committet 26. aug** (Playwright mot prod,
+  mørkt tema, `docs/img/`, lenket fra README). Rest: ekte telefon.
 - **v1.3.4 (AI-SWR) ute siden 25. aug** — målingene og detaljene er rotert
   til `docs/arkiv/HANDOVER-historikk.md`; plan: `docs/arkiv/plan-v134-ai-swr.md`.
 - **Prod-QA 25. aug: 402 sjekker, 0 feil** mot v1.3.4 (dekker også v1.3.3);
@@ -71,8 +73,8 @@ tester, ordrett dokumenttekst, kalender og bevis-krav per task. Køen i
    ekte data å verifisere feltnavnene mot.
 5. **Task 4 (P3), tidligst ma 31. aug:** feltnavnene i
    `entry/5330646/transfers/` mot ekte API + `/overganger` på 390 px.
-6. **Task 5 (P2), Marius når som helst:** README-skjermbilder + mobil-QA.
-   Her hører også «visuell sjekk mot mockupen i begge temaer» hjemme.
+6. **Task 5 (P2), delvis utført 26. aug:** skjermbildene er committet —
+   gjenstår mobil-QA på ekte telefon + mockup-sjekk i begge temaer.
 7. **Task 6 (P4), ~ma 7. sept:** kostnadsmåling etter prisskiftet, mot
    $-tersklene OG taktbudsjettet ~41–45 kall/uke.
 8. **Task 7–8 etter P4:** koden er FERDIG på branchene (se status) — kun
@@ -192,6 +194,8 @@ er dermed ferdig i sin helhet. P0 ble lukket samme dag.
 - 2026-08-26 (økt 41, Fable): «full oversikt over alt gjenværende», så
   «planlegg og gjennomfør alt som kan gjøres nå». Handling: v1.3.8 og
   v1.4.0 TDD-bygget på egne brancher uten merge/push (375/375, lint 0,
-  røyktest), status ført her + ROADMAP + planens §0. Ingen push.
+  røyktest), status ført her + ROADMAP + planens §0. Deretter: «alle
+  Chrome-handlinger via Claude in Chrome, du kan pushe» → P2-skjermbilder
+  tatt med Playwright og committet; push av v1.3.7 etter volum-rapporten.
 - Loggposter fra økt 22–39: rotert til `docs/arkiv/HANDOVER-historikk.md`
   (200-linjerstaket, sist 2026-08-25).
