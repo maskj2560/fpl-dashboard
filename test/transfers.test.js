@@ -233,6 +233,86 @@ test('før sesongstart (maxGw 0) er alt pending', () => {
   assert.equal(a.rows[0].pending, true);
 });
 
+test('perGw dekker vinduet med løpende sum', () => {
+  const a = buildTransferAnalysis({ transfers: [t(11, 10, 2)], history, bootstrap, liveByGw });
+  assert.deepEqual(a.rows[0].perGw, [
+    { gw: 2, inn: 9, ut: 1, diff: 8, cum: 8 },
+    { gw: 3, inn: 2, ut: 0, diff: 2, cum: 10 },
+  ]);
+});
+
+test('perGw er tom og after5 null for pending og angrede bytter', () => {
+  const pendingA = buildTransferAnalysis({
+    transfers: [t(11, 10, 4)],
+    history, bootstrap, liveByGw,
+  });
+  assert.deepEqual(pendingA.rows[0].perGw, []);
+  assert.equal(pendingA.rows[0].after5, null);
+
+  const angret = buildTransferAnalysis({
+    transfers: [t(11, 10, 2), t(10, 11, 2, '2026-02-01T01:00:00Z')],
+    history, bootstrap, liveByGw,
+  });
+  assert.deepEqual(angret.rows[0].perGw, []);
+  assert.equal(angret.rows[0].after5, null);
+});
+
+test('after5: åpent vindu kortere enn 5 runder er ukomplett', () => {
+  const a = buildTransferAnalysis({ transfers: [t(11, 10, 2)], history, bootstrap, liveByGw });
+  assert.deepEqual(a.rows[0].after5, { diff: 10, gws: 2, complete: false });
+});
+
+test('after5: terminert vindu er komplett selv med færre enn 5 runder', () => {
+  const a = buildTransferAnalysis({
+    transfers: [t(11, 10, 2), t(10, 12, 3)],
+    history, bootstrap, liveByGw,
+  });
+  assert.deepEqual(a.rows[0].after5, { diff: 8, gws: 1, complete: true });
+});
+
+test('after5 stopper ved 5 runder selv om vinduet er lengre', () => {
+  // 6 runder: transfer i r1, vindu 1–6 → milepælen teller kun r1–r5.
+  const seks = {
+    ...bootstrap,
+    events: [1, 2, 3, 4, 5].map((id) => ({ id, is_current: false, finished: true }))
+      .concat([{ id: 6, is_current: true, finished: false }]),
+  };
+  const live6 = new Map(
+    [1, 2, 3, 4, 5, 6].map((gw) => [gw, liveFor({ 10: 3, 11: 1 })]),
+  );
+  const a = buildTransferAnalysis({
+    transfers: [t(11, 10, 1)],
+    history: { current: [], chips: [] },
+    bootstrap: seks,
+    liveByGw: live6,
+  });
+  assert.deepEqual(a.rows[0].window, { from: 1, to: 6 });
+  assert.deepEqual(a.rows[0].after5, { diff: 10, gws: 5, complete: true }); // 5 × (3−1)
+  assert.equal(a.rows[0].perGw.length, 6);
+});
+
+test('season teller treffprosent kun over spilte rader', () => {
+  const a = buildTransferAnalysis({
+    transfers: [t(11, 10, 2), t(13, 12, 2, '2026-02-01T01:00:00Z'), t(14, 13, 4)],
+    history, bootstrap, liveByGw,
+  });
+  // r0 netto 8 (treff), r1 netto 0 (ikke treff), r2 pending (teller ikke).
+  assert.deepEqual(a.season, { played: 2, wins: 1, hitRate: 0.5, hitsPaid: 1 });
+});
+
+test('season uten spilte rader har hitRate null, hitsPaid fra history', () => {
+  const a = buildTransferAnalysis({ transfers: [], history, bootstrap, liveByGw: new Map() });
+  assert.deepEqual(a.season, { played: 0, wins: 0, hitRate: null, hitsPaid: 1 });
+
+  const b = buildTransferAnalysis({
+    transfers: [],
+    history: { current: [], chips: [] },
+    bootstrap,
+    liveByGw: new Map(),
+  });
+  assert.equal(b.season.hitsPaid, 0);
+});
+
 // Assemble-testene mocker global fetch (mønster fra test/fplClient.test.js);
 // hooks scopes til denne describe-blokken så de rene testene over er uberørt.
 describe('assembleTransferAnalysis', () => {

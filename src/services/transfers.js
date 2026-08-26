@@ -96,7 +96,34 @@ export function buildTransferAnalysis({ transfers, history, bootstrap, liveByGw 
     const penaltyShare = (costByEvent.get(from) ?? 0) / (countByEvent.get(from) ?? 1);
     const chipName = chipByEvent.get(from);
 
+    // Per-runde-nedbrytning med løpende sum — viser NÅR byttet snudde.
+    const perGw = [];
+    if (played) {
+      let cum = 0;
+      for (let gw = from; gw <= to; gw++) {
+        const inn = pointsByGw.get(gw)?.get(tr.element_in) ?? 0;
+        const ut = pointsByGw.get(gw)?.get(tr.element_out) ?? 0;
+        cum += inn - ut;
+        perGw.push({ gw, inn, ut, diff: inn - ut, cum });
+      }
+    }
+
+    // Milepælen «etter 5 runder»: de første 5 rundene av vinduet. Komplett
+    // når 5 runder er talt, eller når vinduet er terminert (dommen er endelig
+    // selv om byttet varte kortere).
+    let after5 = null;
+    if (played) {
+      const milestone = perGw.slice(0, 5);
+      after5 = {
+        diff: milestone[milestone.length - 1].cum,
+        gws: milestone.length,
+        complete: milestone.length === 5 || to < maxGw,
+      };
+    }
+
     return {
+      perGw,
+      after5,
       event: from,
       chip: chipName === 'wildcard' || chipName === 'freehit' ? chipName : null,
       inn: { ...ref(tr.element_in), points: innPoints },
@@ -123,8 +150,20 @@ export function buildTransferAnalysis({ transfers, history, bootstrap, liveByGw 
     worstIndex = playedIdx.reduce((a, b) => (rows[b].netto < rows[a].netto ? b : a));
   }
 
+  // Sesongtall for toppkortet. `totals`-formen er låst av eksisterende
+  // konsumenter — nye aggregat bor her.
+  const playedRows = rows.filter((r) => r.played);
+  const wins = playedRows.filter((r) => r.netto > 0).length;
+  const season = {
+    played: playedRows.length,
+    wins,
+    hitRate: playedRows.length ? wins / playedRows.length : null,
+    hitsPaid: totalCost / 4,
+  };
+
   return {
     rows,
+    season,
     totals: {
       diff: totalDiff,
       cost: totalCost,
