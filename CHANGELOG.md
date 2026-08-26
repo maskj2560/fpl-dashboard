@@ -30,6 +30,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   de overlever redeploy i samme lagringsplass som brief-markøren.
   Gratisbyttene rekonstrueres fra historikken (1 per runde, bank opptil 5,
   wildcard/free hit bruker ingen) og selvvalideres mot FPLs faktiske trekk.
+- Scenariene følges opp på siden: «planen ville gitt X, du fikk Y» med
+  trekk fra gratisbytte-regnskapet, per bytte-diff og 5-rundersmilepæl
+  for både planen og det faktiske valget.
 
 ## [1.4.0] - 2026-09-XX
 

@@ -10,6 +10,7 @@ import {
   removeScenario,
   _setHooks,
   _reset,
+  evaluateScenario,
 } from '../src/services/scenarios.js';
 
 // Priser i tideler. Runde 3 er neste — FDR regnes for runde 3–5.
@@ -277,4 +278,88 @@ test('uskrivbar disk gir 503, aldri krasj — og lista i minnet er uendret', () 
   } finally {
     _reset();
   }
+});
+
+// --- evaluateScenario (T9): planen mot det som faktisk skjedde ---
+
+const lv = (points) => ({
+  elements: Object.entries(points).map(([id, p]) => ({ id: Number(id), stats: { total_points: p } })),
+});
+const liveFx = new Map([
+  [2, lv({ 10: 9, 30: 3, 21: 1, 31: 2 })],
+  [3, lv({ 10: 2, 30: 7, 21: 0, 31: 5 })],
+]);
+const namesFx = new Map([
+  [10, { id: 10, web_name: 'Haaland', team: 1 }],
+  [21, { id: 21, web_name: 'Dias', team: 1 }],
+  [31, { id: 31, web_name: 'Doku', team: 1 }],
+]);
+const teamsFx = new Map([[1, { short_name: 'MCI', code: 43 }]]);
+// r2 bruker sitt ene FT, r3 gjør 2 bytter med 1 FT → -4. Konsistent ledger.
+const okLedger = buildFtLedger({
+  history: hist([[1, 0, 0], [2, 1, 0], [3, 2, 4]]),
+  chips: [],
+});
+const evalArgs = (scenarioPatch = {}, patch = {}) => ({
+  scenario: { id: 'x', name: 'Plan A', event: 2, moves: [{ out: 10, in: 30 }], ...scenarioPatch },
+  analysisRows: [],
+  ftLedger: okLedger,
+  liveByGw: liveFx,
+  maxGw: 3,
+  elementsById: namesFx,
+  teamsById: teamsFx,
+  ...patch,
+});
+
+test('planen måles fra scenariorunden til maxGw med rå poeng', () => {
+  const r = evaluateScenario(evalArgs());
+  assert.equal(r.pending, false);
+  assert.equal(r.plan.diff, (3 - 9) + (7 - 2)); // -1
+  assert.deepEqual(r.plan.after5, { diff: -1, gws: 2, complete: false });
+  assert.equal(r.perMove[0].diff, -1);
+});
+
+test('FT-kost regnes fra ledgeren på begge sider', () => {
+  const r = evaluateScenario(evalArgs({ event: 3, moves: [{ out: 10, in: 30 }, { out: 21, in: 31 }] }));
+  assert.equal(r.ftEstimert, true);
+  assert.equal(r.plan.cost, 4); // 2 bytter, 1 FT inn i runde 3
+  assert.equal(r.actual.cost, 4); // det FPL faktisk trakk i runde 3
+});
+
+test('faktisk side er 0 når ingen bytter ble gjort den runden', () => {
+  const r = evaluateScenario(evalArgs());
+  assert.equal(r.actual.diff, 0);
+  assert.equal(r.actual.after5, null);
+});
+
+test('faktisk side summerer analyseradene for runden', () => {
+  const rows = [
+    { event: 2, diff: 10, after5: { diff: 10, gws: 2, complete: false } },
+    { event: 3, diff: 99, after5: null }, // annen runde — teller ikke
+  ];
+  const r = evaluateScenario(evalArgs({}, { analysisRows: rows }));
+  assert.equal(r.actual.diff, 10);
+  assert.deepEqual(r.actual.after5, { diff: 10, gws: 2, complete: false });
+});
+
+test('ledger som ikke validerer gir ukjent kost, aldri gjetting', () => {
+  const brutt = buildFtLedger({ history: hist([[1, 0, 0], [2, 1, 4]]), chips: [] });
+  const r = evaluateScenario(evalArgs({}, { ftLedger: brutt }));
+  assert.equal(r.ftEstimert, false);
+  assert.equal(r.plan.cost, null);
+});
+
+test('scenario for framtidig runde er pending med forventet kost', () => {
+  const r = evaluateScenario(evalArgs({ event: 5, moves: [{ out: 10, in: 30 }, { out: 21, in: 31 }] }));
+  assert.equal(r.pending, true);
+  assert.equal(r.plan.diff, null);
+  // ledger.next etter runde 3 (2 bytter, 1 FT) er 1; runde 4 ubrukt gir 2 inn i runde 5.
+  assert.equal(r.plan.cost, 0);
+});
+
+test('spiller som er borte fra bootstrap får plassholder-navn', () => {
+  const r = evaluateScenario(evalArgs());
+  assert.equal(r.perMove[0].in.name, 'Ukjent (30)');
+  assert.equal(r.perMove[0].out.name, 'Haaland');
+  assert.equal(r.perMove[0].out.teamCode, 43);
 });

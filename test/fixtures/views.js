@@ -234,6 +234,23 @@ export const transfers = {
   clubAssets,
   formatSigned: (n) => String(n),
   formatPrice: (n) => (n / 10).toFixed(1),
+  scenarios: [
+    {
+      id: 'scen-1',
+      name: 'Plan A: Isak inn',
+      event: 3,
+      createdAt: '2026-08-26T10:00:00.000Z',
+      moves: [{ out: 11, in: 14 }],
+      snapshot: { bank: 15, prices: { 11: 88, 14: 90 } },
+      evaluering: {
+        pending: false,
+        ftEstimert: true,
+        plan: { diff: 7, cost: 4, after5: { diff: 7, gws: 1, complete: false } },
+        actual: { diff: 3, cost: 0, after5: { diff: 3, gws: 1, complete: false } },
+        perMove: [{ out: { id: 11, name: 'Watkins', teamShort: 'AVL', teamCode: 7 }, in: { id: 14, name: 'Isak', teamShort: 'NEW', teamCode: 4 }, diff: 7 }],
+      },
+    },
+  ],
   baseline: {
     simTotal: 118,
     actualTotal: 131,
@@ -273,6 +290,7 @@ export const transfersEmpty = {
   formatPrice: (n) => (n / 10).toFixed(1),
   priceReport: null,
   baseline: null,
+  scenarios: [],
   analysis: {
     rows: [],
     season: { played: 0, wins: 0, hitRate: null, hitsPaid: 0 },
@@ -290,6 +308,7 @@ export const transfersPending = {
   formatPrice: (n) => (n / 10).toFixed(1),
   priceReport: null,
   baseline: null,
+  scenarios: [],
   analysis: {
     rows: [
       { event: 2, chip: null, inn: { id: 10, name: 'Haaland', teamShort: 'MCI', teamCode: 43, points: 0 }, ut: { id: 11, name: 'Watkins', teamShort: 'AVL', teamCode: 7, points: 0 }, diff: 0, penaltyShare: 0, netto: 0, window: null, played: false, pending: true, perGw: [], after5: null },

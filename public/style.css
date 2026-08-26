@@ -801,6 +801,60 @@ table.data tbody tr:hover {
   color: var(--negative);
 }
 
+.planner-save {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.8rem;
+}
+
+.planner-save input {
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--text);
+  font: inherit;
+}
+
+.planner-save #planner-event {
+  width: 4.5rem;
+}
+
+/* Scenariolista */
+.scenario {
+  border-top: 1px solid var(--border);
+  padding: 0.7rem 0;
+}
+
+.scenario-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.scenario-head .btn-delete {
+  margin-left: auto;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--surface-2);
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.scenario-head .btn-delete:hover {
+  color: var(--negative);
+}
+
+.scenario-moves {
+  list-style: none;
+  margin: 0.3rem 0;
+  padding: 0;
+}
+
 .status-i,
 .status-s,
 .status-u,

@@ -616,9 +616,62 @@ function plannerRules({ out, inn, bank, squad }) {
         .join(''),
       '</ul>',
       `<p class="dim">Bank: ${pris(data.bank)} £m · reglene sjekkes endelig ved lagring.</p>`,
+      '<div class="planner-save">',
+      '<input id="planner-name" maxlength="60" placeholder="Navn (f.eks. Plan A)" aria-label="Navn på scenarioet">',
+      `<input id="planner-event" type="number" min="1" max="38" value="${Number(data.event) || 1}" aria-label="Runde">`,
+      '<button type="button" class="btn-link" id="planner-save-btn">Lagre som scenario</button>',
+      '<span id="planner-save-msg" class="dim" role="status"></span>',
+      '</div>',
     ].join('');
     for (const scroll of box.querySelectorAll('.table-scroll')) {
       initEdgeFades(scroll, 'table-fade');
     }
+    document.getElementById('planner-save-btn').addEventListener('click', saveScenario);
   }
+
+  async function saveScenario() {
+    const msg = document.getElementById('planner-save-msg');
+    const btn = document.getElementById('planner-save-btn');
+    btn.disabled = true;
+    msg.textContent = 'Lagrer …';
+    try {
+      const res = await fetch('/api/scenarier', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: document.getElementById('planner-name').value,
+          event: Number(document.getElementById('planner-event').value),
+          moves: [{ out: ut.id, in: inn.id }],
+        }),
+      });
+      if (res.status === 201) {
+        window.location.reload(); // scenariolista rendres av serveren
+        return;
+      }
+      const body = await res.json().catch(() => ({}));
+      msg.textContent = (body.errors ?? []).map((e) => e.message).join(' ') || 'Kunne ikke lagre.';
+    } catch {
+      msg.textContent = 'Kunne ikke lagre — prøv igjen.';
+    }
+    btn.disabled = false;
+  }
+
+  // Slett-knappene i scenariolista (server-rendret, utenfor planner-root).
+  document.addEventListener('click', async (e) => {
+    const del = e.target.closest('[data-scenario-delete]');
+    if (!del) return;
+    del.disabled = true;
+    try {
+      const res = await fetch(`/api/scenarier/${encodeURIComponent(del.dataset.scenarioDelete)}`, {
+        method: 'DELETE',
+      });
+      if (res.status === 204) {
+        del.closest('.scenario')?.remove();
+        return;
+      }
+    } catch {
+      // faller gjennom til re-aktivering
+    }
+    del.disabled = false;
+  });
 })();

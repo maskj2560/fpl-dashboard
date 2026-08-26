@@ -98,6 +98,45 @@
   </div>
 </section>
 
+<% if (scenarios && scenarios.length > 0) { %>
+  <section class="card card-wide" id="scenarier">
+    <h2>Scenarier</h2>
+    <p class="dim">Planene dine, målt mot det du faktisk gjorde. En plan antas
+    å erstatte rundens faktiske bytter og beholdes ut sesongen; trekk regnes
+    fra gratisbytte-beholdningen din når den kan rekonstrueres sikkert.</p>
+    <% for (const s of scenarios) { const ev = s.evaluering; %>
+      <div class="scenario">
+        <div class="scenario-head">
+          <strong><%= s.name %></strong> <span class="dim">· runde <%= s.event %></span>
+          <button type="button" class="btn-delete" data-scenario-delete="<%= s.id %>">Slett</button>
+        </div>
+        <ul class="scenario-moves dim">
+          <% for (const m of ev.perMove) { %>
+            <li><%= m.out.name %> → <%= m.in.name %><% if (m.diff !== null) { %> (<%= formatSigned(m.diff) %>)<% } %></li>
+          <% } %>
+        </ul>
+        <% if (ev.pending) { %>
+          <p class="dim">Venter på runde <%= s.event %><% if (ev.plan.cost !== null) { %> · forventet trekk: <%= ev.plan.cost > 0 ? formatSigned(-ev.plan.cost) : '0' %><% } %></p>
+        <% } else { %>
+          <% const planNetto = ev.plan.diff - (ev.plan.cost ?? 0); const faktiskNetto = ev.actual.diff - ev.actual.cost; %>
+          <p>
+            Planen ville gitt
+            <strong class="<%= planNetto > 0 ? 'accent' : (planNetto < 0 ? 'negative' : '') %>"><%= formatSigned(planNetto) %></strong><%
+            if (ev.plan.cost === null) { %> <span class="dim">(uten trekk — kunne ikke beregnes sikkert)</span><%
+            } else if (ev.plan.cost > 0) { %> <span class="dim">(<%= formatSigned(ev.plan.diff) %> minus <%= ev.plan.cost %> i trekk)</span><% } %>
+            — du fikk
+            <strong class="<%= faktiskNetto > 0 ? 'accent' : (faktiskNetto < 0 ? 'negative' : '') %>"><%= formatSigned(faktiskNetto) %></strong><%
+            if (ev.actual.cost > 0) { %> <span class="dim">(<%= formatSigned(ev.actual.diff) %> minus <%= ev.actual.cost %> i trekk)</span><% } %>.
+          </p>
+          <% if (ev.plan.after5) { %>
+            <p class="milestone">Etter <%= ev.plan.after5.gws %> av 5 runder: planen <%= formatSigned(ev.plan.after5.diff) %><% if (ev.actual.after5) { %> · faktisk <%= formatSigned(ev.actual.after5.diff) %><% } %></p>
+          <% } %>
+        <% } %>
+      </div>
+    <% } %>
+  </section>
+<% } %>
+
 <% if (baseline) { %>
   <section class="card">
     <h2>Laget uten bytter</h2>

@@ -17,6 +17,7 @@ import {
 import { byId, resolvedGw } from './analysis.js';
 import { buildPurchases, buildPriceReport } from './pricing.js';
 import { assembleBaseline } from './baseline.js';
+import { listScenarios, buildFtLedger, evaluateScenario } from './scenarios.js';
 
 // Skjemaet for entry/{id}/transfers/ er uverifisert før sesongstart —
 // records uten disse feltene hoppes over og telles som «ukjente».
@@ -256,5 +257,43 @@ export async function assembleTransfersPage({ teamId = config.fplTeamId } = {}) 
     baseline = null;
   }
 
-  return { analysis, priceReport, baseline, scenarios: [], aiComment: null };
+  // Lagrede scenarier evalueres mot samme poenggrunnlag som analysen —
+  // live-spennet utvides bare når et scenario starter før første transfer.
+  let scenarios = [];
+  try {
+    const stored = listScenarios();
+    if (stored.length > 0) {
+      const maxGw = analysis.maxGw;
+      const ftLedger = buildFtLedger({ history, chips: history?.chips });
+      const minEvent = Math.min(...stored.map((s) => s.event));
+      const liveByGw = new Map();
+      if (minEvent <= maxGw) {
+        const eventsById = new Map(bootstrap.events.map((e) => [e.id, e]));
+        const gws = [];
+        for (let gw = Math.max(1, minEvent); gw <= maxGw; gw++) gws.push(gw);
+        const results = await Promise.all(
+          gws.map((gw) => (eventsById.get(gw)?.finished ? getLiveHistoric(gw) : getLive(gw))),
+        );
+        gws.forEach((gw, i) => liveByGw.set(gw, results[i]));
+      }
+      const elementsById = byId(bootstrap.elements);
+      const teamsById = byId(bootstrap.teams ?? []);
+      scenarios = stored.map((s) => ({
+        ...s,
+        evaluering: evaluateScenario({
+          scenario: s,
+          analysisRows: analysis.rows,
+          ftLedger,
+          liveByGw,
+          maxGw,
+          elementsById,
+          teamsById,
+        }),
+      }));
+    }
+  } catch {
+    scenarios = [];
+  }
+
+  return { analysis, priceReport, baseline, scenarios, aiComment: null };
 }

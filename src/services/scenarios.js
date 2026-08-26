@@ -308,3 +308,95 @@ export function removeScenario(id) {
   scenarioList = next;
   return { ok: true, status: 204 };
 }
+
+/** FT-beholdningen inn i en gitt runde, fra ledgeren. null = ubegrenset (GW1). */
+function ftAt(ledger, event) {
+  const row = ledger.byGw.get(event);
+  if (row) return row.ftBefore;
+  const gws = [...ledger.byGw.keys()];
+  const last = gws.length ? Math.max(...gws) : 0;
+  if (event <= last) return 1; // hull i historikken — konservativt anslag
+  // Framtidig runde: +1 per mellomliggende runde (antar ingen bytter der).
+  return Math.min(5, ledger.next + Math.max(0, event - last - 1));
+}
+
+/**
+ * Evaluerer et lagret scenario mot det som faktisk skjedde. Planen antas
+ * å ERSTATTE rundens faktiske bytter og holdes ut sesongen (rå poeng fra
+ * scenariorunden til maxGw). Kost hentes fra FT-ledgeren når den
+ * validerer, ellers null (aldri gjetting). Den faktiske siden er rundens
+ * analyserader slik analysen alt dømmer dem.
+ */
+export function evaluateScenario({ scenario, analysisRows, ftLedger, liveByGw, maxGw, elementsById, teamsById }) {
+  const pointsByGw = new Map(
+    [...(liveByGw ?? new Map())].map(([gw, live]) => [
+      gw,
+      new Map((live?.elements ?? []).map((e) => [e.id, e.stats?.total_points ?? 0])),
+    ]),
+  );
+  const pointsFor = (id, from, to) => {
+    let sum = 0;
+    for (let gw = from; gw <= to; gw++) sum += pointsByGw.get(gw)?.get(id) ?? 0;
+    return sum;
+  };
+  const ref = (id) => {
+    const e = elementsById?.get(id);
+    const t = e ? teamsById?.get(e.team) : null;
+    return {
+      id,
+      name: e?.web_name ?? `Ukjent (${id})`,
+      teamShort: t?.short_name ?? null,
+      teamCode: t?.code ?? null,
+    };
+  };
+
+  const event = scenario.event;
+  const pending = event > maxGw;
+  const moves = scenario.moves ?? [];
+
+  let planCost = null;
+  let ftEstimert = false;
+  if (ftLedger?.valid) {
+    const ft = ftAt(ftLedger, event);
+    planCost = ft == null ? 0 : Math.max(0, moves.length - ft) * 4;
+    ftEstimert = true;
+  }
+
+  const perMove = moves.map((m) => ({
+    out: ref(m.out),
+    in: ref(m.in),
+    diff: pending ? null : pointsFor(m.in, event, maxGw) - pointsFor(m.out, event, maxGw),
+  }));
+  const planDiff = pending ? null : perMove.reduce((sum, m) => sum + m.diff, 0);
+  let planAfter5 = null;
+  if (!pending) {
+    const end = Math.min(event + 4, maxGw);
+    const diff5 = moves.reduce(
+      (sum, m) => sum + pointsFor(m.in, event, end) - pointsFor(m.out, event, end),
+      0,
+    );
+    planAfter5 = { diff: diff5, gws: end - event + 1, complete: end - event + 1 === 5 };
+  }
+
+  const rows = (analysisRows ?? []).filter((r) => r.event === event);
+  const actualAfter5 =
+    rows.length > 0 && rows.every((r) => r.after5)
+      ? {
+          diff: rows.reduce((sum, r) => sum + r.after5.diff, 0),
+          gws: Math.max(...rows.map((r) => r.after5.gws)),
+          complete: rows.every((r) => r.after5.complete),
+        }
+      : null;
+
+  return {
+    pending,
+    ftEstimert,
+    plan: { diff: planDiff, cost: planCost, after5: planAfter5 },
+    actual: {
+      diff: rows.reduce((sum, r) => sum + r.diff, 0),
+      cost: ftLedger?.byGw?.get(event)?.paid ?? 0,
+      after5: actualAfter5,
+    },
+    perMove,
+  };
+}

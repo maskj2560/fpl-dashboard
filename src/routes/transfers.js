@@ -17,6 +17,7 @@ router.get('/', async (req, res, next) => {
       analysis: page.analysis,
       priceReport: page.priceReport,
       baseline: page.baseline,
+      scenarios: page.scenarios,
       formatSigned,
       formatPrice,
     });
