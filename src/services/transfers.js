@@ -241,6 +241,20 @@ export function candidatePoints({ id, from, to, liveByGw }) {
   return { points, perGw };
 }
 
+/** Validerer query-parametrene til GET /api/alternativ.json. */
+export function parseAltQuery(query, maxGw) {
+  const spiller = Number(query?.spiller);
+  const fra = Number(query?.fra);
+  const til = Number(query?.til);
+  const ok =
+    [spiller, fra, til].every(Number.isInteger) &&
+    spiller >= 1 &&
+    fra >= 1 &&
+    fra <= til &&
+    til <= maxGw;
+  return ok ? { ok: true, spiller, fra, til } : { ok: false };
+}
+
 /**
  * «Hva om jeg kjøpte Z i stedet»: kandidater i samme posisjon med startpris
  * (now_cost − cost_change_start, dokumentert proxy for pris på

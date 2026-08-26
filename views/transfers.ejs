@@ -86,6 +86,11 @@
                       <% } %>
                     </ul>
                   <% } %>
+                  <div class="alt-egen" data-fra="<%= r.window.from %>" data-til="<%= r.window.to %>" data-innpoints="<%= r.inn.points %>">
+                    <input type="search" class="alt-sok" placeholder="Sjekk en hvilken som helst spiller i samme vindu …" autocomplete="off" aria-label="Søk etter kandidat">
+                    <ul class="planner-hits alt-hits"></ul>
+                    <ul class="scenario-moves dim alt-resultater"></ul>
+                  </div>
                 </td>
               </tr>
             <% } %>

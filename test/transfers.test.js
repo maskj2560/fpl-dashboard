@@ -6,6 +6,7 @@ import {
   assembleTransfersPage,
   buildAlternatives,
   candidatePoints,
+  parseAltQuery,
 } from '../src/services/transfers.js';
 import { clear } from '../src/services/cache.js';
 
@@ -366,6 +367,16 @@ test('alternativer: ukjent kjøpspris eller pending bytte gir tom liste', () => 
 test('candidatePoints summerer vinduet og gir per-runde-liste', () => {
   const r = candidatePoints({ id: 15, from: 2, to: 3, liveByGw });
   assert.deepEqual(r, { points: 11, perGw: [{ gw: 2, p: 7 }, { gw: 3, p: 4 }] });
+});
+
+test('parseAltQuery: gyldige tall innenfor 1..maxGw, ellers ok false', () => {
+  assert.deepEqual(parseAltQuery({ spiller: '15', fra: '2', til: '3' }, 3), {
+    ok: true, spiller: 15, fra: 2, til: 3,
+  });
+  assert.equal(parseAltQuery({ spiller: '15', fra: '2', til: '4' }, 3).ok, false); // til > maxGw
+  assert.equal(parseAltQuery({ spiller: 'x', fra: '2', til: '3' }, 3).ok, false); // ikke tall
+  assert.equal(parseAltQuery({ spiller: '15', fra: '3', til: '2' }, 3).ok, false); // fra > til
+  assert.equal(parseAltQuery({}, 3).ok, false);
 });
 
 // Assemble-testene mocker global fetch (mønster fra test/fplClient.test.js);

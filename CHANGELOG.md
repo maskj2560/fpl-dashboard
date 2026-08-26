@@ -33,6 +33,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Scenariene følges opp på siden: «planen ville gitt X, du fikk Y» med
   trekk fra gratisbytte-regnskapet, per bytte-diff og 5-rundersmilepæl
   for både planen og det faktiske valget.
+- Alternativ-analyse per bytte: detaljraden foreslår de 3 beste kandidatene
+  i samme posisjon og prisklasse (pris ved sesongstart) målt i samme vindu,
+  og et søkefelt lar deg sjekke en hvilken som helst annen spiller.
 
 ## [1.4.0] - 2026-09-XX
 

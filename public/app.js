@@ -519,15 +519,22 @@ function plannerRules({ out, inn, bank, squad }) {
   let ut = null;
   let inn = null;
 
+  // Deles av planleggeren og «egen kandidat»-søket i detaljradene.
+  async function ensureData() {
+    if (data) return data;
+    const res = await fetch(root.dataset.endpoint);
+    if (!res.ok) throw new Error(String(res.status));
+    data = await res.json();
+    return data;
+  }
+
   root.addEventListener('click', async (e) => {
     const load = e.target.closest('#planner-load');
     if (load) {
       load.disabled = true;
       load.textContent = 'Henter …';
       try {
-        const res = await fetch(root.dataset.endpoint);
-        if (!res.ok) throw new Error(String(res.status));
-        data = await res.json();
+        await ensureData();
         renderControls();
       } catch {
         load.disabled = false;
@@ -655,6 +662,53 @@ function plannerRules({ out, inn, bank, squad }) {
     }
     btn.disabled = false;
   }
+
+  // «Egen kandidat» i detaljradene: søk i samme spillerliste som
+  // planleggeren (hentes ved behov), poengene hentes fra /api/alternativ.json.
+  document.addEventListener('input', async (e) => {
+    const input = e.target.closest('.alt-sok');
+    if (!input) return;
+    const hits = input.closest('.alt-egen').querySelector('.alt-hits');
+    const query = input.value.trim().toLowerCase();
+    if (query.length < 2) {
+      hits.innerHTML = '';
+      return;
+    }
+    try {
+      await ensureData();
+    } catch {
+      hits.innerHTML = '<li class="dim">Kunne ikke hente spillerlisten — prøv igjen.</li>';
+      return;
+    }
+    hits.innerHTML = data.players
+      .filter((p) => p.navn.toLowerCase().includes(query))
+      .slice(0, 6)
+      .map((p) => `<li data-alt-id="${p.id}"><button type="button">${escapeHtml(p.navn)} <span class="dim">${escapeHtml(p.lag ?? '?')} · ${pris(p.pris)}</span></button></li>`)
+      .join('');
+  });
+
+  document.addEventListener('click', async (e) => {
+    const li = e.target.closest('li[data-alt-id]');
+    if (!li) return;
+    const box = li.closest('.alt-egen');
+    const resultater = box.querySelector('.alt-resultater');
+    const id = Number(li.dataset.altId);
+    const navn = data?.players.find((p) => p.id === id)?.navn ?? `Spiller ${id}`;
+    box.querySelector('.alt-hits').innerHTML = '';
+    box.querySelector('.alt-sok').value = '';
+    try {
+      const res = await fetch(`/api/alternativ.json?spiller=${id}&fra=${box.dataset.fra}&til=${box.dataset.til}`);
+      if (!res.ok) throw new Error(String(res.status));
+      const r = await res.json();
+      const delta = r.points - Number(box.dataset.innpoints);
+      resultater.insertAdjacentHTML(
+        'beforeend',
+        `<li>${escapeHtml(navn)} — ${r.points} p (${delta > 0 ? '+' + delta : delta} mot ditt valg)</li>`,
+      );
+    } catch {
+      resultater.insertAdjacentHTML('beforeend', '<li>Kunne ikke hente poengene — prøv igjen.</li>');
+    }
+  });
 
   // Slett-knappene i scenariolista (server-rendret, utenfor planner-root).
   document.addEventListener('click', async (e) => {

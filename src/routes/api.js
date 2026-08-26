@@ -26,6 +26,8 @@ import {
 } from '../services/analysis.js';
 import { buildPurchases } from '../services/pricing.js';
 import { buildPlannerData, addScenario, removeScenario } from '../services/scenarios.js';
+import { candidatePoints, parseAltQuery } from '../services/transfers.js';
+import { getLive, getLiveHistoric } from '../services/fplClient.js';
 import { formatDateTime } from '../services/format.js';
 import * as ai from '../services/ai.js';
 import { buildAdvicePrompt } from '../services/prompts.js';
@@ -103,6 +105,29 @@ router.post('/scenarier', async (req, res, next) => {
 router.delete('/scenarier/:id', (req, res) => {
   const result = removeScenario(String(req.params.id));
   res.status(result.status).end();
+});
+
+// Egen kandidat i alternativ-analysen: poengene til en vilkårlig spiller i
+// et vindu. Leser kun cachede live-runder — aldri element-summary.
+router.get('/alternativ.json', async (req, res, next) => {
+  try {
+    const bootstrap = await getBootstrap();
+    const maxGw = resolvedGw(bootstrap.events);
+    const parsed = parseAltQuery(req.query, maxGw);
+    if (!parsed.ok) {
+      return res.status(400).json({ error: `Ugyldige parametre — spiller, fra og til må være tall, 1 ≤ fra ≤ til ≤ ${maxGw}` });
+    }
+    const eventsById = new Map(bootstrap.events.map((e) => [e.id, e]));
+    const gws = [];
+    for (let gw = parsed.fra; gw <= parsed.til; gw++) gws.push(gw);
+    const results = await Promise.all(
+      gws.map((gw) => (eventsById.get(gw)?.finished ? getLiveHistoric(gw) : getLive(gw))),
+    );
+    const liveByGw = new Map(gws.map((gw, i) => [gw, results[i]]));
+    res.json(candidatePoints({ id: parsed.spiller, from: parsed.fra, to: parsed.til, liveByGw }));
+  } catch (err) {
+    next(err);
+  }
 });
 
 router.get('/live.json', async (req, res, next) => {
