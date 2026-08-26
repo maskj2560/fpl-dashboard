@@ -2,7 +2,16 @@ import { Router } from 'express';
 import config from '../config.js';
 import { assembleBrief } from '../services/brief.js';
 import { assembleLive } from '../services/live.js';
-import { getBootstrap, getFixtures, getPicks, getEntry, staleInfo } from '../services/fplClient.js';
+import {
+  getBootstrap,
+  getFixtures,
+  getPicks,
+  getPicksHistoric,
+  getEntry,
+  getEntryTransfers,
+  getEntryHistory,
+  staleInfo,
+} from '../services/fplClient.js';
 import {
   byId,
   captainSuggestions,
@@ -10,10 +19,13 @@ import {
   nextEvent,
   nextOpponents,
   POSITIONS_SHORT,
+  resolvedGw,
   resolvePicks,
   transferInCandidates,
   transferOutCandidates,
 } from '../services/analysis.js';
+import { buildPurchases } from '../services/pricing.js';
+import { buildPlannerData } from '../services/scenarios.js';
 import { formatDateTime } from '../services/format.js';
 import * as ai from '../services/ai.js';
 import { buildAdvicePrompt } from '../services/prompts.js';
@@ -24,6 +36,36 @@ router.get('/brief.json', async (req, res, next) => {
   try {
     const brief = await assembleBrief();
     res.json({ ...brief, dataAlder: staleInfo()?.ageSec ?? null });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Datagrunnlaget for hva hvis-planleggeren på /overganger. Leser kun
+// serverens cacher/fplClient — hentes lazy av klienten ved første åpning.
+router.get('/planlegger.json', async (req, res, next) => {
+  if (!config.hasTeamId) {
+    return res.status(400).json({ error: 'FPL_TEAM_ID er ikke satt' });
+  }
+  try {
+    const teamId = config.fplTeamId;
+    const [bootstrap, fixtures, transfers, history] = await Promise.all([
+      getBootstrap(),
+      getFixtures(),
+      getEntryTransfers(teamId),
+      getEntryHistory(teamId),
+    ]);
+    const gw = Math.max(1, resolvedGw(bootstrap.events));
+    const picks = await getPicks(teamId, gw);
+    const gw1Picks = gw === 1 ? picks : await getPicksHistoric(teamId, 1);
+    const purchases = buildPurchases({
+      transfers,
+      chips: history?.chips,
+      gw1Picks,
+      elements: bootstrap.elements,
+    });
+    const fromGw = nextEvent(bootstrap.events)?.id ?? gw;
+    res.json(buildPlannerData({ bootstrap, fixtures, picks, purchases, fromGw }));
   } catch (err) {
     next(err);
   }

@@ -12,6 +12,7 @@ import {
   getLive,
   getLiveHistoric,
   getPicks,
+  getPicksHistoric,
 } from './fplClient.js';
 import { byId, resolvedGw } from './analysis.js';
 import { buildPurchases, buildPriceReport } from './pricing.js';
@@ -228,7 +229,8 @@ export async function assembleTransfersPage({ teamId = config.fplTeamId } = {}) 
   try {
     const gw = Math.max(1, analysis.maxGw);
     const picks = await getPicks(teamId, gw);
-    const gw1Picks = gw === 1 ? picks : await getPicks(teamId, 1);
+    // gw > 1 betyr at runde 1 er historikk — 6 t-cachen er trygg.
+    const gw1Picks = gw === 1 ? picks : await getPicksHistoric(teamId, 1);
     const purchases = buildPurchases({
       transfers,
       chips: history?.chips,
