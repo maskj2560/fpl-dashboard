@@ -129,6 +129,8 @@ export function buildTransferAnalysis({ transfers, history, bootstrap, liveByGw 
     return {
       perGw,
       after5,
+      // Kjøpsprisen fra transfer-recorden — grunnlaget for alternativ-analysen.
+      innCost: Number.isInteger(tr.element_in_cost) ? tr.element_in_cost : null,
       event: from,
       chip: chipName === 'wildcard' || chipName === 'freehit' ? chipName : null,
       inn: { ...ref(tr.element_in), points: innPoints },
@@ -153,6 +155,17 @@ export function buildTransferAnalysis({ transfers, history, bootstrap, liveByGw 
   if (playedIdx.length >= 2) {
     bestIndex = playedIdx.reduce((a, b) => (rows[b].netto > rows[a].netto ? b : a));
     worstIndex = playedIdx.reduce((a, b) => (rows[b].netto < rows[a].netto ? b : a));
+  }
+
+  // Alternativ-analysen: hva de nærmeste kandidatene gjorde i samme vindu.
+  for (const r of rows) {
+    r.alternativer = buildAlternatives({
+      row: r,
+      buyCost: r.innCost,
+      elements: bootstrap.elements,
+      teamsById,
+      liveByGw,
+    });
   }
 
   // Sesongtall for toppkortet. `totals`-formen er låst av eksisterende
@@ -210,6 +223,73 @@ export async function assembleTransferAnalysis({ teamId = config.fplTeamId } = {
   }
 
   return buildTransferAnalysis({ transfers, history, bootstrap, liveByGw });
+}
+
+/**
+ * Poengsum + per-runde for en vilkårlig spiller i et vindu. Deles av
+ * alternativ-analysen og GET /api/alternativ.json — aldri element-summary.
+ */
+export function candidatePoints({ id, from, to, liveByGw }) {
+  const perGw = [];
+  let points = 0;
+  for (let gw = from; gw <= to; gw++) {
+    const p =
+      (liveByGw.get(gw)?.elements ?? []).find((e) => e.id === id)?.stats?.total_points ?? 0;
+    points += p;
+    perGw.push({ gw, p });
+  }
+  return { points, perGw };
+}
+
+/**
+ * «Hva om jeg kjøpte Z i stedet»: kandidater i samme posisjon med startpris
+ * (now_cost − cost_change_start, dokumentert proxy for pris på
+ * kjøpstidspunktet) innenfor toleransen, målt i byttets eget vindu og
+ * rangert på poeng. Byttets egne spillere er aldri kandidater.
+ */
+export function buildAlternatives({ row, buyCost, elements, teamsById, liveByGw, limit = 3, tolerance = 5 }) {
+  if (!row?.played || !Number.isInteger(buyCost)) return [];
+  const type = (elements ?? []).find((e) => e.id === row.inn.id)?.element_type;
+  if (type == null) return [];
+  const { from, to } = row.window;
+
+  const pointsByGw = new Map(
+    [...liveByGw].map(([gw, live]) => [
+      gw,
+      new Map((live?.elements ?? []).map((e) => [e.id, e.stats?.total_points ?? 0])),
+    ]),
+  );
+  const sumFor = (id) => {
+    let sum = 0;
+    for (let gw = from; gw <= to; gw++) sum += pointsByGw.get(gw)?.get(id) ?? 0;
+    return sum;
+  };
+
+  return (elements ?? [])
+    .filter(
+      (e) =>
+        e.element_type === type &&
+        e.id !== row.inn.id &&
+        e.id !== row.ut.id &&
+        Number.isInteger(e.now_cost) &&
+        Number.isInteger(e.cost_change_start) &&
+        Math.abs(e.now_cost - e.cost_change_start - buyCost) <= tolerance,
+    )
+    .map((e) => {
+      const team = teamsById.get(e.team);
+      const points = sumFor(e.id);
+      return {
+        id: e.id,
+        name: e.web_name,
+        teamShort: team?.short_name ?? null,
+        teamCode: team?.code ?? null,
+        startPrice: e.now_cost - e.cost_change_start,
+        points,
+        delta: points - row.inn.points,
+      };
+    })
+    .sort((a, b) => b.points - a.points)
+    .slice(0, limit);
 }
 
 /**

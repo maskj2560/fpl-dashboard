@@ -78,6 +78,14 @@
                       </tbody>
                     </table>
                   </div>
+                  <% if (r.alternativer && r.alternativer.length > 0) { %>
+                    <p class="milestone">I stedet for <%= r.inn.name %> — samme posisjon og prisklasse (pris ved sesongstart), målt i samme vindu:</p>
+                    <ul class="scenario-moves dim">
+                      <% for (const alt of r.alternativer) { %>
+                        <li><%- include('partials/club-badge', { team: { short_name: alt.teamShort, code: alt.teamCode, name: alt.teamShort }, showName: false }) %> <%= alt.name %> — <%= alt.points %> p (<%= formatSigned(alt.delta) %> mot ditt valg)</li>
+                      <% } %>
+                    </ul>
+                  <% } %>
                 </td>
               </tr>
             <% } %>

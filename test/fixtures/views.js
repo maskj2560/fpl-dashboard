@@ -272,7 +272,7 @@ export const transfers = {
   },
   analysis: {
     rows: [
-      { event: 2, chip: null, inn: { id: 10, name: 'Haaland', teamShort: 'MCI', teamCode: 43, points: 11 }, ut: { id: 11, name: 'Watkins', teamShort: 'AVL', teamCode: 7, points: 1 }, diff: 10, penaltyShare: 4, netto: 6, window: { from: 2, to: 3 }, played: true, pending: false, perGw: [{ gw: 2, inn: 9, ut: 1, diff: 8, cum: 8 }, { gw: 3, inn: 2, ut: 0, diff: 2, cum: 10 }], after5: { diff: 10, gws: 2, complete: false } },
+      { event: 2, chip: null, inn: { id: 10, name: 'Haaland', teamShort: 'MCI', teamCode: 43, points: 11 }, ut: { id: 11, name: 'Watkins', teamShort: 'AVL', teamCode: 7, points: 1 }, diff: 10, penaltyShare: 4, netto: 6, window: { from: 2, to: 3 }, played: true, pending: false, perGw: [{ gw: 2, inn: 9, ut: 1, diff: 8, cum: 8 }, { gw: 3, inn: 2, ut: 0, diff: 2, cum: 10 }], after5: { diff: 10, gws: 2, complete: false }, innCost: 140, alternativer: [{ id: 15, name: 'Mateta', teamShort: 'AVL', teamCode: 7, startPrice: 140, points: 13, delta: 2 }] },
       { event: 3, chip: 'freehit', inn: { id: 12, name: 'Salah', teamShort: 'LIV', teamCode: 14, points: 6 }, ut: { id: 14, name: 'Isak', teamShort: 'NEW', teamCode: 4, points: 3 }, diff: 3, penaltyShare: 0, netto: 3, window: { from: 3, to: 3 }, played: true, pending: false, perGw: [{ gw: 3, inn: 6, ut: 3, diff: 3, cum: 3 }], after5: { diff: 3, gws: 1, complete: true } },
     ],
     season: { played: 2, wins: 2, hitRate: 1, hitsPaid: 1 },

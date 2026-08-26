@@ -4,6 +4,8 @@ import {
   buildTransferAnalysis,
   assembleTransferAnalysis,
   assembleTransfersPage,
+  buildAlternatives,
+  candidatePoints,
 } from '../src/services/transfers.js';
 import { clear } from '../src/services/cache.js';
 
@@ -20,11 +22,12 @@ const bootstrap = {
     { id: 3, short_name: 'LIV', name: 'Liverpool', code: 14 },
   ],
   elements: [
-    { id: 10, web_name: 'Haaland', team: 1, now_cost: 145, cost_change_start: 4 },
-    { id: 11, web_name: 'Watkins', team: 2, now_cost: 88, cost_change_start: -2 },
-    { id: 12, web_name: 'Salah', team: 3, now_cost: 130, cost_change_start: 0 },
-    { id: 13, web_name: 'Saka', team: 3, now_cost: 60, cost_change_start: 5 },
-    { id: 14, web_name: 'Isak', team: 3, now_cost: 90, cost_change_start: 0 },
+    { id: 10, web_name: 'Haaland', team: 1, element_type: 4, now_cost: 145, cost_change_start: 4 },
+    { id: 11, web_name: 'Watkins', team: 2, element_type: 4, now_cost: 88, cost_change_start: -2 },
+    { id: 12, web_name: 'Salah', team: 3, element_type: 3, now_cost: 130, cost_change_start: 0 },
+    { id: 13, web_name: 'Saka', team: 3, element_type: 3, now_cost: 60, cost_change_start: 5 },
+    { id: 14, web_name: 'Isak', team: 3, element_type: 4, now_cost: 138, cost_change_start: -4 },
+    { id: 15, web_name: 'Mateta', team: 2, element_type: 4, now_cost: 140, cost_change_start: 0 },
   ],
 };
 
@@ -43,9 +46,9 @@ function liveFor(points) {
   };
 }
 const liveByGw = new Map([
-  [1, liveFor({ 10: 5, 11: 2, 12: 8, 13: 3, 14: 6 })],
-  [2, liveFor({ 10: 9, 11: 1, 12: 4, 13: 7, 14: 2 })],
-  [3, liveFor({ 10: 2, 11: 0, 12: 6, 13: 1, 14: 3 })],
+  [1, liveFor({ 10: 5, 11: 2, 12: 8, 13: 3, 14: 6, 15: 1 })],
+  [2, liveFor({ 10: 9, 11: 1, 12: 4, 13: 7, 14: 2, 15: 7 })],
+  [3, liveFor({ 10: 2, 11: 0, 12: 6, 13: 1, 14: 3, 15: 4 })],
 ]);
 const history = {
   current: [
@@ -315,6 +318,54 @@ test('season uten spilte rader har hitRate null, hitsPaid fra history', () => {
     liveByGw: new Map(),
   });
   assert.equal(b.season.hitsPaid, 0);
+});
+
+test('alternativer: samme posisjon og startpris innen toleransen, rangert på poeng', () => {
+  const a = buildTransferAnalysis({ transfers: [t(11, 10, 2)], history, bootstrap, liveByGw });
+  const alt = buildAlternatives({
+    row: a.rows[0],
+    buyCost: 140,
+    elements: bootstrap.elements,
+    teamsById: new Map(bootstrap.teams.map((team) => [team.id, team])),
+    liveByGw,
+  });
+  // Kandidater (angripere, start 135–145): Mateta 140 (11 p), Isak 142 (5 p).
+  assert.deepEqual(alt.map((c) => [c.id, c.points, c.delta]), [[15, 11, 0], [14, 5, -6]]);
+  assert.equal(alt[0].name, 'Mateta');
+  assert.equal(alt[0].startPrice, 140);
+  assert.equal(alt[0].teamShort, 'AVL');
+});
+
+test('alternativer: byttets egne spillere er aldri kandidater, selv i prisklassen', () => {
+  const a = buildTransferAnalysis({ transfers: [t(11, 10, 2)], history, bootstrap, liveByGw });
+  const alt = buildAlternatives({
+    row: a.rows[0],
+    buyCost: 140,
+    elements: bootstrap.elements,
+    teamsById: new Map(bootstrap.teams.map((team) => [team.id, team])),
+    liveByGw,
+    tolerance: 100, // slipper inn Watkins (start 90) på pris — men aldri på id
+  });
+  assert.ok(!alt.some((c) => c.id === 10 || c.id === 11));
+});
+
+test('alternativer: ukjent kjøpspris eller pending bytte gir tom liste', () => {
+  const a = buildTransferAnalysis({
+    transfers: [t(11, 10, 2), t(13, 12, 4)],
+    history, bootstrap, liveByGw,
+  });
+  const felles = {
+    elements: bootstrap.elements,
+    teamsById: new Map(bootstrap.teams.map((team) => [team.id, team])),
+    liveByGw,
+  };
+  assert.deepEqual(buildAlternatives({ row: a.rows[0], buyCost: null, ...felles }), []);
+  assert.deepEqual(buildAlternatives({ row: a.rows[1], buyCost: 130, ...felles }), []); // pending
+});
+
+test('candidatePoints summerer vinduet og gir per-runde-liste', () => {
+  const r = candidatePoints({ id: 15, from: 2, to: 3, liveByGw });
+  assert.deepEqual(r, { points: 11, perGw: [{ gw: 2, p: 7 }, { gw: 3, p: 4 }] });
 });
 
 // Assemble-testene mocker global fetch (mønster fra test/fplClient.test.js);
