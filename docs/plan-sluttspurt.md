@@ -32,8 +32,13 @@ Denne fila ER planen og spec-en — det finnes ingen andre planfiler.
   (footer + `/health`), men graceful-shutdown-beviset mangler. Coolifys
   deploy-logg inneholder det ikke — det må hentes med `kill 1` i
   containerterminalen.
-- Task 4–9: blokkert av dato eller Marius. Se §3-kalenderen.
-- **Test-baseline nå: 364/364, lint 0.**
+- Task 7 (v1.3.8) og Task 8 (v1.4.0): **kode utført 26. aug** på branchene
+  `fix/genitiv-nyhetsfilter-v138` og `feat/alderstak-v140` (stablet oppå
+  førstnevnte) — TDD, røyktest OK, alle steg unntatt merge/tag/push og
+  Step 8 (prod). Merges etter P4, jf. §1-beslutning 3; P3-avvik →
+  renummerer mekanisk først.
+- Task 4–6 og 9: blokkert av dato eller Marius. Se §3-kalenderen.
+- **Test-baseline: main 364/364; branchene 375/375. Lint 0.**
 
 ## §1 Beslutninger (Marius, 25. aug — IKKE re-spør)
 

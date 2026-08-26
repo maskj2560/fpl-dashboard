@@ -30,8 +30,8 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.3.5**~~ | ~~Ryddig avslutning (SIGTERM-handler)~~ | **utført 25. aug** | — |
 | ~~**v1.3.6**~~ | ~~gameUpdating-livssyklus + vennlig 503-side~~ | **utført 25. aug** | — |
 | **v1.3.7** | Persistent «brief sendt»-markør (volum `/app/data`) | 4 | **kode klar + tagget lokalt** — venter på volum i Coolify + push |
-| **v1.3.8** | Genitiv-fiks i nyhetsfilteret | 4 | etter P4 |
-| **v1.4.0** | Alderstak på stale data + `dataAlder` i payload | 4 | etter P4 |
+| **v1.3.8** | Genitiv-fiks i nyhetsfilteret | 4 | **kode klar på branch 26. aug** — merge/deploy etter P4 |
+| **v1.4.0** | Alderstak på stale data + `dataAlder` i payload | 4 | **kode klar på branch 26. aug** — merge/deploy etter P4 |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
 Kalenderlogikk: utviklingssporet (v1.3.0 → v1.3.1+) går uavbrutt;
@@ -93,9 +93,13 @@ stedet for den AI-kostende promptendringen (droppet). Rekkefølge:
       volumet legges til i Coolify, så push.
 - [ ] **v1.3.8 Genitiv-fiks i nyhetsfilteret:** navnevarianter uten
       genitiv-s i `filterSummaryPoints` (`news.js`). 0 AI-kall.
+      **Kode klar 26. aug** på `fix/genitiv-nyhetsfilter-v138` —
+      merge + tag + push etter P4.
 - [ ] **v1.4.0 Alderstak + dataAlder:** stale data eldre enn 10 min
       (live) / 60 min (resten) får banner «Viser data fra HH:MM …»;
       `/api/brief.json` og `/api/live.json` får `dataAlder` (sekunder).
+      **Kode klar 26. aug** på `feat/alderstak-v140` (stablet) —
+      merge + tag + push etter P4.
 
 ## Dokumentkart — hvor alt bor
 

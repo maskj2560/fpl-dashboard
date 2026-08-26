@@ -6,7 +6,7 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-25 (økt 40, Opus: v1.3.5+v1.3.6 ute, v1.3.7 venter på volum)
+**Sist oppdatert:** 2026-08-26 (økt 41, Fable: v1.3.8+v1.4.0 forhåndsbygget på brancher)
 
 ## Status akkurat nå
 - **v1.3.5 og v1.3.6 UTE I PROD 25. aug** (footer `v1.3.6`, `/health` 200).
@@ -26,6 +26,9 @@
   på at volumet `/app/data` er lagt til i Coolify (Storages). 364/364,
   lint 0. Røyktest med ekte fs: «Brief-markør lastet: runde 2 er alt
   sendt», ingen Discord-poster.
+- **v1.3.8 og v1.4.0 forhåndsbygget 26. aug** på `fix/genitiv-nyhetsfilter-v138`
+  og `feat/alderstak-v140` (stablet oppå førstnevnte) — 375/375, lint 0,
+  røyktest OK. IKKE merget: merge `--no-ff` + tag + push først etter P4.
 - **v1.3.4 (AI-SWR) ute siden 25. aug** — målingene og detaljene er rotert
   til `docs/arkiv/HANDOVER-historikk.md`; plan: `docs/arkiv/plan-v134-ai-swr.md`.
 - **Prod-QA 25. aug: 402 sjekker, 0 feil** mot v1.3.4 (dekker også v1.3.3);
@@ -72,8 +75,9 @@ tester, ordrett dokumenttekst, kalender og bevis-krav per task. Køen i
    Her hører også «visuell sjekk mot mockupen i begge temaer» hjemme.
 7. **Task 6 (P4), ~ma 7. sept:** kostnadsmåling etter prisskiftet, mot
    $-tersklene OG taktbudsjettet ~41–45 kall/uke.
-8. **Task 7–8 etter P4:** v1.3.8 genitiv-fiks, v1.4.0 alderstak +
-   `dataAlder`. Til slutt Task 9: arkiver planfila.
+8. **Task 7–8 etter P4:** koden er FERDIG på branchene (se status) — kun
+   merge `--no-ff` + tag + push gjenstår (P3-avvik → renummerer mekanisk
+   først). Til slutt Task 9: arkiver planfila.
 
 **P1 er LUKKET 25. aug** (auto-briefen bekreftet i Discord) — sjekkpunkt A
 er dermed ferdig i sin helhet. P0 ble lukket samme dag.
@@ -185,5 +189,9 @@ er dermed ferdig i sin helhet. P0 ble lukket samme dag.
   og overleveringen ryddet: denne fila har «Neste steg» øverst, planfila har
   en §0-statusblokk, ROADMAP viser v1.3.7 som «kode klar, ikke deployet», og
   VIDERE.md er ajour (den lå tre versjoner bak).
+- 2026-08-26 (økt 41, Fable): «full oversikt over alt gjenværende», så
+  «planlegg og gjennomfør alt som kan gjøres nå». Handling: v1.3.8 og
+  v1.4.0 TDD-bygget på egne brancher uten merge/push (375/375, lint 0,
+  røyktest), status ført her + ROADMAP + planens §0. Ingen push.
 - Loggposter fra økt 22–39: rotert til `docs/arkiv/HANDOVER-historikk.md`
   (200-linjerstaket, sist 2026-08-25).
