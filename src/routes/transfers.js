@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import config from '../config.js';
-import { assembleTransferAnalysis } from '../services/transfers.js';
+import { assembleTransfersPage } from '../services/transfers.js';
 import { formatSigned } from '../services/format.js';
+import { formatPrice } from '../services/analysis.js';
 
 const router = Router();
 
@@ -10,8 +11,14 @@ router.get('/', async (req, res, next) => {
     return res.renderPage('no-team', { title: 'Overganger' });
   }
   try {
-    const analysis = await assembleTransferAnalysis();
-    res.renderPage('transfers', { title: 'Overganger', analysis, formatSigned });
+    const page = await assembleTransfersPage();
+    res.renderPage('transfers', {
+      title: 'Overganger',
+      analysis: page.analysis,
+      priceReport: page.priceReport,
+      formatSigned,
+      formatPrice,
+    });
   } catch (err) {
     next(err);
   }

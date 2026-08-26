@@ -37,6 +37,7 @@ const cases = [
   ['transfers', fx.transfersPending, 'Venter på runde 2'],
   ['transfers', fx.transfers, 'Treffprosent'],
   ['transfers', fx.transfers, 'row-detail'],
+  ['transfers', fx.transfers, 'Prisgevinst'],
   ['no-team', {}, 'FPL_TEAM_ID'],
   ['404', {}, '404'],
   ['error', { code: 500, heading: 'Noe gikk galt', message: null }, 'Noe gikk galt'],
@@ -381,6 +382,16 @@ test('transfers.ejs merker beste og verste bytte som piller', async () => {
   const html = await renderView('transfers', fx.transfers);
   assert.match(html, /status status-best">Beste</);
   assert.match(html, /status status-worst">Verste</);
+});
+
+test('transfers.ejs: prisgevinst med salgspris, ukjent-fallback og tapte salg', async () => {
+  const html = await renderView('transfers', fx.transfers);
+  assert.match(html, /14\.2/); // salgspris 142 tideler
+  assert.match(html, /ukjent kjøpspris/); // Salah mangler element_in_cost
+  assert.match(html, /Saka: solgt for 5\.5, nå 6\.0/);
+
+  const uten = await renderView('transfers', fx.transfersEmpty);
+  assert.doesNotMatch(uten, /Prisgevinst/); // priceReport null → seksjonen skjules
 });
 
 test('transfers.ejs: detaljraden viser per-runde-tabell og milepæl', async () => {

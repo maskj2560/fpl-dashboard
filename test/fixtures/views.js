@@ -233,6 +233,17 @@ export const transfers = {
   title: 'Overganger',
   clubAssets,
   formatSigned: (n) => String(n),
+  formatPrice: (n) => (n / 10).toFixed(1),
+  priceReport: {
+    holdings: [
+      { id: 10, name: 'Haaland', teamShort: 'MCI', teamCode: 43, buyCost: 140, nowCost: 145, sellPrice: 142, gain: 2, ukjent: false },
+      { id: 12, name: 'Salah', teamShort: 'LIV', teamCode: 14, buyCost: null, nowCost: 130, sellPrice: null, gain: null, ukjent: true },
+    ],
+    totals: { buyCost: 140, nowCost: 145, sellPrice: 142, gain: 2 },
+    missed: [{ id: 20, name: 'Saka', teamShort: 'LIV', teamCode: 14, soldFor: 55, nowCost: 60, missed: 5 }],
+    bank: 15,
+    value: 1003,
+  },
   analysis: {
     rows: [
       { event: 2, chip: null, inn: { id: 10, name: 'Haaland', teamShort: 'MCI', teamCode: 43, points: 11 }, ut: { id: 11, name: 'Watkins', teamShort: 'AVL', teamCode: 7, points: 1 }, diff: 10, penaltyShare: 4, netto: 6, window: { from: 2, to: 3 }, played: true, pending: false, perGw: [{ gw: 2, inn: 9, ut: 1, diff: 8, cum: 8 }, { gw: 3, inn: 2, ut: 0, diff: 2, cum: 10 }], after5: { diff: 10, gws: 2, complete: false } },
@@ -250,6 +261,8 @@ export const transfersEmpty = {
   title: 'Overganger',
   clubAssets,
   formatSigned: (n) => String(n),
+  formatPrice: (n) => (n / 10).toFixed(1),
+  priceReport: null,
   analysis: {
     rows: [],
     season: { played: 0, wins: 0, hitRate: null, hitsPaid: 0 },
@@ -264,6 +277,8 @@ export const transfersPending = {
   title: 'Overganger',
   clubAssets,
   formatSigned: (n) => String(n),
+  formatPrice: (n) => (n / 10).toFixed(1),
+  priceReport: null,
   analysis: {
     rows: [
       { event: 2, chip: null, inn: { id: 10, name: 'Haaland', teamShort: 'MCI', teamCode: 43, points: 0 }, ut: { id: 11, name: 'Watkins', teamShort: 'AVL', teamCode: 7, points: 0 }, diff: 0, penaltyShare: 0, netto: 0, window: null, played: false, pending: true, perGw: [], after5: null },

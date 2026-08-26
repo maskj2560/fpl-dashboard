@@ -1,6 +1,10 @@
 import { test, describe, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildTransferAnalysis, assembleTransferAnalysis } from '../src/services/transfers.js';
+import {
+  buildTransferAnalysis,
+  assembleTransferAnalysis,
+  assembleTransfersPage,
+} from '../src/services/transfers.js';
 import { clear } from '../src/services/cache.js';
 
 // GW1–2 ferdige, GW3 pågår → maxGw 3.
@@ -16,11 +20,11 @@ const bootstrap = {
     { id: 3, short_name: 'LIV', name: 'Liverpool', code: 14 },
   ],
   elements: [
-    { id: 10, web_name: 'Haaland', team: 1 },
-    { id: 11, web_name: 'Watkins', team: 2 },
-    { id: 12, web_name: 'Salah', team: 3 },
-    { id: 13, web_name: 'Saka', team: 3 },
-    { id: 14, web_name: 'Isak', team: 3 },
+    { id: 10, web_name: 'Haaland', team: 1, now_cost: 145, cost_change_start: 4 },
+    { id: 11, web_name: 'Watkins', team: 2, now_cost: 88, cost_change_start: -2 },
+    { id: 12, web_name: 'Salah', team: 3, now_cost: 130, cost_change_start: 0 },
+    { id: 13, web_name: 'Saka', team: 3, now_cost: 60, cost_change_start: 5 },
+    { id: 14, web_name: 'Isak', team: 3, now_cost: 90, cost_change_start: 0 },
   ],
 };
 
@@ -348,6 +352,51 @@ describe('assembleTransferAnalysis', () => {
     assert.equal(a.rows[0].diff, 10); // (9+2) − (1+0)
     assert.ok(!calls.some((u) => /event\/1\/live/.test(u)), 'runde 1 skal ikke hentes');
     assert.ok(!calls.some((u) => /element-summary/.test(u)), 'aldri element-summary');
+  });
+
+  test('assembleTransfersPage bygger prisrapport fra picks, aldri element-summary', async () => {
+    const routes = [
+      [/bootstrap-static\/$/, bootstrap],
+      [/entry\/42\/transfers\/$/, [{ ...t(11, 10, 2), element_in_cost: 140, element_out_cost: 88 }]],
+      [/entry\/42\/history\/$/, history],
+      [/event\/2\/live\/$/, liveFor({ 10: 9, 11: 1 })],
+      [/event\/3\/live\/$/, liveFor({ 10: 2, 11: 0 })],
+      [/entry\/42\/event\/3\/picks\/$/, { picks: [{ element: 10 }], entry_history: { bank: 15, value: 1003 } }],
+      [/entry\/42\/event\/1\/picks\/$/, { picks: [{ element: 11 }] }],
+    ];
+    globalThis.fetch = async (url) => {
+      const hit = routes.find(([re]) => re.test(String(url)));
+      assert.ok(hit, `uventet URL: ${url}`);
+      calls.push(String(url));
+      return { ok: true, status: 200, json: async () => hit[1] };
+    };
+
+    const page = await assembleTransfersPage({ teamId: 42 });
+
+    assert.equal(page.analysis.totals.count, 1);
+    assert.equal(page.priceReport.holdings[0].sellPrice, 142); // 140 + floor(5/2)
+    assert.equal(page.priceReport.bank, 15);
+    assert.ok(!calls.some((u) => /element-summary/.test(u)), 'aldri element-summary');
+  });
+
+  test('assembleTransfersPage feiler mykt når picks mangler — analysen vises', async () => {
+    const routes = [
+      [/bootstrap-static\/$/, bootstrap],
+      [/entry\/42\/transfers\/$/, [t(11, 10, 2)]],
+      [/entry\/42\/history\/$/, history],
+      [/event\/2\/live\/$/, liveFor({ 10: 9, 11: 1 })],
+      [/event\/3\/live\/$/, liveFor({ 10: 2, 11: 0 })],
+    ];
+    globalThis.fetch = async (url) => {
+      const hit = routes.find(([re]) => re.test(String(url)));
+      if (!hit) return { ok: false, status: 404, json: async () => ({}) };
+      return { ok: true, status: 200, json: async () => hit[1] };
+    };
+
+    const page = await assembleTransfersPage({ teamId: 42 });
+
+    assert.equal(page.analysis.rows[0].diff, 10);
+    assert.equal(page.priceReport, null);
   });
 
   test('uten transfers hentes ingen live-runder', async () => {

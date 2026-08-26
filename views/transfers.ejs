@@ -87,3 +87,50 @@
     </div>
   </section>
 <% } %>
+
+<% if (priceReport) { %>
+  <section class="card card-wide">
+    <h2>Prisgevinst</h2>
+    <p class="dim">Kjøpspris mot dagens pris og salgspris — FPL gir deg halve
+    prisstigningen, rundet ned. Lagverdi
+    <%= priceReport.value !== null ? formatPrice(priceReport.value) : '–' %>
+    · bank <%= priceReport.bank !== null ? formatPrice(priceReport.bank) : '–' %> (£m).</p>
+    <div class="table-scroll">
+      <table class="data">
+        <thead>
+          <tr><th>Spiller</th><th class="num">Kjøpt</th><th class="num">Nå</th><th class="num">Salg</th><th class="num">Gevinst</th></tr>
+        </thead>
+        <tbody>
+          <% for (const h of priceReport.holdings) { %>
+            <tr>
+              <td><%- include('partials/club-badge', { team: { short_name: h.teamShort, code: h.teamCode, name: h.teamShort }, showName: false }) %> <%= h.name %></td>
+              <% if (h.ukjent) { %>
+                <td class="num dim" colspan="4">ukjent kjøpspris</td>
+              <% } else { %>
+                <td class="num"><%= formatPrice(h.buyCost) %></td>
+                <td class="num"><%= formatPrice(h.nowCost) %></td>
+                <td class="num"><%= formatPrice(h.sellPrice) %></td>
+                <td class="num <%= h.gain > 0 ? 'accent' : (h.gain < 0 ? 'negative' : '') %>"><%= (h.gain > 0 ? '+' : '') + formatPrice(h.gain) %></td>
+              <% } %>
+            </tr>
+          <% } %>
+          <tr>
+            <td><strong>Sum</strong></td>
+            <td class="num"><strong><%= formatPrice(priceReport.totals.buyCost) %></strong></td>
+            <td class="num"><strong><%= formatPrice(priceReport.totals.nowCost) %></strong></td>
+            <td class="num"><strong><%= formatPrice(priceReport.totals.sellPrice) %></strong></td>
+            <td class="num <%= priceReport.totals.gain > 0 ? 'accent' : (priceReport.totals.gain < 0 ? 'negative' : '') %>"><strong><%= (priceReport.totals.gain > 0 ? '+' : '') + formatPrice(priceReport.totals.gain) %></strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <% if (priceReport.missed.length > 0) { %>
+      <h3>Salg du gikk glipp av</h3>
+      <ul class="dim">
+        <% for (const m of priceReport.missed.slice(0, 3)) { %>
+          <li><%= m.name %>: solgt for <%= formatPrice(m.soldFor) %>, nå <%= formatPrice(m.nowCost) %> (gikk glipp av <%= formatPrice(m.missed) %>)</li>
+        <% } %>
+      </ul>
+    <% } %>
+  </section>
+<% } %>

@@ -15,6 +15,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - «Overganger»-siden viser treffprosent og antall trekk i sesongkortet,
   og hver rad i byttetabellen kan utvides til per-runde-detaljene med
   milepælsdommen.
+- Ny «Prisgevinst»-seksjon på «Overganger»: kjøpspris mot dagens pris og
+  salgspris per spiller (FPLs halveringsregel), sum for troppen, og salg
+  der prisen siden har steget.
 
 ## [1.4.0] - 2026-09-XX
 

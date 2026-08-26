@@ -11,8 +11,10 @@ import {
   getEntryTransfers,
   getLive,
   getLiveHistoric,
+  getPicks,
 } from './fplClient.js';
 import { byId, resolvedGw } from './analysis.js';
+import { buildPurchases, buildPriceReport } from './pricing.js';
 
 // Skjemaet for entry/{id}/transfers/ er uverifisert før sesongstart —
 // records uten disse feltene hoppes over og telles som «ukjente».
@@ -205,4 +207,44 @@ export async function assembleTransferAnalysis({ teamId = config.fplTeamId } = {
   }
 
   return buildTransferAnalysis({ transfers, history, bootstrap, liveByGw });
+}
+
+/**
+ * Henter alt /overganger-siden trenger. Analysen er kjernen og feiler hardt;
+ * tilleggsseksjonene (prisrapporten m.fl.) feiler mykt hver for seg — siden
+ * vises alltid med det som finnes. Kalladferden til assembleTransferAnalysis
+ * er uendret; kun cachede fplClient-kall kommer i tillegg.
+ */
+export async function assembleTransfersPage({ teamId = config.fplTeamId } = {}) {
+  const [analysis, bootstrap, transfers, history] = await Promise.all([
+    assembleTransferAnalysis({ teamId }),
+    getBootstrap(),
+    getEntryTransfers(teamId),
+    getEntryHistory(teamId),
+  ]);
+
+  let priceReport = null;
+  try {
+    const gw = Math.max(1, analysis.maxGw);
+    const picks = await getPicks(teamId, gw);
+    const gw1Picks = gw === 1 ? picks : await getPicks(teamId, 1);
+    const purchases = buildPurchases({
+      transfers,
+      chips: history?.chips,
+      gw1Picks,
+      elements: bootstrap.elements,
+    });
+    priceReport = buildPriceReport({
+      picks,
+      purchases,
+      elements: bootstrap.elements,
+      teamsById: byId(bootstrap.teams ?? []),
+      transfers,
+      chips: history?.chips,
+    });
+  } catch {
+    priceReport = null; // picks kan mangle (404 før sesongstart) — aldri krasj
+  }
+
+  return { analysis, priceReport, baseline: null, scenarios: [], aiComment: null };
 }
