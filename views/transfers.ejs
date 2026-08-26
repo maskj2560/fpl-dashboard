@@ -88,6 +88,16 @@
   </section>
 <% } %>
 
+<section class="card card-wide" id="planlegger">
+  <h2>Planlegger — hva hvis?</h2>
+  <p class="dim">Prøv et bytte før du gjør det: velg hvem som skal ut og inn,
+  se tallene side om side og få FPL-reglene sjekket — posisjon, budsjett
+  (salgspris + bank) og maks 3 fra samme klubb. Ingenting sendes til FPL.</p>
+  <div id="planner-root" data-endpoint="/api/planlegger.json">
+    <button type="button" class="btn-link" id="planner-load">Åpne planleggeren</button>
+  </div>
+</section>
+
 <% if (baseline) { %>
   <section class="card">
     <h2>Laget uten bytter</h2>

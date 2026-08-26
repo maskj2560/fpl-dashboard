@@ -39,6 +39,8 @@ const cases = [
   ['transfers', fx.transfers, 'row-detail'],
   ['transfers', fx.transfers, 'Prisgevinst'],
   ['transfers', fx.transfers, 'Laget uten bytter'],
+  ['transfers', fx.transfers, 'planner-root'],
+  ['transfers', fx.transfersEmpty, 'planner-root'],
   ['no-team', {}, 'FPL_TEAM_ID'],
   ['404', {}, '404'],
   ['error', { code: 500, heading: 'Noe gikk galt', message: null }, 'Noe gikk galt'],

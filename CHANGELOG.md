@@ -21,6 +21,11 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Ny «Laget uten bytter»-seksjon på «Overganger»: GW1-laget simuleres
   urørt gjennom sesongen (med autosubs og kapteinsregler) og sammenlignes
   med faktisk poengsum — svaret på om byttene har lønt seg totalt.
+- Ny hva hvis-planlegger på «Overganger»: velg spiller ut og inn, se
+  tallene side om side (pris/salgspris, form, forventet poeng, FDR,
+  eierandel, status) og få FPL-reglene sjekket — posisjon, budsjett med
+  salgspris + bank, maks 3 fra samme klubb. Datagrunnlaget hentes først
+  når planleggeren åpnes.
 
 ## [1.4.0] - 2026-09-XX
 

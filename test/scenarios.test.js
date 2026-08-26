@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildPlannerData } from '../src/services/scenarios.js';
+import { buildPlannerData, validateScenario } from '../src/services/scenarios.js';
 
 // Priser i tideler. Runde 3 er neste — FDR regnes for runde 3–5.
 const bootstrap = {
@@ -79,4 +79,66 @@ test('planlegger-payload: spiller uten kjent kjøpspris får sellPrice null', ()
     { id: 11, navn: 'Watkins', lag: 'AVL', lagKode: 7, pos: 4, sellPrice: null, buyCost: null },
   ]);
   assert.equal(utenKjop.bank, null);
+});
+
+// --- validateScenario (T7): serveren er fasit for reglene ---
+
+const squadFx = [
+  { id: 10, navn: 'Haaland', lag: 'MCI', lagKode: 43, pos: 4, sellPrice: 142, buyCost: 140 },
+  { id: 21, navn: 'Dias', lag: 'MCI', lagKode: 43, pos: 2, sellPrice: 55, buyCost: 55 },
+  { id: 22, navn: 'Stones', lag: 'MCI', lagKode: 43, pos: 2, sellPrice: 53, buyCost: 53 },
+  { id: 23, navn: 'Konsa', lag: 'AVL', lagKode: 7, pos: 2, sellPrice: 45, buyCost: 45 },
+];
+const plannerFx = {
+  event: 3,
+  bank: 15,
+  maxPerClub: 3,
+  squad: squadFx,
+  players: [
+    ...squadFx.map((s) => ({ id: s.id, navn: s.navn, lagKode: s.lagKode, pos: s.pos, pris: s.sellPrice + 3 })),
+    { id: 30, navn: 'Isak', lagKode: 4, pos: 4, pris: 155 },
+    { id: 31, navn: 'Doku', lagKode: 43, pos: 2, pris: 50 },
+    { id: 32, navn: 'Saliba', lagKode: 3, pos: 2, pris: 60 },
+    { id: 33, navn: 'Dyr', lagKode: 9, pos: 4, pris: 158 },
+  ],
+};
+const scenario = (moves, extra = {}) => ({ name: 'Plan A', event: 4, moves, ...extra });
+const codes = (result) => result.errors.map((e) => e.code);
+
+test('gyldig bytte passerer med tom feilliste', () => {
+  const r = validateScenario(scenario([{ out: 10, in: 30 }]), plannerFx);
+  assert.deepEqual(r, { ok: true, errors: [] });
+});
+
+test('posisjonsmismatch avvises', () => {
+  const r = validateScenario(scenario([{ out: 10, in: 32 }]), plannerFx);
+  assert.deepEqual(codes(r), ['posisjon']);
+});
+
+test('budsjettet bruker salgspris pluss bank, ikke nåpris', () => {
+  // Salgspris 142 + bank 15 = 157 < 158 — med nåpris 145 ville byttet passert.
+  const r = validateScenario(scenario([{ out: 10, in: 33 }]), plannerFx);
+  assert.deepEqual(codes(r), ['budsjett']);
+});
+
+test('fjerde spiller fra samme klubb avvises — ut-spilleren frigjør plassen sin', () => {
+  const fjerde = validateScenario(scenario([{ out: 23, in: 31 }]), plannerFx);
+  assert.deepEqual(codes(fjerde), ['klubbtak']); // 3 MCI fra før + Doku = 4
+
+  const frigjort = validateScenario(scenario([{ out: 21, in: 31 }]), plannerFx);
+  assert.equal(frigjort.ok, true); // Dias ut åpner MCI-plassen
+});
+
+test('inn-spiller som alt står i troppen avvises', () => {
+  const r = validateScenario(scenario([{ out: 23, in: 21 }]), plannerFx);
+  assert.ok(codes(r).includes('alt-i-troppen'));
+});
+
+test('ukjente spillere, duplikater og ugyldig navn/runde gir egne koder', () => {
+  assert.ok(codes(validateScenario(scenario([{ out: 999, in: 30 }]), plannerFx)).includes('ikke-i-troppen'));
+  assert.ok(codes(validateScenario(scenario([{ out: 10, in: 999 }]), plannerFx)).includes('ukjent-spiller'));
+  assert.ok(codes(validateScenario(scenario([{ out: 10, in: 30 }, { out: 10, in: 33 }]), plannerFx)).includes('duplikat'));
+  assert.ok(codes(validateScenario(scenario([{ out: 10, in: 30 }], { name: '' }), plannerFx)).includes('navn'));
+  assert.ok(codes(validateScenario(scenario([{ out: 10, in: 30 }], { event: 0 }), plannerFx)).includes('runde'));
+  assert.ok(codes(validateScenario(scenario([], {}), plannerFx)).includes('bytter'));
 });

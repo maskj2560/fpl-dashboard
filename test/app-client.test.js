@@ -130,3 +130,28 @@ test('edgeFadeState er nøytral uten overflow og dobbel midt i', () => {
   assert.equal(app.evaluate('JSON.stringify(edgeFadeState(0, 400, 400))'), '{"left":false,"right":false}');
   assert.equal(app.evaluate('JSON.stringify(edgeFadeState(200, 800, 400))'), '{"left":true,"right":true}');
 });
+
+test('plannerRules speiler posisjon, budsjett og klubbtak', () => {
+  const rules = app.evaluate(`plannerRules({
+    out: { id: 4, pos: 4, sellPrice: 88, lagKode: 7 },
+    inn: { pos: 4, pris: 100, lagKode: 43 },
+    bank: 15,
+    squad: [
+      { id: 1, lagKode: 43 }, { id: 2, lagKode: 43 },
+      { id: 3, lagKode: 43 }, { id: 4, lagKode: 7 },
+    ],
+  })`);
+  assert.equal(rules.find((r) => r.kode === 'posisjon').ok, true);
+  assert.equal(rules.find((r) => r.kode === 'budsjett').ok, true); // 88 + 15 >= 100
+  assert.equal(rules.find((r) => r.kode === 'klubbtak').ok, false); // fjerde fra klubb 43
+});
+
+test('plannerRules uten kjent salgspris lar budsjettet staa aapent', () => {
+  const rules = app.evaluate(`plannerRules({
+    out: { id: 4, pos: 4, sellPrice: null, lagKode: 7 },
+    inn: { pos: 4, pris: 100, lagKode: 4 },
+    bank: 15,
+    squad: [{ id: 4, lagKode: 7 }],
+  })`);
+  assert.equal(rules.find((r) => r.kode === 'budsjett').ok, null);
+});

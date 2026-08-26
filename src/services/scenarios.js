@@ -67,3 +67,86 @@ export function buildPlannerData({ bootstrap, fixtures, picks, purchases, fromGw
     players,
   };
 }
+
+/**
+ * Regelsjekken for et scenario — serveren er fasit, klientens sjekk er bare
+ * UX. `planner` er payloaden fra buildPlannerData. Budsjettet bruker
+ * salgspris + bank (aldri nåpris); mangler en salgspris, hoppes
+ * budsjettsjekken over i stedet for å gjette. Returnerer alle brudd, ikke
+ * bare det første.
+ */
+export function validateScenario(input, planner) {
+  const errors = [];
+  const push = (code, message) => errors.push({ code, message });
+
+  const name = typeof input?.name === 'string' ? input.name.trim() : '';
+  if (name.length < 1 || name.length > 60) {
+    push('navn', 'Scenarioet trenger et navn på 1–60 tegn.');
+  }
+  if (!Number.isInteger(input?.event) || input.event < 1 || input.event > 38) {
+    push('runde', 'Runden må være et tall mellom 1 og 38.');
+  }
+  const moves = Array.isArray(input?.moves) ? input.moves : [];
+  if (moves.length < 1) {
+    push('bytter', 'Scenarioet må inneholde minst ett bytte.');
+  }
+
+  const squadById = new Map((planner?.squad ?? []).map((s) => [s.id, s]));
+  const playersById = new Map((planner?.players ?? []).map((p) => [p.id, p]));
+  const maxPerClub = planner?.maxPerClub ?? 3;
+
+  // Klubbtelling: start med troppen, trekk ut-spillerne, legg til inn-spillerne.
+  const clubCount = new Map();
+  for (const s of squadById.values()) {
+    if (s.lagKode != null) clubCount.set(s.lagKode, (clubCount.get(s.lagKode) ?? 0) + 1);
+  }
+
+  const outsSeen = new Set();
+  const insSeen = new Set();
+  let sellSum = 0;
+  let buySum = 0;
+  let priceUnknown = false;
+
+  for (const m of moves) {
+    const out = squadById.get(m?.out);
+    const inn = playersById.get(m?.in);
+    if (!out) {
+      push('ikke-i-troppen', 'Spilleren du vil selge står ikke i troppen din.');
+    }
+    if (!inn) {
+      push('ukjent-spiller', 'Spilleren du vil kjøpe finnes ikke.');
+    }
+    if (inn && squadById.has(m.in)) {
+      push('alt-i-troppen', `${inn.navn} står allerede i troppen din.`);
+    }
+    if (out && inn && out.pos !== inn.pos && !squadById.has(m.in)) {
+      push('posisjon', 'Inn- og ut-spilleren må spille samme posisjon.');
+    }
+    if (out) {
+      if (outsSeen.has(out.id)) push('duplikat', `${out.navn} selges to ganger i samme scenario.`);
+      outsSeen.add(out.id);
+      if (out.sellPrice == null) priceUnknown = true;
+      else sellSum += out.sellPrice;
+      if (out.lagKode != null) clubCount.set(out.lagKode, (clubCount.get(out.lagKode) ?? 0) - 1);
+    }
+    if (inn && !squadById.has(m.in)) {
+      if (insSeen.has(inn.id)) push('duplikat', `${inn.navn} kjøpes to ganger i samme scenario.`);
+      insSeen.add(inn.id);
+      if (inn.pris == null) priceUnknown = true;
+      else buySum += inn.pris;
+      if (inn.lagKode != null) clubCount.set(inn.lagKode, (clubCount.get(inn.lagKode) ?? 0) + 1);
+    }
+  }
+
+  if (!priceUnknown && planner?.bank != null && moves.length > 0 && sellSum + planner.bank < buySum) {
+    push('budsjett', 'Byttene koster mer enn salgsprisene og banken dekker.');
+  }
+  for (const [, count] of clubCount) {
+    if (count > maxPerClub) {
+      push('klubbtak', `Maks ${maxPerClub} spillere fra samme klubb.`);
+      break;
+    }
+  }
+
+  return { ok: errors.length === 0, errors };
+}

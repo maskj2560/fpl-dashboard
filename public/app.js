@@ -458,6 +458,26 @@ function initEdgeFades(el, prefix) {
   });
 })();
 
+// Delt med testene (test/app-client.test.js): klient-speilet av planlegger-
+// reglene. Serveren (validateScenario i scenarios.js) er alltid fasit —
+// dette er bare umiddelbar tilbakemelding i UI-et. ok: true/false/null
+// (null = kan ikke avgjøres, f.eks. ukjent salgspris).
+function plannerRules({ out, inn, bank, squad }) {
+  if (!out || !inn) return [];
+  const budsjettOk =
+    out.sellPrice != null && inn.pris != null && bank != null
+      ? out.sellPrice + bank >= inn.pris
+      : null;
+  const sammeKlubb = (squad || []).filter(
+    (s) => s.lagKode != null && s.lagKode === inn.lagKode && s.id !== out.id,
+  ).length;
+  return [
+    { kode: 'posisjon', ok: out.pos === inn.pos, tekst: 'Samme posisjon' },
+    { kode: 'budsjett', ok: budsjettOk, tekst: 'Innenfor budsjett (salgspris + bank)' },
+    { kode: 'klubbtak', ok: sammeKlubb + 1 <= 3, tekst: 'Maks 3 fra samme klubb' },
+  ];
+}
+
 // Modul 7: Utvidbare rader (/overganger) — per-runde-detaljene for et bytte.
 // Kantfaden kan først initieres når raden faktisk vises (skjulte bokser har
 // ingen bredde å måle).
@@ -480,4 +500,125 @@ function initEdgeFades(el, prefix) {
       }
     }
   });
+})();
+
+// Modul 8: Hva hvis-planleggeren (/overganger). Datagrunnlaget hentes lazy
+// ved første åpning — en sidevisning koster aldri payloaden. Reglene speiles
+// med plannerRules(); serveren er fasit ved lagring.
+(function () {
+  'use strict';
+  const root = document.getElementById('planner-root');
+  if (!root) return;
+
+  const POS = { 1: 'K', 2: 'F', 3: 'M', 4: 'A' };
+  const STATUS = { a: 'Tilgjengelig', d: 'Tvilsom', i: 'Skadet', s: 'Utestengt', u: 'Utilgjengelig', n: 'Ikke i troppen' };
+  const pris = (n) => (n == null ? '–' : (n / 10).toFixed(1));
+  const tall = (n) => (n == null ? '–' : String(n));
+
+  let data = null;
+  let ut = null;
+  let inn = null;
+
+  root.addEventListener('click', async (e) => {
+    const load = e.target.closest('#planner-load');
+    if (load) {
+      load.disabled = true;
+      load.textContent = 'Henter …';
+      try {
+        const res = await fetch(root.dataset.endpoint);
+        if (!res.ok) throw new Error(String(res.status));
+        data = await res.json();
+        renderControls();
+      } catch {
+        load.disabled = false;
+        load.textContent = 'Kunne ikke hente — prøv igjen';
+      }
+      return;
+    }
+    const hit = e.target.closest('li[data-id]');
+    if (hit) {
+      inn = data.players.find((p) => p.id === Number(hit.dataset.id)) ?? null;
+      const search = document.getElementById('planner-search');
+      if (search && inn) search.value = inn.navn;
+      const box = document.getElementById('planner-hits');
+      if (box) box.innerHTML = '';
+      renderCompare();
+    }
+  });
+
+  function renderControls() {
+    root.innerHTML = [
+      '<div class="planner-grid">',
+      '<label>Ut av laget',
+      '<select id="planner-out"><option value="">Velg spiller …</option>',
+      data.squad
+        .map((s) => `<option value="${s.id}">${escapeHtml(s.navn)} (${POS[s.pos] ?? '?'} · selges for ${pris(s.sellPrice)})</option>`)
+        .join(''),
+      '</select></label>',
+      '<label>Inn i laget',
+      '<input type="search" id="planner-search" placeholder="Søk spiller …" autocomplete="off">',
+      '</label></div>',
+      '<ul id="planner-hits" class="planner-hits"></ul>',
+      '<div id="planner-compare"></div>',
+    ].join('');
+    document.getElementById('planner-out').addEventListener('change', (e) => {
+      ut = data.squad.find((s) => s.id === Number(e.target.value)) ?? null;
+      renderCompare();
+    });
+    document.getElementById('planner-search').addEventListener('input', (e) => {
+      renderHits(e.target.value);
+    });
+  }
+
+  function renderHits(q) {
+    const box = document.getElementById('planner-hits');
+    const query = q.trim().toLowerCase();
+    if (query.length < 2) {
+      box.innerHTML = '';
+      return;
+    }
+    box.innerHTML = data.players
+      .filter((p) => p.navn.toLowerCase().includes(query))
+      .slice(0, 8)
+      .map((p) => `<li data-id="${p.id}"><button type="button">${escapeHtml(p.navn)} <span class="dim">${escapeHtml(p.lag ?? '?')} · ${POS[p.pos] ?? '?'} · ${pris(p.pris)}</span></button></li>`)
+      .join('');
+  }
+
+  function statusText(p) {
+    const label = STATUS[p.status] ?? '–';
+    return p.status === 'd' && p.sjanse != null ? `${label} (${p.sjanse} %)` : label;
+  }
+
+  function renderCompare() {
+    const box = document.getElementById('planner-compare');
+    if (!ut || !inn) {
+      box.innerHTML = '';
+      return;
+    }
+    const utSpiller = data.players.find((p) => p.id === ut.id) ?? {};
+    const rad = (label, a, b) => `<tr><th>${label}</th><td class="num">${a}</td><td class="num">${b}</td></tr>`;
+    const regler = plannerRules({ out: ut, inn, bank: data.bank, squad: data.squad });
+    box.innerHTML = [
+      '<div class="table-scroll"><table class="data compare">',
+      `<thead><tr><th></th><th class="num">Ut: ${escapeHtml(ut.navn)}</th><th class="num">Inn: ${escapeHtml(inn.navn)}</th></tr></thead>`,
+      '<tbody>',
+      rad('Pris (£m)', pris(utSpiller.pris), pris(inn.pris)),
+      rad('Salgspris (£m)', pris(ut.sellPrice), '–'),
+      rad('Form', tall(utSpiller.form), tall(inn.form)),
+      rad('Forventet poeng', tall(utSpiller.epNext), tall(inn.epNext)),
+      rad('FDR neste 3', utSpiller.fdr3 == null ? '–' : utSpiller.fdr3.toFixed(1), inn.fdr3 == null ? '–' : inn.fdr3.toFixed(1)),
+      rad('Eid av (%)', tall(utSpiller.eid), tall(inn.eid)),
+      rad('Status', statusText(utSpiller), statusText(inn)),
+      '</tbody></table></div>',
+      '<ul class="rule-check">',
+      regler
+        .map((r) => `<li class="${r.ok === true ? 'ok' : r.ok === false ? 'brudd' : ''}">${r.ok === true ? '✓' : r.ok === false ? '✕' : '?'} ${escapeHtml(r.tekst)}</li>`)
+        .join(''),
+      '</ul>',
+      `<p class="dim">Bank: ${pris(data.bank)} £m · reglene sjekkes endelig ved lagring.</p>`,
+    ].join('');
+    for (const scroll of box.querySelectorAll('.table-scroll')) {
+      initEdgeFades(scroll, 'table-fade');
+    }
+  }
 })();
