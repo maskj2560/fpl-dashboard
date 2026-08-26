@@ -1,8 +1,9 @@
 import { Router } from 'express';
 import config from '../config.js';
-import { assembleTransfersPage } from '../services/transfers.js';
+import { assembleTransfersPage, transferCommentCacheKey } from '../services/transfers.js';
 import { formatSigned } from '../services/format.js';
 import { formatPrice } from '../services/analysis.js';
+import * as ai from '../services/ai.js';
 
 const router = Router();
 
@@ -18,6 +19,8 @@ router.get('/', async (req, res, next) => {
       priceReport: page.priceReport,
       baseline: page.baseline,
       scenarios: page.scenarios,
+      // Kun cachen — genereringen eies av refresh.js (aldri en sidevisning).
+      aiComment: ai.getCached(transferCommentCacheKey()),
       formatSigned,
       formatPrice,
     });

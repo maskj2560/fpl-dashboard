@@ -234,6 +234,7 @@ export const transfers = {
   clubAssets,
   formatSigned: (n) => String(n),
   formatPrice: (n) => (n / 10).toFixed(1),
+  aiComment: { text: "Byttene treffer — **Haaland** inn var rett.", generatedAt: 1 },
   scenarios: [
     {
       id: 'scen-1',
@@ -291,6 +292,7 @@ export const transfersEmpty = {
   priceReport: null,
   baseline: null,
   scenarios: [],
+  aiComment: null,
   analysis: {
     rows: [],
     season: { played: 0, wins: 0, hitRate: null, hitsPaid: 0 },
@@ -309,6 +311,7 @@ export const transfersPending = {
   priceReport: null,
   baseline: null,
   scenarios: [],
+  aiComment: null,
   analysis: {
     rows: [
       { event: 2, chip: null, inn: { id: 10, name: 'Haaland', teamShort: 'MCI', teamCode: 43, points: 0 }, ut: { id: 11, name: 'Watkins', teamShort: 'AVL', teamCode: 7, points: 0 }, diff: 0, penaltyShare: 0, netto: 0, window: null, played: false, pending: true, perGw: [], after5: null },

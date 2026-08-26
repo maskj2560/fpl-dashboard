@@ -8,6 +8,7 @@ import { nextEvent } from './analysis.js';
 import * as ai from './ai.js';
 import { assembleBrief, generateAiBrief, briefCacheKey } from './brief.js';
 import { refreshNewsSummary, NEWS_CACHE_KEY } from './news.js';
+import { generateTransferComment, transferCommentCacheKey } from './transfers.js';
 
 const MIN = 60_000;
 const HOUR = 60 * MIN;
@@ -19,6 +20,9 @@ const HOUR = 60 * MIN;
 const TICK_INTERVAL_MS = 30 * MIN;
 const NEWS_MAX_AGE_MS = 6 * HOUR;
 const BRIEF_MAX_AGE_MS = 24 * HOUR;
+// Overgangskommentaren (v1.5.0): 1x/døgn er nok — analysen endrer seg bare
+// når runder spilles. Etter sesongslutt fryses den (som briefen).
+const TRANSFER_MAX_AGE_MS = 24 * HOUR;
 // Timene før deadline er de eneste der briefen faktisk endrer seg fort
 // (lagnytt, priser, skader). Bredden er Marius' valg: 6 timer.
 const DEADLINE_WINDOW_MS = 6 * HOUR;
@@ -34,12 +38,16 @@ export function refreshDecision({
   nowMs,
   briefGeneratedAt = null,
   newsGeneratedAt = null,
+  transferGeneratedAt = null,
   deadlineTime = null,
   hasUpcoming = false,
 }) {
   return {
     brief: briefDue({ nowMs, briefGeneratedAt, deadlineTime, hasUpcoming }),
     news: newsGeneratedAt == null || nowMs - newsGeneratedAt >= NEWS_MAX_AGE_MS,
+    transferComment:
+      hasUpcoming &&
+      (transferGeneratedAt == null || nowMs - transferGeneratedAt >= TRANSFER_MAX_AGE_MS),
   };
 }
 
@@ -67,6 +75,7 @@ export async function _tick() {
     nowMs: now(),
     briefGeneratedAt: ai.getCached(briefCacheKey({ gameweek: upcoming }))?.generatedAt ?? null,
     newsGeneratedAt: ai.getCached(NEWS_CACHE_KEY)?.generatedAt ?? null,
+    transferGeneratedAt: ai.getCached(transferCommentCacheKey())?.generatedAt ?? null,
     deadlineTime: upcoming?.deadline_time ?? null,
     hasUpcoming: Boolean(upcoming),
   });
@@ -83,6 +92,13 @@ export async function _tick() {
       await refreshNewsSummary();
     } catch (err) {
       console.error('AI-oppfrisking av nyhetene feilet:', err.message);
+    }
+  }
+  if (decision.transferComment) {
+    try {
+      await generateTransferComment();
+    } catch (err) {
+      console.error('AI-oppfrisking av overgangskommentaren feilet:', err.message);
     }
   }
 }

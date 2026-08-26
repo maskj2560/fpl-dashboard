@@ -36,6 +36,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Alternativ-analyse per bytte: detaljraden foreslår de 3 beste kandidatene
   i samme posisjon og prisklasse (pris ved sesongstart) målt i samme vindu,
   og et søkefelt lar deg sjekke en hvilken som helst annen spiller.
+- AI-kommentar til overgangsanalysen («godt bytte, dårlig timing»):
+  genereres maks én gang i døgnet av bakgrunnsoppfriskeren, aldri av en
+  sidevisning, og kun når det finnes spilte bytter. Vises med cyan
+  AI-merke under sesongkortet.
 
 ## [1.4.0] - 2026-09-XX
 

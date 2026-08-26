@@ -44,6 +44,7 @@ const cases = [
   ['transfers', fx.transfers, 'Plan A: Isak inn'],
   ['transfers', fx.transfers, 'I stedet for Haaland'],
   ['transfers', fx.transfers, 'alt-sok'],
+  ['transfers', fx.transfers, 'Kommentar til byttene'],
   ['no-team', {}, 'FPL_TEAM_ID'],
   ['404', {}, '404'],
   ['error', { code: 500, heading: 'Noe gikk galt', message: null }, 'Noe gikk galt'],

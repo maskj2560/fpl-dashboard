@@ -18,6 +18,8 @@ import { byId, resolvedGw } from './analysis.js';
 import { buildPurchases, buildPriceReport } from './pricing.js';
 import { assembleBaseline } from './baseline.js';
 import { listScenarios, buildFtLedger, evaluateScenario } from './scenarios.js';
+import * as ai from './ai.js';
+import { buildTransferCommentPrompt } from './prompts.js';
 
 // Skjemaet for entry/{id}/transfers/ er uverifisert før sesongstart —
 // records uten disse feltene hoppes over og telles som «ukjente».
@@ -390,4 +392,36 @@ export async function assembleTransfersPage({ teamId = config.fplTeamId } = {}) 
   }
 
   return { analysis, priceReport, baseline, scenarios, aiComment: null };
+}
+
+/** Cachenøkkel for AI-kommentaren — deles av refresh.js og ruta. */
+export function transferCommentCacheKey(teamId = config.fplTeamId) {
+  return `transfer-comment:${teamId}`;
+}
+
+/**
+ * Genererer AI-kommentaren til overgangsanalysen. Kalles KUN av
+ * refresh.js-tikket (aldri fra en rute — ruta leser ai.getCached).
+ * Null når det ikke finnes spilte bytter: 0 bytter = 0 kall.
+ * Maks én generering per døgn via minIntervalMs.
+ */
+export async function generateTransferComment({ teamId = config.fplTeamId } = {}) {
+  const analysis = await assembleTransferAnalysis({ teamId });
+  if (analysis.season.played === 0) return null;
+
+  let baseline = null;
+  try {
+    const [bootstrap, history] = await Promise.all([getBootstrap(), getEntryHistory(teamId)]);
+    baseline = await assembleBaseline({ teamId, bootstrap, history, analysis });
+  } catch {
+    baseline = null; // kommentaren klarer seg uten baseline-differansen
+  }
+
+  return ai.generate({
+    cacheKey: transferCommentCacheKey(teamId),
+    minIntervalMs: 24 * 60 * 60_000,
+    system: 'Du er en norsk Fantasy Premier League-ekspert. Vurder overganger presist, kort og ærlig.',
+    prompt: buildTransferCommentPrompt(analysis, { baseline }),
+    maxTokens: 1500,
+  });
 }

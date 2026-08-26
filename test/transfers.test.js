@@ -7,8 +7,11 @@ import {
   buildAlternatives,
   candidatePoints,
   parseAltQuery,
+  generateTransferComment,
+  transferCommentCacheKey,
 } from '../src/services/transfers.js';
 import { clear } from '../src/services/cache.js';
+import * as ai from '../src/services/ai.js';
 
 // GW1–2 ferdige, GW3 pågår → maxGw 3.
 const bootstrap = {
@@ -459,6 +462,51 @@ describe('assembleTransferAnalysis', () => {
 
     assert.equal(page.analysis.rows[0].diff, 10);
     assert.equal(page.priceReport, null);
+  });
+
+  test('generateTransferComment: null uten spilte bytter — AI kalles aldri', async () => {
+    const aiCalls = [];
+    ai._setClient({ messages: { create: async (args) => { aiCalls.push(args); return { model: 'fake', usage: {}, content: [{ type: 'text', text: 'x' }] }; } } });
+    globalThis.fetch = async (url) => {
+      if (/transfers\/$/.test(String(url))) return { ok: true, status: 200, json: async () => [] };
+      if (/history\/$/.test(String(url))) return { ok: true, status: 200, json: async () => history };
+      return { ok: true, status: 200, json: async () => bootstrap };
+    };
+    try {
+      const result = await generateTransferComment({ teamId: 42 });
+      assert.equal(result, null);
+      assert.equal(aiCalls.length, 0);
+    } finally {
+      ai._setClient(null);
+      ai._reset();
+    }
+  });
+
+  test('generateTransferComment: genererer fra analysen og cacher på nøkkelen', async () => {
+    const aiCalls = [];
+    ai._setClient({ messages: { create: async (args) => { aiCalls.push(args); return { model: 'fake', usage: {}, content: [{ type: 'text', text: '**Godt** bytte.' }] }; } } });
+    const routes = [
+      [/bootstrap-static\/$/, bootstrap],
+      [/entry\/42\/transfers\/$/, [{ ...t(11, 10, 2), element_in_cost: 140, element_out_cost: 88 }]],
+      [/entry\/42\/history\/$/, history],
+      [/event\/2\/live\/$/, liveFor({ 10: 9, 11: 1 })],
+      [/event\/3\/live\/$/, liveFor({ 10: 2, 11: 0 })],
+    ];
+    globalThis.fetch = async (url) => {
+      const hit = routes.find(([re]) => re.test(String(url)));
+      if (!hit) return { ok: false, status: 404, json: async () => ({}) }; // picks: baseline feiler mykt
+      return { ok: true, status: 200, json: async () => hit[1] };
+    };
+    try {
+      const result = await generateTransferComment({ teamId: 42 });
+      assert.equal(result.text, '**Godt** bytte.');
+      assert.equal(ai.getCached(transferCommentCacheKey(42))?.text, '**Godt** bytte.');
+      assert.equal(aiCalls.length, 1);
+      assert.match(aiCalls[0].messages[0].content, /Watkins ut, Haaland inn/);
+    } finally {
+      ai._setClient(null);
+      ai._reset();
+    }
   });
 
   test('uten transfers hentes ingen live-runder', async () => {

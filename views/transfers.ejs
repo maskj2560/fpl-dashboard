@@ -25,6 +25,24 @@
     <div class="stat"><span class="stat-val"><%= analysis.worstIndex !== null ? analysis.rows[analysis.worstIndex].inn.name : '–' %></span><span class="stat-lbl">Verste bytte</span></div>
   </div>
 
+  <% if (aiComment && aiComment.text) { %>
+    <%
+      // AI-tekst er utrygt innhold: escape først, gjør **fet** om til <strong>.
+      function escAi(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+      function boldAi(text) {
+        return escAi(text).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      }
+    %>
+    <section class="card card-wide card-ai">
+      <h2><span class="h2-title"><span class="ai-badge">AI</span> Kommentar til byttene</span></h2>
+      <% for (const line of aiComment.text.split('\n').filter((l) => l.trim())) { %>
+        <p><%- boldAi(line) %></p>
+      <% } %>
+    </section>
+  <% } %>
+
   <section class="card card-wide">
     <h2>Bytte for bytte</h2>
     <% if (analysis.totals.skipped > 0) { %>

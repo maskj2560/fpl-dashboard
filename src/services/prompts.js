@@ -50,6 +50,57 @@ export function buildBriefPrompt(brief) {
 const CRITERION_LABELS = { form: 'form', ep_next: 'forventet poeng (FPL)' };
 
 /**
+ * AI-kommentaren til overgangsanalysen (/overganger). Kompakt grunnlag:
+ * sesongtall, én linje per SPILT bytte (pending utelates — modellen skal
+ * aldri spå), beste/verste og «laget uten bytter»-differansen når den
+ * finnes. Samme regelfilosofi som briefen: kun tall fra grunnlaget.
+ */
+export function buildTransferCommentPrompt(analysis, { baseline = null } = {}) {
+  const played = analysis.rows.filter((r) => r.played);
+  const parts = [
+    'Kommenter overgangene mine i Fantasy Premier League denne sesongen.',
+    '',
+    `Sesongtall: ${analysis.season.played} spilte bytter, ${analysis.season.wins} i pluss` +
+      (analysis.season.hitRate !== null
+        ? ` (treffprosent ${Math.round(analysis.season.hitRate * 100)} %)`
+        : '') +
+      `, netto ${analysis.totals.netto} poeng inkludert ${analysis.totals.cost} i trekk.`,
+    '',
+    'Byttene (rå poengdiff inn mot ut i byttets vindu, netto = diff minus straffandel):',
+    ...played.map((r) => {
+      const vindu =
+        r.window.from === r.window.to
+          ? `R${r.window.from}`
+          : `R${r.window.from}–R${r.window.to}`;
+      const milepael = r.after5 ? `, etter ${r.after5.gws} runder: ${r.after5.diff}` : '';
+      const chip = r.chip ? `, chip: ${r.chip}` : '';
+      return `- R${r.event}: ${r.ut.name} ut, ${r.inn.name} inn (${vindu}): diff ${r.diff}, netto ${r.netto}${milepael}${chip}`;
+    }),
+  ];
+  if (analysis.bestIndex !== null && analysis.worstIndex !== null) {
+    parts.push(
+      '',
+      `Beste bytte: ${analysis.rows[analysis.bestIndex].inn.name} inn. Verste: ${analysis.rows[analysis.worstIndex].inn.name} inn.`,
+    );
+  }
+  if (baseline && baseline.diff !== null) {
+    parts.push(
+      '',
+      `Laget uten bytter: ${baseline.simTotal} poeng simulert mot ${baseline.actualTotal} faktisk — byttene har totalt ${baseline.diff >= 0 ? 'gitt' : 'kostet'} ${Math.abs(baseline.diff)} poeng.`,
+    );
+  }
+  parts.push(
+    '',
+    'REGLER:',
+    '- Bruk kun tall som står i grunnlaget over. Finn aldri på tall.',
+    '- Vurder hvert bytte kort og ærlig: uttelling og timing («godt bytte», «dårlig timing», «for tidlig å dømme»).',
+    '- Maks ~120 ord, norsk, spillernavn i **fet**. Ingen innledning og ingen overskrifter.',
+    '- Skriv «runde», aldri «gameweek». Ordet «deadline» brukes som det er.',
+  );
+  return parts.join('\n');
+}
+
+/**
  * Rådgiver-prompten (/lag → «Spør AI om råd»).
  *
  * Fullt signalsett per spiller (form, ep_next, minutter, totalpoeng,

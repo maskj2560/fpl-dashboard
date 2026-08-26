@@ -165,6 +165,21 @@ test('startAiRefresher varmer begge tekstene med en gang', async () => {
   assert.equal(aiCalls.length, 2, 'ett tikk kjøres ved oppstart, ikke først etter 30 min');
 });
 
+test('overgangskommentaren friskes opp én gang i døgnet, aldri etter sesongslutt', () => {
+  const base = { nowMs: NOW, hasUpcoming: true, briefGeneratedAt: NOW, newsGeneratedAt: NOW };
+  assert.equal(refreshDecision({ ...base, transferGeneratedAt: NOW - 23 * HOUR }).transferComment, false);
+  assert.equal(refreshDecision({ ...base, transferGeneratedAt: NOW - 24 * HOUR }).transferComment, true);
+  assert.equal(refreshDecision({ ...base }).transferComment, true, 'kald cache etter deploy');
+  assert.equal(refreshDecision({ nowMs: NOW, hasUpcoming: false }).transferComment, false);
+});
+
+test('_tick overlever at overgangskommentaren feiler', async () => {
+  // Stubben mangler transfers-endepunktet — kommentar-forsøket feiler stille,
+  // og brief + nyheter genereres som før.
+  await _tick();
+  assert.equal(aiCalls.length, 2);
+});
+
 test('_tick kaster ikke når FPL-kallet feiler', async () => {
   globalThis.fetch = async () => {
     throw new Error('nede');
