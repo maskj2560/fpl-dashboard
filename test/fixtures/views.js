@@ -235,9 +235,10 @@ export const transfers = {
   formatSigned: (n) => String(n),
   analysis: {
     rows: [
-      { event: 2, chip: null, inn: { id: 10, name: 'Haaland', teamShort: 'MCI', teamCode: 43, points: 11 }, ut: { id: 11, name: 'Watkins', teamShort: 'AVL', teamCode: 7, points: 1 }, diff: 10, penaltyShare: 4, netto: 6, window: { from: 2, to: 3 }, played: true, pending: false },
-      { event: 3, chip: 'freehit', inn: { id: 12, name: 'Salah', teamShort: 'LIV', teamCode: 14, points: 6 }, ut: { id: 14, name: 'Isak', teamShort: 'NEW', teamCode: 4, points: 3 }, diff: 3, penaltyShare: 0, netto: 3, window: { from: 3, to: 3 }, played: true, pending: false },
+      { event: 2, chip: null, inn: { id: 10, name: 'Haaland', teamShort: 'MCI', teamCode: 43, points: 11 }, ut: { id: 11, name: 'Watkins', teamShort: 'AVL', teamCode: 7, points: 1 }, diff: 10, penaltyShare: 4, netto: 6, window: { from: 2, to: 3 }, played: true, pending: false, perGw: [{ gw: 2, inn: 9, ut: 1, diff: 8, cum: 8 }, { gw: 3, inn: 2, ut: 0, diff: 2, cum: 10 }], after5: { diff: 10, gws: 2, complete: false } },
+      { event: 3, chip: 'freehit', inn: { id: 12, name: 'Salah', teamShort: 'LIV', teamCode: 14, points: 6 }, ut: { id: 14, name: 'Isak', teamShort: 'NEW', teamCode: 4, points: 3 }, diff: 3, penaltyShare: 0, netto: 3, window: { from: 3, to: 3 }, played: true, pending: false, perGw: [{ gw: 3, inn: 6, ut: 3, diff: 3, cum: 3 }], after5: { diff: 3, gws: 1, complete: true } },
     ],
+    season: { played: 2, wins: 2, hitRate: 1, hitsPaid: 1 },
     totals: { diff: 13, cost: 4, netto: 9, count: 2, skipped: 0 },
     bestIndex: 0,
     worstIndex: 1,
@@ -251,6 +252,7 @@ export const transfersEmpty = {
   formatSigned: (n) => String(n),
   analysis: {
     rows: [],
+    season: { played: 0, wins: 0, hitRate: null, hitsPaid: 0 },
     totals: { diff: 0, cost: 0, netto: 0, count: 0, skipped: 0 },
     bestIndex: null,
     worstIndex: null,
@@ -264,8 +266,9 @@ export const transfersPending = {
   formatSigned: (n) => String(n),
   analysis: {
     rows: [
-      { event: 2, chip: null, inn: { id: 10, name: 'Haaland', teamShort: 'MCI', teamCode: 43, points: 0 }, ut: { id: 11, name: 'Watkins', teamShort: 'AVL', teamCode: 7, points: 0 }, diff: 0, penaltyShare: 0, netto: 0, window: null, played: false, pending: true },
+      { event: 2, chip: null, inn: { id: 10, name: 'Haaland', teamShort: 'MCI', teamCode: 43, points: 0 }, ut: { id: 11, name: 'Watkins', teamShort: 'AVL', teamCode: 7, points: 0 }, diff: 0, penaltyShare: 0, netto: 0, window: null, played: false, pending: true, perGw: [], after5: null },
     ],
+    season: { played: 0, wins: 0, hitRate: null, hitsPaid: 0 },
     totals: { diff: 0, cost: 0, netto: 0, count: 1, skipped: 0 },
     bestIndex: null,
     worstIndex: null,

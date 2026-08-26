@@ -12,6 +12,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - «Overganger»-analysen bryter hvert bytte ned per runde (poeng inn/ut
   med løpende sum), gir en milepælsdom «etter 5 runder», og teller
   sesongtall: spilte bytter, treffprosent og antall -4-trekk betalt.
+- «Overganger»-siden viser treffprosent og antall trekk i sesongkortet,
+  og hver rad i byttetabellen kan utvides til per-runde-detaljene med
+  milepælsdommen.
 
 ## [1.4.0] - 2026-09-XX
 

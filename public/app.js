@@ -457,3 +457,27 @@ function initEdgeFades(el, prefix) {
     window.location.href = row.dataset.href;
   });
 })();
+
+// Modul 7: Utvidbare rader (/overganger) — per-runde-detaljene for et bytte.
+// Kantfaden kan først initieres når raden faktisk vises (skjulte bokser har
+// ingen bredde å måle).
+(function () {
+  'use strict';
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.btn-expand');
+    if (!btn) return;
+    const detail = btn.closest('tr')?.nextElementSibling;
+    if (!detail || !detail.classList.contains('row-detail')) return;
+    const show = detail.hidden;
+    detail.hidden = !show;
+    btn.setAttribute('aria-expanded', String(show));
+    const icon = btn.querySelector('[aria-hidden]');
+    if (icon) icon.textContent = show ? '−' : '+';
+    if (show && !detail.dataset.fadeInit) {
+      detail.dataset.fadeInit = '1';
+      for (const box of detail.querySelectorAll('.table-scroll')) {
+        initEdgeFades(box, 'table-fade');
+      }
+    }
+  });
+})();

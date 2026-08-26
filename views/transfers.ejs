@@ -19,7 +19,8 @@
   <div class="stat-strip">
     <div class="stat"><span class="stat-val <%= analysis.totals.netto > 0 ? 'accent' : (analysis.totals.netto < 0 ? 'negative' : '') %>"><%= played.length ? formatSigned(analysis.totals.netto) : '–' %></span><span class="stat-lbl">Netto totalt</span></div>
     <div class="stat"><span class="stat-val"><%= analysis.totals.count %></span><span class="stat-lbl">Overganger</span></div>
-    <div class="stat"><span class="stat-val"><%= analysis.totals.cost > 0 ? formatSigned(-analysis.totals.cost) : '0' %></span><span class="stat-lbl">Poengstraff</span></div>
+    <div class="stat"><span class="stat-val"><%= analysis.season && analysis.season.hitRate !== null ? Math.round(analysis.season.hitRate * 100) + ' %' : '–' %></span><span class="stat-lbl">Treffprosent</span></div>
+    <div class="stat"><span class="stat-val"><%= analysis.totals.cost > 0 ? formatSigned(-analysis.totals.cost) : '0' %></span><span class="stat-lbl">Poengstraff<%= analysis.season && analysis.season.hitsPaid > 0 ? ' · ' + analysis.season.hitsPaid + ' trekk' : '' %></span></div>
     <div class="stat"><span class="stat-val"><%= analysis.bestIndex !== null ? analysis.rows[analysis.bestIndex].inn.name : '–' %></span><span class="stat-lbl">Beste bytte</span></div>
     <div class="stat"><span class="stat-val"><%= analysis.worstIndex !== null ? analysis.rows[analysis.worstIndex].inn.name : '–' %></span><span class="stat-lbl">Verste bytte</span></div>
   </div>
@@ -32,11 +33,12 @@
     <div class="table-scroll">
       <table class="data">
         <thead>
-          <tr><th>Runde</th><th>Inn</th><th>Ut</th><th class="num">Poengdiff</th><th class="num">Straff</th><th class="num">Netto</th><th>Periode</th></tr>
+          <tr><th></th><th>Runde</th><th>Inn</th><th>Ut</th><th class="num">Poengdiff</th><th class="num">Straff</th><th class="num">Netto</th><th>Periode</th></tr>
         </thead>
         <tbody>
-          <% for (let i = analysis.rows.length - 1; i >= 0; i--) { const r = analysis.rows[i]; %>
+          <% for (let i = analysis.rows.length - 1; i >= 0; i--) { const r = analysis.rows[i]; const detaljer = r.perGw && r.perGw.length > 0; %>
             <tr>
+              <td><% if (detaljer) { %><button type="button" class="btn-expand" aria-expanded="false" aria-label="Vis rundene for byttet"><span aria-hidden="true">+</span></button><% } %></td>
               <td><%= r.event %><% if (r.chip === 'wildcard') { %> <span class="status">Wildcard</span><% } else if (r.chip === 'freehit') { %> <span class="status">Free Hit</span><% } %></td>
               <td><%- include('partials/club-badge', { team: { short_name: r.inn.teamShort, code: r.inn.teamCode, name: r.inn.teamShort }, showName: false }) %> <%= r.inn.name %><% if (r.played) { %> <span class="dim"><%= r.inn.points %> p</span><% } %></td>
               <td><%- include('partials/club-badge', { team: { short_name: r.ut.teamShort, code: r.ut.teamCode, name: r.ut.teamShort }, showName: false }) %> <%= r.ut.name %><% if (r.played) { %> <span class="dim"><%= r.ut.points %> p</span><% } %></td>
@@ -49,6 +51,36 @@
               </td>
               <td class="dim"><% if (r.pending) { %>Venter på runde <%= r.event %><% } else if (!r.played) { %>Angret før deadline<% } else if (r.window.from === r.window.to) { %>R<%= r.window.from %><% } else { %>R<%= r.window.from %>–R<%= r.window.to %><% } %></td>
             </tr>
+            <% if (detaljer) { %>
+              <tr class="row-detail" hidden>
+                <td colspan="8">
+                  <% if (r.after5) { %>
+                    <p class="milestone"><%
+                      if (r.after5.complete && r.after5.gws === 5) { %>Etter 5 runder: <%= formatSigned(r.after5.diff) %><%
+                      } else if (r.after5.complete) { %>Byttet varte <%= r.after5.gws %> runde<%= r.after5.gws === 1 ? '' : 'r' %>: <%= formatSigned(r.after5.diff) %><%
+                      } else { %>Hittil (<%= r.after5.gws %> av 5 runder): <%= formatSigned(r.after5.diff) %><% } %></p>
+                  <% } %>
+                  <div class="table-scroll">
+                    <table class="data">
+                      <thead>
+                        <tr><th>Runde</th><th class="num"><%= r.inn.name %></th><th class="num"><%= r.ut.name %></th><th class="num">Diff</th><th class="num">Sum</th></tr>
+                      </thead>
+                      <tbody>
+                        <% for (const g of r.perGw) { %>
+                          <tr>
+                            <td>R<%= g.gw %></td>
+                            <td class="num"><%= g.inn %></td>
+                            <td class="num"><%= g.ut %></td>
+                            <td class="num <%= g.diff > 0 ? 'accent' : (g.diff < 0 ? 'negative' : '') %>"><%= formatSigned(g.diff) %></td>
+                            <td class="num"><%= formatSigned(g.cum) %></td>
+                          </tr>
+                        <% } %>
+                      </tbody>
+                    </table>
+                  </div>
+                </td>
+              </tr>
+            <% } %>
           <% } %>
         </tbody>
       </table>

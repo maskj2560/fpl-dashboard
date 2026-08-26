@@ -701,6 +701,36 @@ table.data tbody tr:hover {
   color: var(--negative);
 }
 
+/* Utvidbare rader på /overganger: knapp + skjult detaljrad per bytte */
+.btn-expand {
+  width: 1.7rem;
+  height: 1.7rem;
+  padding: 0;
+  line-height: 1;
+  font-size: 1rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.btn-expand[aria-expanded='true'] {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+
+.row-detail > td {
+  background: var(--surface-2);
+  padding: 0.6rem 0.9rem;
+}
+
+.milestone {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
 .status-i,
 .status-s,
 .status-u,

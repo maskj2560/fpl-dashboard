@@ -35,6 +35,8 @@ const cases = [
   ['transfers', fx.transfers, 'rå spillerpoeng'],
   ['transfers', fx.transfersEmpty, 'Ingen overganger registrert ennå'],
   ['transfers', fx.transfersPending, 'Venter på runde 2'],
+  ['transfers', fx.transfers, 'Treffprosent'],
+  ['transfers', fx.transfers, 'row-detail'],
   ['no-team', {}, 'FPL_TEAM_ID'],
   ['404', {}, '404'],
   ['error', { code: 500, heading: 'Noe gikk galt', message: null }, 'Noe gikk galt'],
@@ -379,4 +381,25 @@ test('transfers.ejs merker beste og verste bytte som piller', async () => {
   const html = await renderView('transfers', fx.transfers);
   assert.match(html, /status status-best">Beste</);
   assert.match(html, /status status-worst">Verste</);
+});
+
+test('transfers.ejs: detaljraden viser per-runde-tabell og milepæl', async () => {
+  const html = await renderView('transfers', fx.transfers);
+  assert.match(html, /btn-expand" aria-expanded="false"/);
+  assert.match(html, /row-detail" hidden/);
+  assert.match(html, /Hittil \(2 av 5 runder\): 10/);
+  assert.match(html, /Byttet varte 1 runde: 3/);
+  assert.match(html, /100 %/); // treffprosent: 2 av 2 bytter i pluss
+
+  // Komplett 5-rundersvindu får den endelige dommen.
+  const rows = fx.transfers.analysis.rows;
+  const komplett = {
+    ...fx.transfers,
+    analysis: {
+      ...fx.transfers.analysis,
+      rows: [{ ...rows[0], after5: { diff: 12, gws: 5, complete: true } }, rows[1]],
+    },
+  };
+  const html2 = await renderView('transfers', komplett);
+  assert.match(html2, /Etter 5 runder: 12/);
 });
