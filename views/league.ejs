@@ -54,6 +54,25 @@
   <% } %>
 </div>
 
+<% if (report && report.text) { %>
+  <%
+    // AI-tekst er utrygt innhold: escape først, gjør **fet** om til <strong>.
+    function escAi(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+    function boldAi(text) {
+      return escAi(text).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    }
+  %>
+  <section class="card card-wide <%= report.source === 'ai' ? 'card-ai' : '' %>">
+    <h2><span class="h2-title"><% if (report.source === 'ai') { %><span class="ai-badge">AI</span> <% } %>Rundens rapport</span> <span class="dim">Runde <%= report.lastReportedEvent %></span></h2>
+    <% for (const line of report.text.split('\n').filter((l) => l.trim())) { %>
+      <p><%- boldAi(line) %></p>
+    <% } %>
+    <% if (report.generatedAt) { %><p class="hint">Skrevet <%= formatDateTime(report.generatedAt) %></p><% } %>
+  </section>
+<% } %>
+
 <% /* Radar-spillere har {name, teamCode, teamShort, eventPoints} — badge bygges inline. */ %>
 <% const radarBadge = (p) => ({ team: { short_name: p.teamShort, code: p.teamCode, name: p.teamShort }, showName: false }); %>
 

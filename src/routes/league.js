@@ -2,9 +2,10 @@ import { Router } from 'express';
 import config from '../config.js';
 import { getBootstrap, getLeagueStandings } from '../services/fplClient.js';
 import { byId } from '../services/analysis.js';
-import { formatNumber, formatSigned } from '../services/format.js';
+import { formatNumber, formatSigned, formatDateTime } from '../services/format.js';
 import { resolveLeagueIds } from '../services/leagues.js';
 import { assembleLeagueInsights } from '../services/league-insights.js';
+import { getLeagueReport } from '../services/notify.js';
 
 const router = Router();
 
@@ -28,12 +29,13 @@ router.get('/', async (req, res, next) => {
       title: 'Miniligaer',
       leagues,
       insights,
-      report: null,
+      report: getLeagueReport(),
       myEntry: config.fplTeamId,
       rivalEntry: insights?.rivalEntry ?? null,
       teamsById: byId(bootstrap.teams),
       formatNumber,
       formatSigned,
+      formatDateTime,
     });
   } catch (err) {
     next(err);

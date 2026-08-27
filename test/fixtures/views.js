@@ -118,14 +118,19 @@ const radarPlayer = (id, name, eventPoints) => ({
 
 export const league = {
   teamsById, clubAssets,
-  formatNumber, formatSigned,
+  formatNumber, formatSigned, formatDateTime,
   myEntry: 123,
   rivalEntry: 456,
   leagues: [{
     league: { id: 999, name: 'Kompisligaen' },
     standings: { results: leagueResults },
   }],
-  report: null,
+  report: {
+    lastReportedEvent: 2,
+    text: 'Rundens vinner ble **Rival FC** med 55 poeng.\n\nSelv holdt du unna på topp.',
+    generatedAt: '2026-08-27T10:00:00Z',
+    source: 'ai',
+  },
   insights: {
     gw: 2,
     leagueName: 'Kompisligaen',
@@ -187,10 +192,21 @@ export const leagueCaptainsCapped = {
   },
 };
 
+// Rapporten uten AI-nøkkel: datafallback skal ikke bære AI-merket.
+export const leagueDataReport = {
+  ...league,
+  report: {
+    lastReportedEvent: 2,
+    text: 'Rundens vinner: **Rival FC** med 55 poeng.',
+    generatedAt: '2026-08-27T10:00:00Z',
+    source: 'data',
+  },
+};
+
 // Ingen ligaer funnet — ingen innsikt å vise.
 export const leagueEmpty = {
   teamsById, clubAssets,
-  formatNumber, formatSigned,
+  formatNumber, formatSigned, formatDateTime,
   myEntry: 123,
   rivalEntry: null,
   leagues: [],
@@ -201,7 +217,7 @@ export const leagueEmpty = {
 // P1-2: ligaen finnes, men tabellen er tom fram til første runde er spilt.
 export const leagueNoRows = {
   teamsById, clubAssets,
-  formatNumber, formatSigned,
+  formatNumber, formatSigned, formatDateTime,
   myEntry: 123,
   rivalEntry: null,
   leagues: [{ league: { id: 1, name: 'Var Har Skylda' }, standings: { results: [] } }],

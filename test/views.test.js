@@ -32,6 +32,8 @@ const cases = [
   ['league', fx.leagueCaptainsCapped, 'siste 10 ferdige rundene'],
   ['league', fx.league, 'Sesongutvikling'],
   ['league', fx.league, 'league-graph'],
+  ['league', fx.league, 'Rundens rapport'],
+  ['league', fx.league, '<strong>Rival FC</strong>'],
   ['brief', fx.brief, 'Rundebrief'],
   ['brief', fx.briefEmpty, 'Rundebrief'],
   ['live', fx.live, 'live-root'],
@@ -346,6 +348,12 @@ test('league.ejs viser retningsmarkører med skjermlesertekst', async () => {
 test('league.ejs viser nøytral markør uten historikk', async () => {
   const html = await renderView('league', fx.league);
   assert.match(html, /class="rank-same" aria-label="uendret plassering">–/);
+});
+
+test('league.ejs viser ikke ai-badge for datarapport', async () => {
+  const html = await renderView('league', fx.leagueDataReport);
+  assert.ok(html.includes('Rundens rapport'), 'rapporten skal vises');
+  assert.ok(!html.includes('ai-badge'), 'datafallback skal ikke bære AI-merket');
 });
 
 test('league.ejs uten grafdata utelater league-graph', async () => {
