@@ -147,7 +147,31 @@ export const league = {
       },
     },
     graph: null,
-    captainLeague: null,
+    captainLeague: {
+      gws: [1, 2],
+      lastGw: 2,
+      depth: 10,
+      capped: false,
+      rows: [
+        { entry: 123, entryName: 'Marius XI', last: { name: 'Haaland', teamCode: 3, teamShort: 'ARS', points: 12, optimal: 12, lost: 0, tc: false }, sum: { points: 20, lost: 2, rounds: 2 } },
+        { entry: 456, entryName: 'Rival FC', last: { name: 'Palmer', teamCode: 3, teamShort: 'ARS', points: 9, optimal: 12, lost: 3, tc: true }, sum: { points: 15, lost: 6, rounds: 2 } },
+        { entry: 789, entryName: 'Nykommer FC', last: null, sum: { points: 5, lost: 0, rounds: 1 } },
+      ],
+    },
+  },
+};
+
+// Kaptein-ligaen når dybdetaket har kuttet eldre runder.
+export const leagueCaptainsCapped = {
+  ...league,
+  insights: {
+    ...league.insights,
+    captainLeague: {
+      ...league.insights.captainLeague,
+      gws: [3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      lastGw: 12,
+      capped: true,
+    },
   },
 };
 

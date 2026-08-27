@@ -117,3 +117,28 @@
     <% } %>
   </section>
 <% } %>
+
+<% if (insights && insights.captainLeague) { const cl = insights.captainLeague; %>
+  <section class="card card-wide">
+    <h2>Kaptein-liga <span class="dim">Runde <%= cl.lastGw %></span></h2>
+    <div class="table-scroll">
+      <table class="data">
+        <thead><tr><th>Manager</th><th>Kaptein</th><th class="num">Poeng</th><th class="num">Tapt mot optimal</th><th class="num">Sum poeng</th><th class="num">Sum tapt</th></tr></thead>
+        <tbody>
+          <% for (const r of cl.rows) { %>
+            <tr class="<%= r.entry === myEntry ? 'row-me' : '' %>">
+              <td><%= r.entryName %></td>
+              <td><% if (r.last) { %><%- include('partials/club-badge', radarBadge(r.last)) %> <%= r.last.name %><% if (r.last.tc) { %> <span class="status">TC</span><% } %><% } else { %><span class="dim">–</span><% } %></td>
+              <td class="num"><%= r.last ? r.last.points : '–' %></td>
+              <td class="num <%= r.last && r.last.lost > 0 ? 'negative' : '' %>"><%= r.last ? (r.last.lost > 0 ? formatSigned(-r.last.lost) : '0') : '–' %></td>
+              <td class="num"><strong><%= r.sum.points %></strong></td>
+              <td class="num"><%= r.sum.lost > 0 ? formatSigned(-r.sum.lost) : '0' %></td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+    <p class="dim"><%= cl.capped ? `Sum over de siste ${cl.depth} ferdige rundene.` : 'Sum over hele sesongen.' %>
+    Tapt mot optimal: beste spiller i start-XI minus kapteinen, i rå spillerpoeng.</p>
+  </section>
+<% } %>
