@@ -3,7 +3,7 @@
 > Enkel oversikt for Marius — oppdateres når noe blir ferdig eller planlagt.
 > (Tekniske detaljer bor i ROADMAP.md; dette er kortversjonen.)
 
-**Sist oppdatert:** 26. august 2026
+**Sist oppdatert:** 27. august 2026
 
 ## Dette har du nå (v1.3.7, sluppet 26. august)
 
@@ -169,6 +169,17 @@ er «porter» — de skjer når datoen eller du er klar, uten å stoppe utviklin
   ville scoret urørt hele sesongen; prisgevinst per spiller; og en
   AI-kommentar til byttene dine én gang i døgnet. Du kan teste alt lokalt
   når du vil — ute i drift etter måleuka.
+- **Så: fire nye pakker (bestilt av deg 27. august).** Du valgte 16 nye
+  funksjoner, og alle valgene er tatt: først liga-pakka (rival-radar, graf
+  over hele miniligaen sesongen gjennom, hvem i ligaen kapteinet hva, og
+  en rapport til Discord etter hver runde som skåler for vinneren og erter
+  taperen), så en ny «Innsikt»-side (poeng du la igjen på benken,
+  kapteinsfasit, flaks-barometer, rundens lag mot ditt), så spiller-pakka
+  (spillerkort ved klikk på navn, sammenlign spillere, differensial-finner,
+  hvem tar straffene), og til slutt planleggingspakka (beste chip-vindu,
+  automatisk sjekk av laget ditt 3 timer før deadline, kalender-abonnement
+  med deadlines og kampene dine). Bygges pakke for pakke etter måleuka.
+  Koden ligger trygt på GitHub underveis (egen staging-gren fra 27. august).
 
 ## Ting bare du kan gjøre
 
@@ -194,6 +205,10 @@ i chatten):
 
 ## Idéer på vent (ikke planlagt, sniker ikke i køen)
 
-- AI som kommenterer overgangsanalysen din («godt bytte, dårlig timing …»)
+- ~~AI som kommenterer overgangsanalysen din~~ — kommer i «Overganger»-siden
 - Varsel når spillerprisene endrer seg
 - E-postvarsling som alternativ til Discord
+- Live bonuskamp (topp 3 bonuskandidater per kamp mens de spilles)
+- «FPL-karrieren din»: tidligere sesonger med rekorder
+- Merkedager/badges («beste runde noensinne», «3 grønne piler på rad»)
+- Appen som egen app på mobilen (PWA)

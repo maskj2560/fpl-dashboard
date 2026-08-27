@@ -1269,3 +1269,13 @@ Etter GW2, når første ekte transfer finnes (sjekkliste i planfilen):
   tatt med Playwright og committet. Volum-rapporten kom (Claude in
   Chrome, navngitt volum) → push: v1.3.7 + docs ut 26. aug, prod
   verifisert utenfra (footer, /health, uendret asset-hash).
+
+## Roterte lærdommer (fra HANDOVER 27. aug 2026, 200-linjerstaket)
+
+- **Sjekk at fila ikke finnes før du «oppretter» den:** planen sa
+  «Create `test/format.test.js`», men fila fantes med 3 tester fra
+  v1.2.0. Write overskrev dem stille, og det ble bare synlig fordi
+  testtallet ble 302 i stedet for 305. Gjenopprettet med `git checkout`.
+- **En CSS-overstyring må stå ETTER regelen den overstyrer** — en medieblokk
+  lenger oppe har lik spesifisitet og taper cascaden. `.table-scroll--pinned`
+  lå i ≤640-blokka over basisregelen og hadde null effekt (økt 34).

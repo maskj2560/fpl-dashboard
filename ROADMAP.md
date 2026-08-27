@@ -33,6 +33,10 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | **v1.3.8** | Genitiv-fiks i nyhetsfilteret | 4 | **kode klar på branch 26. aug** — merge/deploy etter P4 |
 | **v1.4.0** | Alderstak på stale data + `dataAlder` i payload | 4 | **kode klar på branch 26. aug** — merge/deploy etter P4 |
 | **v1.5.0** | «Overganger» total: planlegger, scenarier, analyse, AI-kommentar | 4 | **kode klar på branch 26. aug** — merge/deploy etter P4, etter v1.3.8/v1.4.0 |
+| **v1.6.0** | «Liga-pakka»: rival-radar, ligagraf, kaptein-liga, roast-rapport | 5 | P4-mergen (v1.3.8–v1.5.0 først) |
+| **v1.7.0** | «/innsikt»: benkesløsing, kapteinsfasit, flaksbarometer, rundens XI | 5 | v1.6.0 |
+| **v1.8.0** | «Spiller-pakka»: spillerkort, duell, differensialer, straffer | 5 | v1.7.0 |
+| **v1.9.0** | «Planleggingspakka»: chip-planlegger, deadline-sjekk, kalender-feed | 5 | v1.8.0 |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
 Kalenderlogikk: utviklingssporet (v1.3.0 → v1.3.1+) går uavbrutt;
@@ -110,6 +114,17 @@ stedet for den AI-kostende promptendringen (droppet). Rekkefølge:
       454/454, røyktest grønn) — merge + tag + push etter P4,
       etter v1.3.8 og v1.4.0.
 
+### 5. Idépakken v1.6.0–v1.9.0 (besluttet 27. aug)
+
+- **Hva:** 16 nye funksjoner valgt av Marius, alle nøkkelvalg avgjort i
+  fire spørsmålsrunder. Fire versjoner: liga-pakka → /innsikt →
+  spiller-pakka → planleggingspakka.
+- **Eier detaljene:** `docs/plan-idepakken-v16-v19.md` (beslutningsfasit).
+  Hver versjon får egen detaljplan-økt (T-tasks, TDD) før bygging.
+- **Blokkert av:** P4-mergen — v1.3.8/v1.4.0/v1.5.0 skal inn i main
+  først, så ny branch per versjon fra main (ingen 4. etasje på stabelen).
+- **Størrelse:** stor (fire releaser).
+
 ## Dokumentkart — hvor alt bor
 
 Én eier per fil; alt uten leserverdi for en ny økt ligger i `docs/arkiv/`
@@ -128,12 +143,15 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 
 ## Senere / idéer (ikke planlagt)
 
-- AI-kommentar til overgangsanalysen (bevisst utelatt fra v1: tallene taler
-  for seg, koster per generering — ettermonteres via ai.js ved behov)
-- Prisendrings-varsler
+- Prisendrings-varsler (daglig prissnapshot, Discord ved endring i troppen)
 - E-postvarsling som alternativ til Discord
 - Spillerbilder (FPLs `p{code}.png`, 609 × ~10 KB) — bevisst utelatt fra
   v1.3-overhalingen (beslutning F-g i planen)
+- BPS-race live: topp 3 bonuskandidater per kamp mens kampene går
+- FPL-karrieren: tidligere sesonger (beste rank, rekorder) som egen side
+- Badges/merkedager: «beste runde noensinne», «3 grønne piler på rad»
+- PWA: installer appen på mobilen som egen app med ikon
+- ~~AI-kommentar til overgangsanalysen~~ — bygget i v1.5.0
 
 ---
 

@@ -6,7 +6,7 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-26 (økt 41, Fable: v1.3.7 i prod; v1.3.8, v1.4.0 og v1.5.0 klare på brancher)
+**Sist oppdatert:** 2026-08-27 (økt 42, Fable: idépakken v1.6.0–v1.9.0 besluttet; staging-branch på GitHub)
 
 ## Status akkurat nå
 - **v1.3.5 og v1.3.6 UTE I PROD 25. aug** (footer `v1.3.6`, `/health` 200).
@@ -36,6 +36,9 @@
   scenario-POST/DELETE mot ekte data — klubbtaket avviste korrekt).
   Fasit: `docs/plan-overganger-v150.md`. Marius tester lokalt
   (`npm run dev`) når han vil; merge/deploy etter P4, etter v1.3.8/v1.4.0.
+- **Idépakken v1.6.0–v1.9.0 besluttet 27. aug:** 16 funksjoner, alle valg
+  avgjort i fire spørsmålsrunder. Fasit: `docs/plan-idepakken-v16-v19.md`.
+  Bygging etter P4-mergen, egen detaljplan-økt per versjon (kø-punkt 5).
 - **P2-skjermbildene tatt og committet 26. aug** (Playwright mot prod,
   mørkt tema, `docs/img/`, lenket fra README). Rest: ekte telefon.
 - **v1.3.4 (AI-SWR) ute siden 25. aug** — målingene og detaljene er rotert
@@ -54,10 +57,11 @@
 - Kostnad målt 23. aug: **$0,94/uke** — under terskelen. Ny måling i uken
   etter 31. aug (prisskiftet), nå mot taktbudsjettet ~41–45 kall/uke, kø-punkt 1.
 - **Git akkurat nå:** `main` pushet t.o.m. `98377e0` 26. aug (v1.3.7 +
-  docs + P2-skjermbilder), tag `v1.3.7` pushet. Lokale brancher (umerget,
-  stablet): `fix/genitiv-nyhetsfilter-v138` → `feat/alderstak-v140` →
-  `feat/overganger-v150`.
-  Docs-commits etter dette kan ligge lokalt til neste release-push —
+  docs + P2-skjermbilder), tag `v1.3.7` pushet. Branchene (umerget,
+  stablet) `fix/genitiv-nyhetsfilter-v138` → `feat/alderstak-v140` →
+  `feat/overganger-v150` + `staging` (= v150-toppen) er PUSHET til GitHub
+  27. aug som backup/staging — utløser ingen deploy, Coolify bygger kun
+  `main`. Docs-commits på main ligger lokalt til neste release-push —
   måleuken 1.–6. sept skal være deploy-fri.
 - Eldre status (v1.2.3, doks-opprydning, versjonsplan, v1.2.4): arkivert.
 
@@ -82,7 +86,7 @@ i økt 41 og kan gjenbrukes fra chatloggen.**
 6. **Task 7–8 etter P4:** koden er FERDIG på branchene (se status) — kun
    merge `--no-ff` + tag + push gjenstår (P3-avvik → renummerer mekanisk
    først). Deretter v1.5.0 (`docs/plan-overganger-v150.md`), til slutt
-   Task 9: arkiver planfilene.
+   Task 9: arkiver planfilene. Så: idépakken v1.6.0–v1.9.0 (kø-punkt 5).
 
 **P1 er LUKKET 25. aug** (auto-briefen bekreftet i Discord) — sjekkpunkt A
 er dermed ferdig i sin helhet. P0 ble lukket samme dag.
@@ -106,15 +110,8 @@ er dermed ferdig i sin helhet. P0 ble lukket samme dag.
   containerterminalen den trygge måten å bevise ryddig avslutning:
   containeren restartes av `unless-stopped` og BEHOLDER loggen.
   Aldri `docker stop`/`kill` på prod — da blir den liggende nede.
-- **Sjekk at fila ikke finnes før du «oppretter» den:** planen sa
-  «Create `test/format.test.js`», men fila fantes med 3 tester fra
-  v1.2.0. Write overskrev dem stille, og det ble bare synlig fordi
-  testtallet ble 302 i stedet for 305. Gjenopprettet med `git checkout`.
 - **Restart serveren etter endringer i `src/`:** ESM lastes én gang ved
   oppstart, så en Playwright-kjøring mot en gammel prosess gir falske funn.
-- **En CSS-overstyring må stå ETTER regelen den overstyrer** — en medieblokk
-  lenger oppe har lik spesifisitet og taper cascaden. `.table-scroll--pinned`
-  lå i ≤640-blokka over basisregelen og hadde null effekt (økt 34).
 - **Sjekk `git status -sb`, ikke anta at `main` = `origin/main`:** ved
   starten av økt 30 lå `main` 2 docs-commits foran origin (loggføring fra
   økt 29) selv om prompten sa «main = origin/main».
@@ -192,5 +189,12 @@ er dermed ferdig i sin helhet. P0 ble lukket samme dag.
   TDD-bygget ferdig på `feat/overganger-v150` (T1–T13, 454/454, lint 0,
   røyktest med tomme nøkler + scenario-syklus mot ekte data). Valget
   «AI-kommentar JA» overstyrer «uten AI-kommentar i v1» i beslutningslista.
+- 2026-08-27 (økt 42): «Har du andre kule ideer? Lang liste, spør meg
+  hvilke jeg vil ha og hvordan hver skal fungere.» Handling: 21 idéer
+  presentert, Marius valgte alle 16 hovedidéer; 4 spørsmålsrunder ga
+  fasit for hver — `docs/plan-idepakken-v16-v19.md`, fire versjoner
+  v1.6.0–v1.9.0 i ROADMAP. Deretter: «Lag en ny branch på github til
+  dette. Et staging miljø eller noe» → `staging` + de tre kodebranchene
+  pushet til GitHub (ingen deploy — Coolify bygger kun main).
 - Loggposter fra økt 22–41 (første del): rotert til
   `docs/arkiv/HANDOVER-historikk.md` (200-linjerstaket, sist 2026-08-26).
