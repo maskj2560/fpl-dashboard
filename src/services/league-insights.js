@@ -3,6 +3,8 @@
 // Ingen nettverkskall her utenom assemble-funksjonene, som kun bruker
 // fplClient. Se docs/plan-liga-v160.md.
 
+import { differentials } from './analysis.js';
+
 /** Maks antall managere som analyseres (side 1 av standings kuttes hit). */
 export const MAX_MANAGERS = 20;
 
@@ -104,5 +106,94 @@ export function buildLeagueGraph({ ranks, myEntry, rivalEntry = null, width = 60
     managers,
     single,
     series,
+  };
+}
+
+/**
+ * Velger rivalen: forespurt entry når den finnes i ligaen og ikke er meg;
+ * ellers nærmeste over meg i tabellen (leder får nærmeste under).
+ * null når jeg mangler i lista eller er alene.
+ */
+export function pickRival({ results, myEntry, requested = null }) {
+  if (!Array.isArray(results) || results.length < 2) return null;
+  const me = results.find((r) => r.entry === myEntry);
+  if (!me) return null;
+
+  if (requested !== null && requested !== myEntry && results.some((r) => r.entry === requested)) {
+    return requested;
+  }
+
+  const above = results.find((r) => r.rank === me.rank - 1);
+  if (above) return above.entry;
+  const below = results.find((r) => r.rank === me.rank + 1);
+  return below ? below.entry : null;
+}
+
+function managerMeta(row) {
+  return {
+    entry: row.entry,
+    entryName: row.entry_name ?? '',
+    playerName: row.player_name ?? '',
+    rank: row.rank ?? null,
+    total: row.total ?? null,
+    eventTotal: row.event_total ?? null,
+  };
+}
+
+function displayPlayer(element, teamsById) {
+  const team = teamsById?.get(element.team) ?? {};
+  return {
+    id: element.id,
+    name: element.web_name,
+    teamCode: team.code ?? null,
+    teamShort: team.short_name ?? '',
+    eventPoints: Number.isFinite(element.event_points) ? element.event_points : 0,
+  };
+}
+
+function captainOf(picks, elementsById, teamsById) {
+  const pick = (picks?.picks ?? []).find((p) => p.is_captain);
+  const element = pick ? elementsById.get(pick.element) : null;
+  if (!element) return null;
+  return { ...displayPlayer(element, teamsById), tc: pick.multiplier === 3 };
+}
+
+/**
+ * Rival-radaren: avstand (totalt + siste runde, rival − meg),
+ * differensialer begge veier (eierandel-rekkefølge fra differentials()),
+ * felles spillere og begges kaptein. Rundepoeng fra bootstrap
+ * `event_points` — ingen ekstra kall. null når picks mangler.
+ */
+export function buildRivalCompare({ myEntry, rivalEntry, results, myPicks, rivalPicks, elements, teamsById }) {
+  const myRow = results.find((r) => r.entry === myEntry);
+  const rivalRow = results.find((r) => r.entry === rivalEntry);
+  if (!myRow || !rivalRow || !myPicks?.picks || !rivalPicks?.picks) return null;
+
+  const elementsById = new Map(elements.map((e) => [e.id, e]));
+  const myIds = new Set(myPicks.picks.map((p) => p.element));
+  const rivalIds = new Set(rivalPicks.picks.map((p) => p.element));
+
+  const diff = differentials(myIds, rivalIds, elements);
+  const enrich = (list) => list.map((e) => displayPlayer(e, teamsById));
+
+  const shared = elements
+    .filter((e) => myIds.has(e.id) && rivalIds.has(e.id))
+    .map((e) => displayPlayer(e, teamsById))
+    .sort((a, b) => b.eventPoints - a.eventPoints);
+
+  const me = managerMeta(myRow);
+  const rival = managerMeta(rivalRow);
+
+  return {
+    me,
+    rival,
+    gapTotal: (rival.total ?? 0) - (me.total ?? 0),
+    gapEvent: (rival.eventTotal ?? 0) - (me.eventTotal ?? 0),
+    diff: { theirs: enrich(diff.theirs), mine: enrich(diff.mine) },
+    shared,
+    captains: {
+      mine: captainOf(myPicks, elementsById, teamsById),
+      rival: captainOf(rivalPicks, elementsById, teamsById),
+    },
   };
 }

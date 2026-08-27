@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import {
   leagueRanksByGw,
   buildLeagueGraph,
+  pickRival,
+  buildRivalCompare,
 } from '../src/services/league-insights.js';
 
 // ---- fixtures ------------------------------------------------------------
@@ -126,4 +128,153 @@ test('buildLeagueGraph med én runde setter single, og null-ranks gir null', () 
   assert.equal(graph.series.find((s) => s.entry === 2).points, '300,0');
 
   assert.equal(buildLeagueGraph({ ranks: null, myEntry: 1 }), null);
+});
+
+// ---- pickRival -----------------------------------------------------------
+
+const tableResults = [
+  manager(10, 'Topplaget', 'Tone', { rank: 1, total: 150 }),
+  manager(20, 'Midtlaget', 'Mads', { rank: 2, total: 140 }),
+  manager(30, 'Mitt lag', 'Marius', { rank: 3, total: 130 }),
+  manager(40, 'Bunnlaget', 'Bård', { rank: 4, total: 120 }),
+];
+
+test('pickRival: forespurt rival brukes når den finnes i ligaen', () => {
+  assert.equal(pickRival({ results: tableResults, myEntry: 30, requested: 40 }), 40);
+});
+
+test('pickRival: default er nærmeste over meg i tabellen', () => {
+  assert.equal(pickRival({ results: tableResults, myEntry: 30 }), 20);
+});
+
+test('pickRival: leder får nærmeste under, alene gir null', () => {
+  assert.equal(pickRival({ results: tableResults, myEntry: 10 }), 20);
+  assert.equal(pickRival({ results: [tableResults[2]], myEntry: 30 }), null);
+  assert.equal(pickRival({ results: tableResults, myEntry: 999 }), null);
+});
+
+test('pickRival ignorerer ukjent id og meg selv som forespurt rival', () => {
+  assert.equal(pickRival({ results: tableResults, myEntry: 30, requested: 777 }), 20);
+  assert.equal(pickRival({ results: tableResults, myEntry: 30, requested: 30 }), 20);
+});
+
+// ---- buildRivalCompare ---------------------------------------------------
+
+function el(id, name, team, eventPoints, ownership) {
+  return {
+    id,
+    web_name: name,
+    team,
+    event_points: eventPoints,
+    selected_by_percent: String(ownership),
+  };
+}
+
+const elements = [
+  el(101, 'Haaland', 1, 12, '55.0'),
+  el(102, 'Salah', 2, 8, '45.0'),
+  el(103, 'Watkins', 3, 2, '20.0'),
+  el(104, 'Isak', 4, 6, '30.0'),
+  el(105, 'Raya', 5, 3, '15.0'),
+];
+
+const teamsById = new Map([
+  [1, { short_name: 'MCI', code: 43 }],
+  [2, { short_name: 'LIV', code: 14 }],
+  [3, { short_name: 'AVL', code: 7 }],
+  [4, { short_name: 'NEW', code: 4 }],
+  [5, { short_name: 'ARS', code: 3 }],
+]);
+
+function picksOf(ids, captainId, multiplier = 2) {
+  return {
+    picks: ids.map((id, i) => ({
+      element: id,
+      position: i + 1,
+      is_captain: id === captainId,
+      is_vice_captain: false,
+      multiplier: id === captainId ? multiplier : 1,
+    })),
+  };
+}
+
+test('buildRivalCompare regner avstand totalt og siste runde med riktig fortegn', () => {
+  const results = [
+    manager(30, 'Mitt lag', 'Marius', { rank: 3, total: 130, event_total: 60 }),
+    manager(20, 'Midtlaget', 'Mads', { rank: 2, total: 140, event_total: 55 }),
+  ];
+  const compare = buildRivalCompare({
+    myEntry: 30,
+    rivalEntry: 20,
+    results,
+    myPicks: picksOf([101, 102], 101),
+    rivalPicks: picksOf([101, 103], 103),
+    elements,
+    teamsById,
+  });
+
+  assert.equal(compare.me.entryName, 'Mitt lag');
+  assert.equal(compare.rival.playerName, 'Mads');
+  assert.equal(compare.gapTotal, 10); // rival 140 − meg 130
+  assert.equal(compare.gapEvent, -5); // rival 55 − meg 60
+});
+
+test('buildRivalCompare: differensialer begge veier med rundens poeng + felles spillere', () => {
+  const results = [
+    manager(30, 'Mitt lag', 'Marius', { rank: 3, total: 130 }),
+    manager(20, 'Midtlaget', 'Mads', { rank: 2, total: 140 }),
+  ];
+  const compare = buildRivalCompare({
+    myEntry: 30,
+    rivalEntry: 20,
+    results,
+    myPicks: picksOf([101, 102, 104], 101),
+    rivalPicks: picksOf([101, 103, 105], 103),
+    elements,
+    teamsById,
+  });
+
+  // Mine differensialer: Salah (45 %) før Isak (30 %) — eierandel-rekkefølge.
+  assert.deepEqual(compare.diff.mine.map((p) => p.name), ['Salah', 'Isak']);
+  assert.deepEqual(compare.diff.theirs.map((p) => p.name), ['Watkins', 'Raya']);
+  assert.equal(compare.diff.mine[0].eventPoints, 8);
+  assert.equal(compare.diff.mine[0].teamShort, 'LIV');
+  // Felles: kun Haaland.
+  assert.deepEqual(compare.shared.map((p) => p.name), ['Haaland']);
+  assert.equal(compare.shared[0].teamCode, 43);
+});
+
+test('buildRivalCompare finner begges kaptein og flagger TC, og gir null uten picks', () => {
+  const results = [
+    manager(30, 'Mitt lag', 'Marius', { rank: 3, total: 130 }),
+    manager(20, 'Midtlaget', 'Mads', { rank: 2, total: 140 }),
+  ];
+  const compare = buildRivalCompare({
+    myEntry: 30,
+    rivalEntry: 20,
+    results,
+    myPicks: picksOf([101, 102], 101, 3), // TC
+    rivalPicks: picksOf([103, 104], 104),
+    elements,
+    teamsById,
+  });
+
+  assert.equal(compare.captains.mine.name, 'Haaland');
+  assert.equal(compare.captains.mine.tc, true);
+  assert.equal(compare.captains.rival.name, 'Isak');
+  assert.equal(compare.captains.rival.tc, false);
+  assert.equal(compare.captains.rival.eventPoints, 6);
+
+  assert.equal(
+    buildRivalCompare({
+      myEntry: 30,
+      rivalEntry: 20,
+      results,
+      myPicks: null,
+      rivalPicks: picksOf([103], 103),
+      elements,
+      teamsById,
+    }),
+    null,
+  );
 });
