@@ -173,7 +173,8 @@ er «porter» — de skjer når datoen eller du er klar, uten å stoppe utviklin
   funksjoner, og alle valgene er tatt: først liga-pakka (rival-radar, graf
   over hele miniligaen sesongen gjennom, hvem i ligaen kapteinet hva, og
   en rapport til Discord etter hver runde som skåler for vinneren og erter
-  taperen), så en ny «Innsikt»-side (poeng du la igjen på benken,
+  taperen) — **den er alt ferdigbygget (27. august)** og kan testes lokalt
+  når du vil; så en ny «Innsikt»-side (poeng du la igjen på benken,
   kapteinsfasit, flaks-barometer, rundens lag mot ditt), så spiller-pakka
   (spillerkort ved klikk på navn, sammenlign spillere, differensial-finner,
   hvem tar straffene), og til slutt planleggingspakka (beste chip-vindu,

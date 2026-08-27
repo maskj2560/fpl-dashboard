@@ -6,22 +6,17 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-27 (økt 42, Fable: idépakken v1.6.0–v1.9.0 besluttet; staging-branch på GitHub)
+**Sist oppdatert:** 2026-08-27 (økt 42, Fable: v1.6.0 Liga-pakka ferdigbygget; staging på GitHub)
 
 ## Status akkurat nå
 - **v1.3.5 og v1.3.6 UTE I PROD 25. aug** (footer `v1.3.6`, `/health` 200).
   v1.3.5: SIGTERM/SIGINT-handler (`createShutdown`). v1.3.6: tidsstemplet
   gameUpdating (5 min utløp) + egen 503-side ved kaldstart i FPLs
   oppdateringsvindu. 360/360, lint 0.
-- **Ekte SIGTERM-bevis mangler — og Coolifys DEPLOY-logg er feil sted å
-  lete.** Deploy-loggen (25. aug 02:04, v1.3.6) viser build + «Removing
-  old containers»; appens stdout lever i den gamle containerens logg, som
-  slettes med containeren. Sirkumstansielt: fjerningen tok 0,5 s — uten
-  handler venter Docker ut stopp-timeouten (10 s) og SIGKILL-er. Ekte
-  bevis: `kill 1` i containerterminalen (samme container restartes, loggen
-  beholdes) — de to linjene skal stå der. Lokalt er handleren bevist med
-  `process.emit('SIGINT')`: «SIGINT mottatt — lukker serveren» +
-  «Serveren lukket ryddig», exit 0.
+- **Ekte SIGTERM-bevis mangler.** Deploy-loggen er feil sted (gammel
+  containers stdout slettes). Beviset er `kill 1` i containerterminalen
+  (containeren restartes, loggen beholdes) — de to avslutningslinjene
+  skal stå der. Lokalt bevist med `process.emit('SIGINT')`, exit 0.
 - **v1.3.7 UTE I PROD 26. aug** (footer `v1.3.7`, `/health` 200, hash
   `d508c47f` uendret). Volumet `/app/data` lagt til i Coolify FØR pushen
   (navngitt volum `…-fpl-data`, via Claude in Chrome) — aktivt fra denne
@@ -38,7 +33,13 @@
   (`npm run dev`) når han vil; merge/deploy etter P4, etter v1.3.8/v1.4.0.
 - **Idépakken v1.6.0–v1.9.0 besluttet 27. aug:** 16 funksjoner, alle valg
   avgjort i fire spørsmålsrunder. Fasit: `docs/plan-idepakken-v16-v19.md`.
-  Bygging etter P4-mergen, egen detaljplan-økt per versjon (kø-punkt 5).
+  Egen detaljplan-økt per versjon (kø-punkt 5).
+- **v1.6.0 Liga-pakka FERDIGBYGGET 27. aug** på `feat/liga-v160` (stablet
+  på v1.5.0-branchen — Marius godkjente «planlegg + bygg nå» og 4. etasje):
+  rival-radar, sesonggraf, kaptein-liga (tak siste 10 runder, godkjent),
+  Rundens rapport (roast, persistert i DATA_DIR/report-state.json).
+  T1–T13, 509/509, lint 0, røyktest med tomme nøkler grønn mot ekte
+  ligadata. Plan: `docs/plan-liga-v160.md`. Merge etter v1.5.0 i P4-løpet.
 - **P2-skjermbildene tatt og committet 26. aug** (Playwright mot prod,
   mørkt tema, `docs/img/`, lenket fra README). Rest: ekte telefon.
 - **v1.3.4 (AI-SWR) ute siden 25. aug** — målingene og detaljene er rotert
@@ -46,22 +47,19 @@
 - **Prod-QA 25. aug: 402 sjekker, 0 feil** mot v1.3.4 (dekker også v1.3.3);
   detaljene er rotert til historikken. v1.3.5–v1.3.7 rører kun `src/`, så
   QA-en står — ingen ny full QA er planlagt.
-- **Asset-hashen i prod er `d508c47f`, og den er RIKTIG.** Den skiftet ved
-  v1.3.3 (`style.css` + `app.js`) og skal IKKE endres av v1.3.4–v1.3.7, som
-  kun rører `src/`. Regn den fra git-blobbene, ikke arbeidstreet — Windows
-  har CRLF på disk og gir et annet tall enn containeren.
+- **Asset-hashen i prod er `d508c47f`, og den er RIKTIG** (uendret siden
+  v1.3.3). Regn den fra git-blobbene, ikke arbeidstreet (CRLF på disk).
 - **Helsesjekken:** alt. a aktiv (Coolifys sjekk AV, Dockerfilens gjelder).
   Se lærdommene under for hva den IKKE fanger.
 - **v1.3.0–v1.3.3 ute siden 24. aug** (tokenpalett, temabryter, klubbgrafikk,
   finpuss, QA-rettelser). Detaljer i `docs/arkiv/HANDOVER-historikk.md`.
 - Kostnad målt 23. aug: **$0,94/uke** — under terskelen. Ny måling i uken
   etter 31. aug (prisskiftet), nå mot taktbudsjettet ~41–45 kall/uke, kø-punkt 1.
-- **Git akkurat nå:** `main` pushet t.o.m. `98377e0` 26. aug (v1.3.7 +
-  docs + P2-skjermbilder), tag `v1.3.7` pushet. Branchene (umerget,
-  stablet) `fix/genitiv-nyhetsfilter-v138` → `feat/alderstak-v140` →
-  `feat/overganger-v150` + `staging` (= v150-toppen) er PUSHET til GitHub
-  27. aug som backup/staging — utløser ingen deploy, Coolify bygger kun
-  `main`. Docs-commits på main ligger lokalt til neste release-push —
+- **Git akkurat nå:** `main` pushet t.o.m. `98377e0` 26. aug, tag
+  `v1.3.7` pushet. Branchene (umerget, stablet) v138 → v140 → v150 →
+  `feat/liga-v160` + `staging` (= v160-toppen) er PUSHET til GitHub som
+  backup/staging — utløser ingen deploy, Coolify bygger kun `main`.
+  Docs-commits på main ligger lokalt til neste release-push —
   måleuken 1.–6. sept skal være deploy-fri.
 - Eldre status (v1.2.3, doks-opprydning, versjonsplan, v1.2.4): arkivert.
 
@@ -195,6 +193,8 @@ er dermed ferdig i sin helhet. P0 ble lukket samme dag.
   fasit for hver — `docs/plan-idepakken-v16-v19.md`, fire versjoner
   v1.6.0–v1.9.0 i ROADMAP. Deretter: «Lag en ny branch på github til
   dette. Et staging miljø eller noe» → `staging` + de tre kodebranchene
-  pushet til GitHub (ingen deploy — Coolify bygger kun main).
+  pushet til GitHub (ingen deploy — Coolify bygger kun main). Så: «Skal
+  vi begynne å jobbe med det nå?» → planlegg + bygg valgt, kaptein-tak
+  10 runder godkjent, v1.6.0 TDD-bygget ferdig på `feat/liga-v160`.
 - Loggposter fra økt 22–41 (første del): rotert til
   `docs/arkiv/HANDOVER-historikk.md` (200-linjerstaket, sist 2026-08-26).

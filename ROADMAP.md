@@ -33,7 +33,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | **v1.3.8** | Genitiv-fiks i nyhetsfilteret | 4 | **kode klar på branch 26. aug** — merge/deploy etter P4 |
 | **v1.4.0** | Alderstak på stale data + `dataAlder` i payload | 4 | **kode klar på branch 26. aug** — merge/deploy etter P4 |
 | **v1.5.0** | «Overganger» total: planlegger, scenarier, analyse, AI-kommentar | 4 | **kode klar på branch 26. aug** — merge/deploy etter P4, etter v1.3.8/v1.4.0 |
-| **v1.6.0** | «Liga-pakka»: rival-radar, ligagraf, kaptein-liga, roast-rapport | 5 | P4-mergen (v1.3.8–v1.5.0 først) |
+| **v1.6.0** | «Liga-pakka»: rival-radar, ligagraf, kaptein-liga, roast-rapport | 5 | **kode klar på branch 27. aug** — merge/deploy etter P4, etter v1.5.0 |
 | **v1.7.0** | «/innsikt»: benkesløsing, kapteinsfasit, flaksbarometer, rundens XI | 5 | v1.6.0 |
 | **v1.8.0** | «Spiller-pakka»: spillerkort, duell, differensialer, straffer | 5 | v1.7.0 |
 | **v1.9.0** | «Planleggingspakka»: chip-planlegger, deadline-sjekk, kalender-feed | 5 | v1.8.0 |
@@ -121,8 +121,11 @@ stedet for den AI-kostende promptendringen (droppet). Rekkefølge:
   spiller-pakka → planleggingspakka.
 - **Eier detaljene:** `docs/plan-idepakken-v16-v19.md` (beslutningsfasit).
   Hver versjon får egen detaljplan-økt (T-tasks, TDD) før bygging.
-- **Blokkert av:** P4-mergen — v1.3.8/v1.4.0/v1.5.0 skal inn i main
-  først, så ny branch per versjon fra main (ingen 4. etasje på stabelen).
+- **Status:** v1.6.0 **ferdigbygget 27. aug** på `feat/liga-v160` (stablet
+  på v1.5.0-branchen — Marius godkjente 4. etasje samme dag; detaljplan:
+  `docs/plan-liga-v160.md`, T1–T13, 509/509, røyktest grønn). v1.7.0+
+  planlegges hver for seg.
+- **Blokkert av:** P4-mergen — merges etter v1.5.0 i samme rekkefølge.
 - **Størrelse:** stor (fire releaser).
 
 ## Dokumentkart — hvor alt bor
