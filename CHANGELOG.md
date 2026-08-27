@@ -17,6 +17,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   sum over de siste 10 ferdige rundene.
 - Sesonggraf på «Miniligaer»: hele ligaens plassering runde for runde i
   én graf — du og rivalen uthevet, resten dempet, med tegnforklaring.
+- Rival-valget huskes i nettleseren: åpner du «Miniligaer» uten valgt
+  rival, sendes du til sist valgte; forsvinner rivalen fra ligaen,
+  ryddes valget.
 
 ## [1.5.0] - 2026-09-XX
 
