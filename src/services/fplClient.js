@@ -124,6 +124,19 @@ export function getEntryHistory(teamId) {
   });
 }
 
+/**
+ * Samme endepunkt og cache-nøkkel som getEntryHistory(), men 6 t TTL.
+ * Delt nøkkel betyr at første skriver setter TTL-en — derfor skal denne
+ * KUN kalles for ANDRE manageres historikk (ligagrafen på /liga), aldri
+ * for egen FPL_TEAM_ID: egen historikk (rank-grafen på /lag) må være
+ * fersk og hentes alltid via getEntryHistory.
+ */
+export function getEntryHistoryHistoric(teamId) {
+  return getOrFetch(`history:${teamId}`, () => fplFetch(`entry/${teamId}/history/`), {
+    ttl: 360 * MIN,
+  });
+}
+
 export function getEntryTransfers(teamId) {
   return getOrFetch(`transfers:${teamId}`, () => fplFetch(`entry/${teamId}/transfers/`), {
     ttl: 5 * MIN,
