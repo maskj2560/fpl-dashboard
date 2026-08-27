@@ -410,3 +410,102 @@ export async function assembleLeagueInsights({ leagueId, teamId = config.fplTeam
 
   return base;
 }
+
+// ---- rundens rapport -----------------------------------------------------
+
+/**
+ * Grunnlaget for «Rundens rapport»: vinner/taper på rundepoeng,
+ * bevegelser (rank ≠ last_rank), tabellen, min runde med kapteinsfasit
+ * og alle kapteinsvalg. Rene data — prompten bygges i prompts.js.
+ */
+export function buildReportData({ event, leagueName, results, captainRound, myEntry }) {
+  const byEvent = [...results].sort((a, b) => (b.event_total ?? 0) - (a.event_total ?? 0));
+  const capByEntry = new Map((captainRound?.rows ?? []).map((r) => [r.entry, r.last]));
+
+  const meta = (r) => ({
+    entryName: r.entry_name ?? '',
+    playerName: r.player_name ?? '',
+    eventTotal: r.event_total ?? 0,
+  });
+
+  const myRow = results.find((r) => r.entry === myEntry) ?? null;
+  const myCap = myRow ? capByEntry.get(myEntry) : null;
+
+  return {
+    event: { id: event.id, name: event.name },
+    league: { name: leagueName, size: results.length },
+    winner: byEvent.length ? meta(byEvent[0]) : null,
+    loser: byEvent.length ? meta(byEvent.at(-1)) : null,
+    movers: results
+      .filter((r) => r.last_rank && r.rank !== r.last_rank)
+      .map((r) => ({ entryName: r.entry_name ?? '', from: r.last_rank, to: r.rank })),
+    table: results.map((r) => ({
+      rank: r.rank,
+      entryName: r.entry_name ?? '',
+      playerName: r.player_name ?? '',
+      eventTotal: r.event_total ?? 0,
+      total: r.total ?? 0,
+    })),
+    mine: myRow
+      ? {
+          entryName: myRow.entry_name ?? '',
+          rank: myRow.rank,
+          lastRank: myRow.last_rank ?? null,
+          eventTotal: myRow.event_total ?? 0,
+          total: myRow.total ?? 0,
+          captain: myCap
+            ? { name: myCap.name, points: myCap.points, lost: myCap.lost, tc: myCap.tc }
+            : null,
+        }
+      : null,
+    captains: (captainRound?.rows ?? [])
+      .filter((r) => r.last)
+      .map((r) => ({
+        entryName: r.entryName,
+        captain: r.last.name,
+        points: r.last.points,
+        lost: r.last.lost,
+        tc: r.last.tc,
+      })),
+  };
+}
+
+/**
+ * Henter rapportgrunnlaget for ÉN ferdig runde: standings + live +
+ * picks per manager KUN for rapportrunden. Deler cache-nøkler med
+ * /liga-visningen, så rapporten er gratis når siden nettopp er vist.
+ */
+export async function assembleLeagueReportData({ leagueId, teamId = config.fplTeamId, event }) {
+  const [bootstrap, standings] = await Promise.all([getBootstrap(), getLeagueStandings(leagueId)]);
+  const results = (standings?.standings?.results ?? []).slice(0, MAX_MANAGERS);
+  const teamsById = new Map((bootstrap.teams ?? []).map((t) => [t.id, t]));
+
+  const live = await getLiveHistoric(event.id);
+  const liveByGw = new Map([[event.id, live]]);
+  const picksRows = await _mapLimit(results, 8, async (r) => {
+    try {
+      return [r.entry, await getPicksHistoric(r.entry, event.id)];
+    } catch {
+      return [r.entry, null];
+    }
+  });
+  const picksByEntry = new Map(picksRows.map(([entry, picks]) => [entry, new Map([[event.id, picks]])]));
+
+  const captainRound = buildCaptainLeague({
+    results,
+    picksByEntry,
+    liveByGw,
+    elements: bootstrap.elements ?? [],
+    teamsById,
+    gws: [event.id],
+    lastGw: event.id,
+  });
+
+  return buildReportData({
+    event,
+    leagueName: standings?.league?.name ?? '',
+    results,
+    captainRound,
+    myEntry: teamId,
+  });
+}

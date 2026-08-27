@@ -342,3 +342,56 @@ export function sanitizeBriefText(text, brief) {
   }
   return lines.filter((line) => line !== null).join('\n');
 }
+
+/**
+ * «Rundens rapport» for miniligaen (v1.6.0): én Discord-melding etter
+ * rundeslutt — min runde + ligaen, «roast med glimt i øyet».
+ * Samme REGLER-mønster som briefen og transfer-kommentaren.
+ */
+export function buildLeagueReportPrompt(data) {
+  const parts = [
+    `Skriv «Rundens rapport» for miniligaen ${data.league.name} (${data.league.size} lag) etter ${data.event.name} i Fantasy Premier League.`,
+    '',
+    'Tabellen (plass, lag, manager, rundepoeng, totalt):',
+    ...data.table.map(
+      (r) => `- ${r.rank}. ${r.entryName} (${r.playerName}): ${r.eventTotal} p denne runden, ${r.total} totalt`,
+    ),
+    '',
+  ];
+  if (data.winner) parts.push(`Rundens vinner: ${data.winner.entryName} (${data.winner.playerName}) med ${data.winner.eventTotal} poeng.`);
+  if (data.loser) parts.push(`Rundens taper: ${data.loser.entryName} (${data.loser.playerName}) med ${data.loser.eventTotal} poeng.`);
+  if (data.movers.length > 0) {
+    parts.push('', 'Bevegelser i tabellen:', ...data.movers.map((m) => `- ${m.entryName}: ${m.from}. → ${m.to}. plass`));
+  }
+  if (data.captains.length > 0) {
+    parts.push(
+      '',
+      'Kapteinsvalgene (rå poeng, tapt = beste spiller i start-XI minus kapteinen):',
+      ...data.captains.map(
+        (c) => `- ${c.entryName}: ${c.captain}${c.tc ? ' (TC)' : ''} — ${c.points} p, tapte ${c.lost} mot optimal`,
+      ),
+    );
+  }
+  if (data.mine) {
+    const cap = data.mine.captain
+      ? ` Kaptein: ${data.mine.captain.name} med ${data.mine.captain.points} p (tapte ${data.mine.captain.lost} mot optimal).`
+      : '';
+    const move =
+      data.mine.lastRank && data.mine.lastRank !== data.mine.rank
+        ? ` Gikk fra ${data.mine.lastRank}. til ${data.mine.rank}. plass.`
+        : '';
+    parts.push('', `Mitt lag: ${data.mine.entryName}, ${data.mine.eventTotal} p denne runden, nr. ${data.mine.rank} i ligaen.${move}${cap}`);
+  }
+  parts.push(
+    '',
+    'TONE: roast med glimt i øyet — ert rundens taper godmodig, skål for vinneren. Aldri ondsinnet, aldri personangrep utover fotballen.',
+    '',
+    'REGLER:',
+    '- Bruk kun tall og navn som står i grunnlaget over. Finn aldri på tall, kamper eller hendelser.',
+    '- Manager- og lagnavn skrives nøyaktig som de står.',
+    '- Maks ~180 ord, norsk, 2–4 korte avsnitt. Ingen innledning, ingen overskrifter, ingen punktlister.',
+    '- Spillernavn i **fet**.',
+    '- Skriv «runde», aldri «gameweek».',
+  );
+  return parts.join('\n');
+}

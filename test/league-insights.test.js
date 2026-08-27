@@ -10,6 +10,8 @@ import {
   buildCaptainLeague,
   _mapLimit,
   assembleLeagueInsights,
+  buildReportData,
+  assembleLeagueReportData,
 } from '../src/services/league-insights.js';
 
 // ---- fixtures ------------------------------------------------------------
@@ -629,5 +631,121 @@ describe('assembleLeagueInsights', () => {
     assert.equal(currentPicks.length, 2, 'kun meg + rival for uferdig runde');
     const historicPicks = calls.filter((u) => /event\/1\/picks\//.test(u));
     assert.equal(historicPicks.length, 3, 'kaptein-ligaen henter alle tre for ferdig runde');
+  });
+});
+
+// ---- buildReportData + assembleLeagueReportData --------------------------
+
+function reportFixture() {
+  const reportResults = [
+    { entry: 123, entry_name: 'Marius XI', player_name: 'Marius S.', rank: 1, last_rank: 3, event_total: 60, total: 100 },
+    { entry: 456, entry_name: 'Rival FC', player_name: 'Rival R.', rank: 2, last_rank: 1, event_total: 42, total: 95 },
+    { entry: 789, entry_name: 'Nykommer FC', player_name: 'Ny N.', rank: 3, last_rank: 3, event_total: 71, total: 80 },
+  ];
+  const captainRound = {
+    gws: [2],
+    lastGw: 2,
+    depth: 10,
+    capped: false,
+    rows: [
+      { entry: 123, entryName: 'Marius XI', last: { name: 'Haaland', points: 12, optimal: 12, lost: 0, tc: false }, sum: { points: 12, lost: 0, rounds: 1 } },
+      { entry: 456, entryName: 'Rival FC', last: { name: 'Salah', points: 4, optimal: 9, lost: 5, tc: true }, sum: { points: 4, lost: 5, rounds: 1 } },
+      { entry: 789, entryName: 'Nykommer FC', last: null, sum: { points: 0, lost: 0, rounds: 0 } },
+    ],
+  };
+  return { reportResults, captainRound };
+}
+
+test('buildReportData kaarer rundevinner og -taper paa rundepoeng', () => {
+  const { reportResults, captainRound } = reportFixture();
+  const data = buildReportData({
+    event: { id: 2, name: 'Runde 2' },
+    leagueName: 'Testligaen',
+    results: reportResults,
+    captainRound,
+    myEntry: 123,
+  });
+
+  assert.equal(data.winner.entryName, 'Nykommer FC');
+  assert.equal(data.winner.eventTotal, 71);
+  assert.equal(data.loser.entryName, 'Rival FC');
+  assert.equal(data.loser.eventTotal, 42);
+  assert.equal(data.league.name, 'Testligaen');
+  assert.equal(data.league.size, 3);
+  assert.equal(data.event.name, 'Runde 2');
+});
+
+test('buildReportData tar med bevegelser og min runde med kapteinsfasit', () => {
+  const { reportResults, captainRound } = reportFixture();
+  const data = buildReportData({
+    event: { id: 2, name: 'Runde 2' },
+    leagueName: 'Testligaen',
+    results: reportResults,
+    captainRound,
+    myEntry: 123,
+  });
+
+  // 123 gikk 3 -> 1, 456 gikk 1 -> 2; 789 sto stille.
+  assert.deepEqual(data.movers, [
+    { entryName: 'Marius XI', from: 3, to: 1 },
+    { entryName: 'Rival FC', from: 1, to: 2 },
+  ]);
+  assert.equal(data.mine.rank, 1);
+  assert.equal(data.mine.lastRank, 3);
+  assert.equal(data.mine.captain.name, 'Haaland');
+  assert.equal(data.mine.captain.lost, 0);
+  // Kapteinslista tar kun managere med picks den runden.
+  assert.deepEqual(data.captains.map((c) => c.entryName), ['Marius XI', 'Rival FC']);
+  assert.equal(data.captains[1].tc, true);
+});
+
+describe('assembleLeagueReportData', () => {
+  const originalFetch = globalThis.fetch;
+  let calls;
+
+  beforeEach(() => {
+    clear();
+    calls = [];
+  });
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+  });
+
+  test('henter picks kun for rapportrunden', async () => {
+    const routes = [
+      [/bootstrap-static\/$/, {
+        events: [{ id: 1, is_current: false, finished: true }, { id: 2, is_current: true, finished: false }],
+        elements: [{ id: 101, web_name: 'Haaland', team: 1, event_points: 12, selected_by_percent: '55.0' }],
+        teams: [{ id: 1, short_name: 'MCI', code: 43 }],
+      }],
+      [/leagues-classic\/99\/standings\//, {
+        league: { name: 'Testligaen' },
+        standings: { results: [
+          { entry: 42, entry_name: 'Mitt lag', player_name: 'Marius S.', rank: 1, last_rank: 2, event_total: 30, total: 80 },
+          { entry: 77, entry_name: 'Rival FC', player_name: 'Rival R.', rank: 2, last_rank: 1, event_total: 20, total: 70 },
+        ] },
+      }],
+      [/event\/1\/live\/$/, { elements: [{ id: 101, stats: { total_points: 12 } }] }],
+      [/entry\/\d+\/event\/1\/picks\/$/, { picks: [{ element: 101, position: 1, is_captain: true, is_vice_captain: false, multiplier: 2 }] }],
+    ];
+    globalThis.fetch = async (url) => {
+      const u = String(url);
+      calls.push(u);
+      const hit = routes.find(([re]) => re.test(u));
+      assert.ok(hit, `uventet URL: ${u}`);
+      return { ok: true, status: 200, json: async () => hit[1] };
+    };
+
+    const data = await assembleLeagueReportData({
+      leagueId: 99,
+      teamId: 42,
+      event: { id: 1, name: 'Runde 1' },
+    });
+
+    assert.equal(data.winner.entryName, 'Mitt lag');
+    assert.equal(data.mine.captain.name, 'Haaland');
+    assert.ok(!calls.some((u) => /event\/2\/picks\//.test(u)), 'aldri picks for andre runder');
+    assert.equal(calls.filter((u) => /event\/1\/picks\//.test(u)).length, 2);
   });
 });
