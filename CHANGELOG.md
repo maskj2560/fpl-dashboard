@@ -7,6 +7,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+
+- Rival-radar på «Miniligaer»: velg rival i nedtrekksmeny (forhåndsvalgt =
+  nærmeste over deg), se poengavstand totalt og siste runde, differensialer
+  begge veier med rundens poeng, felles spillere og begges kaptein.
+
 ## [1.5.0] - 2026-09-XX
 
 ### Added

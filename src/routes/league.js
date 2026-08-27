@@ -1,64 +1,39 @@
 import { Router } from 'express';
 import config from '../config.js';
-import { getBootstrap, getLeagueStandings, getPicks, FplError } from '../services/fplClient.js';
-import { resolvedGw, differentials, byId } from '../services/analysis.js';
-import { formatNumber } from '../services/format.js';
+import { getBootstrap, getLeagueStandings } from '../services/fplClient.js';
+import { byId } from '../services/analysis.js';
+import { formatNumber, formatSigned } from '../services/format.js';
 import { resolveLeagueIds } from '../services/leagues.js';
+import { assembleLeagueInsights } from '../services/league-insights.js';
 
 const router = Router();
-
-async function picksIdSet(entryId, gw) {
-  try {
-    const picks = await getPicks(entryId, gw);
-    return new Set(picks.picks.map((p) => p.element));
-  } catch (err) {
-    if (err instanceof FplError && err.status === 404) return null;
-    throw err;
-  }
-}
 
 router.get('/', async (req, res, next) => {
   if (!config.hasTeamId) return res.renderPage('no-team', { title: 'Miniligaer' });
   try {
     const bootstrap = await getBootstrap();
-    const gw = resolvedGw(bootstrap.events);
     const leagueIds = await resolveLeagueIds();
     const leagues = await Promise.all(leagueIds.map((id) => getLeagueStandings(id)));
 
-    // Differensial mot leder (eller valgt rival via ?rival=<entryId>&liga=<leagueId>)
-    let diff = null;
-    const rivalEntry = Number(req.query.rival) || null;
-    const firstLeague = leagues[0];
-    const leader =
-      rivalEntry ??
-      leagues
-        .flatMap((l) => l.standings.results)
-        .find((r) => r.rank === 1 && r.entry !== config.fplTeamId)?.entry ??
-      null;
-
-    if (leader && gw >= 1) {
-      const [mine, theirs] = await Promise.all([
-        picksIdSet(config.fplTeamId, gw),
-        picksIdSet(leader, gw),
-      ]);
-      if (mine && theirs) {
-        const d = differentials(mine, theirs, bootstrap.elements);
-        const rivalRow = leagues
-          .flatMap((l) => l.standings.results)
-          .find((r) => r.entry === leader);
-        diff = { ...d, rivalName: rivalRow?.entry_name ?? `Lag ${leader}`, rivalEntry: leader };
-      }
-    }
+    // All innsikt (rival-radar, graf, kaptein-liga) bygges for FØRSTE liga;
+    // tabellene over viser fortsatt alle. Rival velges med ?rival=<entryId>.
+    const insights = leagueIds.length
+      ? await assembleLeagueInsights({
+          leagueId: leagueIds[0],
+          requestedRival: Number(req.query.rival) || null,
+        })
+      : null;
 
     res.renderPage('league', {
       title: 'Miniligaer',
       leagues,
-      diff,
+      insights,
+      report: null,
       myEntry: config.fplTeamId,
-      rivalEntry: diff?.rivalEntry ?? null,
-      firstLeague,
+      rivalEntry: insights?.rivalEntry ?? null,
       teamsById: byId(bootstrap.teams),
       formatNumber,
+      formatSigned,
     });
   } catch (err) {
     next(err);
