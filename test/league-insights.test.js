@@ -1,5 +1,6 @@
-import { test } from 'node:test';
+import { test, describe, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
+import { clear } from '../src/services/cache.js';
 import {
   leagueRanksByGw,
   buildLeagueGraph,
@@ -7,6 +8,8 @@ import {
   buildRivalCompare,
   effectiveCaptain,
   buildCaptainLeague,
+  _mapLimit,
+  assembleLeagueInsights,
 } from '../src/services/league-insights.js';
 
 // ---- fixtures ------------------------------------------------------------
@@ -451,4 +454,180 @@ test('rader sorteres på sum poeng, deretter minst tapt — og vindu som ikke st
   // 30 kapteinet Haaland (10, tapt 0); 20 kapteinet Salah (4, tapt 6).
   assert.deepEqual(skewed.rows.map((r) => r.entry), [30, 20]);
   assert.equal(skewed.rows[1].sum.lost, 6);
+});
+
+// ---- _mapLimit + assembleLeagueInsights ----------------------------------
+
+test('_mapLimit kjører maks N samtidig og bevarer rekkefølgen', async () => {
+  let inFlight = 0;
+  let peak = 0;
+  const fn = async (x) => {
+    inFlight += 1;
+    peak = Math.max(peak, inFlight);
+    await new Promise((r) => setTimeout(r, 5));
+    inFlight -= 1;
+    return x * 10;
+  };
+
+  const out = await _mapLimit([1, 2, 3, 4, 5, 6], 2, fn);
+
+  assert.deepEqual(out, [10, 20, 30, 40, 50, 60]);
+  assert.ok(peak <= 2, `peak var ${peak}, skal være maks 2`);
+});
+
+describe('assembleLeagueInsights', () => {
+  const originalFetch = globalThis.fetch;
+  let calls;
+
+  beforeEach(() => {
+    clear();
+    calls = [];
+  });
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+  });
+
+  function standingsOf(rows) {
+    return { league: { name: 'Testligaen' }, standings: { results: rows } };
+  }
+
+  function row(entry, rank, total, eventTotal = 0) {
+    return {
+      entry,
+      entry_name: `Lag ${entry}`,
+      player_name: `Spiller ${entry}`,
+      rank,
+      last_rank: rank,
+      total,
+      event_total: eventTotal,
+    };
+  }
+
+  function bootstrapOf(events) {
+    return {
+      events,
+      elements: [
+        { id: 101, web_name: 'Haaland', team: 1, event_points: 12, selected_by_percent: '55.0' },
+        { id: 102, web_name: 'Salah', team: 2, event_points: 8, selected_by_percent: '45.0' },
+      ],
+      teams: [
+        { id: 1, short_name: 'MCI', code: 43 },
+        { id: 2, short_name: 'LIV', code: 14 },
+      ],
+    };
+  }
+
+  function serve(routes) {
+    globalThis.fetch = async (url) => {
+      const u = String(url);
+      calls.push(u);
+      const hit = routes.find(([re]) => re.test(u));
+      assert.ok(hit, `uventet URL: ${u}`);
+      const body = typeof hit[1] === 'function' ? hit[1](u) : hit[1];
+      if (body && body.__status) {
+        return { ok: false, status: body.__status, json: async () => ({}) };
+      }
+      return { ok: true, status: 200, json: async () => body };
+    };
+  }
+
+  const historyFor = () => ({ current: [{ event: 1, total_points: 50 }] });
+  const picksFor = (cap) => ({
+    picks: [
+      { element: 101, position: 1, is_captain: cap === 101, is_vice_captain: false, multiplier: cap === 101 ? 2 : 1 },
+      { element: 102, position: 2, is_captain: cap === 102, is_vice_captain: false, multiplier: cap === 102 ? 2 : 1 },
+    ],
+  });
+
+  test('assembleLeagueInsights bygger alle tre seksjoner fra mocket API', async () => {
+    const events = [
+      { id: 1, is_current: false, finished: true },
+      { id: 2, is_current: true, finished: false },
+    ];
+    serve([
+      [/bootstrap-static\/$/, bootstrapOf(events)],
+      [/leagues-classic\/99\/standings\//, standingsOf([row(77, 1, 80, 40), row(42, 2, 70, 35)])],
+      [/entry\/\d+\/history\/$/, historyFor],
+      [/entry\/42\/event\/\d+\/picks\/$/, picksFor(101)],
+      [/entry\/77\/event\/\d+\/picks\/$/, picksFor(102)],
+      [/event\/1\/live\/$/, { elements: [{ id: 101, stats: { total_points: 12 } }, { id: 102, stats: { total_points: 8 } }] }],
+    ]);
+
+    const insights = await assembleLeagueInsights({ leagueId: 99, teamId: 42 });
+
+    assert.equal(insights.leagueName, 'Testligaen');
+    assert.equal(insights.rivalEntry, 77, 'nærmeste over meg');
+    assert.equal(insights.rival.captains.mine.name, 'Haaland');
+    assert.equal(insights.graph.managers, 2);
+    assert.equal(insights.captainLeague.rows.length, 2);
+    assert.equal(insights.gw, 2);
+  });
+
+  test('kutter ligaen til 20 managere og kapteinsligaen til 10 runder', async () => {
+    const events = [];
+    for (let i = 1; i <= 12; i++) events.push({ id: i, is_current: i === 12, finished: true });
+    const rows = [];
+    for (let e = 1; e <= 25; e++) rows.push(row(e, e, 100 - e));
+    const longHistory = () => ({
+      current: Array.from({ length: 12 }, (_, i) => ({ event: i + 1, total_points: (i + 1) * 10 })),
+    });
+    serve([
+      [/bootstrap-static\/$/, bootstrapOf(events)],
+      [/leagues-classic\/99\/standings\//, standingsOf(rows)],
+      [/entry\/\d+\/history\/$/, longHistory],
+      [/entry\/\d+\/event\/\d+\/picks\/$/, picksFor(101)],
+      [/event\/\d+\/live\/$/, { elements: [{ id: 101, stats: { total_points: 5 } }] }],
+    ]);
+
+    const insights = await assembleLeagueInsights({ leagueId: 99, teamId: 1 });
+
+    assert.equal(insights.graph.managers, 20);
+    assert.deepEqual(insights.captainLeague.gws, [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+    assert.equal(insights.captainLeague.capped, true);
+    assert.ok(!calls.some((u) => /event\/[12]\/picks\//.test(u)), 'runde 1-2 er kuttet av dybdetaket');
+  });
+
+  test('en seksjon som feiler gir null - de andre leveres', async () => {
+    const events = [
+      { id: 1, is_current: false, finished: true },
+      { id: 2, is_current: true, finished: false },
+    ];
+    serve([
+      [/bootstrap-static\/$/, bootstrapOf(events)],
+      [/leagues-classic\/99\/standings\//, standingsOf([row(77, 1, 80), row(42, 2, 70)])],
+      [/entry\/\d+\/history\/$/, historyFor],
+      [/entry\/\d+\/event\/2\/picks\/$/, { __status: 500 }],
+      [/entry\/\d+\/event\/1\/picks\/$/, picksFor(101)],
+      [/event\/1\/live\/$/, { elements: [{ id: 101, stats: { total_points: 12 } }] }],
+    ]);
+
+    const insights = await assembleLeagueInsights({ leagueId: 99, teamId: 42 });
+
+    assert.equal(insights.rival, null, 'rundens picks feilet -> rival-radar null');
+    assert.ok(insights.graph, 'grafen leveres likevel');
+    assert.ok(insights.captainLeague, 'kaptein-ligaen leveres likevel');
+  });
+
+  test('henter aldri element-summary, og rundens picks kun for meg og rivalen', async () => {
+    const events = [
+      { id: 1, is_current: false, finished: true },
+      { id: 2, is_current: true, finished: false },
+    ];
+    serve([
+      [/bootstrap-static\/$/, bootstrapOf(events)],
+      [/leagues-classic\/99\/standings\//, standingsOf([row(77, 1, 80), row(42, 2, 70), row(55, 3, 60)])],
+      [/entry\/\d+\/history\/$/, historyFor],
+      [/entry\/\d+\/event\/\d+\/picks\/$/, picksFor(101)],
+      [/event\/1\/live\/$/, { elements: [{ id: 101, stats: { total_points: 12 } }] }],
+    ]);
+
+    await assembleLeagueInsights({ leagueId: 99, teamId: 42 });
+
+    assert.ok(!calls.some((u) => /element-summary/.test(u)), 'aldri element-summary');
+    const currentPicks = calls.filter((u) => /event\/2\/picks\//.test(u));
+    assert.equal(currentPicks.length, 2, 'kun meg + rival for uferdig runde');
+    const historicPicks = calls.filter((u) => /event\/1\/picks\//.test(u));
+    assert.equal(historicPicks.length, 3, 'kaptein-ligaen henter alle tre for ferdig runde');
+  });
 });

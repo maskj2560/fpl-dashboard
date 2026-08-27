@@ -3,7 +3,17 @@
 // Ingen nettverkskall her utenom assemble-funksjonene, som kun bruker
 // fplClient. Se docs/plan-liga-v160.md.
 
-import { differentials } from './analysis.js';
+import { differentials, resolvedGw } from './analysis.js';
+import config from '../config.js';
+import {
+  getBootstrap,
+  getLeagueStandings,
+  getPicks,
+  getPicksHistoric,
+  getLiveHistoric,
+  getEntryHistory,
+  getEntryHistoryHistoric,
+} from './fplClient.js';
 
 /** Maks antall managere som analyseres (side 1 av standings kuttes hit). */
 export const MAX_MANAGERS = 20;
@@ -292,4 +302,111 @@ export function buildCaptainLeague({ results, picksByEntry, liveByGw, elements, 
     capped: gws[0] > 1,
     rows,
   };
+}
+
+// ---- henting -------------------------------------------------------------
+
+/**
+ * Promise.all med tak på samtidighet: maks `limit` kall i flukt.
+ * Resultatene kommer i input-rekkefølge. Kaldstarten på /liga kan
+ * romme ~200 kall — Promise.all rett på ville sluppet alle løs samtidig.
+ */
+export async function _mapLimit(items, limit, fn) {
+  const out = new Array(items.length);
+  let next = 0;
+  async function worker() {
+    while (next < items.length) {
+      const i = next++;
+      out[i] = await fn(items[i], i);
+    }
+  }
+  const workers = Array.from({ length: Math.min(limit, items.length) }, worker);
+  await Promise.all(workers);
+  return out;
+}
+
+async function softNull(fn) {
+  try {
+    return await fn();
+  } catch (err) {
+    console.warn(`Liga-innsikt: seksjon feilet mykt: ${err.message}`);
+    return null;
+  }
+}
+
+/**
+ * Henter alt /liga-innsikten trenger via fplClient-cachene. Bootstrap og
+ * standings er harde feil (uten dem finnes ingen side); rival-radar,
+ * graf og kaptein-liga feiler mykt til null hver for seg.
+ */
+export async function assembleLeagueInsights({ leagueId, teamId = config.fplTeamId, requestedRival = null }) {
+  const [bootstrap, standings] = await Promise.all([getBootstrap(), getLeagueStandings(leagueId)]);
+
+  const results = (standings?.standings?.results ?? []).slice(0, MAX_MANAGERS);
+  const leagueName = standings?.league?.name ?? '';
+  const events = bootstrap.events ?? [];
+  const gw = resolvedGw(events);
+  const teamsById = new Map((bootstrap.teams ?? []).map((t) => [t.id, t]));
+  const elements = bootstrap.elements ?? [];
+
+  const base = { gw, leagueName, results, rivalEntry: null, rival: null, graph: null, captainLeague: null };
+  if (results.length === 0) return base;
+
+  const rivalEntry = pickRival({ results, myEntry: teamId, requested: requestedRival });
+  base.rivalEntry = rivalEntry;
+
+  const finishedAll = events.filter((e) => e.finished).map((e) => e.id);
+  const finishedGws = finishedAll.slice(-CAPTAIN_LEAGUE_DEPTH);
+
+  // Rival-radar: rundens picks for meg og rivalen — aldri resten av ligaen.
+  base.rival = await softNull(async () => {
+    if (!rivalEntry || gw < 1) return null;
+    const [myPicks, rivalPicks] = await Promise.all([getPicks(teamId, gw), getPicks(rivalEntry, gw)]);
+    return buildRivalCompare({ myEntry: teamId, rivalEntry, results, myPicks, rivalPicks, elements, teamsById });
+  });
+
+  // Sesonggraf: entry-history per manager. Egen id ALLTID via
+  // getEntryHistory (5 min) — delt nøkkel med 6 t-varianten.
+  base.graph = await softNull(async () => {
+    const histories = await _mapLimit(results, 8, async (r) => {
+      const history = r.entry === teamId ? await getEntryHistory(r.entry) : await getEntryHistoryHistoric(r.entry);
+      return [r.entry, history?.current ?? []];
+    });
+    const ranks = leagueRanksByGw({ results, histories: new Map(histories), maxGw: finishedAll.at(-1) ?? 0 });
+    return buildLeagueGraph({ ranks, myEntry: teamId, rivalEntry });
+  });
+
+  // Kaptein-liga: picks + live KUN for ferdige runder i dybdevinduet.
+  base.captainLeague = await softNull(async () => {
+    if (finishedGws.length === 0) return null;
+    const liveRows = await _mapLimit(finishedGws, 8, async (g) => [g, await getLiveHistoric(g)]);
+    const liveByGw = new Map(liveRows);
+
+    const wanted = [];
+    for (const r of results) for (const g of finishedGws) wanted.push([r.entry, g]);
+    const picksRows = await _mapLimit(wanted, 8, async ([entry, g]) => {
+      try {
+        return [entry, g, await getPicksHistoric(entry, g)];
+      } catch {
+        return [entry, g, null]; // 404 o.l.: manageren fantes ikke den runden
+      }
+    });
+    const picksByEntry = new Map();
+    for (const [entry, g, picks] of picksRows) {
+      if (!picksByEntry.has(entry)) picksByEntry.set(entry, new Map());
+      picksByEntry.get(entry).set(g, picks);
+    }
+
+    return buildCaptainLeague({
+      results,
+      picksByEntry,
+      liveByGw,
+      elements,
+      teamsById,
+      gws: finishedGws,
+      lastGw: finishedGws.at(-1),
+    });
+  });
+
+  return base;
 }
