@@ -146,7 +146,19 @@ export const league = {
         rival: { ...radarPlayer(7, 'Palmer', 9), tc: true },
       },
     },
-    graph: null,
+    graph: {
+      width: 600,
+      height: 140,
+      gwFirst: 1,
+      gwLast: 2,
+      managers: 3,
+      single: false,
+      series: [
+        { entry: 789, name: 'Nykommer FC', points: '0,140 600,140', me: false, rival: false, lastRank: 3 },
+        { entry: 456, name: 'Rival FC', points: '0,70 600,0', me: false, rival: true, lastRank: 1 },
+        { entry: 123, name: 'Marius XI', points: '0,0 600,70', me: true, rival: false, lastRank: 2 },
+      ],
+    },
     captainLeague: {
       gws: [1, 2],
       lastGw: 2,

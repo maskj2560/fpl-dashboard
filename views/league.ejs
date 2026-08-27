@@ -142,3 +142,28 @@
     Tapt mot optimal: beste spiller i start-XI minus kapteinen, i rå spillerpoeng.</p>
   </section>
 <% } %>
+
+<% if (insights && insights.graph) { const g = insights.graph; %>
+  <% const seriesColor = (s) => s.me ? 'var(--accent)' : (s.rival ? 'var(--accent-2)' : 'var(--text-dim)'); %>
+  <section class="card card-wide">
+    <h2>Sesongutvikling <span class="dim">Runde <%= g.gwFirst %>–<%= g.gwLast %></span></h2>
+    <svg class="rank-graph league-graph" viewBox="-8 -8 <%= g.width + 16 %> <%= g.height + 16 %>" preserveAspectRatio="none" role="img" aria-label="Ligaplassering per runde">
+      <% for (const y of [0, g.height / 2, g.height]) { %>
+        <line x1="0" y1="<%= y %>" x2="<%= g.width %>" y2="<%= y %>" stroke="var(--border)" stroke-width="1" vector-effect="non-scaling-stroke" />
+      <% } %>
+      <% for (const s of g.series) { if (!s.points) continue; %>
+        <% if (g.single) { %>
+          <circle cx="<%= s.points.split(',')[0] %>" cy="<%= s.points.split(',')[1] %>" r="4" fill="<%= seriesColor(s) %>" />
+        <% } else { %>
+          <polyline points="<%= s.points %>" fill="none" stroke="<%= seriesColor(s) %>" stroke-width="<%= s.me ? 2.5 : (s.rival ? 2 : 1) %>" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round" />
+        <% } %>
+      <% } %>
+    </svg>
+    <ul class="graph-legend">
+      <% for (const s of [...g.series].reverse()) { %>
+        <li><span class="legend-swatch" style="background: <%= seriesColor(s) %>"></span><%= s.name %><% if (s.me) { %> <span class="dim">(meg)</span><% } else if (s.rival) { %> <span class="dim">(rival)</span><% } %><% if (s.lastRank) { %> <span class="dim">· <%= s.lastRank %>.</span><% } %></li>
+      <% } %>
+    </ul>
+    <p class="hint">Ligaplassering per runde — toppen er 1. plass.</p>
+  </section>
+<% } %>

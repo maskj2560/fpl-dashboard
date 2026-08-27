@@ -30,6 +30,8 @@ const cases = [
   ['league', fx.league, 'Kaptein-liga'],
   ['league', fx.league, 'Tapt mot optimal'],
   ['league', fx.leagueCaptainsCapped, 'siste 10 ferdige rundene'],
+  ['league', fx.league, 'Sesongutvikling'],
+  ['league', fx.league, 'league-graph'],
   ['brief', fx.brief, 'Rundebrief'],
   ['brief', fx.briefEmpty, 'Rundebrief'],
   ['live', fx.live, 'live-root'],
@@ -344,6 +346,11 @@ test('league.ejs viser retningsmarkører med skjermlesertekst', async () => {
 test('league.ejs viser nøytral markør uten historikk', async () => {
   const html = await renderView('league', fx.league);
   assert.match(html, /class="rank-same" aria-label="uendret plassering">–/);
+});
+
+test('league.ejs uten grafdata utelater league-graph', async () => {
+  const html = await renderView('league', fx.leagueEmpty);
+  assert.ok(!html.includes('league-graph'), 'grafen skal utelates helt uten data');
 });
 
 test('league.ejs gjør radene klikkbare og markerer valgt rival', async () => {

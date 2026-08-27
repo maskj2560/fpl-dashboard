@@ -1703,3 +1703,32 @@ footer .version {
   align-items: center;
   gap: 0.35rem;
 }
+
+.league-graph {
+  width: 100%;
+  height: 160px;
+  display: block;
+}
+
+.graph-legend {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1.1rem;
+  font-size: var(--fs-sm);
+}
+
+.graph-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.legend-swatch {
+  width: 0.9rem;
+  height: 3px;
+  border-radius: 2px;
+  flex: none;
+}

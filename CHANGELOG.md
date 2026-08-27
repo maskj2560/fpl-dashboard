@@ -15,6 +15,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Kaptein-liga på «Miniligaer»: hvem i ligaen kapteinet hva sist runde,
   med «tapt mot optimal» (beste spiller i start-XI minus kapteinen) og
   sum over de siste 10 ferdige rundene.
+- Sesonggraf på «Miniligaer»: hele ligaens plassering runde for runde i
+  én graf — du og rivalen uthevet, resten dempet, med tegnforklaring.
 
 ## [1.5.0] - 2026-09-XX
 
