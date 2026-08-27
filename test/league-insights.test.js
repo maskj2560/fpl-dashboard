@@ -5,6 +5,8 @@ import {
   buildLeagueGraph,
   pickRival,
   buildRivalCompare,
+  effectiveCaptain,
+  buildCaptainLeague,
 } from '../src/services/league-insights.js';
 
 // ---- fixtures ------------------------------------------------------------
@@ -277,4 +279,176 @@ test('buildRivalCompare finner begges kaptein og flagger TC, og gir null uten pi
     }),
     null,
   );
+});
+
+// ---- effectiveCaptain + buildCaptainLeague -------------------------------
+
+function squadPicks(rows) {
+  // rows: [element, position, flags]
+  return {
+    picks: rows.map(([element, position, flags = {}]) => ({
+      element,
+      position,
+      is_captain: flags.c ?? false,
+      is_vice_captain: flags.v ?? false,
+      multiplier: flags.m ?? (flags.c ? 2 : 1),
+    })),
+  };
+}
+
+function liveOf(pointsById) {
+  return {
+    elements: Object.entries(pointsById).map(([id, p]) => ({
+      id: Number(id),
+      stats: { total_points: p },
+    })),
+  };
+}
+
+const captainResults = [
+  manager(30, 'Mitt lag', 'Marius', { rank: 1 }),
+  manager(20, 'Midtlaget', 'Mads', { rank: 2 }),
+];
+
+test('kapteinens poeng telles rått (1x) selv om multiplier er 2', () => {
+  const picksByEntry = new Map([
+    [30, new Map([[1, squadPicks([[101, 1, { c: true }], [102, 2], [103, 12]])]])],
+    [20, new Map([[1, squadPicks([[102, 1, { c: true }], [101, 2]])]])],
+  ]);
+  const liveByGw = new Map([[1, liveOf({ 101: 12, 102: 8, 103: 4 })]]);
+
+  const table = buildCaptainLeague({
+    results: captainResults,
+    picksByEntry,
+    liveByGw,
+    elements,
+    teamsById,
+    gws: [1],
+    lastGw: 1,
+  });
+
+  const mine = table.rows.find((r) => r.entry === 30);
+  assert.equal(mine.last.name, 'Haaland');
+  assert.equal(mine.last.points, 12, 'rå poeng, aldri ganget med multiplier');
+  assert.equal(mine.last.optimal, 12);
+  assert.equal(mine.last.lost, 0);
+  const rival = table.rows.find((r) => r.entry === 20);
+  assert.equal(rival.last.points, 8);
+  assert.equal(rival.last.optimal, 12); // Haaland i start-XI slo kapteinen
+  assert.equal(rival.last.lost, 4);
+});
+
+test('TC (multiplier 3) endrer ikke råpoengene, men flagges tc', () => {
+  const picks = squadPicks([[101, 1, { c: true, m: 3 }], [102, 2]]);
+  assert.equal(effectiveCaptain(picks).element, 101);
+
+  const picksByEntry = new Map([[30, new Map([[1, picks]])]]);
+  const liveByGw = new Map([[1, liveOf({ 101: 12, 102: 8 })]]);
+  const table = buildCaptainLeague({
+    results: [captainResults[0]],
+    picksByEntry,
+    liveByGw,
+    elements,
+    teamsById,
+    gws: [1],
+    lastGw: 1,
+  });
+  assert.equal(table.rows[0].last.points, 12);
+  assert.equal(table.rows[0].last.tc, true);
+});
+
+test('vise-kapteinen med multiplier 2 er effektiv kaptein når kapteinen sto over', () => {
+  // Kapteinen (101) spilte ikke — FPL flytter bindet: VC får multiplier 2.
+  const picks = squadPicks([
+    [101, 1, { c: true, m: 1 }],
+    [102, 2, { v: true, m: 2 }],
+  ]);
+  assert.equal(effectiveCaptain(picks).element, 102);
+});
+
+test('optimal er beste råscore i start-XI — benken (position > 11) teller ikke', () => {
+  const picksByEntry = new Map([
+    [30, new Map([[1, squadPicks([[102, 1, { c: true }], [104, 2], [101, 12]])]])],
+  ]);
+  // Haaland (101) scorer mest, men står på benken (position 12).
+  const liveByGw = new Map([[1, liveOf({ 101: 12, 102: 8, 104: 6 })]]);
+  const table = buildCaptainLeague({
+    results: [captainResults[0]],
+    picksByEntry,
+    liveByGw,
+    elements,
+    teamsById,
+    gws: [1],
+    lastGw: 1,
+  });
+  assert.equal(table.rows[0].last.optimal, 8);
+  assert.equal(table.rows[0].last.lost, 0);
+});
+
+test('manager uten picks i en runde hoppes over og rounds teller riktig', () => {
+  const picksByEntry = new Map([
+    [30, new Map([
+      [1, squadPicks([[101, 1, { c: true }]])],
+      [2, squadPicks([[102, 1, { c: true }]])],
+    ])],
+    [20, new Map([[1, squadPicks([[102, 1, { c: true }]])], [2, null]])],
+  ]);
+  const liveByGw = new Map([
+    [1, liveOf({ 101: 10, 102: 5 })],
+    [2, liveOf({ 101: 4, 102: 7 })],
+  ]);
+  const table = buildCaptainLeague({
+    results: captainResults,
+    picksByEntry,
+    liveByGw,
+    elements,
+    teamsById,
+    gws: [1, 2],
+    lastGw: 2,
+  });
+
+  const mine = table.rows.find((r) => r.entry === 30);
+  assert.equal(mine.sum.points, 17); // 10 + 7
+  assert.equal(mine.sum.rounds, 2);
+  const rival = table.rows.find((r) => r.entry === 20);
+  assert.equal(rival.sum.points, 5);
+  assert.equal(rival.sum.rounds, 1);
+  assert.equal(rival.last, null, 'uten picks i siste runde er last null');
+});
+
+test('rader sorteres på sum poeng, deretter minst tapt — og vindu som ikke starter på GW1 er capped', () => {
+  const picksByEntry = new Map([
+    [30, new Map([[3, squadPicks([[101, 1, { c: true }], [102, 2]])]])],
+    [20, new Map([[3, squadPicks([[102, 1, { c: true }], [101, 2]])]])],
+  ]);
+  const liveByGw = new Map([[3, liveOf({ 101: 10, 102: 10 })]]);
+  const table = buildCaptainLeague({
+    results: captainResults,
+    picksByEntry,
+    liveByGw,
+    elements,
+    teamsById,
+    gws: [3],
+    lastGw: 3,
+  });
+
+  // Begge har 10 kapteinspoeng; 30 tapte 0, 20 tapte 0 — likhet beholdes,
+  // men sorteringens fasit pinnes med et skjevt tilfelle:
+  assert.deepEqual(table.rows.map((r) => r.entry), [30, 20]);
+  assert.equal(table.capped, true, 'gws starter på 3 — eldre runder er kuttet');
+  assert.equal(table.depth, 10);
+
+  const liveSkewed = new Map([[3, liveOf({ 101: 10, 102: 4 })]]);
+  const skewed = buildCaptainLeague({
+    results: captainResults,
+    picksByEntry,
+    liveByGw: liveSkewed,
+    elements,
+    teamsById,
+    gws: [3],
+    lastGw: 3,
+  });
+  // 30 kapteinet Haaland (10, tapt 0); 20 kapteinet Salah (4, tapt 6).
+  assert.deepEqual(skewed.rows.map((r) => r.entry), [30, 20]);
+  assert.equal(skewed.rows[1].sum.lost, 6);
 });

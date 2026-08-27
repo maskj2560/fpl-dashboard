@@ -9,6 +9,13 @@ import { differentials } from './analysis.js';
 export const MAX_MANAGERS = 20;
 
 /**
+ * Kaptein-ligaens dybde: siste N ferdige runder. Full sesong ville i
+ * verstefall kostet 20 managere × 38 runder = 760 picks-kall ved kald
+ * cache — taket holder kaldstarten under ~210 kall (Marius 27. aug).
+ */
+export const CAPTAIN_LEAGUE_DEPTH = 10;
+
+/**
  * Ligaintern plassering per runde, rekonstruert fra hver managers
  * entry-history: sortér kumulativ total per runde, likhet → lavest
  * entry-id. Manager uten historikkrad for en runde får null (hull i
@@ -195,5 +202,94 @@ export function buildRivalCompare({ myEntry, rivalEntry, results, myPicks, rival
       mine: captainOf(myPicks, elementsById, teamsById),
       rival: captainOf(rivalPicks, elementsById, teamsById),
     },
+  };
+}
+
+/**
+ * Den som faktisk bar bindet: picken med høyest multiplier (dekker TC=3
+ * og vise-kaptein som overtok med 2), fallback is_captain når ingen
+ * multiplier skiller (f.eks. før runden er spilt).
+ */
+export function effectiveCaptain(picks) {
+  const rows = picks?.picks ?? [];
+  if (rows.length === 0) return null;
+  let best = null;
+  for (const p of rows) {
+    if ((p.multiplier ?? 0) >= 2 && (!best || p.multiplier > best.multiplier)) best = p;
+  }
+  return best ?? rows.find((p) => p.is_captain) ?? null;
+}
+
+function livePointsMap(live) {
+  const map = new Map();
+  for (const e of live?.elements ?? []) map.set(e.id, e.stats?.total_points ?? 0);
+  return map;
+}
+
+/**
+ * Kaptein-ligaen: per manager — kapteinens RÅ poeng (1×, aldri ganget
+ * med multiplier; TC identifiserer bare capen) og «tapt mot optimal»,
+ * der optimal = beste råscore i start-XI (position ≤ 11). Sum over
+ * vinduet `gws` (siste CAPTAIN_LEAGUE_DEPTH ferdige runder).
+ */
+export function buildCaptainLeague({ results, picksByEntry, liveByGw, elements, teamsById, gws, lastGw }) {
+  if (!Array.isArray(gws) || gws.length === 0) return null;
+  const elementsById = new Map(elements.map((e) => [e.id, e]));
+
+  const rows = results.map((r) => {
+    let sumPoints = 0;
+    let sumLost = 0;
+    let rounds = 0;
+    let last = null;
+
+    for (const gw of gws) {
+      const picks = picksByEntry.get(r.entry)?.get(gw);
+      const live = liveByGw.get(gw);
+      const cap = effectiveCaptain(picks);
+      if (!picks?.picks || !live || !cap) {
+        if (gw === lastGw) last = null;
+        continue;
+      }
+      const points = livePointsMap(live);
+      const capPoints = points.get(cap.element) ?? 0;
+      const optimal = picks.picks
+        .filter((p) => p.position <= 11)
+        .reduce((best, p) => Math.max(best, points.get(p.element) ?? 0), 0);
+      const lost = optimal - capPoints;
+
+      sumPoints += capPoints;
+      sumLost += lost;
+      rounds += 1;
+
+      if (gw === lastGw) {
+        const element = elementsById.get(cap.element);
+        last = {
+          name: element?.web_name ?? 'Ukjent',
+          teamCode: teamsById?.get(element?.team)?.code ?? null,
+          teamShort: teamsById?.get(element?.team)?.short_name ?? '',
+          points: capPoints,
+          optimal,
+          lost,
+          tc: cap.multiplier === 3,
+        };
+      }
+    }
+
+    return {
+      entry: r.entry,
+      entryName: r.entry_name ?? '',
+      last,
+      sum: { points: sumPoints, lost: sumLost, rounds },
+    };
+  });
+
+  rows.sort((a, b) => b.sum.points - a.sum.points || a.sum.lost - b.sum.lost);
+
+  return {
+    gws,
+    lastGw,
+    depth: CAPTAIN_LEAGUE_DEPTH,
+    capped: gws[0] > 1,
+    rows,
   };
 }
