@@ -20,6 +20,11 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Rival-valget huskes i nettleseren: åpner du «Miniligaer» uten valgt
   rival, sendes du til sist valgte; forsvinner rivalen fra ligaen,
   ryddes valget.
+- «Rundens rapport»: etter hver ferdigspilte runde skrives én rapport om
+  miniligaen (vinner, taper, bevegelser, kapteinsvalg og din runde) —
+  AI-skrevet «roast med glimt i øyet» med nøktern datafallback. Postes
+  til Discord når webhook er satt, og overlever redeploy
+  (`DATA_DIR/report-state.json`). Maks 1 AI-kall per runde.
 
 ## [1.5.0] - 2026-09-XX
 
