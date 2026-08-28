@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildBriefPrompt, buildAdvicePrompt, sanitizeBriefText } from '../src/services/prompts.js';
+import { buildBriefPrompt, buildAdvicePrompt, buildTransferCommentPrompt, sanitizeBriefText } from '../src/services/prompts.js';
 import { briefTextGw1, briefGw1, briefGw1MedData } from './fixtures/brief-gw1.js';
 
 test('buildBriefPrompt tar med deadline, skader og kapteiner', () => {
@@ -489,4 +489,27 @@ test('buildAdvicePrompt lister innkjøpskandidater med data, og «ingen» når l
     transfers: [{ outName: 'Doku', reasons: ['Skadet'], inn: [] }],
   });
   assert.match(uten, /Inn-kandidater: ingen/);
+});
+
+test('overgangskommentar-prompten har sesongtall og spilte bytter, aldri pending', () => {
+  const analysis = {
+    rows: [
+      { event: 2, chip: null, inn: { name: 'Haaland', points: 11 }, ut: { name: 'Watkins', points: 1 }, diff: 10, netto: 6, window: { from: 2, to: 3 }, played: true, pending: false, after5: { diff: 10, gws: 2, complete: false } },
+      { event: 5, chip: null, inn: { name: 'Isak', points: 0 }, ut: { name: 'Salah', points: 0 }, diff: 0, netto: 0, window: null, played: false, pending: true, after5: null },
+    ],
+    season: { played: 1, wins: 1, hitRate: 1, hitsPaid: 1 },
+    totals: { diff: 10, cost: 4, netto: 6, count: 2, skipped: 0 },
+    bestIndex: null,
+    worstIndex: null,
+    maxGw: 3,
+  };
+  const p = buildTransferCommentPrompt(analysis, {
+    baseline: { simTotal: 100, actualTotal: 106, diff: 6 },
+  });
+  assert.match(p, /netto 6 poeng/);
+  assert.match(p, /Watkins ut, Haaland inn/);
+  assert.ok(!p.includes('Isak'), 'pending bytter skal aldri med i grunnlaget');
+  assert.match(p, /Laget uten bytter: 100/);
+  assert.match(p, /REGLER/);
+  assert.match(p, /120 ord/);
 });

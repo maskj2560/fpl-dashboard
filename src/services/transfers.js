@@ -11,8 +11,15 @@ import {
   getEntryTransfers,
   getLive,
   getLiveHistoric,
+  getPicks,
+  getPicksHistoric,
 } from './fplClient.js';
 import { byId, resolvedGw } from './analysis.js';
+import { buildPurchases, buildPriceReport } from './pricing.js';
+import { assembleBaseline } from './baseline.js';
+import { listScenarios, buildFtLedger, evaluateScenario } from './scenarios.js';
+import * as ai from './ai.js';
+import { buildTransferCommentPrompt } from './prompts.js';
 
 // Skjemaet for entry/{id}/transfers/ er uverifisert før sesongstart —
 // records uten disse feltene hoppes over og telles som «ukjente».
@@ -96,7 +103,36 @@ export function buildTransferAnalysis({ transfers, history, bootstrap, liveByGw 
     const penaltyShare = (costByEvent.get(from) ?? 0) / (countByEvent.get(from) ?? 1);
     const chipName = chipByEvent.get(from);
 
+    // Per-runde-nedbrytning med løpende sum — viser NÅR byttet snudde.
+    const perGw = [];
+    if (played) {
+      let cum = 0;
+      for (let gw = from; gw <= to; gw++) {
+        const inn = pointsByGw.get(gw)?.get(tr.element_in) ?? 0;
+        const ut = pointsByGw.get(gw)?.get(tr.element_out) ?? 0;
+        cum += inn - ut;
+        perGw.push({ gw, inn, ut, diff: inn - ut, cum });
+      }
+    }
+
+    // Milepælen «etter 5 runder»: de første 5 rundene av vinduet. Komplett
+    // når 5 runder er talt, eller når vinduet er terminert (dommen er endelig
+    // selv om byttet varte kortere).
+    let after5 = null;
+    if (played) {
+      const milestone = perGw.slice(0, 5);
+      after5 = {
+        diff: milestone[milestone.length - 1].cum,
+        gws: milestone.length,
+        complete: milestone.length === 5 || to < maxGw,
+      };
+    }
+
     return {
+      perGw,
+      after5,
+      // Kjøpsprisen fra transfer-recorden — grunnlaget for alternativ-analysen.
+      innCost: Number.isInteger(tr.element_in_cost) ? tr.element_in_cost : null,
       event: from,
       chip: chipName === 'wildcard' || chipName === 'freehit' ? chipName : null,
       inn: { ...ref(tr.element_in), points: innPoints },
@@ -123,8 +159,31 @@ export function buildTransferAnalysis({ transfers, history, bootstrap, liveByGw 
     worstIndex = playedIdx.reduce((a, b) => (rows[b].netto < rows[a].netto ? b : a));
   }
 
+  // Alternativ-analysen: hva de nærmeste kandidatene gjorde i samme vindu.
+  for (const r of rows) {
+    r.alternativer = buildAlternatives({
+      row: r,
+      buyCost: r.innCost,
+      elements: bootstrap.elements,
+      teamsById,
+      liveByGw,
+    });
+  }
+
+  // Sesongtall for toppkortet. `totals`-formen er låst av eksisterende
+  // konsumenter — nye aggregat bor her.
+  const playedRows = rows.filter((r) => r.played);
+  const wins = playedRows.filter((r) => r.netto > 0).length;
+  const season = {
+    played: playedRows.length,
+    wins,
+    hitRate: playedRows.length ? wins / playedRows.length : null,
+    hitsPaid: totalCost / 4,
+  };
+
   return {
     rows,
+    season,
     totals: {
       diff: totalDiff,
       cost: totalCost,
@@ -166,4 +225,203 @@ export async function assembleTransferAnalysis({ teamId = config.fplTeamId } = {
   }
 
   return buildTransferAnalysis({ transfers, history, bootstrap, liveByGw });
+}
+
+/**
+ * Poengsum + per-runde for en vilkårlig spiller i et vindu. Deles av
+ * alternativ-analysen og GET /api/alternativ.json — aldri element-summary.
+ */
+export function candidatePoints({ id, from, to, liveByGw }) {
+  const perGw = [];
+  let points = 0;
+  for (let gw = from; gw <= to; gw++) {
+    const p =
+      (liveByGw.get(gw)?.elements ?? []).find((e) => e.id === id)?.stats?.total_points ?? 0;
+    points += p;
+    perGw.push({ gw, p });
+  }
+  return { points, perGw };
+}
+
+/** Validerer query-parametrene til GET /api/alternativ.json. */
+export function parseAltQuery(query, maxGw) {
+  const spiller = Number(query?.spiller);
+  const fra = Number(query?.fra);
+  const til = Number(query?.til);
+  const ok =
+    [spiller, fra, til].every(Number.isInteger) &&
+    spiller >= 1 &&
+    fra >= 1 &&
+    fra <= til &&
+    til <= maxGw;
+  return ok ? { ok: true, spiller, fra, til } : { ok: false };
+}
+
+/**
+ * «Hva om jeg kjøpte Z i stedet»: kandidater i samme posisjon med startpris
+ * (now_cost − cost_change_start, dokumentert proxy for pris på
+ * kjøpstidspunktet) innenfor toleransen, målt i byttets eget vindu og
+ * rangert på poeng. Byttets egne spillere er aldri kandidater.
+ */
+export function buildAlternatives({ row, buyCost, elements, teamsById, liveByGw, limit = 3, tolerance = 5 }) {
+  if (!row?.played || !Number.isInteger(buyCost)) return [];
+  const type = (elements ?? []).find((e) => e.id === row.inn.id)?.element_type;
+  if (type == null) return [];
+  const { from, to } = row.window;
+
+  const pointsByGw = new Map(
+    [...liveByGw].map(([gw, live]) => [
+      gw,
+      new Map((live?.elements ?? []).map((e) => [e.id, e.stats?.total_points ?? 0])),
+    ]),
+  );
+  const sumFor = (id) => {
+    let sum = 0;
+    for (let gw = from; gw <= to; gw++) sum += pointsByGw.get(gw)?.get(id) ?? 0;
+    return sum;
+  };
+
+  return (elements ?? [])
+    .filter(
+      (e) =>
+        e.element_type === type &&
+        e.id !== row.inn.id &&
+        e.id !== row.ut.id &&
+        Number.isInteger(e.now_cost) &&
+        Number.isInteger(e.cost_change_start) &&
+        Math.abs(e.now_cost - e.cost_change_start - buyCost) <= tolerance,
+    )
+    .map((e) => {
+      const team = teamsById.get(e.team);
+      const points = sumFor(e.id);
+      return {
+        id: e.id,
+        name: e.web_name,
+        teamShort: team?.short_name ?? null,
+        teamCode: team?.code ?? null,
+        startPrice: e.now_cost - e.cost_change_start,
+        points,
+        delta: points - row.inn.points,
+      };
+    })
+    .sort((a, b) => b.points - a.points)
+    .slice(0, limit);
+}
+
+/**
+ * Henter alt /overganger-siden trenger. Analysen er kjernen og feiler hardt;
+ * tilleggsseksjonene (prisrapporten m.fl.) feiler mykt hver for seg — siden
+ * vises alltid med det som finnes. Kalladferden til assembleTransferAnalysis
+ * er uendret; kun cachede fplClient-kall kommer i tillegg.
+ */
+export async function assembleTransfersPage({ teamId = config.fplTeamId } = {}) {
+  const [analysis, bootstrap, transfers, history] = await Promise.all([
+    assembleTransferAnalysis({ teamId }),
+    getBootstrap(),
+    getEntryTransfers(teamId),
+    getEntryHistory(teamId),
+  ]);
+
+  let priceReport = null;
+  try {
+    const gw = Math.max(1, analysis.maxGw);
+    const picks = await getPicks(teamId, gw);
+    // gw > 1 betyr at runde 1 er historikk — 6 t-cachen er trygg.
+    const gw1Picks = gw === 1 ? picks : await getPicksHistoric(teamId, 1);
+    const purchases = buildPurchases({
+      transfers,
+      chips: history?.chips,
+      gw1Picks,
+      elements: bootstrap.elements,
+    });
+    priceReport = buildPriceReport({
+      picks,
+      purchases,
+      elements: bootstrap.elements,
+      teamsById: byId(bootstrap.teams ?? []),
+      transfers,
+      chips: history?.chips,
+    });
+  } catch {
+    priceReport = null; // picks kan mangle (404 før sesongstart) — aldri krasj
+  }
+
+  let baseline = null;
+  try {
+    baseline = await assembleBaseline({ teamId, bootstrap, history, analysis });
+  } catch {
+    baseline = null;
+  }
+
+  // Lagrede scenarier evalueres mot samme poenggrunnlag som analysen —
+  // live-spennet utvides bare når et scenario starter før første transfer.
+  let scenarios = [];
+  try {
+    const stored = listScenarios();
+    if (stored.length > 0) {
+      const maxGw = analysis.maxGw;
+      const ftLedger = buildFtLedger({ history, chips: history?.chips });
+      const minEvent = Math.min(...stored.map((s) => s.event));
+      const liveByGw = new Map();
+      if (minEvent <= maxGw) {
+        const eventsById = new Map(bootstrap.events.map((e) => [e.id, e]));
+        const gws = [];
+        for (let gw = Math.max(1, minEvent); gw <= maxGw; gw++) gws.push(gw);
+        const results = await Promise.all(
+          gws.map((gw) => (eventsById.get(gw)?.finished ? getLiveHistoric(gw) : getLive(gw))),
+        );
+        gws.forEach((gw, i) => liveByGw.set(gw, results[i]));
+      }
+      const elementsById = byId(bootstrap.elements);
+      const teamsById = byId(bootstrap.teams ?? []);
+      scenarios = stored.map((s) => ({
+        ...s,
+        evaluering: evaluateScenario({
+          scenario: s,
+          analysisRows: analysis.rows,
+          ftLedger,
+          liveByGw,
+          maxGw,
+          elementsById,
+          teamsById,
+        }),
+      }));
+    }
+  } catch {
+    scenarios = [];
+  }
+
+  return { analysis, priceReport, baseline, scenarios, aiComment: null };
+}
+
+/** Cachenøkkel for AI-kommentaren — deles av refresh.js og ruta. */
+export function transferCommentCacheKey(teamId = config.fplTeamId) {
+  return `transfer-comment:${teamId}`;
+}
+
+/**
+ * Genererer AI-kommentaren til overgangsanalysen. Kalles KUN av
+ * refresh.js-tikket (aldri fra en rute — ruta leser ai.getCached).
+ * Null når det ikke finnes spilte bytter: 0 bytter = 0 kall.
+ * Maks én generering per døgn via minIntervalMs.
+ */
+export async function generateTransferComment({ teamId = config.fplTeamId } = {}) {
+  const analysis = await assembleTransferAnalysis({ teamId });
+  if (analysis.season.played === 0) return null;
+
+  let baseline = null;
+  try {
+    const [bootstrap, history] = await Promise.all([getBootstrap(), getEntryHistory(teamId)]);
+    baseline = await assembleBaseline({ teamId, bootstrap, history, analysis });
+  } catch {
+    baseline = null; // kommentaren klarer seg uten baseline-differansen
+  }
+
+  return ai.generate({
+    cacheKey: transferCommentCacheKey(teamId),
+    minIntervalMs: 24 * 60 * 60_000,
+    system: 'Du er en norsk Fantasy Premier League-ekspert. Vurder overganger presist, kort og ærlig.',
+    prompt: buildTransferCommentPrompt(analysis, { baseline }),
+    maxTokens: 1500,
+  });
 }

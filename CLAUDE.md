@@ -37,9 +37,23 @@ src/services/
   prompts.js       rene promptbyggere (brief + rådgiver) og
                    sanitizeBriefText (etterkontroll av AI-briefen)
   live.js          live-visningen: buildLive (ren data), assembleLive (henter)
-  transfers.js     «Overganger»-siden: buildTransferAnalysis (ren hva
-                   hvis-analyse av egne transfers), assembleTransferAnalysis
-                   (henter — maks 38 live-kall, aldri element-summary)
+  transfers.js     «Overganger»-siden: buildTransferAnalysis (ren analyse med
+                   per-runde-detaljer, milepæl og alternativer),
+                   assembleTransfersPage (hele siden, delseksjoner feiler
+                   mykt), generateTransferComment (AI-kommentaren — kalles
+                   kun av refresh.js). Aldri element-summary
+  pricing.js       (v1.5.0) rene prisfunksjoner: sellingPrice (FPLs
+                   halveringsregel), buildPurchases (kjøpshistorikk),
+                   buildPriceReport (prisgevinst-seksjonen)
+  baseline.js      (v1.5.0) «laget uten bytter»: simulateNoTransferSeason
+                   (ren autosub-simulering) + assembleBaseline (henter;
+                   getPicksHistoric for ferdige runder)
+  scenarios.js     (v1.5.0) hva hvis-planleggeren: buildPlannerData (payload
+                   til /api/planlegger.json), validateScenario (server er
+                   fasit), buildFtLedger (gratisbytte-regnskap, selvvalidert
+                   mot event_transfers_cost), evaluateScenario, og
+                   scenario-CRUD med persistens i DATA_DIR/scenarios.json
+                   (samme volum-mønster som brief-markøren)
   leagues.js       hvilke ligaer som vises; knownLeagueCount() for /health
   clubAssets.js    hvilke klubbbilder som finnes i public/img/clubs/. Leses én
                    gang ved oppstart til app.locals.clubAssets; partialene spør
@@ -101,7 +115,7 @@ Base `https://fantasy.premierleague.com/api/` — åpent, ingen nøkkel. Viktig:
 
 Alle AI-kall går gjennom `ai.js`. Modell konfigureres med `AI_MODEL`
 (default `claude-sonnet-5`; `claude-haiku-4-5` er billig-alternativet).
-Fire funksjoner, alle kun aktive når `ANTHROPIC_API_KEY` er satt:
+Fem funksjoner, alle kun aktive når `ANTHROPIC_API_KEY` er satt:
 
 1. **Nyhetsoppsummering** (`news.js`): RSS-titler + ingresser oppsummeres til
    korte norske FPL-punkter. Maks én generering per 30 min, `max_tokens` 2000.
@@ -120,6 +134,10 @@ ubrukte tokens koster ingenting. Lengden styres av instruksjonene i prompten.
 4. **Auto-brief** (`notify.js`): postes til `DISCORD_WEBHOOK_URL` X timer før
    deadline (`BRIEF_HOURS_BEFORE_DEADLINE`, default 24). 1–2 kall per uke.
    Bruker samme `generateAiBrief()` som /brief, så de to kan ikke divergere.
+5. **Overgangskommentar** (/overganger, fra v1.5.0): kort norsk vurdering av
+   byttene («godt bytte, dårlig timing»). Maks 1 generering per døgn via
+   `refresh.js`, `max_tokens` 1500, kun når det finnes spilte bytter
+   (0 bytter = 0 kall). Ruta leser kun cachen.
 
 Ved feil eller tomt svar venter `ai.js` 5 minutter før nytt forsøk på samme
 nøkkel (`FAILURE_BACKOFF_MS`), slik at en ugyldig nøkkel ikke gir ett betalt
@@ -130,9 +148,10 @@ En sidevisning blokkerer aldri på et AI-kall og utløser aldri et — den leser
 cachen (`ai.getCached`). Eneste unntak: rådgiverklikket på /lag venter når
 cachen er helt kald. Utgått tekst serveres umiddelbart og fornyes i
 bakgrunnen (`swr: true` i `ai.generate`). Takt: briefen 1x/døgn + hver time
-i et 6-timersvindu før deadline, nyhetene hver 6. time, pluss ett tikk ved
+i et 6-timersvindu før deadline, nyhetene hver 6. time,
+overgangskommentaren 1x/døgn (fra v1.5.0), pluss ett tikk ved
 oppstart (AI-cachen bor i minnet og er tom etter hver deploy) — til sammen
-~41–45 kall/uke. Prompts holdes korte. Uten nøkkel vises rå data
+~48–52 kall/uke. Prompts holdes korte. Uten nøkkel vises rå data
 (feed-liste, data-brief) — AI er alltid et tillegg, aldri et krav.
 
 ## Konvensjoner

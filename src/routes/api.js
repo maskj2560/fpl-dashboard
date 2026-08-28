@@ -2,7 +2,16 @@ import { Router } from 'express';
 import config from '../config.js';
 import { assembleBrief } from '../services/brief.js';
 import { assembleLive } from '../services/live.js';
-import { getBootstrap, getFixtures, getPicks, getEntry, staleInfo } from '../services/fplClient.js';
+import {
+  getBootstrap,
+  getFixtures,
+  getPicks,
+  getPicksHistoric,
+  getEntry,
+  getEntryTransfers,
+  getEntryHistory,
+  staleInfo,
+} from '../services/fplClient.js';
 import {
   byId,
   captainSuggestions,
@@ -10,10 +19,15 @@ import {
   nextEvent,
   nextOpponents,
   POSITIONS_SHORT,
+  resolvedGw,
   resolvePicks,
   transferInCandidates,
   transferOutCandidates,
 } from '../services/analysis.js';
+import { buildPurchases } from '../services/pricing.js';
+import { buildPlannerData, addScenario, removeScenario } from '../services/scenarios.js';
+import { candidatePoints, parseAltQuery } from '../services/transfers.js';
+import { getLive, getLiveHistoric } from '../services/fplClient.js';
 import { formatDateTime } from '../services/format.js';
 import * as ai from '../services/ai.js';
 import { buildAdvicePrompt } from '../services/prompts.js';
@@ -24,6 +38,93 @@ router.get('/brief.json', async (req, res, next) => {
   try {
     const brief = await assembleBrief();
     res.json({ ...brief, dataAlder: staleInfo()?.ageSec ?? null });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Datagrunnlaget for hva hvis-planleggeren på /overganger: min tropp med
+// salgspriser + alle spillere. Deles av GET-en (klienten henter lazy) og
+// POST-en (server-side validering mot samme fasit). Kun cachede kall.
+async function assemblePlanner() {
+  const teamId = config.fplTeamId;
+  const [bootstrap, fixtures, transfers, history] = await Promise.all([
+    getBootstrap(),
+    getFixtures(),
+    getEntryTransfers(teamId),
+    getEntryHistory(teamId),
+  ]);
+  const gw = Math.max(1, resolvedGw(bootstrap.events));
+  const picks = await getPicks(teamId, gw);
+  const gw1Picks = gw === 1 ? picks : await getPicksHistoric(teamId, 1);
+  const purchases = buildPurchases({
+    transfers,
+    chips: history?.chips,
+    gw1Picks,
+    elements: bootstrap.elements,
+  });
+  const fromGw = nextEvent(bootstrap.events)?.id ?? gw;
+  return buildPlannerData({ bootstrap, fixtures, picks, purchases, fromGw });
+}
+
+router.get('/planlegger.json', async (req, res, next) => {
+  if (!config.hasTeamId) {
+    return res.status(400).json({ error: 'FPL_TEAM_ID er ikke satt' });
+  }
+  try {
+    res.json(await assemblePlanner());
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Scenario-CRUD. Server-valideringen (validateScenario via addScenario) er
+// autoritativ — klientens regelsjekk er bare UX. Persistens i DATA_DIR.
+router.post('/scenarier', async (req, res, next) => {
+  if (!config.hasTeamId) {
+    return res.status(400).json({ error: 'FPL_TEAM_ID er ikke satt' });
+  }
+  try {
+    const body = req.body ?? {};
+    const input = {
+      name: typeof body.name === 'string' ? body.name : '',
+      event: Number(body.event),
+      moves: Array.isArray(body.moves)
+        ? body.moves.map((m) => ({ out: Number(m?.out), in: Number(m?.in) }))
+        : [],
+    };
+    const planner = await assemblePlanner();
+    const result = addScenario(input, planner);
+    if (!result.ok) return res.status(result.status).json({ errors: result.errors });
+    res.status(201).json({ scenario: result.scenario });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.delete('/scenarier/:id', (req, res) => {
+  const result = removeScenario(String(req.params.id));
+  res.status(result.status).end();
+});
+
+// Egen kandidat i alternativ-analysen: poengene til en vilkårlig spiller i
+// et vindu. Leser kun cachede live-runder — aldri element-summary.
+router.get('/alternativ.json', async (req, res, next) => {
+  try {
+    const bootstrap = await getBootstrap();
+    const maxGw = resolvedGw(bootstrap.events);
+    const parsed = parseAltQuery(req.query, maxGw);
+    if (!parsed.ok) {
+      return res.status(400).json({ error: `Ugyldige parametre — spiller, fra og til må være tall, 1 ≤ fra ≤ til ≤ ${maxGw}` });
+    }
+    const eventsById = new Map(bootstrap.events.map((e) => [e.id, e]));
+    const gws = [];
+    for (let gw = parsed.fra; gw <= parsed.til; gw++) gws.push(gw);
+    const results = await Promise.all(
+      gws.map((gw) => (eventsById.get(gw)?.finished ? getLiveHistoric(gw) : getLive(gw))),
+    );
+    const liveByGw = new Map(gws.map((gw, i) => [gw, results[i]]));
+    res.json(candidatePoints({ id: parsed.spiller, from: parsed.fra, to: parsed.til, liveByGw }));
   } catch (err) {
     next(err);
   }

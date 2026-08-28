@@ -1,7 +1,17 @@
 import { test, describe, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildTransferAnalysis, assembleTransferAnalysis } from '../src/services/transfers.js';
+import {
+  buildTransferAnalysis,
+  assembleTransferAnalysis,
+  assembleTransfersPage,
+  buildAlternatives,
+  candidatePoints,
+  parseAltQuery,
+  generateTransferComment,
+  transferCommentCacheKey,
+} from '../src/services/transfers.js';
 import { clear } from '../src/services/cache.js';
+import * as ai from '../src/services/ai.js';
 
 // GW1–2 ferdige, GW3 pågår → maxGw 3.
 const bootstrap = {
@@ -16,11 +26,12 @@ const bootstrap = {
     { id: 3, short_name: 'LIV', name: 'Liverpool', code: 14 },
   ],
   elements: [
-    { id: 10, web_name: 'Haaland', team: 1 },
-    { id: 11, web_name: 'Watkins', team: 2 },
-    { id: 12, web_name: 'Salah', team: 3 },
-    { id: 13, web_name: 'Saka', team: 3 },
-    { id: 14, web_name: 'Isak', team: 3 },
+    { id: 10, web_name: 'Haaland', team: 1, element_type: 4, now_cost: 145, cost_change_start: 4 },
+    { id: 11, web_name: 'Watkins', team: 2, element_type: 4, now_cost: 88, cost_change_start: -2 },
+    { id: 12, web_name: 'Salah', team: 3, element_type: 3, now_cost: 130, cost_change_start: 0 },
+    { id: 13, web_name: 'Saka', team: 3, element_type: 3, now_cost: 60, cost_change_start: 5 },
+    { id: 14, web_name: 'Isak', team: 3, element_type: 4, now_cost: 138, cost_change_start: -4 },
+    { id: 15, web_name: 'Mateta', team: 2, element_type: 4, now_cost: 140, cost_change_start: 0 },
   ],
 };
 
@@ -39,9 +50,9 @@ function liveFor(points) {
   };
 }
 const liveByGw = new Map([
-  [1, liveFor({ 10: 5, 11: 2, 12: 8, 13: 3, 14: 6 })],
-  [2, liveFor({ 10: 9, 11: 1, 12: 4, 13: 7, 14: 2 })],
-  [3, liveFor({ 10: 2, 11: 0, 12: 6, 13: 1, 14: 3 })],
+  [1, liveFor({ 10: 5, 11: 2, 12: 8, 13: 3, 14: 6, 15: 1 })],
+  [2, liveFor({ 10: 9, 11: 1, 12: 4, 13: 7, 14: 2, 15: 7 })],
+  [3, liveFor({ 10: 2, 11: 0, 12: 6, 13: 1, 14: 3, 15: 4 })],
 ]);
 const history = {
   current: [
@@ -233,6 +244,144 @@ test('før sesongstart (maxGw 0) er alt pending', () => {
   assert.equal(a.rows[0].pending, true);
 });
 
+test('perGw dekker vinduet med løpende sum', () => {
+  const a = buildTransferAnalysis({ transfers: [t(11, 10, 2)], history, bootstrap, liveByGw });
+  assert.deepEqual(a.rows[0].perGw, [
+    { gw: 2, inn: 9, ut: 1, diff: 8, cum: 8 },
+    { gw: 3, inn: 2, ut: 0, diff: 2, cum: 10 },
+  ]);
+});
+
+test('perGw er tom og after5 null for pending og angrede bytter', () => {
+  const pendingA = buildTransferAnalysis({
+    transfers: [t(11, 10, 4)],
+    history, bootstrap, liveByGw,
+  });
+  assert.deepEqual(pendingA.rows[0].perGw, []);
+  assert.equal(pendingA.rows[0].after5, null);
+
+  const angret = buildTransferAnalysis({
+    transfers: [t(11, 10, 2), t(10, 11, 2, '2026-02-01T01:00:00Z')],
+    history, bootstrap, liveByGw,
+  });
+  assert.deepEqual(angret.rows[0].perGw, []);
+  assert.equal(angret.rows[0].after5, null);
+});
+
+test('after5: åpent vindu kortere enn 5 runder er ukomplett', () => {
+  const a = buildTransferAnalysis({ transfers: [t(11, 10, 2)], history, bootstrap, liveByGw });
+  assert.deepEqual(a.rows[0].after5, { diff: 10, gws: 2, complete: false });
+});
+
+test('after5: terminert vindu er komplett selv med færre enn 5 runder', () => {
+  const a = buildTransferAnalysis({
+    transfers: [t(11, 10, 2), t(10, 12, 3)],
+    history, bootstrap, liveByGw,
+  });
+  assert.deepEqual(a.rows[0].after5, { diff: 8, gws: 1, complete: true });
+});
+
+test('after5 stopper ved 5 runder selv om vinduet er lengre', () => {
+  // 6 runder: transfer i r1, vindu 1–6 → milepælen teller kun r1–r5.
+  const seks = {
+    ...bootstrap,
+    events: [1, 2, 3, 4, 5].map((id) => ({ id, is_current: false, finished: true }))
+      .concat([{ id: 6, is_current: true, finished: false }]),
+  };
+  const live6 = new Map(
+    [1, 2, 3, 4, 5, 6].map((gw) => [gw, liveFor({ 10: 3, 11: 1 })]),
+  );
+  const a = buildTransferAnalysis({
+    transfers: [t(11, 10, 1)],
+    history: { current: [], chips: [] },
+    bootstrap: seks,
+    liveByGw: live6,
+  });
+  assert.deepEqual(a.rows[0].window, { from: 1, to: 6 });
+  assert.deepEqual(a.rows[0].after5, { diff: 10, gws: 5, complete: true }); // 5 × (3−1)
+  assert.equal(a.rows[0].perGw.length, 6);
+});
+
+test('season teller treffprosent kun over spilte rader', () => {
+  const a = buildTransferAnalysis({
+    transfers: [t(11, 10, 2), t(13, 12, 2, '2026-02-01T01:00:00Z'), t(14, 13, 4)],
+    history, bootstrap, liveByGw,
+  });
+  // r0 netto 8 (treff), r1 netto 0 (ikke treff), r2 pending (teller ikke).
+  assert.deepEqual(a.season, { played: 2, wins: 1, hitRate: 0.5, hitsPaid: 1 });
+});
+
+test('season uten spilte rader har hitRate null, hitsPaid fra history', () => {
+  const a = buildTransferAnalysis({ transfers: [], history, bootstrap, liveByGw: new Map() });
+  assert.deepEqual(a.season, { played: 0, wins: 0, hitRate: null, hitsPaid: 1 });
+
+  const b = buildTransferAnalysis({
+    transfers: [],
+    history: { current: [], chips: [] },
+    bootstrap,
+    liveByGw: new Map(),
+  });
+  assert.equal(b.season.hitsPaid, 0);
+});
+
+test('alternativer: samme posisjon og startpris innen toleransen, rangert på poeng', () => {
+  const a = buildTransferAnalysis({ transfers: [t(11, 10, 2)], history, bootstrap, liveByGw });
+  const alt = buildAlternatives({
+    row: a.rows[0],
+    buyCost: 140,
+    elements: bootstrap.elements,
+    teamsById: new Map(bootstrap.teams.map((team) => [team.id, team])),
+    liveByGw,
+  });
+  // Kandidater (angripere, start 135–145): Mateta 140 (11 p), Isak 142 (5 p).
+  assert.deepEqual(alt.map((c) => [c.id, c.points, c.delta]), [[15, 11, 0], [14, 5, -6]]);
+  assert.equal(alt[0].name, 'Mateta');
+  assert.equal(alt[0].startPrice, 140);
+  assert.equal(alt[0].teamShort, 'AVL');
+});
+
+test('alternativer: byttets egne spillere er aldri kandidater, selv i prisklassen', () => {
+  const a = buildTransferAnalysis({ transfers: [t(11, 10, 2)], history, bootstrap, liveByGw });
+  const alt = buildAlternatives({
+    row: a.rows[0],
+    buyCost: 140,
+    elements: bootstrap.elements,
+    teamsById: new Map(bootstrap.teams.map((team) => [team.id, team])),
+    liveByGw,
+    tolerance: 100, // slipper inn Watkins (start 90) på pris — men aldri på id
+  });
+  assert.ok(!alt.some((c) => c.id === 10 || c.id === 11));
+});
+
+test('alternativer: ukjent kjøpspris eller pending bytte gir tom liste', () => {
+  const a = buildTransferAnalysis({
+    transfers: [t(11, 10, 2), t(13, 12, 4)],
+    history, bootstrap, liveByGw,
+  });
+  const felles = {
+    elements: bootstrap.elements,
+    teamsById: new Map(bootstrap.teams.map((team) => [team.id, team])),
+    liveByGw,
+  };
+  assert.deepEqual(buildAlternatives({ row: a.rows[0], buyCost: null, ...felles }), []);
+  assert.deepEqual(buildAlternatives({ row: a.rows[1], buyCost: 130, ...felles }), []); // pending
+});
+
+test('candidatePoints summerer vinduet og gir per-runde-liste', () => {
+  const r = candidatePoints({ id: 15, from: 2, to: 3, liveByGw });
+  assert.deepEqual(r, { points: 11, perGw: [{ gw: 2, p: 7 }, { gw: 3, p: 4 }] });
+});
+
+test('parseAltQuery: gyldige tall innenfor 1..maxGw, ellers ok false', () => {
+  assert.deepEqual(parseAltQuery({ spiller: '15', fra: '2', til: '3' }, 3), {
+    ok: true, spiller: 15, fra: 2, til: 3,
+  });
+  assert.equal(parseAltQuery({ spiller: '15', fra: '2', til: '4' }, 3).ok, false); // til > maxGw
+  assert.equal(parseAltQuery({ spiller: 'x', fra: '2', til: '3' }, 3).ok, false); // ikke tall
+  assert.equal(parseAltQuery({ spiller: '15', fra: '3', til: '2' }, 3).ok, false); // fra > til
+  assert.equal(parseAltQuery({}, 3).ok, false);
+});
+
 // Assemble-testene mocker global fetch (mønster fra test/fplClient.test.js);
 // hooks scopes til denne describe-blokken så de rene testene over er uberørt.
 describe('assembleTransferAnalysis', () => {
@@ -268,6 +417,96 @@ describe('assembleTransferAnalysis', () => {
     assert.equal(a.rows[0].diff, 10); // (9+2) − (1+0)
     assert.ok(!calls.some((u) => /event\/1\/live/.test(u)), 'runde 1 skal ikke hentes');
     assert.ok(!calls.some((u) => /element-summary/.test(u)), 'aldri element-summary');
+  });
+
+  test('assembleTransfersPage bygger prisrapport fra picks, aldri element-summary', async () => {
+    const routes = [
+      [/bootstrap-static\/$/, bootstrap],
+      [/entry\/42\/transfers\/$/, [{ ...t(11, 10, 2), element_in_cost: 140, element_out_cost: 88 }]],
+      [/entry\/42\/history\/$/, history],
+      [/event\/2\/live\/$/, liveFor({ 10: 9, 11: 1 })],
+      [/event\/3\/live\/$/, liveFor({ 10: 2, 11: 0 })],
+      [/entry\/42\/event\/3\/picks\/$/, { picks: [{ element: 10 }], entry_history: { bank: 15, value: 1003 } }],
+      [/entry\/42\/event\/1\/picks\/$/, { picks: [{ element: 11 }] }],
+    ];
+    globalThis.fetch = async (url) => {
+      const hit = routes.find(([re]) => re.test(String(url)));
+      assert.ok(hit, `uventet URL: ${url}`);
+      calls.push(String(url));
+      return { ok: true, status: 200, json: async () => hit[1] };
+    };
+
+    const page = await assembleTransfersPage({ teamId: 42 });
+
+    assert.equal(page.analysis.totals.count, 1);
+    assert.equal(page.priceReport.holdings[0].sellPrice, 142); // 140 + floor(5/2)
+    assert.equal(page.priceReport.bank, 15);
+    assert.ok(!calls.some((u) => /element-summary/.test(u)), 'aldri element-summary');
+  });
+
+  test('assembleTransfersPage feiler mykt når picks mangler — analysen vises', async () => {
+    const routes = [
+      [/bootstrap-static\/$/, bootstrap],
+      [/entry\/42\/transfers\/$/, [t(11, 10, 2)]],
+      [/entry\/42\/history\/$/, history],
+      [/event\/2\/live\/$/, liveFor({ 10: 9, 11: 1 })],
+      [/event\/3\/live\/$/, liveFor({ 10: 2, 11: 0 })],
+    ];
+    globalThis.fetch = async (url) => {
+      const hit = routes.find(([re]) => re.test(String(url)));
+      if (!hit) return { ok: false, status: 404, json: async () => ({}) };
+      return { ok: true, status: 200, json: async () => hit[1] };
+    };
+
+    const page = await assembleTransfersPage({ teamId: 42 });
+
+    assert.equal(page.analysis.rows[0].diff, 10);
+    assert.equal(page.priceReport, null);
+  });
+
+  test('generateTransferComment: null uten spilte bytter — AI kalles aldri', async () => {
+    const aiCalls = [];
+    ai._setClient({ messages: { create: async (args) => { aiCalls.push(args); return { model: 'fake', usage: {}, content: [{ type: 'text', text: 'x' }] }; } } });
+    globalThis.fetch = async (url) => {
+      if (/transfers\/$/.test(String(url))) return { ok: true, status: 200, json: async () => [] };
+      if (/history\/$/.test(String(url))) return { ok: true, status: 200, json: async () => history };
+      return { ok: true, status: 200, json: async () => bootstrap };
+    };
+    try {
+      const result = await generateTransferComment({ teamId: 42 });
+      assert.equal(result, null);
+      assert.equal(aiCalls.length, 0);
+    } finally {
+      ai._setClient(null);
+      ai._reset();
+    }
+  });
+
+  test('generateTransferComment: genererer fra analysen og cacher på nøkkelen', async () => {
+    const aiCalls = [];
+    ai._setClient({ messages: { create: async (args) => { aiCalls.push(args); return { model: 'fake', usage: {}, content: [{ type: 'text', text: '**Godt** bytte.' }] }; } } });
+    const routes = [
+      [/bootstrap-static\/$/, bootstrap],
+      [/entry\/42\/transfers\/$/, [{ ...t(11, 10, 2), element_in_cost: 140, element_out_cost: 88 }]],
+      [/entry\/42\/history\/$/, history],
+      [/event\/2\/live\/$/, liveFor({ 10: 9, 11: 1 })],
+      [/event\/3\/live\/$/, liveFor({ 10: 2, 11: 0 })],
+    ];
+    globalThis.fetch = async (url) => {
+      const hit = routes.find(([re]) => re.test(String(url)));
+      if (!hit) return { ok: false, status: 404, json: async () => ({}) }; // picks: baseline feiler mykt
+      return { ok: true, status: 200, json: async () => hit[1] };
+    };
+    try {
+      const result = await generateTransferComment({ teamId: 42 });
+      assert.equal(result.text, '**Godt** bytte.');
+      assert.equal(ai.getCached(transferCommentCacheKey(42))?.text, '**Godt** bytte.');
+      assert.equal(aiCalls.length, 1);
+      assert.match(aiCalls[0].messages[0].content, /Watkins ut, Haaland inn/);
+    } finally {
+      ai._setClient(null);
+      ai._reset();
+    }
   });
 
   test('uten transfers hentes ingen live-runder', async () => {

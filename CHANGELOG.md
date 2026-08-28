@@ -7,6 +7,42 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-09-XX
+
+### Added
+
+- «Overganger»-analysen bryter hvert bytte ned per runde (poeng inn/ut
+  med løpende sum), gir en milepælsdom «etter 5 runder», og teller
+  sesongtall: spilte bytter, treffprosent og antall -4-trekk betalt.
+- «Overganger»-siden viser treffprosent og antall trekk i sesongkortet,
+  og hver rad i byttetabellen kan utvides til per-runde-detaljene med
+  milepælsdommen.
+- Ny «Prisgevinst»-seksjon på «Overganger»: kjøpspris mot dagens pris og
+  salgspris per spiller (FPLs halveringsregel), sum for troppen, og salg
+  der prisen siden har steget.
+- Ny «Laget uten bytter»-seksjon på «Overganger»: GW1-laget simuleres
+  urørt gjennom sesongen (med autosubs og kapteinsregler) og sammenlignes
+  med faktisk poengsum — svaret på om byttene har lønt seg totalt.
+- Ny hva hvis-planlegger på «Overganger»: velg spiller ut og inn, se
+  tallene side om side (pris/salgspris, form, forventet poeng, FDR,
+  eierandel, status) og få FPL-reglene sjekket — posisjon, budsjett med
+  salgspris + bank, maks 3 fra samme klubb. Datagrunnlaget hentes først
+  når planleggeren åpnes.
+- Scenarier kan lagres (maks 20, navngitte, med prissnapshot) og slettes —
+  de overlever redeploy i samme lagringsplass som brief-markøren.
+  Gratisbyttene rekonstrueres fra historikken (1 per runde, bank opptil 5,
+  wildcard/free hit bruker ingen) og selvvalideres mot FPLs faktiske trekk.
+- Scenariene følges opp på siden: «planen ville gitt X, du fikk Y» med
+  trekk fra gratisbytte-regnskapet, per bytte-diff og 5-rundersmilepæl
+  for både planen og det faktiske valget.
+- Alternativ-analyse per bytte: detaljraden foreslår de 3 beste kandidatene
+  i samme posisjon og prisklasse (pris ved sesongstart) målt i samme vindu,
+  og et søkefelt lar deg sjekke en hvilken som helst annen spiller.
+- AI-kommentar til overgangsanalysen («godt bytte, dårlig timing»):
+  genereres maks én gang i døgnet av bakgrunnsoppfriskeren, aldri av en
+  sidevisning, og kun når det finnes spilte bytter. Vises med cyan
+  AI-merke under sesongkortet.
+
 ## [1.4.0] - 2026-09-XX
 
 ### Added

@@ -701,6 +701,160 @@ table.data tbody tr:hover {
   color: var(--negative);
 }
 
+/* Utvidbare rader på /overganger: knapp + skjult detaljrad per bytte */
+.btn-expand {
+  width: 1.7rem;
+  height: 1.7rem;
+  padding: 0;
+  line-height: 1;
+  font-size: 1rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.btn-expand[aria-expanded='true'] {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+
+.row-detail > td {
+  background: var(--surface-2);
+  padding: 0.6rem 0.9rem;
+}
+
+.milestone {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+/* Hva hvis-planleggeren på /overganger */
+.planner-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  margin-bottom: 0.6rem;
+}
+
+@media (max-width: 640px) {
+  .planner-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.planner-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+.planner-grid select,
+.planner-grid input {
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--text);
+  font: inherit;
+}
+
+.planner-hits {
+  list-style: none;
+  margin: 0 0 0.6rem;
+  padding: 0;
+}
+
+.planner-hits button {
+  width: 100%;
+  text-align: left;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+  margin-bottom: 0.25rem;
+}
+
+.planner-hits button:hover {
+  background: var(--surface-3);
+}
+
+.rule-check {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  font-size: 0.9rem;
+}
+
+.rule-check li.ok {
+  color: var(--accent-text);
+}
+
+.rule-check li.brudd {
+  color: var(--negative);
+}
+
+.planner-save {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.8rem;
+}
+
+.planner-save input {
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--text);
+  font: inherit;
+}
+
+.planner-save #planner-event {
+  width: 4.5rem;
+}
+
+/* Scenariolista */
+.scenario {
+  border-top: 1px solid var(--border);
+  padding: 0.7rem 0;
+}
+
+.scenario-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.scenario-head .btn-delete {
+  margin-left: auto;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--surface-2);
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.scenario-head .btn-delete:hover {
+  color: var(--negative);
+}
+
+.scenario-moves {
+  list-style: none;
+  margin: 0.3rem 0;
+  padding: 0;
+}
+
 .status-i,
 .status-s,
 .status-u,

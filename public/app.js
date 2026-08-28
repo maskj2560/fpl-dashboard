@@ -457,3 +457,275 @@ function initEdgeFades(el, prefix) {
     window.location.href = row.dataset.href;
   });
 })();
+
+// Delt med testene (test/app-client.test.js): klient-speilet av planlegger-
+// reglene. Serveren (validateScenario i scenarios.js) er alltid fasit —
+// dette er bare umiddelbar tilbakemelding i UI-et. ok: true/false/null
+// (null = kan ikke avgjøres, f.eks. ukjent salgspris).
+function plannerRules({ out, inn, bank, squad }) {
+  if (!out || !inn) return [];
+  const budsjettOk =
+    out.sellPrice != null && inn.pris != null && bank != null
+      ? out.sellPrice + bank >= inn.pris
+      : null;
+  const sammeKlubb = (squad || []).filter(
+    (s) => s.lagKode != null && s.lagKode === inn.lagKode && s.id !== out.id,
+  ).length;
+  return [
+    { kode: 'posisjon', ok: out.pos === inn.pos, tekst: 'Samme posisjon' },
+    { kode: 'budsjett', ok: budsjettOk, tekst: 'Innenfor budsjett (salgspris + bank)' },
+    { kode: 'klubbtak', ok: sammeKlubb + 1 <= 3, tekst: 'Maks 3 fra samme klubb' },
+  ];
+}
+
+// Modul 7: Utvidbare rader (/overganger) — per-runde-detaljene for et bytte.
+// Kantfaden kan først initieres når raden faktisk vises (skjulte bokser har
+// ingen bredde å måle).
+(function () {
+  'use strict';
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.btn-expand');
+    if (!btn) return;
+    const detail = btn.closest('tr')?.nextElementSibling;
+    if (!detail || !detail.classList.contains('row-detail')) return;
+    const show = detail.hidden;
+    detail.hidden = !show;
+    btn.setAttribute('aria-expanded', String(show));
+    const icon = btn.querySelector('[aria-hidden]');
+    if (icon) icon.textContent = show ? '−' : '+';
+    if (show && !detail.dataset.fadeInit) {
+      detail.dataset.fadeInit = '1';
+      for (const box of detail.querySelectorAll('.table-scroll')) {
+        initEdgeFades(box, 'table-fade');
+      }
+    }
+  });
+})();
+
+// Modul 8: Hva hvis-planleggeren (/overganger). Datagrunnlaget hentes lazy
+// ved første åpning — en sidevisning koster aldri payloaden. Reglene speiles
+// med plannerRules(); serveren er fasit ved lagring.
+(function () {
+  'use strict';
+  const root = document.getElementById('planner-root');
+  if (!root) return;
+
+  const POS = { 1: 'K', 2: 'F', 3: 'M', 4: 'A' };
+  const STATUS = { a: 'Tilgjengelig', d: 'Tvilsom', i: 'Skadet', s: 'Utestengt', u: 'Utilgjengelig', n: 'Ikke i troppen' };
+  const pris = (n) => (n == null ? '–' : (n / 10).toFixed(1));
+  const tall = (n) => (n == null ? '–' : String(n));
+
+  let data = null;
+  let ut = null;
+  let inn = null;
+
+  // Deles av planleggeren og «egen kandidat»-søket i detaljradene.
+  async function ensureData() {
+    if (data) return data;
+    const res = await fetch(root.dataset.endpoint);
+    if (!res.ok) throw new Error(String(res.status));
+    data = await res.json();
+    return data;
+  }
+
+  root.addEventListener('click', async (e) => {
+    const load = e.target.closest('#planner-load');
+    if (load) {
+      load.disabled = true;
+      load.textContent = 'Henter …';
+      try {
+        await ensureData();
+        renderControls();
+      } catch {
+        load.disabled = false;
+        load.textContent = 'Kunne ikke hente — prøv igjen';
+      }
+      return;
+    }
+    const hit = e.target.closest('li[data-id]');
+    if (hit) {
+      inn = data.players.find((p) => p.id === Number(hit.dataset.id)) ?? null;
+      const search = document.getElementById('planner-search');
+      if (search && inn) search.value = inn.navn;
+      const box = document.getElementById('planner-hits');
+      if (box) box.innerHTML = '';
+      renderCompare();
+    }
+  });
+
+  function renderControls() {
+    root.innerHTML = [
+      '<div class="planner-grid">',
+      '<label>Ut av laget',
+      '<select id="planner-out"><option value="">Velg spiller …</option>',
+      data.squad
+        .map((s) => `<option value="${s.id}">${escapeHtml(s.navn)} (${POS[s.pos] ?? '?'} · selges for ${pris(s.sellPrice)})</option>`)
+        .join(''),
+      '</select></label>',
+      '<label>Inn i laget',
+      '<input type="search" id="planner-search" placeholder="Søk spiller …" autocomplete="off">',
+      '</label></div>',
+      '<ul id="planner-hits" class="planner-hits"></ul>',
+      '<div id="planner-compare"></div>',
+    ].join('');
+    document.getElementById('planner-out').addEventListener('change', (e) => {
+      ut = data.squad.find((s) => s.id === Number(e.target.value)) ?? null;
+      renderCompare();
+    });
+    document.getElementById('planner-search').addEventListener('input', (e) => {
+      renderHits(e.target.value);
+    });
+  }
+
+  function renderHits(q) {
+    const box = document.getElementById('planner-hits');
+    const query = q.trim().toLowerCase();
+    if (query.length < 2) {
+      box.innerHTML = '';
+      return;
+    }
+    box.innerHTML = data.players
+      .filter((p) => p.navn.toLowerCase().includes(query))
+      .slice(0, 8)
+      .map((p) => `<li data-id="${p.id}"><button type="button">${escapeHtml(p.navn)} <span class="dim">${escapeHtml(p.lag ?? '?')} · ${POS[p.pos] ?? '?'} · ${pris(p.pris)}</span></button></li>`)
+      .join('');
+  }
+
+  function statusText(p) {
+    const label = STATUS[p.status] ?? '–';
+    return p.status === 'd' && p.sjanse != null ? `${label} (${p.sjanse} %)` : label;
+  }
+
+  function renderCompare() {
+    const box = document.getElementById('planner-compare');
+    if (!ut || !inn) {
+      box.innerHTML = '';
+      return;
+    }
+    const utSpiller = data.players.find((p) => p.id === ut.id) ?? {};
+    const rad = (label, a, b) => `<tr><th>${label}</th><td class="num">${a}</td><td class="num">${b}</td></tr>`;
+    const regler = plannerRules({ out: ut, inn, bank: data.bank, squad: data.squad });
+    box.innerHTML = [
+      '<div class="table-scroll"><table class="data compare">',
+      `<thead><tr><th></th><th class="num">Ut: ${escapeHtml(ut.navn)}</th><th class="num">Inn: ${escapeHtml(inn.navn)}</th></tr></thead>`,
+      '<tbody>',
+      rad('Pris (£m)', pris(utSpiller.pris), pris(inn.pris)),
+      rad('Salgspris (£m)', pris(ut.sellPrice), '–'),
+      rad('Form', tall(utSpiller.form), tall(inn.form)),
+      rad('Forventet poeng', tall(utSpiller.epNext), tall(inn.epNext)),
+      rad('FDR neste 3', utSpiller.fdr3 == null ? '–' : utSpiller.fdr3.toFixed(1), inn.fdr3 == null ? '–' : inn.fdr3.toFixed(1)),
+      rad('Eid av (%)', tall(utSpiller.eid), tall(inn.eid)),
+      rad('Status', statusText(utSpiller), statusText(inn)),
+      '</tbody></table></div>',
+      '<ul class="rule-check">',
+      regler
+        .map((r) => `<li class="${r.ok === true ? 'ok' : r.ok === false ? 'brudd' : ''}">${r.ok === true ? '✓' : r.ok === false ? '✕' : '?'} ${escapeHtml(r.tekst)}</li>`)
+        .join(''),
+      '</ul>',
+      `<p class="dim">Bank: ${pris(data.bank)} £m · reglene sjekkes endelig ved lagring.</p>`,
+      '<div class="planner-save">',
+      '<input id="planner-name" maxlength="60" placeholder="Navn (f.eks. Plan A)" aria-label="Navn på scenarioet">',
+      `<input id="planner-event" type="number" min="1" max="38" value="${Number(data.event) || 1}" aria-label="Runde">`,
+      '<button type="button" class="btn-link" id="planner-save-btn">Lagre som scenario</button>',
+      '<span id="planner-save-msg" class="dim" role="status"></span>',
+      '</div>',
+    ].join('');
+    for (const scroll of box.querySelectorAll('.table-scroll')) {
+      initEdgeFades(scroll, 'table-fade');
+    }
+    document.getElementById('planner-save-btn').addEventListener('click', saveScenario);
+  }
+
+  async function saveScenario() {
+    const msg = document.getElementById('planner-save-msg');
+    const btn = document.getElementById('planner-save-btn');
+    btn.disabled = true;
+    msg.textContent = 'Lagrer …';
+    try {
+      const res = await fetch('/api/scenarier', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: document.getElementById('planner-name').value,
+          event: Number(document.getElementById('planner-event').value),
+          moves: [{ out: ut.id, in: inn.id }],
+        }),
+      });
+      if (res.status === 201) {
+        window.location.reload(); // scenariolista rendres av serveren
+        return;
+      }
+      const body = await res.json().catch(() => ({}));
+      msg.textContent = (body.errors ?? []).map((e) => e.message).join(' ') || 'Kunne ikke lagre.';
+    } catch {
+      msg.textContent = 'Kunne ikke lagre — prøv igjen.';
+    }
+    btn.disabled = false;
+  }
+
+  // «Egen kandidat» i detaljradene: søk i samme spillerliste som
+  // planleggeren (hentes ved behov), poengene hentes fra /api/alternativ.json.
+  document.addEventListener('input', async (e) => {
+    const input = e.target.closest('.alt-sok');
+    if (!input) return;
+    const hits = input.closest('.alt-egen').querySelector('.alt-hits');
+    const query = input.value.trim().toLowerCase();
+    if (query.length < 2) {
+      hits.innerHTML = '';
+      return;
+    }
+    try {
+      await ensureData();
+    } catch {
+      hits.innerHTML = '<li class="dim">Kunne ikke hente spillerlisten — prøv igjen.</li>';
+      return;
+    }
+    hits.innerHTML = data.players
+      .filter((p) => p.navn.toLowerCase().includes(query))
+      .slice(0, 6)
+      .map((p) => `<li data-alt-id="${p.id}"><button type="button">${escapeHtml(p.navn)} <span class="dim">${escapeHtml(p.lag ?? '?')} · ${pris(p.pris)}</span></button></li>`)
+      .join('');
+  });
+
+  document.addEventListener('click', async (e) => {
+    const li = e.target.closest('li[data-alt-id]');
+    if (!li) return;
+    const box = li.closest('.alt-egen');
+    const resultater = box.querySelector('.alt-resultater');
+    const id = Number(li.dataset.altId);
+    const navn = data?.players.find((p) => p.id === id)?.navn ?? `Spiller ${id}`;
+    box.querySelector('.alt-hits').innerHTML = '';
+    box.querySelector('.alt-sok').value = '';
+    try {
+      const res = await fetch(`/api/alternativ.json?spiller=${id}&fra=${box.dataset.fra}&til=${box.dataset.til}`);
+      if (!res.ok) throw new Error(String(res.status));
+      const r = await res.json();
+      const delta = r.points - Number(box.dataset.innpoints);
+      resultater.insertAdjacentHTML(
+        'beforeend',
+        `<li>${escapeHtml(navn)} — ${r.points} p (${delta > 0 ? '+' + delta : delta} mot ditt valg)</li>`,
+      );
+    } catch {
+      resultater.insertAdjacentHTML('beforeend', '<li>Kunne ikke hente poengene — prøv igjen.</li>');
+    }
+  });
+
+  // Slett-knappene i scenariolista (server-rendret, utenfor planner-root).
+  document.addEventListener('click', async (e) => {
+    const del = e.target.closest('[data-scenario-delete]');
+    if (!del) return;
+    del.disabled = true;
+    try {
+      const res = await fetch(`/api/scenarier/${encodeURIComponent(del.dataset.scenarioDelete)}`, {
+        method: 'DELETE',
+      });
+      if (res.status === 204) {
+        del.closest('.scenario')?.remove();
+        return;
+      }
+    } catch {
+      // faller gjennom til re-aktivering
+    }
+    del.disabled = false;
+  });
+})();

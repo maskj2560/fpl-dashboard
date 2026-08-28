@@ -19,10 +19,29 @@
   <div class="stat-strip">
     <div class="stat"><span class="stat-val <%= analysis.totals.netto > 0 ? 'accent' : (analysis.totals.netto < 0 ? 'negative' : '') %>"><%= played.length ? formatSigned(analysis.totals.netto) : '–' %></span><span class="stat-lbl">Netto totalt</span></div>
     <div class="stat"><span class="stat-val"><%= analysis.totals.count %></span><span class="stat-lbl">Overganger</span></div>
-    <div class="stat"><span class="stat-val"><%= analysis.totals.cost > 0 ? formatSigned(-analysis.totals.cost) : '0' %></span><span class="stat-lbl">Poengstraff</span></div>
+    <div class="stat"><span class="stat-val"><%= analysis.season && analysis.season.hitRate !== null ? Math.round(analysis.season.hitRate * 100) + ' %' : '–' %></span><span class="stat-lbl">Treffprosent</span></div>
+    <div class="stat"><span class="stat-val"><%= analysis.totals.cost > 0 ? formatSigned(-analysis.totals.cost) : '0' %></span><span class="stat-lbl">Poengstraff<%= analysis.season && analysis.season.hitsPaid > 0 ? ' · ' + analysis.season.hitsPaid + ' trekk' : '' %></span></div>
     <div class="stat"><span class="stat-val"><%= analysis.bestIndex !== null ? analysis.rows[analysis.bestIndex].inn.name : '–' %></span><span class="stat-lbl">Beste bytte</span></div>
     <div class="stat"><span class="stat-val"><%= analysis.worstIndex !== null ? analysis.rows[analysis.worstIndex].inn.name : '–' %></span><span class="stat-lbl">Verste bytte</span></div>
   </div>
+
+  <% if (aiComment && aiComment.text) { %>
+    <%
+      // AI-tekst er utrygt innhold: escape først, gjør **fet** om til <strong>.
+      function escAi(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+      function boldAi(text) {
+        return escAi(text).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      }
+    %>
+    <section class="card card-wide card-ai">
+      <h2><span class="h2-title"><span class="ai-badge">AI</span> Kommentar til byttene</span></h2>
+      <% for (const line of aiComment.text.split('\n').filter((l) => l.trim())) { %>
+        <p><%- boldAi(line) %></p>
+      <% } %>
+    </section>
+  <% } %>
 
   <section class="card card-wide">
     <h2>Bytte for bytte</h2>
@@ -32,11 +51,12 @@
     <div class="table-scroll">
       <table class="data">
         <thead>
-          <tr><th>Runde</th><th>Inn</th><th>Ut</th><th class="num">Poengdiff</th><th class="num">Straff</th><th class="num">Netto</th><th>Periode</th></tr>
+          <tr><th></th><th>Runde</th><th>Inn</th><th>Ut</th><th class="num">Poengdiff</th><th class="num">Straff</th><th class="num">Netto</th><th>Periode</th></tr>
         </thead>
         <tbody>
-          <% for (let i = analysis.rows.length - 1; i >= 0; i--) { const r = analysis.rows[i]; %>
+          <% for (let i = analysis.rows.length - 1; i >= 0; i--) { const r = analysis.rows[i]; const detaljer = r.perGw && r.perGw.length > 0; %>
             <tr>
+              <td><% if (detaljer) { %><button type="button" class="btn-expand" aria-expanded="false" aria-label="Vis rundene for byttet"><span aria-hidden="true">+</span></button><% } %></td>
               <td><%= r.event %><% if (r.chip === 'wildcard') { %> <span class="status">Wildcard</span><% } else if (r.chip === 'freehit') { %> <span class="status">Free Hit</span><% } %></td>
               <td><%- include('partials/club-badge', { team: { short_name: r.inn.teamShort, code: r.inn.teamCode, name: r.inn.teamShort }, showName: false }) %> <%= r.inn.name %><% if (r.played) { %> <span class="dim"><%= r.inn.points %> p</span><% } %></td>
               <td><%- include('partials/club-badge', { team: { short_name: r.ut.teamShort, code: r.ut.teamCode, name: r.ut.teamShort }, showName: false }) %> <%= r.ut.name %><% if (r.played) { %> <span class="dim"><%= r.ut.points %> p</span><% } %></td>
@@ -49,9 +69,181 @@
               </td>
               <td class="dim"><% if (r.pending) { %>Venter på runde <%= r.event %><% } else if (!r.played) { %>Angret før deadline<% } else if (r.window.from === r.window.to) { %>R<%= r.window.from %><% } else { %>R<%= r.window.from %>–R<%= r.window.to %><% } %></td>
             </tr>
+            <% if (detaljer) { %>
+              <tr class="row-detail" hidden>
+                <td colspan="8">
+                  <% if (r.after5) { %>
+                    <p class="milestone"><%
+                      if (r.after5.complete && r.after5.gws === 5) { %>Etter 5 runder: <%= formatSigned(r.after5.diff) %><%
+                      } else if (r.after5.complete) { %>Byttet varte <%= r.after5.gws %> runde<%= r.after5.gws === 1 ? '' : 'r' %>: <%= formatSigned(r.after5.diff) %><%
+                      } else { %>Hittil (<%= r.after5.gws %> av 5 runder): <%= formatSigned(r.after5.diff) %><% } %></p>
+                  <% } %>
+                  <div class="table-scroll">
+                    <table class="data">
+                      <thead>
+                        <tr><th>Runde</th><th class="num"><%= r.inn.name %></th><th class="num"><%= r.ut.name %></th><th class="num">Diff</th><th class="num">Sum</th></tr>
+                      </thead>
+                      <tbody>
+                        <% for (const g of r.perGw) { %>
+                          <tr>
+                            <td>R<%= g.gw %></td>
+                            <td class="num"><%= g.inn %></td>
+                            <td class="num"><%= g.ut %></td>
+                            <td class="num <%= g.diff > 0 ? 'accent' : (g.diff < 0 ? 'negative' : '') %>"><%= formatSigned(g.diff) %></td>
+                            <td class="num"><%= formatSigned(g.cum) %></td>
+                          </tr>
+                        <% } %>
+                      </tbody>
+                    </table>
+                  </div>
+                  <% if (r.alternativer && r.alternativer.length > 0) { %>
+                    <p class="milestone">I stedet for <%= r.inn.name %> — samme posisjon og prisklasse (pris ved sesongstart), målt i samme vindu:</p>
+                    <ul class="scenario-moves dim">
+                      <% for (const alt of r.alternativer) { %>
+                        <li><%- include('partials/club-badge', { team: { short_name: alt.teamShort, code: alt.teamCode, name: alt.teamShort }, showName: false }) %> <%= alt.name %> — <%= alt.points %> p (<%= formatSigned(alt.delta) %> mot ditt valg)</li>
+                      <% } %>
+                    </ul>
+                  <% } %>
+                  <div class="alt-egen" data-fra="<%= r.window.from %>" data-til="<%= r.window.to %>" data-innpoints="<%= r.inn.points %>">
+                    <input type="search" class="alt-sok" placeholder="Sjekk en hvilken som helst spiller i samme vindu …" autocomplete="off" aria-label="Søk etter kandidat">
+                    <ul class="planner-hits alt-hits"></ul>
+                    <ul class="scenario-moves dim alt-resultater"></ul>
+                  </div>
+                </td>
+              </tr>
+            <% } %>
           <% } %>
         </tbody>
       </table>
     </div>
+  </section>
+<% } %>
+
+<section class="card card-wide" id="planlegger">
+  <h2>Planlegger — hva hvis?</h2>
+  <p class="dim">Prøv et bytte før du gjør det: velg hvem som skal ut og inn,
+  se tallene side om side og få FPL-reglene sjekket — posisjon, budsjett
+  (salgspris + bank) og maks 3 fra samme klubb. Ingenting sendes til FPL.</p>
+  <div id="planner-root" data-endpoint="/api/planlegger.json">
+    <button type="button" class="btn-link" id="planner-load">Åpne planleggeren</button>
+  </div>
+</section>
+
+<% if (scenarios && scenarios.length > 0) { %>
+  <section class="card card-wide" id="scenarier">
+    <h2>Scenarier</h2>
+    <p class="dim">Planene dine, målt mot det du faktisk gjorde. En plan antas
+    å erstatte rundens faktiske bytter og beholdes ut sesongen; trekk regnes
+    fra gratisbytte-beholdningen din når den kan rekonstrueres sikkert.</p>
+    <% for (const s of scenarios) { const ev = s.evaluering; %>
+      <div class="scenario">
+        <div class="scenario-head">
+          <strong><%= s.name %></strong> <span class="dim">· runde <%= s.event %></span>
+          <button type="button" class="btn-delete" data-scenario-delete="<%= s.id %>">Slett</button>
+        </div>
+        <ul class="scenario-moves dim">
+          <% for (const m of ev.perMove) { %>
+            <li><%= m.out.name %> → <%= m.in.name %><% if (m.diff !== null) { %> (<%= formatSigned(m.diff) %>)<% } %></li>
+          <% } %>
+        </ul>
+        <% if (ev.pending) { %>
+          <p class="dim">Venter på runde <%= s.event %><% if (ev.plan.cost !== null) { %> · forventet trekk: <%= ev.plan.cost > 0 ? formatSigned(-ev.plan.cost) : '0' %><% } %></p>
+        <% } else { %>
+          <% const planNetto = ev.plan.diff - (ev.plan.cost ?? 0); const faktiskNetto = ev.actual.diff - ev.actual.cost; %>
+          <p>
+            Planen ville gitt
+            <strong class="<%= planNetto > 0 ? 'accent' : (planNetto < 0 ? 'negative' : '') %>"><%= formatSigned(planNetto) %></strong><%
+            if (ev.plan.cost === null) { %> <span class="dim">(uten trekk — kunne ikke beregnes sikkert)</span><%
+            } else if (ev.plan.cost > 0) { %> <span class="dim">(<%= formatSigned(ev.plan.diff) %> minus <%= ev.plan.cost %> i trekk)</span><% } %>
+            — du fikk
+            <strong class="<%= faktiskNetto > 0 ? 'accent' : (faktiskNetto < 0 ? 'negative' : '') %>"><%= formatSigned(faktiskNetto) %></strong><%
+            if (ev.actual.cost > 0) { %> <span class="dim">(<%= formatSigned(ev.actual.diff) %> minus <%= ev.actual.cost %> i trekk)</span><% } %>.
+          </p>
+          <% if (ev.plan.after5) { %>
+            <p class="milestone">Etter <%= ev.plan.after5.gws %> av 5 runder: planen <%= formatSigned(ev.plan.after5.diff) %><% if (ev.actual.after5) { %> · faktisk <%= formatSigned(ev.actual.after5.diff) %><% } %></p>
+          <% } %>
+        <% } %>
+      </div>
+    <% } %>
+  </section>
+<% } %>
+
+<% if (baseline) { %>
+  <section class="card">
+    <h2>Laget uten bytter</h2>
+    <p>Hadde du latt GW1-laget stå urørt hele sesongen, ville det gitt
+    <strong><%= baseline.simTotal %></strong> poeng. Du står med
+    <strong><%= baseline.actualTotal !== null ? baseline.actualTotal : '–' %></strong><% if (baseline.diff !== null) { %> —
+    byttene (med straff) har altså <%= baseline.diff >= 0 ? 'gitt deg' : 'kostet deg' %>
+    <strong class="<%= baseline.diff > 0 ? 'accent' : (baseline.diff < 0 ? 'negative' : '') %>"><%= formatSigned(baseline.diff) %></strong> poeng<% } %>.</p>
+    <details>
+      <summary>Runde for runde</summary>
+      <div class="table-scroll">
+        <table class="data">
+          <thead><tr><th>Runde</th><th class="num">Poeng</th><th>Kaptein</th><th class="num">Autosubs</th></tr></thead>
+          <tbody>
+            <% for (const g of baseline.perGw) { %>
+              <tr>
+                <td>R<%= g.gw %></td>
+                <td class="num"><%= g.points %></td>
+                <td><%= g.captainName ?? '–' %><%= g.viceUsed ? ' (vise)' : '' %></td>
+                <td class="num"><%= g.autosubs.length %></td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </details>
+    <p class="dim">Simulering: startere uten spilleminutter byttes automatisk
+    mot benken i benkerekkefølge under formasjonskravene (keeper kun mot
+    keeper). Kaptein er rundens faktiske kaptein når han står i GW1-laget,
+    ellers visekapteinen; dobling er alltid ×2.</p>
+  </section>
+<% } %>
+
+<% if (priceReport) { %>
+  <section class="card card-wide">
+    <h2>Prisgevinst</h2>
+    <p class="dim">Kjøpspris mot dagens pris og salgspris — FPL gir deg halve
+    prisstigningen, rundet ned. Lagverdi
+    <%= priceReport.value !== null ? formatPrice(priceReport.value) : '–' %>
+    · bank <%= priceReport.bank !== null ? formatPrice(priceReport.bank) : '–' %> (£m).</p>
+    <div class="table-scroll">
+      <table class="data">
+        <thead>
+          <tr><th>Spiller</th><th class="num">Kjøpt</th><th class="num">Nå</th><th class="num">Salg</th><th class="num">Gevinst</th></tr>
+        </thead>
+        <tbody>
+          <% for (const h of priceReport.holdings) { %>
+            <tr>
+              <td><%- include('partials/club-badge', { team: { short_name: h.teamShort, code: h.teamCode, name: h.teamShort }, showName: false }) %> <%= h.name %></td>
+              <% if (h.ukjent) { %>
+                <td class="num dim" colspan="4">ukjent kjøpspris</td>
+              <% } else { %>
+                <td class="num"><%= formatPrice(h.buyCost) %></td>
+                <td class="num"><%= formatPrice(h.nowCost) %></td>
+                <td class="num"><%= formatPrice(h.sellPrice) %></td>
+                <td class="num <%= h.gain > 0 ? 'accent' : (h.gain < 0 ? 'negative' : '') %>"><%= (h.gain > 0 ? '+' : '') + formatPrice(h.gain) %></td>
+              <% } %>
+            </tr>
+          <% } %>
+          <tr>
+            <td><strong>Sum</strong></td>
+            <td class="num"><strong><%= formatPrice(priceReport.totals.buyCost) %></strong></td>
+            <td class="num"><strong><%= formatPrice(priceReport.totals.nowCost) %></strong></td>
+            <td class="num"><strong><%= formatPrice(priceReport.totals.sellPrice) %></strong></td>
+            <td class="num <%= priceReport.totals.gain > 0 ? 'accent' : (priceReport.totals.gain < 0 ? 'negative' : '') %>"><strong><%= (priceReport.totals.gain > 0 ? '+' : '') + formatPrice(priceReport.totals.gain) %></strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <% if (priceReport.missed.length > 0) { %>
+      <h3>Salg du gikk glipp av</h3>
+      <ul class="dim">
+        <% for (const m of priceReport.missed.slice(0, 3)) { %>
+          <li><%= m.name %>: solgt for <%= formatPrice(m.soldFor) %>, nå <%= formatPrice(m.nowCost) %> (gikk glipp av <%= formatPrice(m.missed) %>)</li>
+        <% } %>
+      </ul>
+    <% } %>
   </section>
 <% } %>
