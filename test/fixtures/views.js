@@ -1,6 +1,6 @@
 // Mock-locals for view-render-testene. Ingen nettverkskall.
 // Fasit er viewene selv: hvert objekt her dekker alle locals viewet refererer.
-import { formatDateTime, formatNumber } from '../../src/services/format.js';
+import { formatDateTime, formatNumber, formatSigned } from '../../src/services/format.js';
 import { formatPrice, POSITIONS, POSITIONS_SHORT, translateFplNews } from '../../src/services/analysis.js';
 import { clubAssetsFrom } from '../../src/services/clubAssets.js';
 
@@ -106,53 +106,136 @@ export const players = {
   players: [player(1, 'Saka'), player(2, 'Salah', { team: 2, status: 'd' })],
 };
 
+const leagueResults = [
+  { entry: 123, entry_name: 'Marius XI', player_name: 'Marius S.', rank: 1, last_rank: 3, event_total: 60, total: 100 },
+  { entry: 456, entry_name: 'Rival FC', player_name: 'Rival R.', rank: 2, last_rank: 1, event_total: 55, total: 95 },
+  { entry: 789, entry_name: 'Nykommer FC', player_name: 'Ny N.', rank: 3, last_rank: 0, event_total: 40, total: 80 },
+];
+
+const radarPlayer = (id, name, eventPoints) => ({
+  id, name, teamCode: 3, teamShort: 'ARS', eventPoints,
+});
+
 export const league = {
   teamsById, clubAssets,
-  formatNumber,
+  formatNumber, formatSigned, formatDateTime,
   myEntry: 123,
   rivalEntry: 456,
-  firstLeague: 999,
   leagues: [{
     league: { id: 999, name: 'Kompisligaen' },
-    standings: {
-      results: [
-        { entry: 123, entry_name: 'Marius XI', player_name: 'Marius S.', rank: 1, last_rank: 3, event_total: 60, total: 100 },
-        { entry: 456, entry_name: 'Rival FC', player_name: 'Rival R.', rank: 2, last_rank: 1, event_total: 55, total: 95 },
-        { entry: 789, entry_name: 'Nykommer FC', player_name: 'Ny N.', rank: 3, last_rank: 0, event_total: 40, total: 80 },
+    standings: { results: leagueResults },
+  }],
+  report: {
+    lastReportedEvent: 2,
+    text: 'Rundens vinner ble **Rival FC** med 55 poeng.\n\nSelv holdt du unna på topp.',
+    generatedAt: '2026-08-27T10:00:00Z',
+    source: 'ai',
+  },
+  insights: {
+    gw: 2,
+    leagueName: 'Kompisligaen',
+    results: leagueResults,
+    rivalEntry: 456,
+    rival: {
+      me: { entry: 123, entryName: 'Marius XI', playerName: 'Marius S.', rank: 1, total: 100, eventTotal: 60 },
+      rival: { entry: 456, entryName: 'Rival FC', playerName: 'Rival R.', rank: 2, total: 95, eventTotal: 55 },
+      gapTotal: -5,
+      gapEvent: -5,
+      diff: {
+        theirs: [radarPlayer(7, 'Palmer', 9)],
+        mine: [radarPlayer(8, 'Mbeumo', 5)],
+      },
+      shared: [radarPlayer(9, 'Haaland', 12)],
+      captains: {
+        mine: { ...radarPlayer(9, 'Haaland', 12), tc: false },
+        rival: { ...radarPlayer(7, 'Palmer', 9), tc: true },
+      },
+    },
+    graph: {
+      width: 600,
+      height: 140,
+      gwFirst: 1,
+      gwLast: 2,
+      managers: 3,
+      single: false,
+      series: [
+        { entry: 789, name: 'Nykommer FC', points: '0,140 600,140', me: false, rival: false, lastRank: 3 },
+        { entry: 456, name: 'Rival FC', points: '0,70 600,0', me: false, rival: true, lastRank: 1 },
+        { entry: 123, name: 'Marius XI', points: '0,0 600,70', me: true, rival: false, lastRank: 2 },
       ],
     },
-  }],
-  diff: {
-    rivalName: 'Rival FC',
-    rivalEntry: 456,
-    theirs: [player(7, 'Palmer')],
-    mine: [player(8, 'Mbeumo')],
+    captainLeague: {
+      gws: [1, 2],
+      lastGw: 2,
+      depth: 10,
+      capped: false,
+      rows: [
+        { entry: 123, entryName: 'Marius XI', last: { name: 'Haaland', teamCode: 3, teamShort: 'ARS', points: 12, optimal: 12, lost: 0, tc: false }, sum: { points: 20, lost: 2, rounds: 2 } },
+        { entry: 456, entryName: 'Rival FC', last: { name: 'Palmer', teamCode: 3, teamShort: 'ARS', points: 9, optimal: 12, lost: 3, tc: true }, sum: { points: 15, lost: 6, rounds: 2 } },
+        { entry: 789, entryName: 'Nykommer FC', last: null, sum: { points: 5, lost: 0, rounds: 1 } },
+      ],
+    },
   },
 };
 
-// Ingen ligaer funnet, ingen differensial valgt, og tomme differensiallister.
+// Kaptein-ligaen når dybdetaket har kuttet eldre runder.
+export const leagueCaptainsCapped = {
+  ...league,
+  insights: {
+    ...league.insights,
+    captainLeague: {
+      ...league.insights.captainLeague,
+      gws: [3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      lastGw: 12,
+      capped: true,
+    },
+  },
+};
+
+// Rapporten uten AI-nøkkel: datafallback skal ikke bære AI-merket.
+export const leagueDataReport = {
+  ...league,
+  report: {
+    lastReportedEvent: 2,
+    text: 'Rundens vinner: **Rival FC** med 55 poeng.',
+    generatedAt: '2026-08-27T10:00:00Z',
+    source: 'data',
+  },
+};
+
+// Ingen ligaer funnet — ingen innsikt å vise.
 export const leagueEmpty = {
   teamsById, clubAssets,
-  formatNumber,
+  formatNumber, formatSigned, formatDateTime,
   myEntry: 123,
-  firstLeague: null,
+  rivalEntry: null,
   leagues: [],
-  diff: null,
+  report: null,
+  insights: null,
 };
 
 // P1-2: ligaen finnes, men tabellen er tom fram til første runde er spilt.
 export const leagueNoRows = {
   teamsById, clubAssets,
-  formatNumber,
+  formatNumber, formatSigned, formatDateTime,
   myEntry: 123,
-  firstLeague: null,
+  rivalEntry: null,
   leagues: [{ league: { id: 1, name: 'Var Har Skylda' }, standings: { results: [] } }],
-  diff: null,
+  report: null,
+  insights: null,
 };
 
+// Rival valgt, men ingen differensialer noen vei (identiske tropper).
 export const leagueEmptyDiff = {
   ...league,
-  diff: { rivalName: 'Rival FC', rivalEntry: 456, theirs: [], mine: [] },
+  insights: {
+    ...league.insights,
+    rival: {
+      ...league.insights.rival,
+      diff: { theirs: [], mine: [] },
+      shared: [radarPlayer(9, 'Haaland', 12)],
+    },
+  },
 };
 
 const briefData = {

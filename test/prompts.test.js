@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildBriefPrompt, buildAdvicePrompt, buildTransferCommentPrompt, sanitizeBriefText } from '../src/services/prompts.js';
+import { buildBriefPrompt, buildAdvicePrompt, buildTransferCommentPrompt, buildLeagueReportPrompt, sanitizeBriefText } from '../src/services/prompts.js';
 import { briefTextGw1, briefGw1, briefGw1MedData } from './fixtures/brief-gw1.js';
 
 test('buildBriefPrompt tar med deadline, skader og kapteiner', () => {
@@ -512,4 +512,49 @@ test('overgangskommentar-prompten har sesongtall og spilte bytter, aldri pending
   assert.match(p, /Laget uten bytter: 100/);
   assert.match(p, /REGLER/);
   assert.match(p, /120 ord/);
+});
+
+// ---- v1.6.0: buildLeagueReportPrompt -------------------------------------
+
+const reportData = {
+  event: { id: 2, name: 'Runde 2' },
+  league: { name: 'Testligaen', size: 3 },
+  winner: { entryName: 'Nykommer FC', playerName: 'Ny N.', eventTotal: 71 },
+  loser: { entryName: 'Rival FC', playerName: 'Rival R.', eventTotal: 42 },
+  movers: [{ entryName: 'Marius XI', from: 3, to: 1 }],
+  table: [
+    { rank: 1, entryName: 'Marius XI', playerName: 'Marius S.', eventTotal: 60, total: 100 },
+    { rank: 2, entryName: 'Rival FC', playerName: 'Rival R.', eventTotal: 42, total: 95 },
+    { rank: 3, entryName: 'Nykommer FC', playerName: 'Ny N.', eventTotal: 71, total: 80 },
+  ],
+  mine: {
+    entryName: 'Marius XI', rank: 1, lastRank: 3, eventTotal: 60, total: 100,
+    captain: { name: 'Haaland', points: 12, lost: 0, tc: false },
+  },
+  captains: [
+    { entryName: 'Marius XI', captain: 'Haaland', points: 12, lost: 0, tc: false },
+    { entryName: 'Rival FC', captain: 'Salah', points: 4, lost: 5, tc: true },
+  ],
+};
+
+test('buildLeagueReportPrompt inneholder REGLER-blokken, tonen og manager-navnene', () => {
+  const p = buildLeagueReportPrompt(reportData);
+
+  assert.ok(p.includes('REGLER'), 'REGLER-blokk mangler');
+  assert.ok(p.includes('glimt'), 'toneinstruksen (roast med glimt) mangler');
+  assert.ok(p.includes('Testligaen'));
+  assert.ok(p.includes('Runde 2'));
+  assert.ok(p.includes('Nykommer FC'), 'vinneren mangler');
+  assert.ok(p.includes('Rival FC'), 'taperen mangler');
+  assert.ok(p.includes('Haaland'), 'kapteinsfasiten mangler');
+  assert.ok(p.includes('71'), 'vinnerens rundepoeng mangler');
+});
+
+test('buildLeagueReportPrompt krever runde-spraak og ordtaket', () => {
+  const p = buildLeagueReportPrompt(reportData);
+
+  assert.ok(p.includes('aldri «gameweek»'), 'runde-regelen mangler');
+  assert.ok(p.includes('180'), 'ordtaket ~180 mangler');
+  assert.ok(p.includes('Finn aldri'), 'aldri-dikte-regelen mangler');
+  assert.ok(p.includes('**fet**'), 'fet-regelen mangler');
 });

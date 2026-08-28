@@ -155,3 +155,35 @@ test('plannerRules uten kjent salgspris lar budsjettet staa aapent', () => {
   })`);
   assert.equal(rules.find((r) => r.kode === 'budsjett').ok, null);
 });
+
+// ---- v1.6.0 Modul 9: rival-valget paa /liga huskes -------------------------
+
+test('rivalNavAction lagrer rival fra query-parameteren', () => {
+  assert.deepEqual(
+    { ...app.rivalNavAction({ search: '?rival=456', stored: null, validIds: new Set(['456', '789']) }) },
+    { type: 'store', value: '456' },
+  );
+});
+
+test('rivalNavAction redirecter til lagret rival naar param mangler', () => {
+  assert.deepEqual(
+    { ...app.rivalNavAction({ search: '', stored: '456', validIds: new Set(['456']) }) },
+    { type: 'redirect', to: '/liga?rival=456' },
+  );
+});
+
+test('rivalNavAction redirecter aldri naar param er til stede (ingen loop)', () => {
+  const res = app.rivalNavAction({ search: '?rival=789', stored: '456', validIds: new Set(['456', '789']) });
+  assert.deepEqual({ ...res }, { type: 'store', value: '789' });
+});
+
+test('rivalNavAction rydder lagret rival som ikke finnes i ligaen lenger', () => {
+  assert.deepEqual(
+    { ...app.rivalNavAction({ search: '', stored: '999', validIds: new Set(['456']) }) },
+    { type: 'clear' },
+  );
+  assert.deepEqual(
+    { ...app.rivalNavAction({ search: '', stored: null, validIds: new Set(['456']) }) },
+    { type: 'none' },
+  );
+});

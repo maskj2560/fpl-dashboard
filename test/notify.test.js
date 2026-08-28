@@ -3,11 +3,16 @@ import assert from 'node:assert/strict';
 import {
   sendDecision,
   chunkDiscordText,
+  reportDecision,
+  dataReportText,
+  getLeagueReport,
   _send,
+  _checkReport,
   _setHooks,
   _reset,
   _initState,
 } from '../src/services/notify.js';
+import { clear } from '../src/services/cache.js';
 
 const H = 60 * 60_000;
 const CHECK = 6 * H;
@@ -217,4 +222,200 @@ test('en tom markør lar briefen gå ut som normalt', async () => {
   } finally {
     _reset();
   }
+});
+
+// ---- v1.6.0: Rundens rapport (liga) --------------------------------------
+
+const reportEvents = (overrides = {}) => [
+  { id: 1, name: 'Runde 1', finished: true, data_checked: true, ...overrides[1] },
+  { id: 2, name: 'Runde 2', finished: false, data_checked: false, ...overrides[2] },
+];
+
+test('reportDecision: ingen ferdig og data_checked runde gir none', () => {
+  assert.equal(
+    reportDecision({ events: reportEvents({ 1: { data_checked: false } }), lastReportedEvent: null }).action,
+    'none',
+  );
+  assert.equal(reportDecision({ events: [], lastReportedEvent: null }).action, 'none');
+});
+
+test('reportDecision velger nyeste ferdige runde og hopper over alt rapportert', () => {
+  const events = [
+    { id: 1, name: 'Runde 1', finished: true, data_checked: true },
+    { id: 2, name: 'Runde 2', finished: true, data_checked: true },
+    { id: 3, name: 'Runde 3', finished: false, data_checked: false },
+  ];
+  const d = reportDecision({ events, lastReportedEvent: null });
+  assert.equal(d.action, 'report');
+  assert.equal(d.event.id, 2, 'var serveren nede i to runder rapporteres kun den nyeste');
+  assert.equal(reportDecision({ events, lastReportedEvent: 2 }).action, 'none');
+});
+
+function mockBootstrapFetch(events) {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (url) => {
+    assert.match(String(url), /bootstrap-static\/$/, `uventet URL: ${url}`);
+    return { ok: true, status: 200, json: async () => ({ events }) };
+  };
+  return () => {
+    globalThis.fetch = originalFetch;
+  };
+}
+
+test('checkReport poster en gang og lagrer markor + tekst', async () => {
+  const restoreFetch = mockBootstrapFetch(reportEvents());
+  const posts = [];
+  const saved = [];
+  _reset();
+  clear();
+  _setHooks({
+    leagues: async () => [99],
+    webhook: true,
+    reportCompose: async (event) => ({ text: `rapport for ${event.name}`, source: 'ai' }),
+    post: async (t) => posts.push(t),
+    saveReport: (state) => saved.push(state),
+  });
+  try {
+    await _checkReport();
+    await _checkReport(); // markoren stopper nummer to
+    assert.equal(posts.length, 1);
+    assert.ok(posts[0].includes('rapport for Runde 1'));
+    assert.ok(posts[0].includes('Rundens rapport'));
+    assert.equal(saved.length, 1);
+    assert.equal(saved[0].lastReportedEvent, 1);
+    assert.equal(saved[0].source, 'ai');
+    assert.equal(getLeagueReport().text, 'rapport for Runde 1');
+  } finally {
+    _reset();
+    restoreFetch();
+  }
+});
+
+test('checkReport uten webhook genererer og lagrer, men poster aldri', async () => {
+  const restoreFetch = mockBootstrapFetch(reportEvents());
+  const posts = [];
+  const saved = [];
+  _reset();
+  clear();
+  _setHooks({
+    leagues: async () => [99],
+    webhook: false,
+    reportCompose: async () => ({ text: 'kun web', source: 'data' }),
+    post: async (t) => posts.push(t),
+    saveReport: (state) => saved.push(state),
+  });
+  try {
+    await _checkReport();
+    assert.equal(posts.length, 0, 'aldri Discord-post uten webhook');
+    assert.equal(saved.length, 1, 'webvisningen lagres likevel');
+    assert.equal(getLeagueReport().source, 'data');
+  } finally {
+    _reset();
+    restoreFetch();
+  }
+});
+
+test('feilet Discord-post lagrer ikke markoren - neste tikk prover igjen', async () => {
+  const restoreFetch = mockBootstrapFetch(reportEvents());
+  const posts = [];
+  const saved = [];
+  let failFirst = true;
+  _reset();
+  clear();
+  _setHooks({
+    leagues: async () => [99],
+    webhook: true,
+    reportCompose: async () => ({ text: 'rapport', source: 'ai' }),
+    post: async (t) => {
+      if (failFirst) {
+        failFirst = false;
+        throw new Error('Discord svarte 500');
+      }
+      posts.push(t);
+    },
+    saveReport: (state) => saved.push(state),
+  });
+  try {
+    await _checkReport(); // feiler - ingen markor
+    assert.equal(saved.length, 0);
+    await _checkReport(); // retry lykkes
+    assert.equal(posts.length, 1);
+    assert.equal(saved.length, 1);
+  } finally {
+    _reset();
+    restoreFetch();
+  }
+});
+
+test('to overlappende checkReport-kall poster bare en gang', async () => {
+  const restoreFetch = mockBootstrapFetch(reportEvents());
+  const posts = [];
+  let release;
+  const gate = new Promise((resolve) => {
+    release = resolve;
+  });
+  _reset();
+  clear();
+  _setHooks({
+    leagues: async () => [99],
+    webhook: true,
+    reportCompose: async () => {
+      await gate;
+      return { text: 'rapport', source: 'ai' };
+    },
+    post: async (t) => posts.push(t),
+    saveReport: () => {},
+  });
+  try {
+    const first = _checkReport();
+    const second = _checkReport();
+    release();
+    await Promise.all([first, second]);
+    assert.equal(posts.length, 1);
+  } finally {
+    _reset();
+    restoreFetch();
+  }
+});
+
+test('rapportmarkoren leses ved oppstart og getLeagueReport gir teksten (redeploy)', async () => {
+  const restoreFetch = mockBootstrapFetch(reportEvents());
+  const posts = [];
+  _reset();
+  clear();
+  _setHooks({
+    leagues: async () => [99],
+    loadReport: () => ({ lastReportedEvent: 1, text: 'gammel rapport', generatedAt: '2026-08-27T10:00:00Z', source: 'ai' }),
+    webhook: true,
+    reportCompose: async () => ({ text: 'ny rapport', source: 'ai' }),
+    post: async (t) => posts.push(t),
+    saveReport: () => {},
+  });
+  try {
+    _initState();
+    assert.equal(getLeagueReport().text, 'gammel rapport');
+    await _checkReport();
+    assert.equal(posts.length, 0, 'runde 1 var alt rapportert for omstarten');
+  } finally {
+    _reset();
+    restoreFetch();
+  }
+});
+
+test('dataReportText nevner vinner, taper og min plassering', () => {
+  const text = dataReportText({
+    event: { id: 2, name: 'Runde 2' },
+    league: { name: 'Testligaen', size: 3 },
+    winner: { entryName: 'Nykommer FC', playerName: 'Ny N.', eventTotal: 71 },
+    loser: { entryName: 'Rival FC', playerName: 'Rival R.', eventTotal: 42 },
+    movers: [],
+    table: [],
+    mine: { entryName: 'Marius XI', rank: 1, lastRank: 3, eventTotal: 60, total: 100, captain: { name: 'Haaland', points: 12, lost: 0, tc: false } },
+    captains: [],
+  });
+
+  assert.ok(text.includes('Nykommer FC'));
+  assert.ok(text.includes('Rival FC'));
+  assert.ok(text.includes('1.'), 'min plassering mangler');
+  assert.ok(text.includes('Haaland'));
 });

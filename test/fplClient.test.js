@@ -7,6 +7,8 @@ import {
   getLive,
   getLiveHistoric,
   getEntryTransfers,
+  getEntryHistory,
+  getEntryHistoryHistoric,
   getPicks,
   getPicksHistoric,
   isGameUpdating,
@@ -178,6 +180,24 @@ test('getPicksHistoric deler nøkkel med getPicks og cacher lenge', async () => 
   await getPicks(42, 1); // samme nøkkel → cache-treff, ikke nytt fetch
   assert.equal(fetchCalls.length, 1);
   assert.match(fetchCalls[0].url, /entry\/42\/event\/1\/picks\/$/);
+});
+
+test('getEntryHistoryHistoric deler nøkkel med getEntryHistory og cacher lenge', async () => {
+  mockFetch(() => jsonResponse({ current: [] }));
+  let clock = 1_000_000;
+  _setNow(() => clock);
+  try {
+    await getEntryHistoryHistoric(42);
+    await getEntryHistory(42); // samme nøkkel → cache-treff, ikke nytt fetch
+    assert.equal(fetchCalls.length, 1);
+
+    clock += 10 * 60_000; // 10 min: forbi getEntryHistorys TTL, godt innenfor 6 t
+    await getEntryHistoryHistoric(42);
+    assert.equal(fetchCalls.length, 1, 'andres historikk skal ikke revalideres etter 10 min');
+    assert.match(fetchCalls[0].url, /entry\/42\/history\/$/);
+  } finally {
+    _setNow(null);
+  }
 });
 
 test('gameUpdating utløper av seg selv 5 min etter siste 503', async () => {

@@ -23,6 +23,17 @@ const cases = [
   ['league', fx.leagueEmpty, 'Fant ingen private miniligaer'],
   ['league', fx.leagueNoRows, 'Ligatabellen er tom fram til første runde'],
   ['league', fx.leagueEmptyDiff, 'Differensialer'],
+  ['league', fx.league, 'Rival-radar'],
+  ['league', fx.league, 'rival-select'],
+  ['league', fx.league, 'Felles spillere'],
+  ['league', fx.league, '+5'],
+  ['league', fx.league, 'Kaptein-liga'],
+  ['league', fx.league, 'Tapt mot optimal'],
+  ['league', fx.leagueCaptainsCapped, 'siste 10 ferdige rundene'],
+  ['league', fx.league, 'Sesongutvikling'],
+  ['league', fx.league, 'league-graph'],
+  ['league', fx.league, 'Rundens rapport'],
+  ['league', fx.league, '<strong>Rival FC</strong>'],
   ['brief', fx.brief, 'Rundebrief'],
   ['brief', fx.briefEmpty, 'Rundebrief'],
   ['live', fx.live, 'live-root'],
@@ -337,6 +348,17 @@ test('league.ejs viser retningsmarkører med skjermlesertekst', async () => {
 test('league.ejs viser nøytral markør uten historikk', async () => {
   const html = await renderView('league', fx.league);
   assert.match(html, /class="rank-same" aria-label="uendret plassering">–/);
+});
+
+test('league.ejs viser ikke ai-badge for datarapport', async () => {
+  const html = await renderView('league', fx.leagueDataReport);
+  assert.ok(html.includes('Rundens rapport'), 'rapporten skal vises');
+  assert.ok(!html.includes('ai-badge'), 'datafallback skal ikke bære AI-merket');
+});
+
+test('league.ejs uten grafdata utelater league-graph', async () => {
+  const html = await renderView('league', fx.leagueEmpty);
+  assert.ok(!html.includes('league-graph'), 'grafen skal utelates helt uten data');
 });
 
 test('league.ejs gjør radene klikkbare og markerer valgt rival', async () => {

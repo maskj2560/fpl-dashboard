@@ -55,6 +55,15 @@ src/services/
                    scenario-CRUD med persistens i DATA_DIR/scenarios.json
                    (samme volum-mønster som brief-markøren)
   leagues.js       hvilke ligaer som vises; knownLeagueCount() for /health
+  league-insights.js (v1.6.0) liga-innsikten på /liga: leagueRanksByGw +
+                   buildLeagueGraph (sesonggraf), pickRival + buildRivalCompare
+                   (rival-radar), effectiveCaptain + buildCaptainLeague
+                   (kaptein-liga, tak siste 10 ferdige runder), buildReportData
+                   (rapportgrunnlag). assembleLeagueInsights/-ReportData henter
+                   via fplClient med _mapLimit(8) og myk feil per seksjon.
+                   MAX_MANAGERS 20. Egen team-id ALLTID via getEntryHistory
+                   (5 min) — getEntryHistoryHistoric (delt nøkkel, 6 t) er kun
+                   for andre managere
   clubAssets.js    hvilke klubbbilder som finnes i public/img/clubs/. Leses én
                    gang ved oppstart til app.locals.clubAssets; partialene spør
                    hasBadge/hasShirt/hasKeeper og skriver aldri <img> i blinde.
@@ -64,7 +73,10 @@ src/services/
   news.js          RSS-nyheter + valgfri AI-oppsummering (via ai.js, cachet)
   notify.js        deadline-scheduler + Discord-webhook for auto-brief (valgfri)
                    «Brief sendt»-markøren lagres i DATA_DIR/brief-state.json
-                   så en redeploy i sendevinduet ikke re-poster briefen
+                   så en redeploy i sendevinduet ikke re-poster briefen.
+                   (v1.6.0) også «Rundens rapport»: reportDecision + checkReport
+                   på samme 6 t-tikk — markør OG tekst i DATA_DIR/report-state.json
+                   (webvisningen overlever redeploy, aldri dobbel-post)
   refresh.js       (v1.3.4) timer-styrt oppfrisking av AI-tekstene:
                    refreshDecision (ren beslutning) + startAiRefresher
                    (ett tikk ved oppstart, så hver 30. min). Sender aldri
@@ -115,7 +127,7 @@ Base `https://fantasy.premierleague.com/api/` — åpent, ingen nøkkel. Viktig:
 
 Alle AI-kall går gjennom `ai.js`. Modell konfigureres med `AI_MODEL`
 (default `claude-sonnet-5`; `claude-haiku-4-5` er billig-alternativet).
-Fem funksjoner, alle kun aktive når `ANTHROPIC_API_KEY` er satt:
+Seks funksjoner, alle kun aktive når `ANTHROPIC_API_KEY` er satt:
 
 1. **Nyhetsoppsummering** (`news.js`): RSS-titler + ingresser oppsummeres til
    korte norske FPL-punkter. Maks én generering per 30 min, `max_tokens` 2000.
@@ -138,6 +150,11 @@ ubrukte tokens koster ingenting. Lengden styres av instruksjonene i prompten.
    byttene («godt bytte, dårlig timing»). Maks 1 generering per døgn via
    `refresh.js`, `max_tokens` 1500, kun når det finnes spilte bytter
    (0 bytter = 0 kall). Ruta leser kun cachen.
+6. **Rundens rapport** (/liga + Discord, fra v1.6.0): roast-rapport om
+   miniligaen etter hver ferdigspilte runde (`finished && data_checked`).
+   Genereres av `notify.js` på 6 t-tikket, `max_tokens` 2000, maks 1 kall
+   per runde (event-nøkkel + 7-døgnsintervall + persistert markør).
+   Datafallback uten nøkkel. Ruta leser kun `getLeagueReport()`.
 
 Ved feil eller tomt svar venter `ai.js` 5 minutter før nytt forsøk på samme
 nøkkel (`FAILURE_BACKOFF_MS`), slik at en ugyldig nøkkel ikke gir ett betalt
@@ -149,9 +166,10 @@ cachen (`ai.getCached`). Eneste unntak: rådgiverklikket på /lag venter når
 cachen er helt kald. Utgått tekst serveres umiddelbart og fornyes i
 bakgrunnen (`swr: true` i `ai.generate`). Takt: briefen 1x/døgn + hver time
 i et 6-timersvindu før deadline, nyhetene hver 6. time,
-overgangskommentaren 1x/døgn (fra v1.5.0), pluss ett tikk ved
+overgangskommentaren 1x/døgn (fra v1.5.0), ligarapporten 1x per
+ferdigspilt runde (fra v1.6.0), pluss ett tikk ved
 oppstart (AI-cachen bor i minnet og er tom etter hver deploy) — til sammen
-~48–52 kall/uke. Prompts holdes korte. Uten nøkkel vises rå data
+~49–53 kall/uke. Prompts holdes korte. Uten nøkkel vises rå data
 (feed-liste, data-brief) — AI er alltid et tillegg, aldri et krav.
 
 ## Konvensjoner

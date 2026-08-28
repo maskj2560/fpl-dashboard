@@ -54,32 +54,135 @@
   <% } %>
 </div>
 
-<% if (diff) { %>
+<% if (report && report.text) { %>
+  <%
+    // AI-tekst er utrygt innhold: escape først, gjør **fet** om til <strong>.
+    function escAi(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+    function boldAi(text) {
+      return escAi(text).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    }
+  %>
+  <section class="card card-wide <%= report.source === 'ai' ? 'card-ai' : '' %>">
+    <h2><span class="h2-title"><% if (report.source === 'ai') { %><span class="ai-badge">AI</span> <% } %>Rundens rapport</span> <span class="dim">Runde <%= report.lastReportedEvent %></span></h2>
+    <% for (const line of report.text.split('\n').filter((l) => l.trim())) { %>
+      <p><%- boldAi(line) %></p>
+    <% } %>
+    <% if (report.generatedAt) { %><p class="hint">Skrevet <%= formatDateTime(report.generatedAt) %></p><% } %>
+  </section>
+<% } %>
+
+<% /* Radar-spillere har {name, teamCode, teamShort, eventPoints} — badge bygges inline. */ %>
+<% const radarBadge = (p) => ({ team: { short_name: p.teamShort, code: p.teamCode, name: p.teamShort }, showName: false }); %>
+
+<% if (insights && insights.rival) { const rv = insights.rival; %>
   <section class="card card-wide">
-    <h2>Differensialer <span class="dim">deg mot <%= diff.rivalName %></span></h2>
+    <h2>Rival-radar <span class="dim">deg mot <%= rv.rival.entryName %></span></h2>
+    <form method="get" action="/liga" id="rival-form" class="rival-form">
+      <label for="rival-select" class="dim">Rival:</label>
+      <select name="rival" id="rival-select">
+        <% for (const r of insights.results) { if (r.entry === myEntry) continue; %>
+          <option value="<%= r.entry %>"<%= r.entry === insights.rivalEntry ? ' selected' : '' %>><%= r.entry_name %> — <%= r.player_name %></option>
+        <% } %>
+      </select>
+      <noscript><button type="submit" class="btn">Bytt</button></noscript>
+    </form>
+
+    <% const leadTotal = (rv.me.total ?? 0) - (rv.rival.total ?? 0); %>
+    <% const leadEvent = (rv.me.eventTotal ?? 0) - (rv.rival.eventTotal ?? 0); %>
+    <div class="stat-strip">
+      <div class="stat"><span class="stat-val <%= leadTotal > 0 ? 'accent' : (leadTotal < 0 ? 'negative' : '') %>"><%= formatSigned(leadTotal) %></span><span class="stat-lbl">Avstand totalt</span></div>
+      <div class="stat"><span class="stat-val <%= leadEvent > 0 ? 'accent' : (leadEvent < 0 ? 'negative' : '') %>"><%= formatSigned(leadEvent) %></span><span class="stat-lbl">Siste runde</span></div>
+      <div class="stat"><span class="stat-val"><%= rv.captains.mine ? rv.captains.mine.name : '–' %><% if (rv.captains.mine && rv.captains.mine.tc) { %> <span class="status">TC</span><% } %></span><span class="stat-lbl">Min kaptein<%= rv.captains.mine ? ` · ${rv.captains.mine.eventPoints} p` : '' %></span></div>
+      <div class="stat"><span class="stat-val"><%= rv.captains.rival ? rv.captains.rival.name : '–' %><% if (rv.captains.rival && rv.captains.rival.tc) { %> <span class="status">TC</span><% } %></span><span class="stat-lbl">Rivalens kaptein<%= rv.captains.rival ? ` · ${rv.captains.rival.eventPoints} p` : '' %></span></div>
+    </div>
+
+    <h3 class="sub-head">Differensialer</h3>
     <div class="grid">
       <div>
-        <h3 class="sub-head">De har — jeg mangler</h3>
-        <% if (diff.theirs.length === 0) { %><p class="empty">Ingen.</p><% } else { %>
+        <h4 class="sub-head dim">De har — jeg mangler</h4>
+        <% if (rv.diff.theirs.length === 0) { %><p class="empty">Ingen.</p><% } else { %>
         <div class="table-scroll"><table class="data">
-          <thead><tr><th>Spiller</th><th class="num">Eid</th><th class="num">Form</th></tr></thead>
-          <tbody><% for (const p of diff.theirs) { %>
-            <tr><td><strong><%= p.web_name %></strong> <%- include('partials/club-badge', { team: teamsById.get(p.team) }) %></td><td class="num"><%= p.selected_by_percent %> %</td><td class="num"><%= p.form %></td></tr>
+          <thead><tr><th>Spiller</th><th class="num">Poeng</th></tr></thead>
+          <tbody><% for (const p of rv.diff.theirs) { %>
+            <tr><td><%- include('partials/club-badge', radarBadge(p)) %> <strong><%= p.name %></strong></td><td class="num"><%= p.eventPoints %></td></tr>
           <% } %></tbody>
         </table></div>
         <% } %>
       </div>
       <div>
-        <h3 class="sub-head">Jeg har — de mangler</h3>
-        <% if (diff.mine.length === 0) { %><p class="empty">Ingen.</p><% } else { %>
+        <h4 class="sub-head dim">Jeg har — de mangler</h4>
+        <% if (rv.diff.mine.length === 0) { %><p class="empty">Ingen.</p><% } else { %>
         <div class="table-scroll"><table class="data">
-          <thead><tr><th>Spiller</th><th class="num">Eid</th><th class="num">Form</th></tr></thead>
-          <tbody><% for (const p of diff.mine) { %>
-            <tr><td><strong><%= p.web_name %></strong> <%- include('partials/club-badge', { team: teamsById.get(p.team) }) %></td><td class="num"><%= p.selected_by_percent %> %</td><td class="num"><%= p.form %></td></tr>
+          <thead><tr><th>Spiller</th><th class="num">Poeng</th></tr></thead>
+          <tbody><% for (const p of rv.diff.mine) { %>
+            <tr><td><%- include('partials/club-badge', radarBadge(p)) %> <strong><%= p.name %></strong></td><td class="num"><%= p.eventPoints %></td></tr>
           <% } %></tbody>
         </table></div>
         <% } %>
       </div>
     </div>
+
+    <h3 class="sub-head">Felles spillere</h3>
+    <% if (rv.shared.length === 0) { %>
+      <p class="empty">Ingen felles spillere denne runden.</p>
+    <% } else { %>
+      <ul class="shared-players">
+        <% for (const p of rv.shared) { %>
+          <li><%- include('partials/club-badge', radarBadge(p)) %> <%= p.name %> <span class="dim"><%= p.eventPoints %> p</span></li>
+        <% } %>
+      </ul>
+    <% } %>
+  </section>
+<% } %>
+
+<% if (insights && insights.captainLeague) { const cl = insights.captainLeague; %>
+  <section class="card card-wide">
+    <h2>Kaptein-liga <span class="dim">Runde <%= cl.lastGw %></span></h2>
+    <div class="table-scroll">
+      <table class="data">
+        <thead><tr><th>Manager</th><th>Kaptein</th><th class="num">Poeng</th><th class="num">Tapt mot optimal</th><th class="num">Sum poeng</th><th class="num">Sum tapt</th></tr></thead>
+        <tbody>
+          <% for (const r of cl.rows) { %>
+            <tr class="<%= r.entry === myEntry ? 'row-me' : '' %>">
+              <td><%= r.entryName %></td>
+              <td><% if (r.last) { %><%- include('partials/club-badge', radarBadge(r.last)) %> <%= r.last.name %><% if (r.last.tc) { %> <span class="status">TC</span><% } %><% } else { %><span class="dim">–</span><% } %></td>
+              <td class="num"><%= r.last ? r.last.points : '–' %></td>
+              <td class="num <%= r.last && r.last.lost > 0 ? 'negative' : '' %>"><%= r.last ? (r.last.lost > 0 ? formatSigned(-r.last.lost) : '0') : '–' %></td>
+              <td class="num"><strong><%= r.sum.points %></strong></td>
+              <td class="num"><%= r.sum.lost > 0 ? formatSigned(-r.sum.lost) : '0' %></td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+    <p class="dim"><%= cl.capped ? `Sum over de siste ${cl.depth} ferdige rundene.` : 'Sum over hele sesongen.' %>
+    Tapt mot optimal: beste spiller i start-XI minus kapteinen, i rå spillerpoeng.</p>
+  </section>
+<% } %>
+
+<% if (insights && insights.graph) { const g = insights.graph; %>
+  <% const seriesColor = (s) => s.me ? 'var(--accent)' : (s.rival ? 'var(--accent-2)' : 'var(--text-dim)'); %>
+  <section class="card card-wide">
+    <h2>Sesongutvikling <span class="dim">Runde <%= g.gwFirst %>–<%= g.gwLast %></span></h2>
+    <svg class="rank-graph league-graph" viewBox="-8 -8 <%= g.width + 16 %> <%= g.height + 16 %>" preserveAspectRatio="none" role="img" aria-label="Ligaplassering per runde">
+      <% for (const y of [0, g.height / 2, g.height]) { %>
+        <line x1="0" y1="<%= y %>" x2="<%= g.width %>" y2="<%= y %>" stroke="var(--border)" stroke-width="1" vector-effect="non-scaling-stroke" />
+      <% } %>
+      <% for (const s of g.series) { if (!s.points) continue; %>
+        <% if (g.single) { %>
+          <circle cx="<%= s.points.split(',')[0] %>" cy="<%= s.points.split(',')[1] %>" r="4" fill="<%= seriesColor(s) %>" />
+        <% } else { %>
+          <polyline points="<%= s.points %>" fill="none" stroke="<%= seriesColor(s) %>" stroke-width="<%= s.me ? 2.5 : (s.rival ? 2 : 1) %>" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round" />
+        <% } %>
+      <% } %>
+    </svg>
+    <ul class="graph-legend">
+      <% for (const s of [...g.series].reverse()) { %>
+        <li><span class="legend-swatch" style="background: <%= seriesColor(s) %>"></span><%= s.name %><% if (s.me) { %> <span class="dim">(meg)</span><% } else if (s.rival) { %> <span class="dim">(rival)</span><% } %><% if (s.lastRank) { %> <span class="dim">· <%= s.lastRank %>.</span><% } %></li>
+      <% } %>
+    </ul>
+    <p class="hint">Ligaplassering per runde — toppen er 1. plass.</p>
   </section>
 <% } %>

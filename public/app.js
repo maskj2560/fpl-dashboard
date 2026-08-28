@@ -729,3 +729,40 @@ function plannerRules({ out, inn, bank, squad }) {
     del.disabled = false;
   });
 })();
+
+// Modul 9: rival-valget paa /liga huskes (v1.6.0). Ren beslutningsfunksjon
+// (testes i test/app-client.test.js) + init som lagrer valget i
+// localStorage og redirecter EN gang naar siden aapnes uten ?rival=.
+// Param i URL-en treffer alltid store-grenen, saa redirect kan aldri loope.
+function rivalNavAction({ search, stored, validIds }) {
+  const m = /[?&]rival=(\d+)/.exec(search || '');
+  if (m) return { type: 'store', value: m[1] };
+  if (stored && validIds.has(stored)) return { type: 'redirect', to: '/liga?rival=' + stored };
+  if (stored) return { type: 'clear' };
+  return { type: 'none' };
+}
+
+(function initRivalPicker() {
+  const select = document.getElementById('rival-select');
+  if (!select) return;
+  const form = document.getElementById('rival-form');
+  select.addEventListener('change', () => {
+    if (form) form.submit();
+  });
+
+  let stored = null;
+  try {
+    stored = localStorage.getItem('fpl-rival');
+  } catch {
+    return; // localStorage utilgjengelig (privat modus) - dropdownen virker fortsatt
+  }
+  const validIds = new Set(Array.from(select.options).map((o) => o.value));
+  const action = rivalNavAction({ search: location.search, stored, validIds });
+  try {
+    if (action.type === 'store') localStorage.setItem('fpl-rival', action.value);
+    else if (action.type === 'clear') localStorage.removeItem('fpl-rival');
+  } catch {
+    return;
+  }
+  if (action.type === 'redirect') location.replace(action.to);
+})();
