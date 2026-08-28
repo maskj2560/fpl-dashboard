@@ -7,6 +7,17 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-09-XX
+
+### Added
+
+- Sidene sier fra når FPL-dataene er gamle: er de eldre enn alderstaket
+  (10 minutter for live, 60 minutter ellers), vises banneret «Viser data
+  fra HH:MM — får ikke kontakt med FPL akkurat nå.» Innenfor taket
+  serveres data stille som før.
+- `/api/brief.json` og `/api/live.json` oppgir `dataAlder` — sekunder
+  siden dataene sist ble hentet fra FPL.
+
 ## [1.3.8] - 2026-09-XX
 
 ### Fixed
