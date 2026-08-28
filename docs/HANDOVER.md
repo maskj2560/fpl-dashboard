@@ -9,13 +9,20 @@
 **Sist oppdatert:** 2026-08-28 (økt 43, Opus: v1.3.8–v1.6.0 ut i prod, alle brancher ryddet)
 
 ## Status akkurat nå
-- **v1.3.8, v1.4.0, v1.5.0 og v1.6.0 MERGET OG TAGGET på `main` 28. aug.**
+- **v1.3.8, v1.4.0, v1.5.0 og v1.6.0 UTE I PROD 28. aug kl. 14:49.**
   Fire `--no-ff`-merger i rekkefølge (v138 → v140 → v150 → v160), alle
-  «Merge made by the 'ort' strategy», null konflikt. Tagger: `v1.3.8`,
-  `v1.4.0`, `v1.5.0`, `v1.6.0`. **509/509 + lint 0** både på
-  `feat/liga-v160` før merge og på merget `main`. Prod-beviset (footer,
-  `/health`, rutesveip, ny asset-hash) føres inn i en egen docs-commit
-  rett etter deployen — samme økt.
+  «Merge made by the 'ort' strategy», null konflikt; tagger `v1.3.8`,
+  `v1.4.0`, `v1.5.0`, `v1.6.0` pushet. **509/509 + lint 0** både på
+  `feat/liga-v160` før merge og på merget `main`. Prod-bevis (utenfra,
+  28. aug): footer `v1.6.0 · sist oppdatert fredag 28. august kl. 14:49`;
+  `/health` 200 med `ai:true, discord:true, teamId:true, leagues:1`;
+  rutesveip `/`, `/spillere`, `/lag`, `/liga`, `/brief`, `/live`,
+  `/nyheter`, `/overganger`, `/api/brief.json`, `/api/live.json` alle
+  200 og `/finnesikke` 404; `/liga` har Rival-radar, `rival-select`,
+  Kaptein-liga, Sesongutvikling, `league-graph` og «Rundens rapport»
+  (runde 1, AI-merke); `/overganger` viser tomtilstanden «Ingen
+  overganger registrert ennå» (korrekt — 0 bytter); `dataAlder` finnes
+  i både `/api/brief.json` og `/api/live.json` (56 s ved sjekken).
 - **Ekte SIGTERM-bevis mangler.** Deploy-loggen er feil sted (gammel
   containers stdout slettes). Beviset er `kill 1` i containerterminalen
   (containeren restartes, loggen beholdes) — de to avslutningslinjene
@@ -28,10 +35,12 @@
   mørkt tema, `docs/img/`, lenket fra README). Rest: ekte telefon.
 - **Prod-QA 25. aug: 402 sjekker, 0 feil** mot v1.3.4 (dekker også
   v1.3.3); detaljene er rotert til historikken.
-- **Asset-hashen var `d508c47f` t.o.m. v1.3.7.** v1.5.0/v1.6.0 endrer
-  `style.css` OG `app.js`, så hashen SKAL være ny etter denne deployen —
-  den nye føres inn her ved prod-verifiseringen. Regn den fra
-  git-blobbene, ikke arbeidstreet (CRLF på disk).
+- **Asset-hashen i prod er `f9014751` fra 28. aug** (var `d508c47f`
+  t.o.m. v1.3.7 — v1.5.0/v1.6.0 endret både `style.css` og `app.js`).
+  Verdien ble regnet ut på forhånd fra git-blobbene (sha1 av
+  `style.css` + `app.js`, første 8 tegn) og stemte eksakt med prod —
+  regn den ALLTID fra git-blobbene, aldri fra arbeidstreet (CRLF på
+  disk gir et annet tall). Purge er unødvendig: URL-ene er versjonerte.
 - **Helsesjekken:** alt. a aktiv (Coolifys sjekk AV, Dockerfilens gjelder).
   Se lærdommene under for hva den IKKE fanger.
 - **Kostnad: måleuka er DROPPET** (Marius 28. aug) — han følger forbruket
@@ -39,9 +48,17 @@
   `docs/sjekkpunkt-d-kostnad.md` står ved lag og brukes ved behov.
   Taktbudsjett etter v1.6.0: **~49–53 AI-kall/uke**. Siste måling
   23. aug: $0,94/uke.
-- **Git akkurat nå:** alt ligger på `main`. Én push (= én Coolify-deploy)
-  tar med taggene `v1.3.7`–`v1.6.0`. De fire featurebranchene og
-  `staging` slettes lokalt og på GitHub etter grønn prod-verifisering.
+- **Git akkurat nå:** `origin` har KUN `main`. De fire
+  featurebranchene og `staging` er slettet lokalt og på GitHub med
+  `-d`/`--delete` etter grønn prod-verifisering; taggene t.o.m.
+  `v1.6.0` er pushet. **Rest:** 12 gamle lokale brancher fra økt ≤ 35
+  (`docs/plan-ui-overhaul`, `feat/ai-swr-v134`, `feat/discord-everyone`,
+  `feat/hva-hvis-transfers`, `fix/cache-backoff`, `fix/kvalitetspass-v113`,
+  `fix/lag-anbefalinger`, `fix/live-bonus`, `fix/news-unknown`,
+  `fix/qa-v1.1.1`, `fix/qa-v1.1.2`, `fix/sanitize-brief`) står igjen —
+  alle merget, ingen finnes på GitHub. Slettingen ble blokkert av
+  verktøyets tillatelsesklassifiserer i økt 43; ryddes med
+  `git branch -d <navn>` når som helst.
 - Eldre status (v1.3.0–v1.3.7, idépakke-beslutningen, prod-QA-detaljene,
   branch-statusen før mergen): `docs/arkiv/HANDOVER-historikk.md`.
 
@@ -66,6 +83,8 @@ Marius gjøre.
    for seg etterpå.
 5. **Kostnad:** løpende hos Marius i Anthropic-konsollen — ingen måleuke,
    ingen deploy-fri periode å ta hensyn til.
+6. **Kosmetisk:** slett de 12 gamle lokale branchene (se Git-punktet i
+   statusen) — `git branch -d`, alle er merget.
 
 **P0 og P1 er LUKKET 25. aug** (helsesjekken og auto-briefen).
 ## Driftslærdommer (ikke glem disse)
@@ -161,23 +180,6 @@ Marius gjøre.
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
-- 2026-08-26 (økt 41, senere): «planlegg hele Overganger-siden perfekt fram
-  til testing — hva hvis, all transfer-tracking, masse kul info, still meg
-  masse spørsmål». Handling: 3 spørsmålsrunder (alle valg i planens
-  Beslutninger-liste; Marius krevde FT-rekonstruksjon i stedet for rå
-  poeng), fasit i `docs/plan-overganger-v150.md`, og hele v1.5.0
-  TDD-bygget ferdig på `feat/overganger-v150` (T1–T13, 454/454, lint 0,
-  røyktest med tomme nøkler + scenario-syklus mot ekte data). Valget
-  «AI-kommentar JA» overstyrer «uten AI-kommentar i v1» i beslutningslista.
-- 2026-08-27 (økt 42): «Har du andre kule ideer? Lang liste, spør meg
-  hvilke jeg vil ha og hvordan hver skal fungere.» Handling: 21 idéer
-  presentert, Marius valgte alle 16 hovedidéer; 4 spørsmålsrunder ga
-  fasit for hver — `docs/plan-idepakken-v16-v19.md`, fire versjoner
-  v1.6.0–v1.9.0 i ROADMAP. Deretter: «Lag en ny branch på github til
-  dette. Et staging miljø eller noe» → `staging` + de tre kodebranchene
-  pushet til GitHub (ingen deploy — Coolify bygger kun main). Så: «Skal
-  vi begynne å jobbe med det nå?» → planlegg + bygg valgt, kaptein-tak
-  10 runder godkjent, v1.6.0 TDD-bygget ferdig på `feat/liga-v160`.
 - 2026-08-28 (økt 43, Opus): «briefen kom i går; jeg bytter ikke denne
   uka; alt ferdigbygget skal til `main` nå; slett alle andre brancher,
   også `staging`; kostnadskontrollen tar jeg selv i Anthropic-konsollen
@@ -186,8 +188,10 @@ Marius gjøre.
   CHANGELOG-datoene satt til 2026-08-28, ROADMAP-tabellen og kø-punkt
   1/2/4/5 + dokumentkartet ajour, VIDERE.md skrevet om til v1.6.0,
   de tre planfilene arkivert til `docs/arkiv/`, denne fila rotert og
-  oppdatert. Deretter: én push (= én Coolify-deploy), prod-verifisering
-  utenfra og sletting av alle brancher unntatt `main` — resultatet
-  føres inn i statusblokka over i en egen docs-commit samme økt.
-- Loggposter fra økt 22–41 (første del): rotert til
-  `docs/arkiv/HANDOVER-historikk.md` (200-linjerstaket, sist 2026-08-26).
+  oppdatert. Så ÉN push kl. 14:48 (= én Coolify-deploy, live 14:49),
+  prod-verifisert utenfra (alt grønt, se statusen), og de fem
+  branchene slettet lokalt og på GitHub. «Rundens rapport» for runde 1
+  ble generert ved oppstartstikket og vises på /liga med AI-merke;
+  Discord-posten er ikke verifisert herfra — Marius sjekker kanalen.
+- Loggposter fra økt 22–42: rotert til
+  `docs/arkiv/HANDOVER-historikk.md` (200-linjerstaket, sist 2026-08-28).

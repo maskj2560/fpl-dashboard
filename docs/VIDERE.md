@@ -190,7 +190,8 @@ er «porter» — de skjer når datoen eller du er klar, uten å stoppe utviklin
   prisgevinst og AI-kommentar én gang i døgnet.
 - ~~**v1.6.0** — liga-pakka (rival-radar, sesonggraf, kaptein-liga og
   «Rundens rapport» til Discord etter hver runde).~~ **Ferdig og ute
-  28. august** — første rapport ble postet samme dag.
+  28. august** — rapporten for runde 1 lå klar på Miniligaer-siden samme
+  dag; se etter den i Discord-kanalen også.
 - **Neste: «Innsikt»-siden (v1.7.0).** Poeng du la igjen på benken,
   kapteinsfasit, flaks-barometer og rundens lag mot ditt. Deretter
   spiller-pakka (spillerkort ved klikk på navn, sammenlign spillere,

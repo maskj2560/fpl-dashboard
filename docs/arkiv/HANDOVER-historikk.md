@@ -1363,3 +1363,22 @@ i økt 41 og kan gjenbrukes fra chatloggen.**
 **P1 er LUKKET 25. aug** (auto-briefen bekreftet i Discord) — sjekkpunkt A
 er dermed ferdig i sin helhet. P0 ble lukket samme dag.
 
+## Rotert 2026-08-28 (økt 43): loggpostene fra økt 41 og 42 (verbatim fra HANDOVER.md)
+
+- 2026-08-26 (økt 41, senere): «planlegg hele Overganger-siden perfekt fram
+  til testing — hva hvis, all transfer-tracking, masse kul info, still meg
+  masse spørsmål». Handling: 3 spørsmålsrunder (alle valg i planens
+  Beslutninger-liste; Marius krevde FT-rekonstruksjon i stedet for rå
+  poeng), fasit i `docs/plan-overganger-v150.md`, og hele v1.5.0
+  TDD-bygget ferdig på `feat/overganger-v150` (T1–T13, 454/454, lint 0,
+  røyktest med tomme nøkler + scenario-syklus mot ekte data). Valget
+  «AI-kommentar JA» overstyrer «uten AI-kommentar i v1» i beslutningslista.
+- 2026-08-27 (økt 42): «Har du andre kule ideer? Lang liste, spør meg
+  hvilke jeg vil ha og hvordan hver skal fungere.» Handling: 21 idéer
+  presentert, Marius valgte alle 16 hovedidéer; 4 spørsmålsrunder ga
+  fasit for hver — `docs/plan-idepakken-v16-v19.md`, fire versjoner
+  v1.6.0–v1.9.0 i ROADMAP. Deretter: «Lag en ny branch på github til
+  dette. Et staging miljø eller noe» → `staging` + de tre kodebranchene
+  pushet til GitHub (ingen deploy — Coolify bygger kun main). Så: «Skal
+  vi begynne å jobbe med det nå?» → planlegg + bygg valgt, kaptein-tak
+  10 runder godkjent, v1.6.0 TDD-bygget ferdig på `feat/liga-v160`.
