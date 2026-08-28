@@ -7,7 +7,7 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
-## [1.6.0] - 2026-09-XX
+## [1.6.0] - 2026-08-28
 
 ### Added
 
@@ -28,7 +28,7 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   til Discord når webhook er satt, og overlever redeploy
   (`DATA_DIR/report-state.json`). Maks 1 AI-kall per runde.
 
-## [1.5.0] - 2026-09-XX
+## [1.5.0] - 2026-08-28
 
 ### Added
 
@@ -64,7 +64,7 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   sidevisning, og kun når det finnes spilte bytter. Vises med cyan
   AI-merke under sesongkortet.
 
-## [1.4.0] - 2026-09-XX
+## [1.4.0] - 2026-08-28
 
 ### Added
 
@@ -75,7 +75,7 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - `/api/brief.json` og `/api/live.json` oppgir `dataAlder` — sekunder
   siden dataene sist ble hentet fra FPL.
 
-## [1.3.8] - 2026-09-XX
+## [1.3.8] - 2026-08-28
 
 ### Fixed
 

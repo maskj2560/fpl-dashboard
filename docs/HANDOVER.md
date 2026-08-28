@@ -6,89 +6,68 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-27 (økt 42, Fable: v1.6.0 Liga-pakka ferdigbygget; staging på GitHub)
+**Sist oppdatert:** 2026-08-28 (økt 43, Opus: v1.3.8–v1.6.0 ut i prod, alle brancher ryddet)
 
 ## Status akkurat nå
-- **v1.3.5 og v1.3.6 UTE I PROD 25. aug** (footer `v1.3.6`, `/health` 200).
-  v1.3.5: SIGTERM/SIGINT-handler (`createShutdown`). v1.3.6: tidsstemplet
-  gameUpdating (5 min utløp) + egen 503-side ved kaldstart i FPLs
-  oppdateringsvindu. 360/360, lint 0.
+- **v1.3.8, v1.4.0, v1.5.0 og v1.6.0 MERGET OG TAGGET på `main` 28. aug.**
+  Fire `--no-ff`-merger i rekkefølge (v138 → v140 → v150 → v160), alle
+  «Merge made by the 'ort' strategy», null konflikt. Tagger: `v1.3.8`,
+  `v1.4.0`, `v1.5.0`, `v1.6.0`. **509/509 + lint 0** både på
+  `feat/liga-v160` før merge og på merget `main`. Prod-beviset (footer,
+  `/health`, rutesveip, ny asset-hash) føres inn i en egen docs-commit
+  rett etter deployen — samme økt.
 - **Ekte SIGTERM-bevis mangler.** Deploy-loggen er feil sted (gammel
   containers stdout slettes). Beviset er `kill 1` i containerterminalen
   (containeren restartes, loggen beholdes) — de to avslutningslinjene
   skal stå der. Lokalt bevist med `process.emit('SIGINT')`, exit 0.
-- **v1.3.7 UTE I PROD 26. aug** (footer `v1.3.7`, `/health` 200, hash
-  `d508c47f` uendret). Volumet `/app/data` lagt til i Coolify FØR pushen
-  (navngitt volum `…-fpl-data`, via Claude in Chrome) — aktivt fra denne
-  deployen. Gjenstående markør-bevis: «Brief-markør lastet: runde 2 er
-  alt sendt» i loggen ved første omstart ETTER torsdagens auto-brief.
-- **v1.3.8 og v1.4.0 forhåndsbygget 26. aug** på `fix/genitiv-nyhetsfilter-v138`
-  og `feat/alderstak-v140` (stablet oppå førstnevnte) — 375/375, lint 0,
-  røyktest OK. IKKE merget: merge `--no-ff` + tag + push først etter P4.
-- **v1.5.0 «Overganger» total FERDIGBYGGET 26. aug** på
-  `feat/overganger-v150` (stablet oppå v1.4.0-branchen): T1–T13 utført,
-  454/454, lint 0, røyktest grønn (alle ruter, planlegger-payload,
-  scenario-POST/DELETE mot ekte data — klubbtaket avviste korrekt).
-  Fasit: `docs/plan-overganger-v150.md`. Marius tester lokalt
-  (`npm run dev`) når han vil; merge/deploy etter P4, etter v1.3.8/v1.4.0.
-- **Idépakken v1.6.0–v1.9.0 besluttet 27. aug:** 16 funksjoner, alle valg
-  avgjort i fire spørsmålsrunder. Fasit: `docs/plan-idepakken-v16-v19.md`.
-  Egen detaljplan-økt per versjon (kø-punkt 5).
-- **v1.6.0 Liga-pakka FERDIGBYGGET 27. aug** på `feat/liga-v160` (stablet
-  på v1.5.0-branchen — Marius godkjente «planlegg + bygg nå» og 4. etasje):
-  rival-radar, sesonggraf, kaptein-liga (tak siste 10 runder, godkjent),
-  Rundens rapport (roast, persistert i DATA_DIR/report-state.json).
-  T1–T13, 509/509, lint 0, røyktest med tomme nøkler grønn mot ekte
-  ligadata. Plan: `docs/plan-liga-v160.md`. Merge etter v1.5.0 i P4-løpet.
+- **v1.3.7 ute i prod siden 26. aug.** Volumet `/app/data` er aktivt
+  (navngitt volum `…-fpl-data`). Gjenstående markør-bevis: «Brief-markør
+  lastet: runde 2 er alt sendt» i loggen ved første omstart ETTER
+  torsdagens auto-brief.
 - **P2-skjermbildene tatt og committet 26. aug** (Playwright mot prod,
   mørkt tema, `docs/img/`, lenket fra README). Rest: ekte telefon.
-- **v1.3.4 (AI-SWR) ute siden 25. aug** — målingene og detaljene er rotert
-  til `docs/arkiv/HANDOVER-historikk.md`; plan: `docs/arkiv/plan-v134-ai-swr.md`.
-- **Prod-QA 25. aug: 402 sjekker, 0 feil** mot v1.3.4 (dekker også v1.3.3);
-  detaljene er rotert til historikken. v1.3.5–v1.3.7 rører kun `src/`, så
-  QA-en står — ingen ny full QA er planlagt.
-- **Asset-hashen i prod er `d508c47f`, og den er RIKTIG** (uendret siden
-  v1.3.3). Regn den fra git-blobbene, ikke arbeidstreet (CRLF på disk).
+- **Prod-QA 25. aug: 402 sjekker, 0 feil** mot v1.3.4 (dekker også
+  v1.3.3); detaljene er rotert til historikken.
+- **Asset-hashen var `d508c47f` t.o.m. v1.3.7.** v1.5.0/v1.6.0 endrer
+  `style.css` OG `app.js`, så hashen SKAL være ny etter denne deployen —
+  den nye føres inn her ved prod-verifiseringen. Regn den fra
+  git-blobbene, ikke arbeidstreet (CRLF på disk).
 - **Helsesjekken:** alt. a aktiv (Coolifys sjekk AV, Dockerfilens gjelder).
   Se lærdommene under for hva den IKKE fanger.
-- **v1.3.0–v1.3.3 ute siden 24. aug** (tokenpalett, temabryter, klubbgrafikk,
-  finpuss, QA-rettelser). Detaljer i `docs/arkiv/HANDOVER-historikk.md`.
-- Kostnad målt 23. aug: **$0,94/uke** — under terskelen. Ny måling i uken
-  etter 31. aug (prisskiftet), nå mot taktbudsjettet ~41–45 kall/uke, kø-punkt 1.
-- **Git akkurat nå:** `main` pushet t.o.m. `98377e0` 26. aug, tag
-  `v1.3.7` pushet. Branchene (umerget, stablet) v138 → v140 → v150 →
-  `feat/liga-v160` + `staging` (= v160-toppen) er PUSHET til GitHub som
-  backup/staging — utløser ingen deploy, Coolify bygger kun `main`.
-  Docs-commits på main ligger lokalt til neste release-push —
-  måleuken 1.–6. sept skal være deploy-fri.
-- Eldre status (v1.2.3, doks-opprydning, versjonsplan, v1.2.4): arkivert.
+- **Kostnad: måleuka er DROPPET** (Marius 28. aug) — han følger forbruket
+  løpende i `console.anthropic.com`. Tersklene og skriptet i
+  `docs/sjekkpunkt-d-kostnad.md` står ved lag og brukes ved behov.
+  Taktbudsjett etter v1.6.0: **~49–53 AI-kall/uke**. Siste måling
+  23. aug: $0,94/uke.
+- **Git akkurat nå:** alt ligger på `main`. Én push (= én Coolify-deploy)
+  tar med taggene `v1.3.7`–`v1.6.0`. De fire featurebranchene og
+  `staging` slettes lokalt og på GitHub etter grønn prod-verifisering.
+- Eldre status (v1.3.0–v1.3.7, idépakke-beslutningen, prod-QA-detaljene,
+  branch-statusen før mergen): `docs/arkiv/HANDOVER-historikk.md`.
 
 ## Neste steg (start her)
 
-Fasiten for alt som gjenstår er `docs/plan-sluttspurt.md` — den har kode,
-tester, ordrett dokumenttekst, kalender og bevis-krav per task. Køen i
-`ROADMAP.md` er den langsiktige prioriteringen og sier det samme.
-**Punkt 1–2 kan bare Marius gjøre — Claude in Chrome-promptene er levert
-i økt 41 og kan gjenbrukes fra chatloggen.**
+Køen i `ROADMAP.md` er den langsiktige prioriteringen. Punkt 1–2 kan bare
+Marius gjøre.
 
-1. `[Marius]` **`kill 1` i containerterminalen** (Chrome-prompt 2) → de to
-   avslutningslinjene er siste bevis for v1.3.5; huker av Task 2 Step 8.
-2. `[Marius]` **Én transfer før fr 28. kl. 19:30** (Chrome-prompt 3) —
-   uten den har P3 ingen ekte data å verifisere feltnavnene mot.
-3. **Task 4 (P3), tidligst ma 31. aug:** feltnavnene i
-   `entry/5330646/transfers/` mot ekte API + `/overganger` på 390 px.
-4. **Task 5 (P2), delvis utført 26. aug:** skjermbildene er committet —
-   gjenstår mobil-QA på ekte telefon + mockup-sjekk (Chrome-prompt 4).
-5. **Task 6 (P4), ~ma 7. sept:** kostnadsmåling etter prisskiftet, mot
-   $-tersklene OG taktbudsjettet ~41–45 kall/uke.
-6. **Task 7–8 etter P4:** koden er FERDIG på branchene (se status) — kun
-   merge `--no-ff` + tag + push gjenstår (P3-avvik → renummerer mekanisk
-   først). Deretter v1.5.0 (`docs/plan-overganger-v150.md`), til slutt
-   Task 9: arkiver planfilene. Så: idépakken v1.6.0–v1.9.0 (kø-punkt 5).
+1. `[Marius]` **`kill 1` i containerterminalen** → de to avslutningslinjene
+   («SIGTERM mottatt — lukker serveren», «Serveren lukket ryddig») er det
+   siste beviset for v1.3.5.
+2. `[Marius]` **Mobil-QA på ekte telefon** (P2-resten) — særlig de nye
+   sidene `/overganger` og `/liga` på 390 px, pluss mockup-sjekk i begge
+   temaer.
+3. **P3 ved første ekte transfer:** feltnavnene i
+   `entry/5330646/transfers/` (`element_in`, `element_out`, `event`,
+   `time`, `event_transfers_cost`) mot ekte API. Marius bytter ikke i GW2
+   (besluttet 28. aug), så porten venter på hans første ekte bytte. Til da
+   er tomtilstanden på `/overganger` korrekt — 0 bytter.
+4. **Detaljplan-økt for v1.7.0 «/innsikt»** (kø-punkt 5; beslutningsfasit:
+   `docs/plan-idepakken-v16-v19.md`). v1.8.0 og v1.9.0 planlegges hver
+   for seg etterpå.
+5. **Kostnad:** løpende hos Marius i Anthropic-konsollen — ingen måleuke,
+   ingen deploy-fri periode å ta hensyn til.
 
-**P1 er LUKKET 25. aug** (auto-briefen bekreftet i Discord) — sjekkpunkt A
-er dermed ferdig i sin helhet. P0 ble lukket samme dag.
-
+**P0 og P1 er LUKKET 25. aug** (helsesjekken og auto-briefen).
 ## Driftslærdommer (ikke glem disse)
 
 - **401 med `Basic realm="traefik"`: sjekk FØRST om «HTTP Basic
@@ -167,6 +146,9 @@ er dermed ferdig i sin helhet. P0 ble lukket samme dag.
 - Doks-opprydningen (økt 24): konsumerte prompter slettes, utførte planer
   arkiveres til `docs/arkiv/`, docs/-rot holdes lav (nå 4 filer + arkiv),
   HANDOVER-tak 200 linjer med rotering til historikkfila.
+- **Måleuka droppet (28. aug):** kostnaden følges løpende av Marius i
+  `console.anthropic.com` — ingen stille uke uten deploy. Samme dag:
+  ingen bytter i GW2, så P3 venter på hans første ekte transfer.
 
 ## Miljø
 
@@ -196,5 +178,16 @@ er dermed ferdig i sin helhet. P0 ble lukket samme dag.
   pushet til GitHub (ingen deploy — Coolify bygger kun main). Så: «Skal
   vi begynne å jobbe med det nå?» → planlegg + bygg valgt, kaptein-tak
   10 runder godkjent, v1.6.0 TDD-bygget ferdig på `feat/liga-v160`.
+- 2026-08-28 (økt 43, Opus): «briefen kom i går; jeg bytter ikke denne
+  uka; alt ferdigbygget skal til `main` nå; slett alle andre brancher,
+  også `staging`; kostnadskontrollen tar jeg selv i Anthropic-konsollen
+  — dropp måleuka.» Handling: v1.3.8 → v1.4.0 → v1.5.0 → v1.6.0 merget
+  `--no-ff` og tagget på `main` (509/509 + lint 0 før og etter),
+  CHANGELOG-datoene satt til 2026-08-28, ROADMAP-tabellen og kø-punkt
+  1/2/4/5 + dokumentkartet ajour, VIDERE.md skrevet om til v1.6.0,
+  de tre planfilene arkivert til `docs/arkiv/`, denne fila rotert og
+  oppdatert. Deretter: én push (= én Coolify-deploy), prod-verifisering
+  utenfra og sletting av alle brancher unntatt `main` — resultatet
+  føres inn i statusblokka over i en egen docs-commit samme økt.
 - Loggposter fra økt 22–41 (første del): rotert til
   `docs/arkiv/HANDOVER-historikk.md` (200-linjerstaket, sist 2026-08-26).

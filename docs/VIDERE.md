@@ -3,17 +3,40 @@
 > Enkel oversikt for Marius — oppdateres når noe blir ferdig eller planlagt.
 > (Tekniske detaljer bor i ROADMAP.md; dette er kortversjonen.)
 
-**Sist oppdatert:** 27. august 2026
+**Sist oppdatert:** 28. august 2026
 
-## Dette har du nå (v1.3.7, sluppet 26. august)
+## Dette har du nå (v1.6.0, sluppet 28. august)
 
 Dashbord med nedtelling og skader · spillertabell med søk og filter · laget
-ditt med kapteinsråd · miniligaen · rundebrief (AI skriver den på norsk) ·
-live-poeng mens kampene går · nyheter med AI-oppsummering · auto-brief til
-Discord kvelden før hver deadline · «Overganger» som viser om byttene dine
-ga eller kostet poeng.
+ditt med kapteinsråd · miniligaen med rival-radar, kaptein-liga og
+sesongkurve · rundebrief (AI skriver den på norsk) · live-poeng mens
+kampene går · nyheter med AI-oppsummering · auto-brief til Discord kvelden
+før hver deadline · «Overganger» med angre-analyse, hva hvis-planlegger og
+lagrede planer · «Rundens rapport» til Discord etter hver ferdigspilte
+runde.
 
-**Nytt siden sist (v1.3.7): auto-briefen kan ikke sendes to ganger.**
+**Alt som lå ferdigbygget er nå ute i drift (28. august)** — fire
+versjoner gikk ut samtidig:
+
+- **v1.3.8 — nyhetsfilteret.** Punkter der et spillernavn står i eieform
+  («Haalands») blir ikke lenger kastet bort.
+- **v1.4.0 — sidene sier fra når tallene er blitt gamle.** Får appen ikke
+  kontakt med FPL, vises tallene fortsatt, men med et banner: «Viser data
+  fra HH:MM — får ikke kontakt med FPL akkurat nå».
+- **v1.5.0 — hele «Overganger»-siden**, slik du bestilte den 26. august:
+  hvert bytte kan brettes ut runde for runde med en dom «etter 5 runder»,
+  sesongkort med treffprosent, hva hvis-planlegger med full regelsjekk,
+  lagrede planer som følges opp etterpå, «hva om jeg kjøpte Z i stedet»,
+  hva GW1-laget ditt ville scoret urørt hele sesongen, prisgevinst per
+  spiller, og en AI-kommentar til byttene dine én gang i døgnet.
+- **v1.6.0 — hele liga-pakka:** rival-radar (velg hvem du jager, se
+  differensialene begge veier), kaptein-liga (hvem kapteinet hva, og hva
+  det kostet dem), graf over hele miniligaen sesongen gjennom — og
+  **«Rundens rapport»**, som etter hver ferdigspilte runde skåler for
+  vinneren og erter taperen i Discord. Rapporten står også på
+  Miniligaer-siden.
+
+**Før det (v1.3.7): auto-briefen kan ikke sendes to ganger.**
 Appen husker nå på tvers av omstarter at briefen for en runde alt er
 sendt til Discord (den fikk en liten lagringsplass i Coolify). Før kunne
 en uheldig timet utrulling i kvarteret etter sendetidspunktet ha postet
@@ -137,11 +160,13 @@ Bare oppdateringer med kodeendring får versjonsnummer. Sjekker og målinger
 er «porter» — de skjer når datoen eller du er klar, uten å stoppe utviklingen.
 
 - ~~**v1.2.4** — AI-rådgiveren slutter å dikte.~~ **Ferdig 24. august.**
-- **Port: sjekke «Overganger» med ekte tall** når du har gjort ditt første
-  bytte (etter runde 2, ca. 29.–31. august).
-- **Port: prissjekk etter 1. september** — AI-prisen går opp 50 %, så vi
-  måler på nytt at det fortsatt er billig (dagens bruk vil koste ca.
-  1,50 dollar/uka).
+- **Port: sjekke «Overganger» med ekte tall** ved ditt første bytte. Du
+  bytter ikke i runde 2 (besluttet 28. august), så til da viser siden
+  tomtilstanden — og det er riktig: du har null bytter.
+- **Kostnaden følges løpende av deg** (besluttet 28. august): den stille
+  måleuka er droppet, du ser tokenforbruket i console.anthropic.com i
+  stedet. AI-prisen går opp 50 % 1. september; budsjettet appen er
+  bygget for er ca. 49–53 AI-kall i uka.
 - ~~**v1.2.5** — rundebriefen blir ærligere.~~ **Ferdig 24. august.**
 - ~~**v1.3.0** — nye farger og temavalg.~~ **Ferdig 24. august.**
 - ~~**v1.3.1** — klubbmerker og drakter.~~ **Ferdig 24. august.**
@@ -154,33 +179,25 @@ er «porter» — de skjer når datoen eller du er klar, uten å stoppe utviklin
   side hvis FPL oppdaterer akkurat da.~~ **Ferdig 25. august.**
 - ~~**v1.3.7 — auto-briefen kan ikke sendes to ganger.**~~ **Ferdig
   26. august** — lagringsplassen kom på plass og versjonen er ute.
-- **Etter prissjekken:** to siste småfikser — nyhetsfilteret slutter å kaste
-  gyldige punkter der et navn står i eieform («Haalands»), og sidene sier
-  fra hvis tallene de viser er blitt gamle fordi FPL ikke svarer. **Begge
-  er alt ferdigbygget (26. august)** og venter bare på målingen.
-- **Deretter: helt ny «Overganger»-side (bestilt av deg 26. august, alt
-  ferdigbygget samme dag).** Alt du ba om: hvert bytte kan brettes ut runde
-  for runde så du ser NÅR det snudde, med en dom «etter 5 runder»;
-  sesongkort med treffprosent og antall trekk; en hva hvis-planlegger som
-  sjekker FPL-reglene (posisjon, budsjett med ekte salgspriser, maks 3 fra
-  samme klubb); lagrede planer som følges opp etterpå («planen din ville
-  gitt X, du fikk Y» — appen regner til og med ut gratisbyttene dine);
-  «hva om jeg kjøpte Z i stedet»-forslag per bytte; hva GW1-laget ditt
-  ville scoret urørt hele sesongen; prisgevinst per spiller; og en
-  AI-kommentar til byttene dine én gang i døgnet. Du kan teste alt lokalt
-  når du vil — ute i drift etter måleuka.
-- **Så: fire nye pakker (bestilt av deg 27. august).** Du valgte 16 nye
-  funksjoner, og alle valgene er tatt: først liga-pakka (rival-radar, graf
-  over hele miniligaen sesongen gjennom, hvem i ligaen kapteinet hva, og
-  en rapport til Discord etter hver runde som skåler for vinneren og erter
-  taperen) — **den er alt ferdigbygget (27. august)** og kan testes lokalt
-  når du vil; så en ny «Innsikt»-side (poeng du la igjen på benken,
-  kapteinsfasit, flaks-barometer, rundens lag mot ditt), så spiller-pakka
-  (spillerkort ved klikk på navn, sammenlign spillere, differensial-finner,
-  hvem tar straffene), og til slutt planleggingspakka (beste chip-vindu,
-  automatisk sjekk av laget ditt 3 timer før deadline, kalender-abonnement
-  med deadlines og kampene dine). Bygges pakke for pakke etter måleuka.
-  Koden ligger trygt på GitHub underveis (egen staging-gren fra 27. august).
+- ~~**v1.3.8 og v1.4.0** — de to siste småfiksene: nyhetsfilteret slutter
+  å kaste gyldige punkter der et navn står i eieform («Haalands»), og
+  sidene sier fra hvis tallene de viser er blitt gamle fordi FPL ikke
+  svarer.~~ **Ferdig og ute 28. august.**
+- ~~**v1.5.0** — helt ny «Overganger»-side (bestilt av deg 26. august).~~
+  **Ferdig og ute 28. august.** Alt du ba om er med: bytter som brettes ut
+  runde for runde, sesongkort, hva hvis-planlegger med regelsjekk, lagrede
+  planer med oppfølging, alternativ-forslag, «laget uten bytter»,
+  prisgevinst og AI-kommentar én gang i døgnet.
+- ~~**v1.6.0** — liga-pakka (rival-radar, sesonggraf, kaptein-liga og
+  «Rundens rapport» til Discord etter hver runde).~~ **Ferdig og ute
+  28. august** — første rapport ble postet samme dag.
+- **Neste: «Innsikt»-siden (v1.7.0).** Poeng du la igjen på benken,
+  kapteinsfasit, flaks-barometer og rundens lag mot ditt. Deretter
+  spiller-pakka (spillerkort ved klikk på navn, sammenlign spillere,
+  differensial-finner, hvem tar straffene), og til slutt
+  planleggingspakka (beste chip-vindu, automatisk sjekk av laget ditt
+  3 timer før deadline, kalender-abonnement med deadlines og kampene
+  dine). Bygges pakke for pakke — én plan-økt per pakke først.
 
 ## Ting bare du kan gjøre
 
@@ -191,8 +208,12 @@ i chatten):
    kontrollen på at v1.3.5 gjør jobben: loggen skal si «SIGTERM mottatt —
    lukker serveren» og «Serveren lukket ryddig», og appen skal starte igjen
    av seg selv.
-2. **Gjør minst ett bytte før fredag 19:30.** Uten et ekte bytte har vi
-   ingenting å sjekke «Overganger» mot etter runde 2.
+2. **Se appen på telefonen** og si fra om noe ser rart ut — særlig de nye
+   sidene «Overganger» og «Miniligaer».
+
+- ~~Gjør minst ett bytte før fredag 19:30.~~ **Utgår** — du bestemte
+  28. august at du ikke bytter i runde 2. «Overganger» sjekkes mot ekte
+  tall ved ditt første bytte, når det enn kommer.
 
 - ~~Legge til lagringsplass i Coolify og si «push».~~ **Gjort 26. august**
   — v1.3.7 er ute.

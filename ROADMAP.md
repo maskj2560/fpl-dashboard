@@ -30,11 +30,11 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.3.5**~~ | ~~Ryddig avslutning (SIGTERM-handler)~~ | **utført 25. aug** | — |
 | ~~**v1.3.6**~~ | ~~gameUpdating-livssyklus + vennlig 503-side~~ | **utført 25. aug** | — |
 | ~~**v1.3.7**~~ | ~~Persistent «brief sendt»-markør (volum `/app/data`)~~ | **utført 26. aug — ute i prod** | — |
-| **v1.3.8** | Genitiv-fiks i nyhetsfilteret | 4 | **kode klar på branch 26. aug** — merge/deploy etter P4 |
-| **v1.4.0** | Alderstak på stale data + `dataAlder` i payload | 4 | **kode klar på branch 26. aug** — merge/deploy etter P4 |
-| **v1.5.0** | «Overganger» total: planlegger, scenarier, analyse, AI-kommentar | 4 | **kode klar på branch 26. aug** — merge/deploy etter P4, etter v1.3.8/v1.4.0 |
-| **v1.6.0** | «Liga-pakka»: rival-radar, ligagraf, kaptein-liga, roast-rapport | 5 | **kode klar på branch 27. aug** — merge/deploy etter P4, etter v1.5.0 |
-| **v1.7.0** | «/innsikt»: benkesløsing, kapteinsfasit, flaksbarometer, rundens XI | 5 | v1.6.0 |
+| ~~**v1.3.8**~~ | ~~Genitiv-fiks i nyhetsfilteret~~ | **utført 28. aug — ute i prod** | — |
+| ~~**v1.4.0**~~ | ~~Alderstak på stale data + `dataAlder` i payload~~ | **utført 28. aug — ute i prod** | — |
+| ~~**v1.5.0**~~ | ~~«Overganger» total: planlegger, scenarier, analyse, AI-kommentar~~ | **utført 28. aug — ute i prod** | — |
+| ~~**v1.6.0**~~ | ~~«Liga-pakka»: rival-radar, ligagraf, kaptein-liga, roast-rapport~~ | **utført 28. aug — ute i prod** | — |
+| **v1.7.0** | «/innsikt»: benkesløsing, kapteinsfasit, flaksbarometer, rundens XI | 5 | detaljplan-økt |
 | **v1.8.0** | «Spiller-pakka»: spillerkort, duell, differensialer, straffer | 5 | v1.7.0 |
 | **v1.9.0** | «Planleggingspakka»: chip-planlegger, deadline-sjekk, kalender-feed | 5 | v1.8.0 |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
@@ -44,17 +44,18 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
 
 ## Kø — hva gjøres videre, i rekkefølge
 
-### 1. (P4) Kostnadskontroll etter prisskiftet
+### 1. (P4) Løpende kostnadskontroll
 
-- **Hva:** Sonnet 5 går fra intropris $2/$10 til ordinær $3/$15 per 1M
-  tokens 1. september. Målingen 23. aug ga $0,94/uke (under terskelen);
-  samme bruk koster $1,48/uke etter prisskiftet — inn i $1–4-båndet der
-  planen sier «se hvilken funksjon som drar». Ut-tokens er 78 % av
-  kostnaden, så kortere svar er den billigere knappen før modellbytte.
+- **Hva:** **måleuka er droppet** (besluttet av Marius 28. aug). Marius
+  følger tokenforbruket løpende i `console.anthropic.com` i stedet for
+  én stille måleuke. Tersklene og analysemetoden i
+  `docs/sjekkpunkt-d-kostnad.md` står ved lag og brukes ved behov —
+  altså når tallene i konsollen ser gale ut. Taktbudsjettet etter
+  v1.6.0 er **~49–53 AI-kall/uke** (brief, nyheter,
+  overgangskommentar, ligarapport).
 - **Eier detaljene:** `docs/sjekkpunkt-d-kostnad.md` (metode, terskler,
   analyseskript).
-- **Blokkert av:** dato — måles i uken etter 31. august, når GW2–GW3 gir
-  organisk trafikk uten utviklingsstøy.
+- **Blokkert av:** ingenting — løpende oppfølging hos Marius.
 - **Størrelse:** liten.
 
 ### 2. (P3) Etter GW2: verifiser transfers-skjemaet mot ekte data
@@ -66,8 +67,10 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
   `.table-scroll`). Avvik → `fix:`-commit med oppdaterte fixtures.
 - **Eier detaljene:** sjekklisten «Etter GW2» i
   `docs/arkiv/plan-hva-hvis-transfers.md`.
-- **Blokkert av:** første ekte transfer + GW2 spilt (GW2-deadline
-  28. aug 19:30).
+- **Blokkert av:** **første ekte transfer** — Marius bytter ikke i GW2
+  (besluttet 28. aug), så porten er åpen først når han faktisk gjør et
+  bytte. Til da viser `/overganger` tomtilstanden, og det er korrekt
+  (0 bytter). Feltnavnene verifiseres mot prod ved første bytte.
 - **Størrelse:** liten.
 
 ### 3. (P2) README-skjermbilder + mobil-QA `[Marius]`
@@ -80,7 +83,7 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
 - **Blokkert av:** Marius (nettleser + telefon).
 - **Størrelse:** liten.
 
-### 4. Robusthetsreleasene (besluttet 25. aug — detaljene i `docs/plan-sluttspurt.md`)
+### 4. Robusthetsreleasene (besluttet 25. aug — detaljene i `docs/arkiv/plan-sluttspurt.md`)
 
 Alle fem kandidatene fra kvalitetspasset er avgjort: fire bygges som egne
 releaser, den femte (filterSummaryPoints) får en gratis genitiv-fiks i
@@ -96,23 +99,20 @@ stedet for den AI-kostende promptendringen (droppet). Rekkefølge:
       `data/brief-state.json` (`DATA_DIR`-env, volum `/app/data` i
       Coolify) — redeploy i 15-min-vinduet kan ikke re-poste briefen.
       **Utført 26. aug** — volum lagt til, pushet og verifisert i prod.
-- [ ] **v1.3.8 Genitiv-fiks i nyhetsfilteret:** navnevarianter uten
+- [x] **v1.3.8 Genitiv-fiks i nyhetsfilteret:** navnevarianter uten
       genitiv-s i `filterSummaryPoints` (`news.js`). 0 AI-kall.
-      **Kode klar 26. aug** på `fix/genitiv-nyhetsfilter-v138` —
-      merge + tag + push etter P4.
-- [ ] **v1.4.0 Alderstak + dataAlder:** stale data eldre enn 10 min
+      **Utført 28. aug** — merget, tagget `v1.3.8` og ute i prod.
+- [x] **v1.4.0 Alderstak + dataAlder:** stale data eldre enn 10 min
       (live) / 60 min (resten) får banner «Viser data fra HH:MM …»;
       `/api/brief.json` og `/api/live.json` får `dataAlder` (sekunder).
-      **Kode klar 26. aug** på `feat/alderstak-v140` (stablet) —
-      merge + tag + push etter P4.
-- [ ] **v1.5.0 «Overganger» total:** angre-analyse med per-runde-detaljer,
+      **Utført 28. aug** — merget, tagget `v1.4.0` og ute i prod.
+- [x] **v1.5.0 «Overganger» total:** angre-analyse med per-runde-detaljer,
       hva hvis-planlegger med full FPL-regelsjekk, lagrede navngitte
       scenarier med FT-regnskap og oppfølging, alternativ-analyse,
       sesongkort, «laget uten bytter»-simulering, prisgevinst og
-      AI-kommentar (1x/døgn). Fasit: `docs/plan-overganger-v150.md`.
-      **Kode klar 26. aug** på `feat/overganger-v150` (stablet, T1–T13,
-      454/454, røyktest grønn) — merge + tag + push etter P4,
-      etter v1.3.8 og v1.4.0.
+      AI-kommentar (1x/døgn). Fasit:
+      `docs/arkiv/plan-overganger-v150.md`.
+      **Utført 28. aug** — merget, tagget `v1.5.0` og ute i prod.
 
 ### 5. Idépakken v1.6.0–v1.9.0 (besluttet 27. aug)
 
@@ -121,11 +121,11 @@ stedet for den AI-kostende promptendringen (droppet). Rekkefølge:
   spiller-pakka → planleggingspakka.
 - **Eier detaljene:** `docs/plan-idepakken-v16-v19.md` (beslutningsfasit).
   Hver versjon får egen detaljplan-økt (T-tasks, TDD) før bygging.
-- **Status:** v1.6.0 **ferdigbygget 27. aug** på `feat/liga-v160` (stablet
-  på v1.5.0-branchen — Marius godkjente 4. etasje samme dag; detaljplan:
-  `docs/plan-liga-v160.md`, T1–T13, 509/509, røyktest grønn). v1.7.0+
-  planlegges hver for seg.
-- **Blokkert av:** P4-mergen — merges etter v1.5.0 i samme rekkefølge.
+- **Status:** v1.6.0 **ute i prod 28. aug** (merget, tagget `v1.6.0`,
+  509/509; detaljplan arkivert: `docs/arkiv/plan-liga-v160.md`).
+  Neste er en **detaljplan-økt for v1.7.0 «/innsikt»**; v1.8.0 og
+  v1.9.0 planlegges hver for seg etter den.
+- **Blokkert av:** ingenting — v1.7.0 trenger en detaljplan-økt først.
 - **Størrelse:** stor (fire releaser).
 
 ## Dokumentkart — hvor alt bor
@@ -140,9 +140,10 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 | `docs/VIDERE.md` | Marius' ikke-tekniske kortversjon |
 | `docs/arkiv/plan-v130-ui-overhaul.md` | godkjent plan for v1.3.0–v1.3.3 (UI-overhaling), utføres etappevis |
 | `docs/sjekkpunkt-d-kostnad.md` | metode + skript for P4-målingen |
-| `docs/plan-sluttspurt.md` | gjeldende plan: robusthetsreleasene, portene og docs-ryddingen |
+| `docs/arkiv/plan-sluttspurt.md` | utført plan: robusthetsreleasene, portene og docs-ryddingen |
+| `docs/plan-idepakken-v16-v19.md` | beslutningsfasit for idépakken v1.7.0–v1.9.0 |
 | `docs/arkiv/plan-v134-ai-swr.md` | utført plan for v1.3.4 (SWR + oppfrisker) |
-| `docs/arkiv/` (17 filer) | utførte planer + historikk (kun sti-referanser rettes ved rydding) |
+| `docs/arkiv/` (20 filer) | utførte planer + historikk (kun sti-referanser rettes ved rydding) |
 
 ## Senere / idéer (ikke planlagt)
 
