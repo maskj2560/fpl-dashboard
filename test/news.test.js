@@ -107,6 +107,27 @@ test('filterSummaryPoints lar punktene stå når det ikke finnes saker å måle 
   assert.deepEqual(filterSummaryPoints(points, []), points);
 });
 
+test('genitiv i punktet matcher grunnform i saken', () => {
+  const saker = [{ title: 'Haaland scoret hat trick', description: '' }];
+  const kept = filterSummaryPoints(['**Haalands** form er skremmende'], saker);
+
+  assert.equal(kept.length, 1);
+});
+
+test('apostrof-genitiv matcher også', () => {
+  const saker = [{ title: 'Salah tilbake i trening', description: '' }];
+  const kept = filterSummaryPoints(['**Salah’s** status er avklart'], saker);
+
+  assert.equal(kept.length, 1);
+});
+
+test('punkt uten navnematch forkastes fortsatt', () => {
+  const saker = [{ title: 'Haaland scoret', description: '' }];
+  const kept = filterSummaryPoints(['**Isak** nærmer seg comeback'], saker);
+
+  assert.equal(kept.length, 0);
+});
+
 test('properNames finner både fete navn og ord med stor forbokstav', () => {
   const navn = properNames('**Nkunku** er ute for Chelsea. Han rekker ikke Arsenal.');
 

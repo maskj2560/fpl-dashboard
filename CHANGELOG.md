@@ -7,6 +7,14 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.3.8] - 2026-09-XX
+
+### Fixed
+
+- Nyhetsoppsummeringens etterkontroll forkaster ikke lenger gyldige
+  punkter der et navn står i genitiv («Haalands») mens saken har
+  grunnformen («Haaland»).
+
 ## [1.3.7] - 2026-08-25
 
 ### Fixed
