@@ -1467,6 +1467,12 @@ tr[data-href] {
   color: var(--text-dim);
 }
 
+/* Bytter som ikke teller (angret før deadline / venter på runde) dempes
+   så de spilte byttene skiller seg ut (v1.7.1). */
+.row-muted td {
+  color: var(--text-dim);
+}
+
 /* ---------- Live-puls ---------- */
 
 .pulse {

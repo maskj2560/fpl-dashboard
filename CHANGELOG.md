@@ -23,6 +23,17 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   HH:MM · neste tidligst HH:MM») — teksten er timer-styrt som før, ingen
   knapp og ingen ekstra AI-kall.
 
+- Flere forklaringer der tall sto ukommentert: flagg-hint på dashbordet,
+  FDR forklart på briefen, xG/xA forklart på «Spillere» og «Innsikt»,
+  «lovlig ellever» presisert i benkesløsingen, og tomtilstand for «Mine
+  kapteinsvalg» på briefen.
+
+### Changed
+
+- På «Overganger» vises bytter som ikke teller («Venter på runde» /
+  «Angret før deadline») nå som badge med dempet rad, så de spilte
+  byttene skiller seg ut.
+
 ### Fixed
 
 - API-endepunktene (`/api/*.json`) sender nå `Cache-Control: no-store`,
