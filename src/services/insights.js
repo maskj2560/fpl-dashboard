@@ -8,7 +8,10 @@
 // kapteinsfasiten, aldri som en multiplikator på poengsummene.
 // Se docs/plan-innsikt-v170.md.
 
-import { effectiveCaptain } from './league-insights.js';
+import config from '../config.js';
+import { resolvedGw } from './analysis.js';
+import { effectiveCaptain, _mapLimit } from './league-insights.js';
+import { getBootstrap, getPicksHistoric, getLiveHistoric, getDreamTeam } from './fplClient.js';
 
 /**
  * Lovlige formasjoner som [forsvar, midtbane, spiss]. Utledet av FPLs
@@ -369,4 +372,81 @@ export function buildDreamTeamSection({
     mineCount: xi.filter((p) => p.mine).length,
     trend: sawFlag && trend.length > 0 ? trend : null,
   };
+}
+
+async function softNull(fn) {
+  try {
+    return await fn();
+  } catch (err) {
+    console.warn(`Innsikt: seksjon feilet mykt: ${err.message}`);
+    return null;
+  }
+}
+
+/**
+ * Henter alt /innsikt trenger via fplClient-cachene. Bootstrap er en hard
+ * feil (uten den finnes ingen side); de fire seksjonene feiler mykt til
+ * null hver for seg.
+ *
+ * Vinduet er HELE sesongen: picks + live for hver ferdige runde, hentet
+ * med _mapLimit(8) og 6 t-TTL. Cache-nøklene deles med /overganger-
+ * baselinen, så gjentatte besøk koster ingenting. Dream-team hentes kun
+ * for siste ferdige runde. Ingen AI, ingen element-summary.
+ *
+ * @returns {Promise<{gw:number, finishedCount:number, bench:object|null,
+ *   captains:object|null, luck:object|null, dreamTeam:object|null}>}
+ */
+export async function assembleInsights({ teamId = config.fplTeamId } = {}) {
+  const bootstrap = await getBootstrap();
+  const events = bootstrap.events ?? [];
+  const elementsById = new Map((bootstrap.elements ?? []).map((e) => [e.id, e]));
+  const teamsById = new Map((bootstrap.teams ?? []).map((t) => [t.id, t]));
+  const eventsById = new Map(events.map((e) => [e.id, e]));
+
+  const gws = events
+    .filter((e) => e.finished)
+    .map((e) => e.id)
+    .sort((a, b) => a - b);
+
+  const base = {
+    gw: resolvedGw(events),
+    finishedCount: gws.length,
+    bench: null,
+    captains: null,
+    luck: null,
+    dreamTeam: null,
+  };
+  if (gws.length === 0) return base;
+
+  const liveRows = await _mapLimit(gws, 8, async (g) => [g, await getLiveHistoric(g)]);
+  const picksRows = await _mapLimit(gws, 8, async (g) => {
+    try {
+      return [g, await getPicksHistoric(teamId, g)];
+    } catch {
+      return [g, null]; // 404 o.l.: laget fantes ikke den runden
+    }
+  });
+  const liveByGw = new Map(liveRows);
+  const picksByGw = new Map(picksRows);
+  const lastGw = gws.at(-1);
+
+  base.bench = await softNull(() => buildBenchReport({ picksByGw, liveByGw, elementsById, gws }));
+  base.captains = await softNull(() =>
+    buildCaptainAudit({ picksByGw, liveByGw, eventsById, elementsById, teamsById, gws }),
+  );
+  base.luck = await softNull(() => buildLuckMeter({ picksByGw, liveByGw, elementsById, teamsById, gws }));
+  base.dreamTeam = await softNull(async () =>
+    buildDreamTeamSection({
+      dreamTeam: await getDreamTeam(lastGw),
+      lastGw,
+      myPicks: picksByGw.get(lastGw),
+      picksByGw,
+      liveByGw,
+      elementsById,
+      teamsById,
+      gws,
+    }),
+  );
+
+  return base;
 }

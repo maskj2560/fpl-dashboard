@@ -1,11 +1,13 @@
-import { test } from 'node:test';
+import { test, describe, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
+import { clear } from '../src/services/cache.js';
 import {
   optimalXi,
   buildBenchReport,
   buildCaptainAudit,
   buildLuckMeter,
   buildDreamTeamSection,
+  assembleInsights,
 } from '../src/services/insights.js';
 
 // ---- felles testdata ----------------------------------------------------
@@ -510,4 +512,103 @@ test('buildDreamTeamSection dropper trenden uten in_dreamteam og seksjonen uten 
   });
   assert.equal(tom, null);
   assert.equal(dream({ dreamTeam: null, myPicks, picksByGw: new Map(), liveByGw: new Map() }), null);
+});
+
+// ---- assembleInsights ---------------------------------------------------
+// Mocker global fetch (mønster fra test/transfers.test.js); hooks scopes til
+// denne blokken så de rene testene over er uberørt.
+
+describe('assembleInsights', () => {
+  const originalFetch = globalThis.fetch;
+  let calls;
+
+  const bootstrap = {
+    events: [
+      { id: 1, finished: true, data_checked: true, most_captained: GLOBAL_ID },
+      { id: 2, finished: true, data_checked: true, is_current: true, most_captained: GLOBAL_ID },
+      { id: 3, finished: false, is_next: true },
+    ],
+    elements: [...elementsById.values()],
+    teams: [{ id: 1, code: 3, short_name: 'ARS', name: 'Arsenal' }],
+  };
+
+  const routes = () => [
+    [/bootstrap-static\/$/, bootstrap],
+    [/entry\/42\/event\/1\/picks\/$/, picksFor({ xi: XI, captain: 13, onBench: 4 })],
+    [/entry\/42\/event\/2\/picks\/$/, picksFor({ xi: XI, captain: 13, onBench: 2 })],
+    [/event\/1\/live\/$/, luckLive({ 3: { g: 1 } })],
+    [/event\/2\/live\/$/, luckLive({ 13: { g: 1, xg: '0.5' } })],
+    [/dream-team\/2\/$/, dtFor(DT_IDS)],
+  ];
+
+  function serve(table) {
+    globalThis.fetch = async (url) => {
+      const u = String(url);
+      calls.push(u);
+      const hit = table.find(([re]) => re.test(u));
+      if (!hit) return { ok: false, status: 404, json: async () => ({}) };
+      return { ok: true, status: 200, json: async () => hit[1] };
+    };
+  }
+
+  beforeEach(() => {
+    clear();
+    calls = [];
+  });
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+  });
+
+  test('henter kun ferdige runder, og dream-team kun for den siste', async () => {
+    serve(routes());
+    const insights = await assembleInsights({ teamId: 42 });
+
+    assert.equal(insights.gw, 2);
+    assert.equal(insights.finishedCount, 2);
+    assert.ok(!calls.some((u) => /event\/3\/live/.test(u)), 'runde 3 er ikke ferdig');
+    assert.ok(!calls.some((u) => /event\/3\/picks/.test(u)), 'runde 3 er ikke ferdig');
+    assert.deepEqual(calls.filter((u) => /dream-team/.test(u)).length, 1);
+    assert.ok(calls.some((u) => /dream-team\/2\/$/.test(u)), 'dream-team skal hentes for runde 2');
+  });
+
+  test('bygger alle fire seksjonene fra ferdige runder', async () => {
+    serve(routes());
+    const insights = await assembleInsights({ teamId: 42 });
+
+    assert.deepEqual(insights.bench.rows.map((r) => r.gw), [1, 2]);
+    assert.equal(insights.bench.totalBench, 6);
+    assert.deepEqual(insights.captains.rows.map((r) => r.gw), [1, 2]);
+    assert.equal(insights.luck.rows.length, 2);
+    assert.equal(insights.dreamTeam.gw, 2);
+    assert.equal(insights.dreamTeam.mineCount, 10);
+  });
+
+  test('en seksjon som feiler tar ikke med seg resten', async () => {
+    serve(routes().filter(([re]) => !/dream-team/.test(String(re))));
+    const insights = await assembleInsights({ teamId: 42 });
+
+    assert.equal(insights.dreamTeam, null, 'dream-team 404 → seksjonen utelates');
+    assert.ok(insights.bench, 'benkesløsingen skal fortsatt leveres');
+    assert.ok(insights.captains);
+    assert.ok(insights.luck);
+  });
+
+  test('ingen ferdige runder gir tomme seksjoner uten ekstra kall', async () => {
+    serve([[/bootstrap-static\/$/, { ...bootstrap, events: [{ id: 1, finished: false, is_next: true }] }]]);
+    const insights = await assembleInsights({ teamId: 42 });
+
+    assert.equal(insights.finishedCount, 0);
+    assert.deepEqual(
+      [insights.bench, insights.captains, insights.luck, insights.dreamTeam],
+      [null, null, null, null],
+    );
+    assert.equal(calls.length, 1, 'kun bootstrap');
+  });
+
+  test('assembleInsights henter aldri element-summary', async () => {
+    serve(routes());
+    await assembleInsights({ teamId: 42 });
+    assert.ok(!calls.some((u) => /element-summary/.test(u)), 'aldri element-summary');
+  });
 });
