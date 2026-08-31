@@ -8,6 +8,8 @@
 // kapteinsfasiten, aldri som en multiplikator på poengsummene.
 // Se docs/plan-innsikt-v170.md.
 
+import { effectiveCaptain } from './league-insights.js';
+
 /**
  * Lovlige formasjoner som [forsvar, midtbane, spiss]. Utledet av FPLs
  * regler (1 keeper, 3–5 forsvar, 2–5 midtbanespillere, 1–3 spisser,
@@ -123,5 +125,70 @@ export function buildBenchReport({ picksByGw, liveByGw, elementsById, gws }) {
     rows,
     totalBench: rows.reduce((s, r) => s + r.benchPoints, 0),
     totalAvoidable: rows.reduce((s, r) => s + r.avoidable, 0),
+  };
+}
+
+/**
+ * Kapteinsfasiten, to fasiter per runde:
+ *
+ * A «troppens beste»: bar kapteinen den høyeste RÅ scoren blant de femten?
+ *   Delt topp teller som treff — valget var like godt som det beste.
+ * B «global favoritt»: fikk kapteinen minst like mange rå poeng som
+ *   rundens `most_captained`? Runder der bootstrap mangler feltet holdes
+ *   utenfor B-nevneren i stedet for å telles som bom.
+ *
+ * Bindet tilskrives den som faktisk bar det (effectiveCaptain dekker TC
+ * og vise-kaptein som overtok). Poengene er alltid 1× — multiplieren
+ * brukes kun til å identifisere kapteinen.
+ *
+ * @returns {{rows:Array, hitSquadPct:number, hitGlobalPct:number|null,
+ *   counted:{squad:number, global:number}}|null}
+ */
+export function buildCaptainAudit({ picksByGw, liveByGw, eventsById, elementsById, teamsById, gws }) {
+  const nameOf = (id) => elementsById?.get(id)?.web_name ?? 'Ukjent';
+  const rows = [];
+
+  for (const gw of gws ?? []) {
+    const picks = picksByGw?.get(gw);
+    const live = liveByGw?.get(gw);
+    const cap = effectiveCaptain(picks);
+    if (!picks?.picks?.length || !live || !cap) continue;
+
+    const points = livePointsMap(live);
+    const pts = (id) => points.get(id) ?? 0;
+    const capPoints = pts(cap.element);
+
+    let bestId = null;
+    for (const p of picks.picks) if (bestId === null || pts(p.element) > pts(bestId)) bestId = p.element;
+    const squadBest = { name: nameOf(bestId), points: pts(bestId), hit: capPoints === pts(bestId) };
+
+    const mostCaptained = eventsById?.get(gw)?.most_captained;
+    const global = Number.isFinite(mostCaptained)
+      ? { name: nameOf(mostCaptained), points: pts(mostCaptained), hit: capPoints >= pts(mostCaptained) }
+      : null;
+
+    const element = elementsById?.get(cap.element);
+    rows.push({
+      gw,
+      captain: {
+        id: cap.element,
+        name: nameOf(cap.element),
+        teamCode: teamsById?.get(element?.team)?.code ?? null,
+        points: capPoints,
+      },
+      squadBest,
+      global,
+    });
+  }
+
+  if (rows.length === 0) return null;
+  const withGlobal = rows.filter((r) => r.global);
+  const pct = (hits, total) => (total ? Math.round((hits / total) * 100) : null);
+
+  return {
+    rows,
+    hitSquadPct: pct(rows.filter((r) => r.squadBest.hit).length, rows.length),
+    hitGlobalPct: pct(withGlobal.filter((r) => r.global.hit).length, withGlobal.length),
+    counted: { squad: rows.length, global: withGlobal.length },
   };
 }

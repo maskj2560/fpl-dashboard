@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { optimalXi, buildBenchReport } from '../src/services/insights.js';
+import { optimalXi, buildBenchReport, buildCaptainAudit } from '../src/services/insights.js';
 
 // ---- felles testdata ----------------------------------------------------
 // 15 spillere: 1–2 keeper, 3–7 forsvar, 8–12 midtbane, 13–15 spiss.
@@ -17,13 +17,18 @@ const elementsById = new Map(
   [...TYPES].map(([id, type]) => [id, { id, element_type: type, web_name: `S${id}`, team: 1 }]),
 );
 
+// Den globale favoritten er bevisst UTENFOR troppen: da kan fasit A
+// (troppens beste) og fasit B (global favoritt) gi ulike svar.
+const GLOBAL_ID = 99;
+elementsById.set(GLOBAL_ID, { id: GLOBAL_ID, element_type: 3, web_name: 'Global', team: 1 });
+
 const typeOf = (id) => TYPES.get(id) ?? null;
 const ptsFrom = (map) => (id) => map[id] ?? 0;
 
 /** Live-svar med gitte råpoeng per spiller-id. */
 function liveFor(points, extra = {}) {
   return {
-    elements: SQUAD.map((id) => ({
+    elements: [...SQUAD, GLOBAL_ID].map((id) => ({
       id,
       stats: { total_points: points[id] ?? 0, minutes: 90, ...(extra[id] ?? {}) },
     })),
@@ -34,15 +39,18 @@ function liveFor(points, extra = {}) {
  * Picks: `xi` er de elleve som startet (multiplier 1, kaptein 2), resten
  * havner på benken med multiplier 0. Posisjonene følger rekkefølgen.
  */
-function picksFor({ xi, captain = null, chip = null, onBench = undefined, allStart = false }) {
+function picksFor({ xi, captain = null, vice = null, chip = null, onBench = undefined, allStart = false }) {
   const bench = SQUAD.filter((id) => !xi.includes(id));
+  // `vice` satt = kapteinen spilte ikke, og vise-kapteinen bar bindet:
+  // FPL gir da multiplier 2 til vise-kapteinen og 1 til kapteinen.
+  const carrier = vice ?? captain;
   const rows = [
     ...xi.map((element, i) => ({
       element,
       position: i + 1,
-      multiplier: element === captain ? 2 : 1,
+      multiplier: element === carrier ? 2 : 1,
       is_captain: element === captain,
-      is_vice_captain: false,
+      is_vice_captain: element === vice,
     })),
     ...bench.map((element, i) => ({
       element,
@@ -178,5 +186,127 @@ test('buildBenchReport akkumulerer over rundene og hopper over manglende picks',
     buildBenchReport({ picksByGw: new Map(), liveByGw: new Map(), elementsById, gws: [] }),
     null,
     'ingen runder → hele seksjonen null',
+  );
+});
+
+// ---- buildCaptainAudit --------------------------------------------------
+
+const teamsById = new Map([[1, { id: 1, code: 3, short_name: 'ARS', name: 'Arsenal' }]]);
+const eventsFor = (map) =>
+  new Map(Object.entries(map).map(([gw, mc]) => [Number(gw), { id: Number(gw), most_captained: mc }]));
+
+const audit = (args) => buildCaptainAudit({ elementsById, teamsById, ...args });
+
+test('buildCaptainAudit teller delt topp i troppen som treff, ellers bom', () => {
+  const a = audit({
+    picksByGw: new Map([
+      [1, picksFor({ xi: XI, captain: 13 })],
+      [2, picksFor({ xi: XI, captain: 13 })],
+    ]),
+    liveByGw: new Map([
+      [1, liveFor({ 13: 12, 3: 12, 8: 4 })], // delt topp med 3
+      [2, liveFor({ 13: 5, 3: 9, 8: 4 })], // 3 er alene best
+    ]),
+    eventsById: eventsFor({ 1: GLOBAL_ID, 2: GLOBAL_ID }),
+    gws: [1, 2],
+  });
+
+  assert.equal(a.rows[0].squadBest.hit, true, 'delt topp skal telle som treff');
+  assert.equal(a.rows[0].squadBest.points, 12);
+  assert.equal(a.rows[1].squadBest.hit, false);
+  assert.equal(a.rows[1].squadBest.name, 'S3');
+  assert.equal(a.rows[0].captain.id, 13);
+  assert.equal(a.rows[0].captain.points, 12, 'kapteinen føres med rå 1×-poeng');
+  assert.equal(a.rows[0].captain.teamCode, 3);
+});
+
+test('buildCaptainAudit gir treff mot global favoritt når kapteinen er minst like god', () => {
+  const a = audit({
+    picksByGw: new Map([
+      [1, picksFor({ xi: XI, captain: 13 })],
+      [2, picksFor({ xi: XI, captain: 13 })],
+    ]),
+    liveByGw: new Map([
+      [1, liveFor({ 13: 9, 99: 9 })], // likt = treff
+      [2, liveFor({ 13: 2, 99: 9 })],
+    ]),
+    eventsById: eventsFor({ 1: GLOBAL_ID, 2: GLOBAL_ID }),
+    gws: [1, 2],
+  });
+
+  assert.equal(a.rows[0].global.hit, true, 'likt med favoritten er ikke et tap');
+  assert.equal(a.rows[0].global.name, 'Global');
+  assert.equal(a.rows[0].global.points, 9);
+  assert.equal(a.rows[1].global.hit, false);
+});
+
+test('buildCaptainAudit holder runder uten most_captained utenfor global-nevneren', () => {
+  const a = audit({
+    picksByGw: new Map([
+      [1, picksFor({ xi: XI, captain: 13 })],
+      [2, picksFor({ xi: XI, captain: 13 })],
+    ]),
+    liveByGw: new Map([
+      [1, liveFor({ 13: 9, 99: 4 })],
+      [2, liveFor({ 13: 9, 99: 4 })],
+    ]),
+    eventsById: eventsFor({ 1: GLOBAL_ID }), // runde 2 mangler feltet
+    gws: [1, 2],
+  });
+
+  assert.equal(a.rows[1].global, null);
+  assert.deepEqual(a.counted, { squad: 2, global: 1 });
+  assert.equal(a.hitGlobalPct, 100, 'kun runden med felt teller');
+});
+
+test('buildCaptainAudit bruker den som faktisk bar bindet (vise-kaptein)', () => {
+  const a = audit({
+    picksByGw: new Map([[1, picksFor({ xi: XI, captain: 13, vice: 8 })]]),
+    liveByGw: new Map([[1, liveFor({ 13: 0, 8: 11 })]]),
+    eventsById: eventsFor({ 1: GLOBAL_ID }),
+    gws: [1],
+  });
+
+  assert.equal(a.rows[0].captain.id, 8, 'vise-kapteinen overtok');
+  assert.equal(a.rows[0].captain.points, 11);
+  assert.equal(a.rows[0].squadBest.hit, true);
+});
+
+test('buildCaptainAudit regner treffprosent på begge fasitene', () => {
+  const a = audit({
+    picksByGw: new Map([
+      [1, picksFor({ xi: XI, captain: 13 })],
+      [2, picksFor({ xi: XI, captain: 13 })],
+      [3, picksFor({ xi: XI, captain: 13 })],
+    ]),
+    liveByGw: new Map([
+      [1, liveFor({ 13: 9, 3: 2, 99: 4 })], // treff A, treff B
+      [2, liveFor({ 13: 9, 3: 2, 99: 12 })], // treff A, bom B
+      [3, liveFor({ 13: 1, 3: 8, 99: 12 })], // bom A, bom B
+    ]),
+    eventsById: eventsFor({ 1: GLOBAL_ID, 2: GLOBAL_ID, 3: GLOBAL_ID }),
+    gws: [1, 2, 3],
+  });
+
+  assert.equal(a.hitSquadPct, 67);
+  assert.equal(a.hitGlobalPct, 33);
+  assert.deepEqual(a.counted, { squad: 3, global: 3 });
+});
+
+test('buildCaptainAudit hopper over runder uten picks og gir null uten rader', () => {
+  const a = audit({
+    picksByGw: new Map([
+      [1, null],
+      [2, picksFor({ xi: XI, captain: 13 })],
+    ]),
+    liveByGw: new Map([[2, liveFor({ 13: 9, 99: 4 })]]),
+    eventsById: eventsFor({ 1: GLOBAL_ID, 2: GLOBAL_ID }),
+    gws: [1, 2],
+  });
+  assert.deepEqual(a.rows.map((r) => r.gw), [2]);
+
+  assert.equal(
+    audit({ picksByGw: new Map(), liveByGw: new Map(), eventsById: new Map(), gws: [] }),
+    null,
   );
 });
