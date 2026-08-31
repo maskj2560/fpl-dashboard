@@ -10,8 +10,10 @@ import {
   getEntry,
   getEntryTransfers,
   getEntryHistory,
+  elementSummaryAgeSec,
   staleInfo,
 } from '../services/fplClient.js';
+import { assemblePlayerCard } from '../services/players.js';
 import {
   byId,
   captainSuggestions,
@@ -127,6 +129,27 @@ router.get('/alternativ.json', async (req, res, next) => {
     );
     const liveByGw = new Map(gws.map((gw, i) => [gw, results[i]]));
     res.json(candidatePoints({ id: parsed.spiller, from: parsed.fra, to: parsed.til, liveByGw }));
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * Spillerkortet på /spillere. Hentes lazy ved klikk — ett element-summary-kall
+ * per unike spiller per 30 min (cachen tar resten). Ukjent id koster ingenting:
+ * bootstrap-sjekken i assemblePlayerCard skjer før nettverkskallet.
+ */
+router.get('/spiller/:id', async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).json({ error: 'Ugyldig spiller-id' });
+    }
+
+    const kort = await assemblePlayerCard(id);
+    if (!kort) return res.status(404).json({ error: 'Fant ikke spilleren' });
+
+    res.json({ ...kort, dataAlder: elementSummaryAgeSec(id) });
   } catch (err) {
     next(err);
   }

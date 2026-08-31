@@ -1,6 +1,7 @@
 // «Spiller-pakka» (v1.8.0): spillerkort, differensialer og dødballtakere.
 // Rene funksjoner + én assemble som henter. Importerer ALDRI ai.js —
 // hele pakka koster 0 AI-kall i alle tilstander.
+import { getBootstrap, getElementSummary } from './fplClient.js';
 import {
   POSITIONS,
   POSITIONS_SHORT,
@@ -197,4 +198,18 @@ export function buildSetPieceTable({ elements, teams }) {
   }
 
   return [...perTeam.values()].sort((a, b) => a.lag.navn.localeCompare(b.lag.navn, 'nb'));
+}
+
+/**
+ * Henter grunnlaget for spillerkortet. Bootstrap sjekkes FØRST: en ukjent id
+ * skal aldri koste et element-summary-kall. Returnerer null når spilleren
+ * ikke finnes — ruta gjør det om til 404.
+ */
+export async function assemblePlayerCard(id) {
+  const { elements, teams } = await getBootstrap();
+  const element = elements.find((e) => e.id === id);
+  if (!element) return null;
+
+  const summary = await getElementSummary(id);
+  return buildPlayerCard({ element, teamsById: new Map(teams.map((t) => [t.id, t])), summary });
 }

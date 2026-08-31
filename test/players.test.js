@@ -1,9 +1,11 @@
-import { test } from 'node:test';
+import { test, describe, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
+import { clear } from '../src/services/cache.js';
 import {
   buildPlayerCard,
   buildDifferentials,
   buildSetPieceTable,
+  assemblePlayerCard,
 } from '../src/services/players.js';
 
 // Fixturene bruker de MÅLTE feltnavnene fra ekte FPL-API (2026-09-01):
@@ -428,4 +430,52 @@ test('buildSetPieceTable sorterer klubbene på navn', () => {
   const tabell = buildSetPieceTable({ elements: [], teams: rotete });
 
   assert.deepEqual(tabell.map((r) => r.lag.navn), ['Arsenal', 'Man City', 'Wolves']);
+});
+
+// ---- assemblePlayerCard ---------------------------------------------------
+
+// Mocker global fetch (mønster fra test/fplClient.test.js og transfers.test.js);
+// hooks scopes til blokken så de rene testene over er uberørt.
+describe('assemblePlayerCard', () => {
+  const originalFetch = globalThis.fetch;
+  let calls;
+
+  const bootstrap = { teams, elements: [el(), el({ id: 412, web_name: 'Foden' })] };
+
+  beforeEach(() => {
+    clear();
+    calls = [];
+  });
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+  });
+
+  function route(extra = []) {
+    const routes = [[/bootstrap-static\/$/, bootstrap], ...extra];
+    globalThis.fetch = async (url) => {
+      calls.push(String(url));
+      const hit = routes.find(([re]) => re.test(String(url)));
+      assert.ok(hit, `uventet URL: ${url}`);
+      return { ok: true, status: 200, json: async () => hit[1] };
+    };
+  }
+
+  test('assemblePlayerCard henter element-summary kun for den gitte spilleren', async () => {
+    route([[/element-summary\/411\/$/, { fixtures: [fix(3)], history: [hist(2)] }]]);
+
+    const kort = await assemblePlayerCard(411);
+
+    assert.equal(kort.navn, 'Haaland');
+    assert.deepEqual(kort.kommende, [{ runde: 3, motstander: 'LIV', hjemme: false, fdr: 4 }]);
+    assert.equal(calls.filter((u) => /element-summary/.test(u)).length, 1);
+    assert.ok(calls.some((u) => /element-summary\/411\/$/.test(u)));
+  });
+
+  test('assemblePlayerCard gir null for ukjent id uten å hente element-summary', async () => {
+    route();
+
+    assert.equal(await assemblePlayerCard(999999), null);
+    assert.deepEqual(calls.filter((u) => /element-summary/.test(u)), []);
+  });
 });

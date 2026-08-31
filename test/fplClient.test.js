@@ -13,6 +13,7 @@ import {
   getPicksHistoric,
   getDreamTeam,
   getElementSummary,
+  elementSummaryAgeSec,
   isGameUpdating,
   staleInfo,
   FplError,
@@ -261,6 +262,23 @@ test('getElementSummary deler ikke nøkkel mellom spillere', async () => {
   assert.equal(fetchCalls.length, 2);
   assert.match(fetchCalls[0].url, /element-summary\/1\/$/);
   assert.match(fetchCalls[1].url, /element-summary\/2\/$/);
+});
+
+test('elementSummaryAgeSec leser alderen på spillerens egen cache-nøkkel', async () => {
+  mockFetch(() => jsonResponse({ fixtures: [], history: [] }));
+  let clock = 1_000_000;
+  _setNow(() => clock);
+  try {
+    assert.equal(elementSummaryAgeSec(411), null, 'ingenting hentet ennå');
+
+    await getElementSummary(411);
+    clock += 120_000;
+
+    assert.equal(elementSummaryAgeSec(411), 120);
+    assert.equal(elementSummaryAgeSec(412), null, 'annen spiller har egen nøkkel');
+  } finally {
+    _setNow(null);
+  }
 });
 
 test('gameUpdating utløper av seg selv 5 min etter siste 503', async () => {

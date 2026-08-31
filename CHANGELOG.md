@@ -21,6 +21,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - «Dødballtakere»: én tabellrad per klubb med de to første i køen for
   straffer, hjørner/indirekte frispark og direkte frispark. Klubber uten
   kjente takere står oppført med «–», så hele serien er med.
+- Nytt endepunkt `GET /api/spiller/:id` som spillerkortet hentes fra.
+  Detaljdataene lastes først når du klikker på et navn — aldri for alle
+  626 spillerne — og en ukjent id svares med 404 uten å koste et kall mot
+  FPL. Svaret oppgir også hvor gamle dataene er (`dataAlder`).
 
 ### Fixed
 

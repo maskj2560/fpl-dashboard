@@ -114,6 +114,16 @@ export function getElementSummary(playerId) {
   });
 }
 
+/**
+ * Alderen på spillerens cachede element-summary, i sekunder (null = ikke hentet).
+ * Nøkkelnavnet eies av denne modulen — kallstedene skal aldri kjenne det,
+ * samme mønster som staleInfo().
+ */
+export function elementSummaryAgeSec(playerId) {
+  const age = ageOf(`element:${playerId}`);
+  return age == null ? null : Math.round(age / 1000);
+}
+
 export function getEntry(teamId) {
   return getOrFetch(`entry:${teamId}`, () => fplFetch(`entry/${teamId}/`), { ttl: 5 * MIN });
 }
