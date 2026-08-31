@@ -75,6 +75,14 @@ src/services/
                    cache-nøkler med baseline.js. actualXiIds er fasiten på
                    hvem som spilte: multiplier > 0 (FPL re-sorterer picks
                    etter autosub). All poengregning er rå 1×. ALDRI ai.js
+  players.js       (v1.8.0) «spiller-pakka» på /spillere: buildPlayerCard
+                   (payload for modal-spillerkortet), buildDifferentials
+                   (global differensial-finner, terskler 5/10/15 %, null når
+                   ingen har form ennå), buildSetPieceTable (dødballtakere
+                   per klubb, `{id, navn}` × topp 2 per rolle) og
+                   assemblePlayerCard (bootstrap FØRST — ukjent id koster
+                   aldri et element-summary-kall). Element-summary hentes
+                   KUN lazy per klikk, aldri i bulk. ALDRI ai.js
   clubAssets.js    hvilke klubbbilder som finnes i public/img/clubs/. Leses én
                    gang ved oppstart til app.locals.clubAssets; partialene spør
                    hasBadge/hasShirt/hasKeeper og skriver aldri <img> i blinde.
@@ -129,6 +137,11 @@ Base `https://fantasy.premierleague.com/api/` — åpent, ingen nøkkel. Viktig:
   når bootstrap sier runden er `finished`
 - `dream-team/{gw}/` (fra v1.7.0) hentes med `getDreamTeam(gw)` — EGEN
   cache-nøkkel `dreamteam:${gw}`, 6 t TTL, kalles kun for ferdige runder
+- `element-summary/{id}/` hentes med `getElementSummary(id)` — nøkkel
+  `element:${id}`, 30 min TTL. Fra v1.8.0 brukes den av spillerkortet, og
+  KUN lazy per klikk via `GET /api/spiller/:id`. Aldri i bulk (en
+  sidevisning av /spillere skal koste 0 element-summary-kall);
+  `elementSummaryAgeSec(id)` gir alderen på nøkkelen til `dataAlder`
 - Frontend poller live-data kun mens kamper pågår — aldri poll utenfor
   kampvinduer, og all polling går via serverens cache (aldri rett mot FPL)
 - Alderstak (v1.4.0): stale data eldre enn 60 min (10 min for live) vises
@@ -182,8 +195,10 @@ i et 6-timersvindu før deadline, nyhetene hver 6. time,
 overgangskommentaren 1x/døgn (fra v1.5.0), ligarapporten 1x per
 ferdigspilt runde (fra v1.6.0), pluss ett tikk ved
 oppstart (AI-cachen bor i minnet og er tom etter hver deploy) — til sammen
-~49–53 kall/uke. `/innsikt` (v1.7.0) er utenfor dette regnskapet: den
-importerer aldri `ai.js` og koster **0 AI-kall** i alle tilstander.
+~49–53 kall/uke. `/innsikt` (v1.7.0) og spiller-pakka på `/spillere`
+(v1.8.0, inkludert `/api/spiller/:id`) er utenfor dette regnskapet: de
+importerer aldri `ai.js` og koster **0 AI-kall** i alle tilstander — låst
+på kilden i `test/routes.test.js`.
 Prompts holdes korte. Uten nøkkel vises rå data
 (feed-liste, data-brief) — AI er alltid et tillegg, aldri et krav.
 

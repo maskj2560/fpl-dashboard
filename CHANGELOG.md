@@ -7,6 +7,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-09-01
+
 ### Added
 
 - Grunnlaget for spillerkortet: `buildPlayerCard` samler nøkkeltall, siste

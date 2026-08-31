@@ -1484,3 +1484,35 @@ v1.3.7; v1.5.0/v1.6.0 endret både `style.css` og `app.js` og ga
 `f9014751`. Verdien ble regnet ut på forhånd fra git-blobbene (sha1 av
 `style.css` + `app.js`, første 8 tegn) og stemte eksakt med prod. Purge
 er unødvendig: URL-ene er versjonerte.
+
+## Rotert 2026-09-01 (økt 48) — v1.7.1-detaljene og loggen fra økt 46
+
+**v1.7.1 «UX-polering» ute i prod 1. sep rett etter midnatt.** Bygget
+31. aug (12 godkjente småfiks fra full funksjonsgjennomgang — Marius
+valgte «Fiks» på alle 12), merge holdt til etter kampslutt («Kampen er
+ferdig» 1. sep): merget `--no-ff` (`1633969`), tagget `v1.7.1`, én push.
+**556/556 + lint 0** på branch OG merget main. Innhold: no-store på /api,
+«neste tidligst» på /nyheter, grafakser /lag+/liga, statusfilter +
+sort-generalisering (`table[data-sortable]`, sortering overlever
+live-polling), krysslenker `/spillere?sok=`, forklaringer (flagg, FDR,
+xG/xA, lovlig ellever), venter/angret-badges på /overganger. Pakke 8
+(liga-lenker) og 11 (aria-live) krevde INGEN endring — fantes alt.
+Prod-bevis utenfra 1. sep: footer `v1.7.1`, `/health` 200
+`ai:true, discord:true, leagues:1`, alle 9 ruter 200 + `/finnesikke` 404,
+`/api/live.json` svarer `Cache-Control: no-store`, alle nye features
+spot-sjekket i markupen (30 krysslenker på dashbordet). Røyktest 31. aug
+med tomme nøkler: 0 «AI-kall:»-linjer.
+
+Loggposter:
+
+- 2026-09-01 (økt 46, del 2): «Kampen er ferdig». Handling: merget
+  `--no-ff`, verifiserte 556/556 + lint 0 og CHANGELOG-rekkefølgen på
+  merget main, tagget `v1.7.1`, pushet, prod-bevis utenfra, branch
+  slettet, docs ajour.
+- 2026-08-31 (økt 46, Fable): «gå gjennom hver eneste funksjon jeg kan
+  gjøre på siden … Spørr meg om jeg vil beholde det slik det er eller det
+  du tenker kunne fikses.» Handling: tre Explore-agenter kartla alle 9
+  sider + tverrgående; 12 forslag i tre AskUserQuestion-puljer — Marius
+  valgte «Fiks (Anbefalt)» på ALLE 12. Bygget som v1.7.1 med TDD på
+  logikken (noStore, nextSummaryUpdateAt, rankGraph-akser, compareCells/
+  rowMatchesFilters/queryParam). Merge holdt tilbake: avspark 21:00.

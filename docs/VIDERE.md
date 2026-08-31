@@ -3,9 +3,35 @@
 > Enkel oversikt for Marius — oppdateres når noe blir ferdig eller planlagt.
 > (Tekniske detaljer bor i ROADMAP.md; dette er kortversjonen.)
 
-**Sist oppdatert:** 31. august 2026
+**Sist oppdatert:** 1. september 2026
 
-## Nytt: v1.7.0 «Innsikt» — i drift siden 31. august
+## Klar til test: v1.8.0 «Spiller-pakka» — ikke ute i drift ennå
+
+Fire nye ting på **Spillere**-siden, som nå er delt i tre seksjoner med
+snarveier øverst (Tabell · Differensialer · Dødballtakere):
+
+- **Spillerkort.** Klikk på et spillernavn — hvor som helst på siden — og
+  det spretter opp et kort med drakt, nøkkeltall, dødballroller, de fem
+  siste rundene (mål, assist, xG, xA, bonus) og de tre neste kampene
+  fargelagt etter vanskelighetsgrad. Detaljene hentes først når du klikker,
+  så siden er like rask som før. Lukkes med ×, Esc eller klikk utenfor.
+- **Spillerduell.** Kryss av to spillere i tabellen og trykk «Sammenlign».
+  Du får nøkkeltallene side ved side med den beste verdien uthevet — der
+  billigst vinner på pris, og en fast straffetaker slår en som ikke tar
+  straffer.
+- **Differensialer.** Spillere nesten ingen andre i verden eier, rangert
+  etter form ganget med hvor snilt kampprogrammet er de neste tre rundene.
+  Du velger selv om grensen skal gå ved 5, 10 eller 15 % eierandel.
+- **Dødballtakere.** Én rad per klubb: hvem som tar straffene, hjørnene og
+  de direkte frisparkene — første og andre valg. Navnene er klikkbare.
+
+Hele pakka bruker **ingen AI** og koster dermed ingenting å bruke.
+
+**Status:** bygget 1. september på branchen `feat/spillere-v180`, 602 tester
+grønne. Den er **ikke** merget eller lagt ut ennå — du skal prøve den lokalt
+først (`npm run dev`), så merger vi når du sier fra.
+
+## Før det: v1.7.0 «Innsikt» — i drift siden 31. august
 
 En helt ny side i menyen, rett etter «Liga»: **Innsikt** — fasiten på din
 egen sesong. Fire ting, alle regnet på ferdigspilte runder:

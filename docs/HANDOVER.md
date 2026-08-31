@@ -6,31 +6,32 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-09-01 (økt 47, Fable: detaljplan v1.8.0 klar)
+**Sist oppdatert:** 2026-09-01 (økt 48, Opus: v1.8.0 bygget, venter test)
 
 ## Status akkurat nå
-- **Detaljplan v1.8.0 «Spiller-pakka» KLAR og godkjent 1. sep (økt 47):**
-  `docs/plan-spillerpakka-v180.md` — T1–T9 med TDD, datakontrakt målt mot
-  ekte FPL-API (element-summary 13 KB, `penalties_order` alle 20 klubber,
-  `*_text`-felter tomme). Alle valg besluttet av Marius (alle fire deler i
-  én versjon, modal-kort m/element-summary lazy, duell fra data-attrs med
-  vinnerregler, global differensial 5/10/15 %, alle tre dødball-roller).
-  Utførelse i egen Opus-økt — kjøreprompt levert i chatten økt 47.
-- **v1.7.1 «UX-polering» UTE I PROD 1. sep rett etter midnatt.** Bygget
-  31. aug (12 godkjente småfiks fra full funksjonsgjennomgang — Marius
-  valgte «Fiks» på alle 12), merge holdt til etter kampslutt («Kampen er
-  ferdig» 1. sep): merget `--no-ff` (`1633969`), tagget `v1.7.1`, én
-  push. **556/556 + lint 0** på branch OG merget main. Innhold: no-store
-  på /api, «neste tidligst» på /nyheter, grafakser /lag+/liga,
-  statusfilter + sort-generalisering (`table[data-sortable]`, sortering
-  overlever live-polling), krysslenker `/spillere?sok=`, forklaringer
-  (flagg, FDR, xG/xA, lovlig ellever), venter/angret-badges på
-  /overganger. Pakke 8 (liga-lenker) og 11 (aria-live) krevde INGEN
-  endring — fantes alt. Prod-bevis utenfra 1. sep: footer `v1.7.1`,
-  `/health` 200 `ai:true, discord:true, leagues:1`, alle 9 ruter 200 +
-  `/finnesikke` 404, `/api/live.json` svarer `Cache-Control: no-store`,
-  alle nye features spot-sjekket i markupen (30 krysslenker på
-  dashbordet). Røyktest 31. aug med tomme nøkler: 0 «AI-kall:»-linjer.
+- **v1.8.0 «Spiller-pakka» FERDIG BYGGET 1. sep (økt 48) — IKKE merget.**
+  Branch `feat/spillere-v180`, 9 commits (T1–T9), **602/602 + lint 0**.
+  Bygget nøyaktig etter `docs/plan-spillerpakka-v180.md` med TDD (rød før
+  grønn i T2–T8; T1 var en låsetest som planen forutså ville bestå direkte).
+  Innhold: `src/services/players.js` (buildPlayerCard, buildDifferentials,
+  buildSetPieceTable, assemblePlayerCard), `GET /api/spiller/:id`,
+  `elementSummaryAgeSec` i fplClient, /spillere i tre seksjoner med
+  hopplenker, modal-spillerkort, duell og terskelvelger.
+  **To dokumenterte avvik fra planen (begge teknisk nødvendige):**
+  (1) `buildDifferentials` tok ikke `teamsById` i planens signatur, men
+  rad-kontrakten krever `lag: {kort, kode, navn}` — parameteren er lagt til.
+  (2) `buildSetPieceTable` returnerer `{id, navn}` per taker, ikke bare
+  navn: T6 krever at navnene er knapper som åpner spillerkortet, og en
+  knapp trenger id-en. T4-testene ble justert i T6-commiten.
+  **Røyktest 1. sep med tomme nøkler** (`ai:false, discord:false`): alle 9
+  ruter 200, `/finnesikke` 404, `/api/spiller/411` 200 mot ekte FPL-data,
+  `/api/spiller/abc` 400, `/api/spiller/999999` 404, **0 «AI-kall:»-linjer**.
+  Payload /spillere: 528 → 911 KB ukomprimert, men **22,6 → 44,4 KB gzip**
+  (compression() aktiv) — mer enn planens anslag ukomprimert, uproblematisk
+  over nett. **Marius tester selv før merge — ingen tag/push uten klarsignal.**
+- **v1.7.1 «UX-polering» UTE I PROD 1. sep** (`1633969`, tag `v1.7.1`,
+  556/556 + lint 0, prod-bevis utenfra grønt). Detaljene og prod-beviset
+  er rotert til `docs/arkiv/HANDOVER-historikk.md`.
 - **v1.7.0 «/innsikt» ute i prod 31. aug kl. 16:46** (`a25ac0a`, tag
   `v1.7.0`, 549/549). Prod-beviset er rotert til historikkfila.
 - **v1.3.8, v1.4.0, v1.5.0 og v1.6.0 UTE I PROD 28. aug kl. 14:49** —
@@ -50,11 +51,12 @@
   `docs/sjekkpunkt-d-kostnad.md` brukes ved behov. Taktbudsjett
   **~49–53 AI-kall/uke** (v1.7.0 legger til 0). Siste måling 23. aug:
   $0,94/uke.
-- **Git akkurat nå:** `main` = `origin/main`; `origin` har KUN `main`,
-  taggene t.o.m. `v1.7.1` er pushet. `feat/ux-polering-v171` er slettet
-  lokalt (ble aldri pushet). **Rest:** 12 gamle, merget lokale brancher
-  fra økt ≤ 35 (navnene i historikkfila) — ryddes med `git branch -d`
-  når som helst.
+- **Git akkurat nå:** aktiv branch `feat/spillere-v180` (9 commits, ikke
+  pushet). Lokal `main` ligger **1 commit foran `origin/main`** (docs-
+  commiten fra økt 47) — den må pushes sammen med merge-en. `origin` har
+  KUN `main`, taggene t.o.m. `v1.7.1` er pushet. **Rest:** 12 gamle,
+  merget lokale brancher fra økt ≤ 35 (navnene i historikkfila) — ryddes
+  med `git branch -d` når som helst.
 - Eldre status og alle detaljer: `docs/arkiv/HANDOVER-historikk.md`.
 
 ## Neste steg (start her)
@@ -68,9 +70,11 @@ Marius gjøre.
 2. `[Marius]` **`kill 1` i containerterminalen** → de to avslutningslinjene
    («SIGTERM mottatt — lukker serveren», «Serveren lukket ryddig») er det
    siste beviset for v1.3.5.
-3. **Bygg v1.8.0 «Spiller-pakka»** (kø-punkt 5): detaljplan KLAR —
-   `docs/plan-spillerpakka-v180.md` (T1–T9, TDD). Utførelses-økt (Opus)
-   starter på T1 fra branch `feat/spillere-v180` av lokal `main`-topp.
+3. `[Marius]` **Test v1.8.0 lokalt** (`npm run dev` på
+   `feat/spillere-v180`): modal (klikk, Esc, fokus tilbake), duell (to
+   valgte, filtrering fjerner haken), terskelbytte 5/10/15, 390 px i BEGGE
+   temaer. Deretter klarsignal → merge `--no-ff`, tag `v1.8.0`, push,
+   arkiver detaljplanen til `docs/arkiv/`.
 4. **P3 ved første ekte transfer:** feltnavnene i
    `entry/5330646/transfers/` (`element_in`, `element_out`, `event`,
    `time`, `event_transfers_cost`) mot ekte API. Marius bytter ikke i GW2
@@ -159,6 +163,11 @@ Marius gjøre.
 - **v1.7.0 (31. aug):** begge benkekolonner; kapteinstreff på både
   identitet og poeng; flakspoeng + topp/bunn 3; XI-liste + sesongtrend;
   vindu = hele sesongen; nav-plass etter Liga. Fasit i planen.
+- **v1.8.0 (1. sep):** alle fire deler i én versjon; modal-spillerkort med
+  element-summary KUN lazy per klikk; duell fra data-attrs (pris lavest,
+  dødball satt-slår-null, ellers høyest, likhet umarkert); global
+  eierandel med terskel 5/10/15 % (default 10); alle tre dødball-roller.
+  Full fasit: `docs/plan-spillerpakka-v180.md` §Beslutningsfasit.
 
 ## Miljø
 
@@ -171,22 +180,17 @@ Marius gjøre.
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
+- 2026-09-01 (økt 48, Opus, utførelse): mandat = bygg v1.8.0 etter planen,
+  TDD strengt, stopp etter T9 uten merge/tag/push. Handling: verifiserte
+  baseline 556/556 + lint 0 på main, branch `feat/spillere-v180`, T1–T9
+  med rød→grønn i hver task, 9 conventional commits, CHANGELOG i hver
+  commit, røyktest med tomme nøkler, docs ajour. Sluttstatus 602/602 +
+  lint 0. To planavvik dokumentert i statusen over. Stoppet før merge.
 - 2026-09-01 (økt 47, Fable, planøkt): mandat = detaljplan v1.8.0, ingen
   kode. Handling: målte FPL-API-et (bootstrap 109 felter, element-summary-
   strukturen), fire AskUserQuestion-runder — Marius valgte anbefalingen i
   alle 11 spørsmål. Underveis: «planen så detaljert at Opus gjennomfører
   like bra», «kjøreprompt i chatten, ikke fil». Plan skrevet, docs ajour,
   loggposter økt 45 rotert til historikkfila (200-linjerstaket).
-- 2026-09-01 (økt 46, del 2): «Kampen er ferdig». Handling: merget
-  `--no-ff`, verifiserte 556/556 + lint 0 og CHANGELOG-rekkefølgen på
-  merget main, tagget `v1.7.1`, pushet, prod-bevis utenfra (se statusen),
-  branch slettet, docs ajour.
-- 2026-08-31 (økt 46, Fable): «gå gjennom hver eneste funksjon jeg kan
-  gjøre på siden … Spørr meg om jeg vil beholde det slik det er eller det
-  du tenker kunne fikses.» Handling: tre Explore-agenter kartla alle 9
-  sider + tverrgående; 12 forslag i tre AskUserQuestion-puljer — Marius
-  valgte «Fiks (Anbefalt)» på ALLE 12. Bygget som v1.7.1 med TDD på
-  logikken (noStore, nextSummaryUpdateAt, rankGraph-akser, compareCells/
-  rowMatchesFilters/queryParam). Merge holdt tilbake: avspark 21:00.
-- Loggposter fra økt 22–43: rotert til
-  `docs/arkiv/HANDOVER-historikk.md` (200-linjerstaket, sist 2026-08-31).
+- Loggposter fra økt 22–46: rotert til
+  `docs/arkiv/HANDOVER-historikk.md` (200-linjerstaket, sist 2026-09-01).
