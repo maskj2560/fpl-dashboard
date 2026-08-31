@@ -42,8 +42,9 @@
   <section class="card">
     <h2>Kapteinskandidater globalt</h2>
     <ol class="rec-list"><% for (const c of brief.captains) { %>
-      <li><strong><%= c.name %></strong> <%- include('partials/club-badge', { team: { short_name: c.team, code: c.teamCode } }) %> <span class="dim">form <%= c.form %> · eid <%= c.ownership %> %<% if (c.avgFdr != null) { %> · FDR <%= c.avgFdr.toFixed(1) %><% } %></span></li>
+      <li><a href="/spillere?sok=<%= encodeURIComponent(c.name) %>"><strong><%= c.name %></strong></a> <%- include('partials/club-badge', { team: { short_name: c.team, code: c.teamCode } }) %> <span class="dim">form <%= c.form %> · eid <%= c.ownership %> %<% if (c.avgFdr != null) { %> · FDR <%= c.avgFdr.toFixed(1) %><% } %></span></li>
     <% } %></ol>
+    <p class="hint">FDR = FPLs vanskelighetsgrad for kampprogrammet, 1 (lett) til 5 (vanskelig).</p>
   </section>
 </div>
 
@@ -66,9 +67,11 @@
   <div class="grid">
     <section class="card">
       <h2>Mine kapteinsvalg</h2>
+      <% if (brief.mine.captains.length === 0) { %><p class="empty">Ingen kandidater denne runden.</p><% } else { %>
       <ol class="rec-list"><% for (const c of brief.mine.captains) { %>
         <li><strong><%= c.player.web_name %></strong><ul class="reasons"><% for (const r of c.reasons) { %><li><%= r %></li><% } %></ul></li>
       <% } %></ol>
+      <% } %>
     </section>
     <section class="card">
       <h2>Mine transferkandidater</h2>

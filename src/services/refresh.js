@@ -7,7 +7,7 @@ import { getBootstrap } from './fplClient.js';
 import { nextEvent } from './analysis.js';
 import * as ai from './ai.js';
 import { assembleBrief, generateAiBrief, briefCacheKey } from './brief.js';
-import { refreshNewsSummary, NEWS_CACHE_KEY } from './news.js';
+import { refreshNewsSummary, NEWS_CACHE_KEY, NEWS_MAX_AGE_MS } from './news.js';
 import { generateTransferComment, transferCommentCacheKey } from './transfers.js';
 
 const MIN = 60_000;
@@ -18,7 +18,6 @@ const HOUR = 60 * MIN;
 // deadlinevinduet. Gulvet på hvor ofte det faktisk genereres ligger i
 // minIntervalMs i ai.js.
 const TICK_INTERVAL_MS = 30 * MIN;
-const NEWS_MAX_AGE_MS = 6 * HOUR;
 const BRIEF_MAX_AGE_MS = 24 * HOUR;
 // Overgangskommentaren (v1.5.0): 1x/døgn er nok — analysen endrer seg bare
 // når runder spilles. Etter sesongslutt fryses den (som briefen).

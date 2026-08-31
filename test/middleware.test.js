@@ -6,6 +6,7 @@ import {
   createShutdown,
   FONT_VERSION,
   IMG_VERSION,
+  noStore,
 } from '../src/middleware.js';
 
 // ---- P1-10: bare kjente versjonsstrenger får immutable --------------------
@@ -202,4 +203,15 @@ test('en vanlig feil gir fortsatt 500 og den generiske feilsiden', () => {
   assert.equal(errorView.locals.code, 500);
   assert.equal(errorView.locals.heading, 'Noe gikk galt');
   assert.equal(errorView.locals.message, null);
+});
+
+// ---- v1.7.1: API-svar skal aldri caches av nettleseren --------------------
+
+test('noStore setter Cache-Control: no-store og slipper forespørselen videre', () => {
+  const headers = {};
+  const res = { setHeader: (navn, verdi) => { headers[navn] = verdi; } };
+  let neste = false;
+  noStore({}, res, () => { neste = true; });
+  assert.equal(headers['Cache-Control'], 'no-store');
+  assert.equal(neste, true);
 });

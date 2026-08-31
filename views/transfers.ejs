@@ -55,7 +55,7 @@
         </thead>
         <tbody>
           <% for (let i = analysis.rows.length - 1; i >= 0; i--) { const r = analysis.rows[i]; const detaljer = r.perGw && r.perGw.length > 0; %>
-            <tr>
+            <tr<%- r.pending || !r.played ? ' class="row-muted"' : '' %>>
               <td><% if (detaljer) { %><button type="button" class="btn-expand" aria-expanded="false" aria-label="Vis rundene for byttet"><span aria-hidden="true">+</span></button><% } %></td>
               <td><%= r.event %><% if (r.chip === 'wildcard') { %> <span class="status">Wildcard</span><% } else if (r.chip === 'freehit') { %> <span class="status">Free Hit</span><% } %></td>
               <td><%- include('partials/club-badge', { team: { short_name: r.inn.teamShort, code: r.inn.teamCode, name: r.inn.teamShort }, showName: false }) %> <%= r.inn.name %><% if (r.played) { %> <span class="dim"><%= r.inn.points %> p</span><% } %></td>
@@ -67,7 +67,7 @@
                 <% if (i === analysis.bestIndex) { %> <span class="status status-best">Beste</span><% } %>
                 <% if (i === analysis.worstIndex) { %> <span class="status status-worst">Verste</span><% } %>
               </td>
-              <td class="dim"><% if (r.pending) { %>Venter på runde <%= r.event %><% } else if (!r.played) { %>Angret før deadline<% } else if (r.window.from === r.window.to) { %>R<%= r.window.from %><% } else { %>R<%= r.window.from %>–R<%= r.window.to %><% } %></td>
+              <td class="dim"><% if (r.pending) { %><span class="status">Venter på runde <%= r.event %></span><% } else if (!r.played) { %><span class="status">Angret før deadline</span><% } else if (r.window.from === r.window.to) { %>R<%= r.window.from %><% } else { %>R<%= r.window.from %>–R<%= r.window.to %><% } %></td>
             </tr>
             <% if (detaljer) { %>
               <tr class="row-detail" hidden>

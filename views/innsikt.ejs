@@ -21,7 +21,8 @@
       <h2>Benkesløsing</h2>
       <p class="hint">«På benken» er FPLs eget benkepoengtall. «Unngåelig tap»
       er differansen mellom den beste lovlige elleveren du kunne stilt med av
-      de femten, og den du faktisk stilte — altså den delen av benkepoengene
+      de femten (en gyldig FPL-formasjon: 1 keeper, minst 3 forsvarere,
+      minst 1 spiss), og den du faktisk stilte — altså den delen av benkepoengene
       du kunne hentet med et annet oppsett. I en Bench Boost-runde teller hele
       troppen, og da er ingenting sløst.</p>
       <div class="table-scroll">
@@ -97,7 +98,9 @@
   <% if (insights.luck) { %>
     <section class="card card-wide">
       <h2>Flaksbarometer</h2>
-      <p class="hint">Flakspoeng er avstanden mellom det spillerne dine faktisk
+      <p class="hint">xG og xA er FPLs forventede mål og forventede målgivende,
+      regnet ut fra sjansene spilleren var involvert i. Flakspoeng er avstanden
+      mellom det spillerne dine faktisk
       leverte og det de var forventet å levere: (mål − xG) ganget med
       poengverdien for posisjonen, pluss (assist − xA) ganget med 3. Positivt
       tall betyr at du fikk mer enn statistikken tilsa. Rundetallet gjelder
@@ -173,7 +176,7 @@
               <tr>
                 <td><%- include('partials/club-shirt', { team: { code: p.teamCode }, keeper: p.elementType === 1 }) %></td>
                 <td>
-                  <%= p.name %> <span class="dim"><%= p.teamShort %></span>
+                  <a href="/spillere?sok=<%= encodeURIComponent(p.name) %>"><%= p.name %></a> <span class="dim"><%= p.teamShort %></span>
                   <% if (p.captain) { %> <span class="cap">C</span><% } %>
                 </td>
                 <td class="dim"><%= POS[p.elementType] || '–' %></td>

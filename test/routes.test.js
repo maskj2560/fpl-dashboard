@@ -44,3 +44,14 @@ test('rådgiverklikket blokkerer aldri på en utgått tekst (swr)', () => {
     'rådgiverens ai.generate mangler swr: true',
   );
 });
+
+// v1.7.1: nettleseren skal aldri cache API-JSON — serverens cache styrer
+// TTL, og et cachet /live.json ville vist gamle poeng under polling.
+test('hele API-routeren svarer med no-store', () => {
+  const code = read('api.js');
+  assert.match(
+    code,
+    /router\.use\(noStore\)/,
+    'api.js mangler router.use(noStore) fra middleware.js',
+  );
+});

@@ -7,6 +7,41 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.7.1] - 2026-09-01
+
+### Added
+
+- Krysslenker: spillernavn på dashbordet (Toppform, Mest kjøpt/solgt),
+  i briefens kapteinskandidater og i rundens XI på «Innsikt» lenker nå
+  til «Spillere» med søket ferdig utfylt (`/spillere?sok=…`).
+- «Spillere» har fått status-filter (Klar/Usikker/Skadet/Suspendert/Ute),
+  og «Mine spillere» på «Live» kan nå sorteres ved å klikke på kolonnene —
+  sorteringen beholdes når live-tallene oppdateres. «Live» forklarer også
+  forskjellen på publisert og estimert bonus.
+- Grafene på «Lag» (totalrangering) og «Liga» (sesongutvikling) har fått
+  akse-etiketter: beste/dårligste verdi på y-aksen og første/siste runde
+  på x-aksen — ikke lenger nødvendig å gjette skalaen.
+- «Nyheter» viser nå når neste AI-oppsummering tidligst kommer («generert
+  HH:MM · neste tidligst HH:MM») — teksten er timer-styrt som før, ingen
+  knapp og ingen ekstra AI-kall.
+
+- Flere forklaringer der tall sto ukommentert: flagg-hint på dashbordet,
+  FDR forklart på briefen, xG/xA forklart på «Spillere» og «Innsikt»,
+  «lovlig ellever» presisert i benkesløsingen, og tomtilstand for «Mine
+  kapteinsvalg» på briefen.
+
+### Changed
+
+- På «Overganger» vises bytter som ikke teller («Venter på runde» /
+  «Angret før deadline») nå som badge med dempet rad, så de spilte
+  byttene skiller seg ut.
+
+### Fixed
+
+- API-endepunktene (`/api/*.json`) sender nå `Cache-Control: no-store`,
+  så nettleseren aldri viser utdatert JSON — serverens cache styrer
+  ferskheten alene.
+
 ## [1.7.0] - 2026-08-31
 
 ### Added

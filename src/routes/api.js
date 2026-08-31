@@ -31,8 +31,10 @@ import { getLive, getLiveHistoric } from '../services/fplClient.js';
 import { formatDateTime } from '../services/format.js';
 import * as ai from '../services/ai.js';
 import { buildAdvicePrompt } from '../services/prompts.js';
+import { noStore } from '../middleware.js';
 
 const router = Router();
+router.use(noStore);
 
 router.get('/brief.json', async (req, res, next) => {
   try {

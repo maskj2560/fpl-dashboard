@@ -166,6 +166,9 @@
   <% const seriesColor = (s) => s.me ? 'var(--accent)' : (s.rival ? 'var(--accent-2)' : 'var(--text-dim)'); %>
   <section class="card card-wide">
     <h2>Sesongutvikling <span class="dim">Runde <%= g.gwFirst %>–<%= g.gwLast %></span></h2>
+    <div class="graph-wrap">
+    <div class="graph-y" aria-hidden="true"><span>1.</span><% if (g.managers > 1) { %><span><%= g.managers %>.</span><% } %></div>
+    <div class="graph-main">
     <svg class="rank-graph league-graph" viewBox="-8 -8 <%= g.width + 16 %> <%= g.height + 16 %>" preserveAspectRatio="none" role="img" aria-label="Ligaplassering per runde">
       <% for (const y of [0, g.height / 2, g.height]) { %>
         <line x1="0" y1="<%= y %>" x2="<%= g.width %>" y2="<%= y %>" stroke="var(--border)" stroke-width="1" vector-effect="non-scaling-stroke" />
@@ -178,6 +181,9 @@
         <% } %>
       <% } %>
     </svg>
+    <div class="graph-x" aria-hidden="true"><% if (g.single) { %><span>Runde <%= g.gwFirst %></span><% } else { %><span>Runde <%= g.gwFirst %></span><span>Runde <%= g.gwLast %></span><% } %></div>
+    </div>
+    </div>
     <ul class="graph-legend">
       <% for (const s of [...g.series].reverse()) { %>
         <li><span class="legend-swatch" style="background: <%= seriesColor(s) %>"></span><%= s.name %><% if (s.me) { %> <span class="dim">(meg)</span><% } else if (s.rival) { %> <span class="dim">(rival)</span><% } %><% if (s.lastRank) { %> <span class="dim">· <%= s.lastRank %>.</span><% } %></li>

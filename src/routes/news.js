@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getNews } from '../services/news.js';
+import { getNews, nextSummaryUpdateAt } from '../services/news.js';
 import * as ai from '../services/ai.js';
 
 const router = Router();
@@ -12,6 +12,7 @@ router.get('/', async (req, res, next) => {
       items: news.items,
       points: news.points,
       generatedAt: news.summary?.generatedAt ?? null,
+      nextUpdateAt: nextSummaryUpdateAt(news.summary?.generatedAt ?? null),
       aiEnabled: ai.isEnabled(),
     });
   } catch (err) {

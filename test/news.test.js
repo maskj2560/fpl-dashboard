@@ -9,7 +9,18 @@ import {
   parseFeedItems,
   getNews,
   refreshNewsSummary,
+  nextSummaryUpdateAt,
+  NEWS_MAX_AGE_MS,
 } from '../src/services/news.js';
+
+// ---- v1.7.1: «neste oppdatering tidligst HH:MM» på /nyheter ---------------
+
+test('nextSummaryUpdateAt gir generatedAt + maks-alderen, null uten tidspunkt', () => {
+  assert.equal(nextSummaryUpdateAt(1_000_000), 1_000_000 + NEWS_MAX_AGE_MS);
+  assert.equal(NEWS_MAX_AGE_MS, 6 * 60 * 60_000);
+  assert.equal(nextSummaryUpdateAt(null), null);
+  assert.equal(nextSummaryUpdateAt(undefined), null);
+});
 import * as ai from '../src/services/ai.js';
 import { clear as cacheClear } from '../src/services/cache.js';
 
