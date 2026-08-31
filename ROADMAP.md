@@ -36,7 +36,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.6.0**~~ | ~~«Liga-pakka»: rival-radar, ligagraf, kaptein-liga, roast-rapport~~ | **utført 28. aug — ute i prod** | — |
 | ~~**v1.7.0**~~ | ~~«/innsikt»: benkesløsing, kapteinsfasit, flaksbarometer, rundens XI~~ | **utført 31. aug — ute i prod kl. 16:46, 549/549** | — |
 | ~~**v1.7.1**~~ | ~~UX-polering: 12 småfiks fra funksjonsgjennomgang~~ | **utført 1. sep — ute i prod, 556/556** | — |
-| **v1.8.0** | «Spiller-pakka»: spillerkort, duell, differensialer, straffer | 5 | v1.7.0 |
+| **v1.8.0** | «Spiller-pakka»: spillerkort, duell, differensialer, straffer | 5 | **detaljplan klar 1. sep** (`docs/plan-spillerpakka-v180.md`) — venter utførelses-økt |
 | **v1.9.0** | «Planleggingspakka»: chip-planlegger, deadline-sjekk, kalender-feed | 5 | v1.8.0 |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
@@ -127,9 +127,10 @@ stedet for den AI-kostende promptendringen (droppet). Rekkefølge:
   **v1.7.0 UTE I PROD 31. aug kl. 16:46** (merget `--no-ff`, tagget
   `v1.7.0`, **549/549** + lint 0 før og etter, prod-sveip grønt, 0
   AI-kall; detaljplan arkivert: `docs/arkiv/plan-innsikt-v170.md`).
-  **Neste: v1.8.0 «Spiller-pakka»** — trenger egen detaljplan-økt før
-  bygging, som v1.6.0 og v1.7.0. v1.9.0 planlegges etter det.
-- **Blokkert av:** ingenting — v1.8.0 er klar for planøkt.
+  **Neste: v1.8.0 «Spiller-pakka»** — detaljplan KLAR 1. sep (økt 47):
+  `docs/plan-spillerpakka-v180.md` (T1–T9, TDD, datakontrakt målt mot
+  ekte API). v1.9.0 planlegges etter det.
+- **Blokkert av:** ingenting — v1.8.0 er klar for utførelses-økt (Opus).
 - **Størrelse:** stor (fire releaser).
 
 ## Dokumentkart — hvor alt bor

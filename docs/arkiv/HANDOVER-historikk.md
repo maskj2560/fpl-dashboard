@@ -5,6 +5,26 @@
 > sjekkpunkt-tabellen, versjonshistorikken, utdaterte åpne punkter og hele
 > loggen over brukerbeskjeder til og med økt 22. Nyere logg: HANDOVER.md.
 
+## Rotert 2026-09-01 (økt 47): loggposter økt 45 (verbatim fra HANDOVER.md)
+
+- 2026-08-31 (økt 45, del 2): «Jeg er ikke hjemme. du kan merge og pushe
+  til main.» Handling: sjekket deploy-vinduet FØRST (mandag 16:44, 0
+  kamper i gang, neste avspark 21:00) → merget `--no-ff`, verifiserte
+  CHANGELOG-rekkefølgen og 549/549 + lint 0 på merget `main`, tagget
+  `v1.7.0`, én push kl. 16:46. Prod grønt utenfra (se statusen).
+  Etterpå: planen arkivert, `feat/innsikt-v170` slettet lokalt, docs ajour.
+- 2026-08-31 (økt 45, Opus, utførelsesøkt): mandat = bygg v1.7.0 etter
+  den godkjente detaljplanen, ingen designvalg, TDD strengt, ingen
+  merge/tag/push til `main` uten klarsignal. Handling: `feat/innsikt-v170`
+  fra lokal `main`-topp, T1–T10 i rekkefølge med RED før GREEN i hver
+  task (549/549, lint 0), ni conventional commits, CHANGELOG `[1.7.0]`,
+  ROADMAP/CLAUDE.md/VIDERE.md/denne fila ajour, prod-bevis for
+  v1.3.8–v1.6.0 rotert til historikkfila. To små avvik fra planens
+  signaturskisser, begge nødvendige for returformen: `buildLuckMeter` og
+  `buildDreamTeamSection` fikk henholdsvis `teamsById` og `picksByGw` som
+  ekstra parametre (`teamCode` og sesongtrenden kan ikke utledes uten
+  dem). Ingen push, ingen merge, ingen tag.
+
 ## Rotert 2026-08-31 (økt 46): v1.7.0-prod-bevis (verbatim fra HANDOVER.md)
 
 - **v1.7.0 «/innsikt» UTE I PROD 31. aug kl. 16:46.** Marius ga

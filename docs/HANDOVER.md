@@ -6,9 +6,16 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-09-01 (økt 46, Fable: v1.7.1 ute i prod)
+**Sist oppdatert:** 2026-09-01 (økt 47, Fable: detaljplan v1.8.0 klar)
 
 ## Status akkurat nå
+- **Detaljplan v1.8.0 «Spiller-pakka» KLAR og godkjent 1. sep (økt 47):**
+  `docs/plan-spillerpakka-v180.md` — T1–T9 med TDD, datakontrakt målt mot
+  ekte FPL-API (element-summary 13 KB, `penalties_order` alle 20 klubber,
+  `*_text`-felter tomme). Alle valg besluttet av Marius (alle fire deler i
+  én versjon, modal-kort m/element-summary lazy, duell fra data-attrs med
+  vinnerregler, global differensial 5/10/15 %, alle tre dødball-roller).
+  Utførelse i egen Opus-økt — kjøreprompt levert i chatten økt 47.
 - **v1.7.1 «UX-polering» UTE I PROD 1. sep rett etter midnatt.** Bygget
   31. aug (12 godkjente småfiks fra full funksjonsgjennomgang — Marius
   valgte «Fiks» på alle 12), merge holdt til etter kampslutt («Kampen er
@@ -61,9 +68,9 @@ Marius gjøre.
 2. `[Marius]` **`kill 1` i containerterminalen** → de to avslutningslinjene
    («SIGTERM mottatt — lukker serveren», «Serveren lukket ryddig») er det
    siste beviset for v1.3.5.
-3. **Bygg v1.8.0 «Spiller-pakka»** (kø-punkt 5): spillerkort, duell,
-   differensialer, straffer. Detaljplan-økt først (T-tasks, TDD), som for
-   v1.6.0 og v1.7.0. Fasit: `docs/plan-idepakken-v16-v19.md`.
+3. **Bygg v1.8.0 «Spiller-pakka»** (kø-punkt 5): detaljplan KLAR —
+   `docs/plan-spillerpakka-v180.md` (T1–T9, TDD). Utførelses-økt (Opus)
+   starter på T1 fra branch `feat/spillere-v180` av lokal `main`-topp.
 4. **P3 ved første ekte transfer:** feltnavnene i
    `entry/5330646/transfers/` (`element_in`, `element_out`, `event`,
    `time`, `event_transfers_cost`) mot ekte API. Marius bytter ikke i GW2
@@ -164,23 +171,12 @@ Marius gjøre.
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
-- 2026-08-31 (økt 45, del 2): «Jeg er ikke hjemme. du kan merge og pushe
-  til main.» Handling: sjekket deploy-vinduet FØRST (mandag 16:44, 0
-  kamper i gang, neste avspark 21:00) → merget `--no-ff`, verifiserte
-  CHANGELOG-rekkefølgen og 549/549 + lint 0 på merget `main`, tagget
-  `v1.7.0`, én push kl. 16:46. Prod grønt utenfra (se statusen).
-  Etterpå: planen arkivert, `feat/innsikt-v170` slettet lokalt, docs ajour.
-- 2026-08-31 (økt 45, Opus, utførelsesøkt): mandat = bygg v1.7.0 etter
-  den godkjente detaljplanen, ingen designvalg, TDD strengt, ingen
-  merge/tag/push til `main` uten klarsignal. Handling: `feat/innsikt-v170`
-  fra lokal `main`-topp, T1–T10 i rekkefølge med RED før GREEN i hver
-  task (549/549, lint 0), ni conventional commits, CHANGELOG `[1.7.0]`,
-  ROADMAP/CLAUDE.md/VIDERE.md/denne fila ajour, prod-bevis for
-  v1.3.8–v1.6.0 rotert til historikkfila. To små avvik fra planens
-  signaturskisser, begge nødvendige for returformen: `buildLuckMeter` og
-  `buildDreamTeamSection` fikk henholdsvis `teamsById` og `picksByGw` som
-  ekstra parametre (`teamCode` og sesongtrenden kan ikke utledes uten
-  dem). Ingen push, ingen merge, ingen tag.
+- 2026-09-01 (økt 47, Fable, planøkt): mandat = detaljplan v1.8.0, ingen
+  kode. Handling: målte FPL-API-et (bootstrap 109 felter, element-summary-
+  strukturen), fire AskUserQuestion-runder — Marius valgte anbefalingen i
+  alle 11 spørsmål. Underveis: «planen så detaljert at Opus gjennomfører
+  like bra», «kjøreprompt i chatten, ikke fil». Plan skrevet, docs ajour,
+  loggposter økt 45 rotert til historikkfila (200-linjerstaket).
 - 2026-09-01 (økt 46, del 2): «Kampen er ferdig». Handling: merget
   `--no-ff`, verifiserte 556/556 + lint 0 og CHANGELOG-rekkefølgen på
   merget main, tagget `v1.7.1`, pushet, prod-bevis utenfra (se statusen),
