@@ -34,6 +34,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   dødballroller, de fem siste rundene og de tre neste kampene med
   FDR-farge. Kortet lukkes med ×, Esc eller klikk utenfor, tastaturfokus
   holdes inne i dialogen, og fokus går tilbake til navnet du klikket på.
+- Spillerduell: kryss av to spillere i tabellen og trykk «Sammenlign» for å
+  se nøkkeltallene side ved side, med den beste verdien uthevet på hver
+  rad. Billigst vinner på pris, satt dødballrolle slår ingen rolle, og lik
+  verdi markeres ikke. Alt regnes i nettleseren — ingen kall mot FPL.
 
 ### Fixed
 
