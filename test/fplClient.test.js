@@ -11,6 +11,7 @@ import {
   getEntryHistoryHistoric,
   getPicks,
   getPicksHistoric,
+  getDreamTeam,
   isGameUpdating,
   staleInfo,
   FplError,
@@ -198,6 +199,36 @@ test('getEntryHistoryHistoric deler nøkkel med getEntryHistory og cacher lenge'
   } finally {
     _setNow(null);
   }
+});
+
+// ---- v1.7.0: rundens drømmelag -----------------------------------------
+
+test('getDreamTeam henter dream-team/{gw}/ og cacher 6 t', async () => {
+  mockFetch(() => jsonResponse({ top_player: { id: 1, points: 20 }, team: [] }));
+  let clock = 1_000_000;
+  _setNow(() => clock);
+  try {
+    const first = await getDreamTeam(3);
+    assert.deepEqual(first.top_player, { id: 1, points: 20 });
+    assert.equal(fetchCalls.length, 1);
+    assert.match(fetchCalls[0].url, /dream-team\/3\/$/);
+
+    clock += 60 * 60_000; // 1 time: godt innenfor 6 t
+    await getDreamTeam(3);
+    assert.equal(fetchCalls.length, 1, 'ferdig runde skal ikke revalideres etter en time');
+  } finally {
+    _setNow(null);
+  }
+});
+
+test('getDreamTeam deler ikke nøkkel med live', async () => {
+  mockFetch(() => jsonResponse({ team: [] }));
+
+  await getDreamTeam(3);
+  await getLive(3); // egen nøkkel → må gi et nytt kall
+  assert.equal(fetchCalls.length, 2);
+  assert.match(fetchCalls[0].url, /dream-team\/3\/$/);
+  assert.match(fetchCalls[1].url, /event\/3\/live\/$/);
 });
 
 test('gameUpdating utløper av seg selv 5 min etter siste 503', async () => {
