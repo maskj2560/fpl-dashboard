@@ -18,6 +18,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   Terskelen kan settes til 5, 10 eller 15 %, og topp 10 vises per terskel.
   Før noen har fått form — helt i sesongstart — sier siden fra i stedet
   for å liste vilkårlige navn.
+- «Dødballtakere»: én tabellrad per klubb med de to første i køen for
+  straffer, hjørner/indirekte frispark og direkte frispark. Klubber uten
+  kjente takere står oppført med «–», så hele serien er med.
 
 ### Fixed
 

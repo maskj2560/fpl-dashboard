@@ -158,3 +158,43 @@ export function buildDifferentials({ elements, fixtures, fromGw, teamsById }) {
     })),
   };
 }
+
+const DODBALL_ROLLER = Object.freeze({
+  straffer: 'penalties_order',
+  hjorner: 'corners_and_indirect_freekicks_order',
+  frispark: 'direct_freekicks_order',
+});
+const DODBALL_TOPP = 2;
+
+/**
+ * «Dødballtakere»: én rad per klubb med de to første i køen for hver av de
+ * tre rollene. `*_text`-feltene hos FPL er målt tomme og brukes ALDRI —
+ * ordenstallene (`*_order`) er den eneste kilden.
+ * Klubber uten kjente takere beholder raden med tomme lister, så tabellen
+ * alltid speiler hele serien.
+ */
+export function buildSetPieceTable({ elements, teams }) {
+  const perTeam = new Map(
+    teams.map((t) => [
+      t.id,
+      {
+        lag: { id: t.id, navn: t.name, kort: t.short_name, kode: t.code },
+        straffer: [],
+        hjorner: [],
+        frispark: [],
+      },
+    ]),
+  );
+
+  for (const [rolle, felt] of Object.entries(DODBALL_ROLLER)) {
+    const kandidater = elements
+      .filter((e) => e[felt] != null && perTeam.has(e.team))
+      .sort((a, b) => a[felt] - b[felt]);
+    for (const e of kandidater) {
+      const rad = perTeam.get(e.team);
+      if (rad[rolle].length < DODBALL_TOPP) rad[rolle].push(e.web_name);
+    }
+  }
+
+  return [...perTeam.values()].sort((a, b) => a.lag.navn.localeCompare(b.lag.navn, 'nb'));
+}

@@ -1,6 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildPlayerCard, buildDifferentials } from '../src/services/players.js';
+import {
+  buildPlayerCard,
+  buildDifferentials,
+  buildSetPieceTable,
+} from '../src/services/players.js';
 
 // Fixturene bruker de MÅLTE feltnavnene fra ekte FPL-API (2026-09-01):
 // tallfelter som strenger, now_cost i tideler, *_order for dødballroller.
@@ -349,4 +353,79 @@ test('buildDifferentials filtrerer bort skadde, ubrukte og formløse spillere', 
   const rows = tersklerFor([ok, skadet, ubrukt, formlos]).get(5);
 
   assert.deepEqual(rows.map((r) => r.navn), ['Ok']);
+});
+
+// ---- buildSetPieceTable --------------------------------------------------
+
+// De MÅLTE feltene: penalties_order, corners_and_indirect_freekicks_order,
+// direct_freekicks_order. *_text-feltene er tomme hos FPL og brukes aldri.
+function taker(navn, team, roller = {}) {
+  return el({
+    id: (nextId += 1),
+    web_name: navn,
+    team,
+    penalties_order: null,
+    corners_and_indirect_freekicks_order: null,
+    direct_freekicks_order: null,
+    ...roller,
+  });
+}
+
+function radFor(tabell, kort) {
+  return tabell.find((r) => r.lag.kort === kort);
+}
+
+test('buildSetPieceTable sorterer takerne på ordenstall, ikke på listerekkefølge', () => {
+  const elements = [
+    taker('Tredje', 1, { penalties_order: 3 }),
+    taker('Forste', 1, { penalties_order: 1 }),
+    taker('Hjorne2', 1, { corners_and_indirect_freekicks_order: 2 }),
+    taker('Hjorne1', 1, { corners_and_indirect_freekicks_order: 1 }),
+    taker('Frispark1', 1, { direct_freekicks_order: 1 }),
+  ];
+
+  const rad = radFor(buildSetPieceTable({ elements, teams }), 'ARS');
+
+  assert.deepEqual(rad.straffer, ['Forste', 'Tredje']);
+  assert.deepEqual(rad.hjorner, ['Hjorne1', 'Hjorne2']);
+  assert.deepEqual(rad.frispark, ['Frispark1']);
+});
+
+test('buildSetPieceTable viser bare de to første i køen per rolle', () => {
+  const elements = [1, 2, 3, 4].map((n) => taker(`S${n}`, 13, { penalties_order: n }));
+
+  assert.deepEqual(radFor(buildSetPieceTable({ elements, teams }), 'MCI').straffer, ['S1', 'S2']);
+});
+
+test('buildSetPieceTable beholder raden for klubber uten kjente takere', () => {
+  const rad = radFor(buildSetPieceTable({ elements: [], teams }), 'WOL');
+
+  assert.deepEqual(rad, {
+    lag: { id: 20, navn: 'Wolves', kort: 'WOL', kode: 39 },
+    straffer: [],
+    hjorner: [],
+    frispark: [],
+  });
+});
+
+test('buildSetPieceTable gir én rad per klubb i lista, uansett takere', () => {
+  const tabell = buildSetPieceTable({
+    elements: [taker('Bare en', 1, { penalties_order: 1 })],
+    teams,
+  });
+
+  assert.equal(tabell.length, teams.length);
+  assert.deepEqual(tabell.map((r) => r.lag.id).sort((a, b) => a - b), [1, 12, 13, 20]);
+});
+
+test('buildSetPieceTable sorterer klubbene på navn', () => {
+  const rotete = [
+    { id: 20, name: 'Wolves', short_name: 'WOL', code: 39 },
+    { id: 13, name: 'Man City', short_name: 'MCI', code: 43 },
+    { id: 1, name: 'Arsenal', short_name: 'ARS', code: 3 },
+  ];
+
+  const tabell = buildSetPieceTable({ elements: [], teams: rotete });
+
+  assert.deepEqual(tabell.map((r) => r.lag.navn), ['Arsenal', 'Man City', 'Wolves']);
 });
