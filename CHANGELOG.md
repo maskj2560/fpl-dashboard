@@ -7,6 +7,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Fixed
+
+- API-endepunktene (`/api/*.json`) sender nå `Cache-Control: no-store`,
+  så nettleseren aldri viser utdatert JSON — serverens cache styrer
+  ferskheten alene.
+
 ## [1.7.0] - 2026-08-31
 
 ### Added

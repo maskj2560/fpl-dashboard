@@ -26,6 +26,16 @@ export function cacheControlFor(v, assetVersion) {
     : 'no-cache';
 }
 
+/**
+ * API-JSON skal aldri caches av nettleseren: serverens TTL-cache styrer
+ * ferskheten, og et nettleser-cachet /live.json ville vist gamle poeng
+ * under polling. no-store på hele API-routeren.
+ */
+export function noStore(req, res, next) {
+  res.setHeader('Cache-Control', 'no-store');
+  next();
+}
+
 /** /api/* svarer JSON; klienten kaller res.json() og forventer {error}. */
 function wantsJson(req) {
   return String(req.originalUrl ?? '').split('?')[0].startsWith('/api/');
