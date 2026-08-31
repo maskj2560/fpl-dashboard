@@ -173,7 +173,7 @@
               <tr>
                 <td><%- include('partials/club-shirt', { team: { code: p.teamCode }, keeper: p.elementType === 1 }) %></td>
                 <td>
-                  <%= p.name %> <span class="dim"><%= p.teamShort %></span>
+                  <a href="/spillere?sok=<%= encodeURIComponent(p.name) %>"><%= p.name %></a> <span class="dim"><%= p.teamShort %></span>
                   <% if (p.captain) { %> <span class="cap">C</span><% } %>
                 </td>
                 <td class="dim"><%= POS[p.elementType] || '–' %></td>

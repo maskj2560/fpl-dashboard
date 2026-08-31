@@ -64,7 +64,7 @@
           <tbody>
             <% for (const p of inForm) { %>
               <tr>
-                <td><strong><%= p.web_name %></strong></td>
+                <td><a href="/spillere?sok=<%= encodeURIComponent(p.web_name) %>"><strong><%= p.web_name %></strong></a></td>
                 <td><%- include('partials/club-badge', { team: teamsById.get(p.team) }) %></td>
                 <td><%= POSITIONS_SHORT[p.element_type] %></td>
                 <td class="num accent"><%= p.form %></td>
@@ -90,7 +90,7 @@
           <tbody>
             <% for (const p of boughtMost) { %>
               <tr>
-                <td><strong><%= p.web_name %></strong> <%- include('partials/club-badge', { team: teamsById.get(p.team) }) %></td>
+                <td><a href="/spillere?sok=<%= encodeURIComponent(p.web_name) %>"><strong><%= p.web_name %></strong></a> <%- include('partials/club-badge', { team: teamsById.get(p.team) }) %></td>
                 <td class="num"><%= formatPrice(p.now_cost) %></td>
                 <td class="num accent">+<%= formatNumber(p.transfers_in_event) %></td>
               </tr>
@@ -114,7 +114,7 @@
           <tbody>
             <% for (const p of soldMost) { %>
               <tr>
-                <td><strong><%= p.web_name %></strong> <%- include('partials/club-badge', { team: teamsById.get(p.team) }) %></td>
+                <td><a href="/spillere?sok=<%= encodeURIComponent(p.web_name) %>"><strong><%= p.web_name %></strong></a> <%- include('partials/club-badge', { team: teamsById.get(p.team) }) %></td>
                 <td class="num"><%= formatPrice(p.now_cost) %></td>
                 <td class="num negative">−<%= formatNumber(p.transfers_out_event) %></td>
               </tr>

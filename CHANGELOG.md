@@ -9,6 +9,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Added
 
+- Krysslenker: spillernavn på dashbordet (Toppform, Mest kjøpt/solgt),
+  i briefens kapteinskandidater og i rundens XI på «Innsikt» lenker nå
+  til «Spillere» med søket ferdig utfylt (`/spillere?sok=…`).
 - «Spillere» har fått status-filter (Klar/Usikker/Skadet/Suspendert/Ute),
   og «Mine spillere» på «Live» kan nå sorteres ved å klikke på kolonnene —
   sorteringen beholdes når live-tallene oppdateres. «Live» forklarer også
