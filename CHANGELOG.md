@@ -7,6 +7,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+
+- «Nyheter» viser nå når neste AI-oppsummering tidligst kommer («generert
+  HH:MM · neste tidligst HH:MM») — teksten er timer-styrt som før, ingen
+  knapp og ingen ekstra AI-kall.
+
 ### Fixed
 
 - API-endepunktene (`/api/*.json`) sender nå `Cache-Control: no-store`,

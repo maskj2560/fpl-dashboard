@@ -67,6 +67,15 @@ export function buildNewsPrompt(items) {
 
 export const NEWS_CACHE_KEY = 'news-summary';
 
+// Hvor gammel oppsummeringen får bli før refresh.js lager en ny. Bor her
+// (ikke i refresh.js) så både tikket og /nyheter-ruta leser samme fasit.
+export const NEWS_MAX_AGE_MS = 6 * 60 * MIN;
+
+/** Når neste AI-oppsummering tidligst kommer — null når ingen er laget. */
+export function nextSummaryUpdateAt(generatedAt) {
+  return generatedAt == null ? null : generatedAt + NEWS_MAX_AGE_MS;
+}
+
 const newsSummaryRequest = (items) => ({
   cacheKey: NEWS_CACHE_KEY,
   minIntervalMs: 30 * MIN,

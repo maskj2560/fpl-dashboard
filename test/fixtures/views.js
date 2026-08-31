@@ -287,6 +287,7 @@ export const liveEmpty = { clubAssets, gw: null, live: null };
 export const news = {
   aiEnabled: true,
   generatedAt: Date.parse('2026-08-19T10:00:00Z'),
+  nextUpdateAt: Date.parse('2026-08-19T16:00:00Z'),
   points: ['**Salah** scoret to mot ARS'],
   items: [{
     title: 'Salah scoret to',
@@ -302,6 +303,7 @@ export const news = {
 export const newsEmpty = {
   aiEnabled: false,
   generatedAt: null,
+  nextUpdateAt: null,
   points: [],
   items: [],
 };
