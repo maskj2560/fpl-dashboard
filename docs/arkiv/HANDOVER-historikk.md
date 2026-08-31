@@ -1395,3 +1395,33 @@ er dermed ferdig i sin helhet. P0 ble lukket samme dag.
   branchene slettet lokalt og på GitHub. «Rundens rapport» for runde 1
   ble generert ved oppstartstikket og vises på /liga med AI-merke;
   Discord-posten er ikke verifisert herfra — Marius sjekker kanalen.
+
+## Rotert 2026-08-31 (økt 45, Opus, bygget v1.7.0)
+
+Prod-beviset for v1.3.8–v1.6.0 (rotert fra HANDOVER-statusen, tatt 28. aug
+kl. 14:49 utenfra): footer `v1.6.0 · sist oppdatert fredag 28. august
+kl. 14:49`; `/health` 200 med `ai:true, discord:true, teamId:true,
+leagues:1`; rutesveip `/`, `/spillere`, `/lag`, `/liga`, `/brief`, `/live`,
+`/nyheter`, `/overganger`, `/api/brief.json`, `/api/live.json` alle 200 og
+`/finnesikke` 404; `/liga` hadde Rival-radar, `rival-select`, Kaptein-liga,
+Sesongutvikling, `league-graph` og «Rundens rapport» (runde 1, AI-merke);
+`/overganger` viste tomtilstanden «Ingen overganger registrert ennå»
+(korrekt — 0 bytter); `dataAlder` fantes i både `/api/brief.json` og
+`/api/live.json` (56 s ved sjekken). Fire `--no-ff`-merger i rekkefølge
+(v138 → v140 → v150 → v160), alle «Merge made by the 'ort' strategy», null
+konflikt; tagger `v1.3.8`, `v1.4.0`, `v1.5.0`, `v1.6.0` pushet. 509/509 +
+lint 0 både på `feat/liga-v160` før merge og på merget `main`.
+
+De 12 gamle lokale branchene fra økt ≤ 35 (alle merget, ingen på GitHub,
+ryddes med `git branch -d <navn>`): `docs/plan-ui-overhaul`,
+`feat/ai-swr-v134`, `feat/discord-everyone`, `feat/hva-hvis-transfers`,
+`fix/cache-backoff`, `fix/kvalitetspass-v113`, `fix/lag-anbefalinger`,
+`fix/live-bonus`, `fix/news-unknown`, `fix/qa-v1.1.1`, `fix/qa-v1.1.2`,
+`fix/sanitize-brief`. Slettingen ble blokkert av verktøyets
+tillatelsesklassifiserer i økt 43.
+
+Asset-hash-detaljen (rotert fra statusen): hashen var `d508c47f` t.o.m.
+v1.3.7; v1.5.0/v1.6.0 endret både `style.css` og `app.js` og ga
+`f9014751`. Verdien ble regnet ut på forhånd fra git-blobbene (sha1 av
+`style.css` + `app.js`, første 8 tegn) og stemte eksakt med prod. Purge
+er unødvendig: URL-ene er versjonerte.

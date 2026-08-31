@@ -64,6 +64,16 @@ src/services/
                    MAX_MANAGERS 20. Egen team-id ALLTID via getEntryHistory
                    (5 min) — getEntryHistoryHistoric (delt nøkkel, 6 t) er kun
                    for andre managere
+  insights.js      (v1.7.0) sesonginnsikten på /innsikt: optimalXi +
+                   buildBenchReport (benkesløsing), buildCaptainAudit
+                   (kapteinsfasit: troppens beste + global favoritt),
+                   buildLuckMeter (flakspoeng mot xG/xA), og
+                   buildDreamTeamSection (rundens XI + in_dreamteam-trend).
+                   assembleInsights henter picks + live for ALLE ferdige
+                   runder med _mapLimit(8) og myk feil per seksjon; deler
+                   cache-nøkler med baseline.js. actualXiIds er fasiten på
+                   hvem som spilte: multiplier > 0 (FPL re-sorterer picks
+                   etter autosub). All poengregning er rå 1×. ALDRI ai.js
   clubAssets.js    hvilke klubbbilder som finnes i public/img/clubs/. Leses én
                    gang ved oppstart til app.locals.clubAssets; partialene spør
                    hasBadge/hasShirt/hasKeeper og skriver aldri <img> i blinde.
@@ -116,6 +126,8 @@ Base `https://fantasy.premierleague.com/api/` — åpent, ingen nøkkel. Viktig:
   5 min. Ferdige runder hentes via `getLiveHistoric(gw)` — samme endepunkt
   og cache-nøkkel, 6 t TTL (poengene er i praksis immutable); kalles kun
   når bootstrap sier runden er `finished`
+- `dream-team/{gw}/` (fra v1.7.0) hentes med `getDreamTeam(gw)` — EGEN
+  cache-nøkkel `dreamteam:${gw}`, 6 t TTL, kalles kun for ferdige runder
 - Frontend poller live-data kun mens kamper pågår — aldri poll utenfor
   kampvinduer, og all polling går via serverens cache (aldri rett mot FPL)
 - Alderstak (v1.4.0): stale data eldre enn 60 min (10 min for live) vises
@@ -169,7 +181,9 @@ i et 6-timersvindu før deadline, nyhetene hver 6. time,
 overgangskommentaren 1x/døgn (fra v1.5.0), ligarapporten 1x per
 ferdigspilt runde (fra v1.6.0), pluss ett tikk ved
 oppstart (AI-cachen bor i minnet og er tom etter hver deploy) — til sammen
-~49–53 kall/uke. Prompts holdes korte. Uten nøkkel vises rå data
+~49–53 kall/uke. `/innsikt` (v1.7.0) er utenfor dette regnskapet: den
+importerer aldri `ai.js` og koster **0 AI-kall** i alle tilstander.
+Prompts holdes korte. Uten nøkkel vises rå data
 (feed-liste, data-brief) — AI er alltid et tillegg, aldri et krav.
 
 ## Konvensjoner

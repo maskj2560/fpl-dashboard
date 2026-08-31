@@ -34,7 +34,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.4.0**~~ | ~~Alderstak på stale data + `dataAlder` i payload~~ | **utført 28. aug — ute i prod** | — |
 | ~~**v1.5.0**~~ | ~~«Overganger» total: planlegger, scenarier, analyse, AI-kommentar~~ | **utført 28. aug — ute i prod** | — |
 | ~~**v1.6.0**~~ | ~~«Liga-pakka»: rival-radar, ligagraf, kaptein-liga, roast-rapport~~ | **utført 28. aug — ute i prod** | — |
-| **v1.7.0** | «/innsikt»: benkesløsing, kapteinsfasit, flaksbarometer, rundens XI | 5 | — (detaljplan godkjent 31. aug) |
+| ~~**v1.7.0**~~ | ~~«/innsikt»: benkesløsing, kapteinsfasit, flaksbarometer, rundens XI~~ | **bygget 31. aug på `feat/innsikt-v170` — 549/549, venter på Marius' klarsignal for merge** | — |
 | **v1.8.0** | «Spiller-pakka»: spillerkort, duell, differensialer, straffer | 5 | v1.7.0 |
 | **v1.9.0** | «Planleggingspakka»: chip-planlegger, deadline-sjekk, kalender-feed | 5 | v1.8.0 |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
@@ -123,10 +123,13 @@ stedet for den AI-kostende promptendringen (droppet). Rekkefølge:
   Hver versjon får egen detaljplan-økt (T-tasks, TDD) før bygging.
 - **Status:** v1.6.0 **ute i prod 28. aug** (merget, tagget `v1.6.0`,
   509/509; detaljplan arkivert: `docs/arkiv/plan-liga-v160.md`).
-  **v1.7.0-detaljplanen godkjent 31. aug** — `docs/plan-innsikt-v170.md`
-  (T1–T10, 509 → 549 tester, AI-budsjett 0) — klar for bygging på
-  `feat/innsikt-v170`. v1.8.0 og v1.9.0 planlegges hver for seg etterpå.
-- **Blokkert av:** ingenting — v1.7.0 er klar for utførelsesøkt (Opus).
+  **v1.7.0 BYGGET 31. aug** på `feat/innsikt-v170` etter
+  `docs/plan-innsikt-v170.md`: T1–T10 fullført, **549/549 tester**, lint 0,
+  røyktest med tomme nøkler grønn, 0 AI-kall. Ikke merget — venter på
+  Marius' lokale test og klarsignal. v1.8.0 og v1.9.0 planlegges hver for
+  seg etterpå.
+- **Blokkert av:** v1.7.0-merge venter på Marius' klarsignal; v1.8.0
+  starter etter det.
 - **Størrelse:** stor (fire releaser).
 
 ## Dokumentkart — hvor alt bor

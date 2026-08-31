@@ -61,8 +61,8 @@
       spilleren flest i verden kapteinet. Runder der FPL ikke oppgir en global
       favoritt står som «Ikke målt» og teller ikke mot deg.</p>
       <div class="stat-strip">
-        <div class="stat"><span class="stat-val"><%= insights.captains.hitSquadPct %> %</span><span class="stat-lbl">Traff troppens beste · <%= insights.captains.counted.squad %> runder</span></div>
-        <div class="stat"><span class="stat-val"><%= insights.captains.hitGlobalPct === null ? '–' : insights.captains.hitGlobalPct + ' %' %></span><span class="stat-lbl">Minst like god som global favoritt · <%= insights.captains.counted.global %> runder</span></div>
+        <div class="stat"><span class="stat-val"><%= insights.captains.hitSquadPct %> %</span><span class="stat-lbl">Traff troppens beste · <%= insights.captains.counted.squad %> runde<%= insights.captains.counted.squad === 1 ? '' : 'r' %></span></div>
+        <div class="stat"><span class="stat-val"><%= insights.captains.hitGlobalPct === null ? '–' : insights.captains.hitGlobalPct + ' %' %></span><span class="stat-lbl">Minst like god som global favoritt · <%= insights.captains.counted.global %> runde<%= insights.captains.counted.global === 1 ? '' : 'r' %></span></div>
       </div>
       <div class="table-scroll">
         <table class="data">

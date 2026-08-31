@@ -3,7 +3,32 @@
 > Enkel oversikt for Marius — oppdateres når noe blir ferdig eller planlagt.
 > (Tekniske detaljer bor i ROADMAP.md; dette er kortversjonen.)
 
-**Sist oppdatert:** 28. august 2026
+**Sist oppdatert:** 31. august 2026
+
+## Klar til test: v1.7.0 «Innsikt» (bygget 31. august)
+
+En helt ny side i menyen, rett etter «Liga»: **Innsikt** — fasiten på din
+egen sesong. Fire ting, alle regnet på ferdigspilte runder:
+
+- **Benkesløsing.** Hva benken din scoret hver runde, og hvor mye av det du
+  faktisk kunne fått. «Unngåelig tap» er differansen mellom den beste
+  lovlige elleveren du kunne stilt av de femten, og den du stilte. En Bench
+  Boost-runde teller som null sløsing — der spilte hele troppen uansett.
+- **Kapteinsfasit.** To spørsmål per runde: fikk kapteinen din flest poeng
+  av dine femten, og fikk han minst like mange som spilleren resten av
+  verden kapteinet? Begge med treffprosent for sesongen.
+- **Flaksbarometer.** Hvor mye over eller under forventningen spillerne dine
+  leverte, målt i poeng (mål mot xG, assist mot xA). Per runde, for
+  sesongen, og de tre heldigste og tre uheldigste i troppen din.
+- **Rundens XI.** FPLs eget drømmelag for siste ferdige runde, med drakter,
+  merket med hvem du eide og hvem som var kapteinen din — pluss en trend
+  over hvor mange av dine som kom med, runde for runde.
+
+Siden bruker **ingen AI** og koster dermed ingenting å se på.
+
+**Dette ligger på branchen `feat/innsikt-v170`, ikke i drift.** Test det
+lokalt med `git checkout feat/innsikt-v170` og `npm run dev`, så merges det
+til prod når du sier fra.
 
 ## Dette har du nå (v1.6.0, sluppet 28. august)
 
