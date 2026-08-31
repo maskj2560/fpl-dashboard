@@ -56,6 +56,8 @@ const cases = [
   ['transfers', fx.transfers, 'I stedet for Haaland'],
   ['transfers', fx.transfers, 'alt-sok'],
   ['transfers', fx.transfers, 'Kommentar til byttene'],
+  ['innsikt', fx.insights, 'Benkesløsing'],
+  ['innsikt', fx.insightsEmpty, 'Innsikt kommer når første runde er ferdigspilt'],
   ['no-team', {}, 'FPL_TEAM_ID'],
   ['404', {}, '404'],
   ['error', { code: 500, heading: 'Noe gikk galt', message: null }, 'Noe gikk galt'],
@@ -85,6 +87,7 @@ const NAV = [
   ['/lag', 'Lag'],
   ['/overganger', 'Overganger'],
   ['/liga', 'Liga'],
+  ['/innsikt', 'Innsikt'],
   ['/brief', 'Brief'],
   ['/live', 'Live'],
   ['/nyheter', 'Nyheter'],
@@ -442,4 +445,15 @@ test('transfers.ejs: detaljraden viser per-runde-tabell og milepæl', async () =
   };
   const html2 = await renderView('transfers', komplett);
   assert.match(html2, /Etter 5 runder: 12/);
+});
+
+// v1.7.0: benkesløsingen skal både summere sesongen og merke chip-rundene —
+// en Bench Boost-runde er 0 sløst, ikke bare 0 benkepoeng.
+test('innsikt.ejs viser sumraden og BB-merket i benkesløsingen', async () => {
+  const html = await renderView('innsikt', fx.insights);
+
+  assert.ok(html.includes('Sum sesongen'), 'sumraden mangler');
+  assert.ok(html.includes('>20<'), 'sum benkepoeng mangler');
+  assert.ok(html.includes('−11'), 'sum unngåelig tap mangler fortegn');
+  assert.ok(html.includes('<span class="status">BB</span>'), 'BB-merket mangler');
 });

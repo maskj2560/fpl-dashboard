@@ -7,6 +7,16 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+
+- Ny side «Innsikt» (`/innsikt`, i menyen etter Liga): fasiten på din egen
+  sesong, regnet på rå spillerpoeng uten kapteinsdobling og kun på
+  ferdigspilte runder.
+- «Benkesløsing» på «Innsikt»: hva benken scoret hver runde, hvor mye av det
+  som var unngåelig (beste lovlige ellever av de femten minus den du faktisk
+  stilte), sum for hele sesongen og merking av chip-runder. En Bench
+  Boost-runde teller som null sløsing — hele troppen spilte.
+
 ## [1.6.0] - 2026-08-28
 
 ### Added

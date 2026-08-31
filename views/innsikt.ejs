@@ -1,0 +1,55 @@
+<section class="page-head">
+  <h1>Innsikt</h1>
+  <p class="dim">Fasiten på sesongen din: hva du lot bli sittende på benken,
+  hvor godt kapteinsvalgene traff, hvor mye flaks og uflaks som ligger i
+  poengene — og hvem som kom med i rundens drømmelag. Alt regnes på rå
+  spillerpoeng uten kapteinsdobling, og bare på ferdigspilte runder.</p>
+</section>
+
+<% if (insights.finishedCount === 0) { %>
+  <section class="card">
+    <p class="empty">
+      Innsikt kommer når første runde er ferdigspilt. Da dukker
+      benkesløsingen, kapteinsfasiten, flaksbarometeret og rundens XI opp
+      her — én rad per runde, for hele sesongen.
+    </p>
+  </section>
+<% } else { %>
+
+  <% if (insights.bench) { %>
+    <section class="card card-wide">
+      <h2>Benkesløsing</h2>
+      <p class="hint">«På benken» er FPLs eget benkepoengtall. «Unngåelig tap»
+      er differansen mellom den beste lovlige elleveren du kunne stilt med av
+      de femten, og den du faktisk stilte — altså den delen av benkepoengene
+      du kunne hentet med et annet oppsett. I en Bench Boost-runde teller hele
+      troppen, og da er ingenting sløst.</p>
+      <div class="table-scroll">
+        <table class="data">
+          <thead>
+            <tr><th>Runde</th><th class="num">På benken</th><th class="num">Unngåelig tap</th><th>Chip</th></tr>
+          </thead>
+          <tbody>
+            <% for (const r of insights.bench.rows) { %>
+              <tr>
+                <td>R<%= r.gw %></td>
+                <td class="num"><%= r.benchPoints %></td>
+                <td class="num <%= r.avoidable > 0 ? 'negative' : '' %>"><%= r.avoidable > 0 ? formatSigned(-r.avoidable) : '0' %></td>
+                <td><% if (r.chip) { %><span class="status"><%= r.chip %></span><% } %></td>
+              </tr>
+            <% } %>
+          </tbody>
+          <tfoot>
+            <tr>
+              <th scope="row">Sum sesongen</th>
+              <td class="num"><%= insights.bench.totalBench %></td>
+              <td class="num <%= insights.bench.totalAvoidable > 0 ? 'negative' : '' %>"><%= insights.bench.totalAvoidable > 0 ? formatSigned(-insights.bench.totalAvoidable) : '0' %></td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+  <% } %>
+
+<% } %>
