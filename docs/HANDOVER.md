@@ -6,9 +6,14 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-28 (økt 43, Opus: v1.3.8–v1.6.0 ut i prod, alle brancher ryddet)
+**Sist oppdatert:** 2026-08-31 (økt 44, Fable: detaljplan v1.7.0 «/innsikt» godkjent)
 
 ## Status akkurat nå
+- **v1.7.0-detaljplanen GODKJENT 31. aug:** `docs/plan-innsikt-v170.md`
+  (T1–T10, testtall 509 → 549, kall-budsjett 2G+2, AI-budsjett 0).
+  Alle datafelt målt mot ekte API i planøkta — inkl. autosub-multiplier
+  (FPL re-sorterer picks: XI = multiplier > 0) og BB (points_on_bench=0).
+  Bygges av Opus på `feat/innsikt-v170` fra `main`; kjøreprompt levert.
 - **v1.3.8, v1.4.0, v1.5.0 og v1.6.0 UTE I PROD 28. aug kl. 14:49.**
   Fire `--no-ff`-merger i rekkefølge (v138 → v140 → v150 → v160), alle
   «Merge made by the 'ort' strategy», null konflikt; tagger `v1.3.8`,
@@ -78,9 +83,9 @@ Marius gjøre.
    `time`, `event_transfers_cost`) mot ekte API. Marius bytter ikke i GW2
    (besluttet 28. aug), så porten venter på hans første ekte bytte. Til da
    er tomtilstanden på `/overganger` korrekt — 0 bytter.
-4. **Detaljplan-økt for v1.7.0 «/innsikt»** (kø-punkt 5; beslutningsfasit:
-   `docs/plan-idepakken-v16-v19.md`). v1.8.0 og v1.9.0 planlegges hver
-   for seg etterpå.
+4. **Bygg v1.7.0 «/innsikt»** (kø-punkt 5): planen er godkjent —
+   `docs/plan-innsikt-v170.md`. Opus bygger T1–T10 på `feat/innsikt-v170`
+   fra `main`. v1.8.0 og v1.9.0 planlegges hver for seg etterpå.
 5. **Kostnad:** løpende hos Marius i Anthropic-konsollen — ingen måleuke,
    ingen deploy-fri periode å ta hensyn til.
 6. **Kosmetisk:** slett de 12 gamle lokale branchene (se Git-punktet i
@@ -180,18 +185,13 @@ Marius gjøre.
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
-- 2026-08-28 (økt 43, Opus): «briefen kom i går; jeg bytter ikke denne
-  uka; alt ferdigbygget skal til `main` nå; slett alle andre brancher,
-  også `staging`; kostnadskontrollen tar jeg selv i Anthropic-konsollen
-  — dropp måleuka.» Handling: v1.3.8 → v1.4.0 → v1.5.0 → v1.6.0 merget
-  `--no-ff` og tagget på `main` (509/509 + lint 0 før og etter),
-  CHANGELOG-datoene satt til 2026-08-28, ROADMAP-tabellen og kø-punkt
-  1/2/4/5 + dokumentkartet ajour, VIDERE.md skrevet om til v1.6.0,
-  de tre planfilene arkivert til `docs/arkiv/`, denne fila rotert og
-  oppdatert. Så ÉN push kl. 14:48 (= én Coolify-deploy, live 14:49),
-  prod-verifisert utenfra (alt grønt, se statusen), og de fem
-  branchene slettet lokalt og på GitHub. «Rundens rapport» for runde 1
-  ble generert ved oppstartstikket og vises på /liga med AI-merke;
-  Discord-posten er ikke verifisert herfra — Marius sjekker kanalen.
-- Loggposter fra økt 22–42: rotert til
-  `docs/arkiv/HANDOVER-historikk.md` (200-linjerstaket, sist 2026-08-28).
+- 2026-08-31 (økt 44, Fable, planøkt): mandat = detaljplan for v1.7.0
+  «/innsikt». Marius godkjente alle seks anbefalingene (begge
+  benkekolonner; kapteinstreff identitet+poeng; flakspoeng + topp/bunn 3;
+  XI-liste + sesongtrend; hele sesongen; nav etter Liga). På spørsmål om
+  risikolista: «Løs det slik at det er minst mulig risiko» → autosub-,
+  BB- og chip-antakelsene MÅLT mot ekte API (re-sortering, points_on_bench=0,
+  bboost/3xc) — null antakelser igjen i datakontrakten. Plan skrevet til
+  `docs/plan-innsikt-v170.md`, kjøreprompt til Opus levert i chatten.
+- Loggposter fra økt 22–43: rotert til
+  `docs/arkiv/HANDOVER-historikk.md` (200-linjerstaket, sist 2026-08-31).

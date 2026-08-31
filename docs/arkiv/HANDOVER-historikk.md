@@ -1382,3 +1382,16 @@ er dermed ferdig i sin helhet. P0 ble lukket samme dag.
   pushet til GitHub (ingen deploy — Coolify bygger kun main). Så: «Skal
   vi begynne å jobbe med det nå?» → planlegg + bygg valgt, kaptein-tak
   10 runder godkjent, v1.6.0 TDD-bygget ferdig på `feat/liga-v160`.
+- 2026-08-28 (økt 43, Opus): «briefen kom i går; jeg bytter ikke denne
+  uka; alt ferdigbygget skal til `main` nå; slett alle andre brancher,
+  også `staging`; kostnadskontrollen tar jeg selv i Anthropic-konsollen
+  — dropp måleuka.» Handling: v1.3.8 → v1.4.0 → v1.5.0 → v1.6.0 merget
+  `--no-ff` og tagget på `main` (509/509 + lint 0 før og etter),
+  CHANGELOG-datoene satt til 2026-08-28, ROADMAP-tabellen og kø-punkt
+  1/2/4/5 + dokumentkartet ajour, VIDERE.md skrevet om til v1.6.0,
+  de tre planfilene arkivert til `docs/arkiv/`, denne fila rotert og
+  oppdatert. Så ÉN push kl. 14:48 (= én Coolify-deploy, live 14:49),
+  prod-verifisert utenfra (alt grønt, se statusen), og de fem
+  branchene slettet lokalt og på GitHub. «Rundens rapport» for runde 1
+  ble generert ved oppstartstikket og vises på /liga med AI-merke;
+  Discord-posten er ikke verifisert herfra — Marius sjekker kanalen.

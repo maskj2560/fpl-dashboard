@@ -34,7 +34,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.4.0**~~ | ~~Alderstak på stale data + `dataAlder` i payload~~ | **utført 28. aug — ute i prod** | — |
 | ~~**v1.5.0**~~ | ~~«Overganger» total: planlegger, scenarier, analyse, AI-kommentar~~ | **utført 28. aug — ute i prod** | — |
 | ~~**v1.6.0**~~ | ~~«Liga-pakka»: rival-radar, ligagraf, kaptein-liga, roast-rapport~~ | **utført 28. aug — ute i prod** | — |
-| **v1.7.0** | «/innsikt»: benkesløsing, kapteinsfasit, flaksbarometer, rundens XI | 5 | detaljplan-økt |
+| **v1.7.0** | «/innsikt»: benkesløsing, kapteinsfasit, flaksbarometer, rundens XI | 5 | — (detaljplan godkjent 31. aug) |
 | **v1.8.0** | «Spiller-pakka»: spillerkort, duell, differensialer, straffer | 5 | v1.7.0 |
 | **v1.9.0** | «Planleggingspakka»: chip-planlegger, deadline-sjekk, kalender-feed | 5 | v1.8.0 |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
@@ -123,9 +123,10 @@ stedet for den AI-kostende promptendringen (droppet). Rekkefølge:
   Hver versjon får egen detaljplan-økt (T-tasks, TDD) før bygging.
 - **Status:** v1.6.0 **ute i prod 28. aug** (merget, tagget `v1.6.0`,
   509/509; detaljplan arkivert: `docs/arkiv/plan-liga-v160.md`).
-  Neste er en **detaljplan-økt for v1.7.0 «/innsikt»**; v1.8.0 og
-  v1.9.0 planlegges hver for seg etter den.
-- **Blokkert av:** ingenting — v1.7.0 trenger en detaljplan-økt først.
+  **v1.7.0-detaljplanen godkjent 31. aug** — `docs/plan-innsikt-v170.md`
+  (T1–T10, 509 → 549 tester, AI-budsjett 0) — klar for bygging på
+  `feat/innsikt-v170`. v1.8.0 og v1.9.0 planlegges hver for seg etterpå.
+- **Blokkert av:** ingenting — v1.7.0 er klar for utførelsesøkt (Opus).
 - **Størrelse:** stor (fire releaser).
 
 ## Dokumentkart — hvor alt bor
@@ -142,6 +143,7 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 | `docs/sjekkpunkt-d-kostnad.md` | metode + skript for P4-målingen |
 | `docs/arkiv/plan-sluttspurt.md` | utført plan: robusthetsreleasene, portene og docs-ryddingen |
 | `docs/plan-idepakken-v16-v19.md` | beslutningsfasit for idépakken v1.7.0–v1.9.0 |
+| `docs/plan-innsikt-v170.md` | godkjent detaljplan for v1.7.0 «/innsikt» (T1–T10) |
 | `docs/arkiv/plan-v134-ai-swr.md` | utført plan for v1.3.4 (SWR + oppfrisker) |
 | `docs/arkiv/` (20 filer) | utførte planer + historikk (kun sti-referanser rettes ved rydding) |
 
