@@ -34,7 +34,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.4.0**~~ | ~~Alderstak på stale data + `dataAlder` i payload~~ | **utført 28. aug — ute i prod** | — |
 | ~~**v1.5.0**~~ | ~~«Overganger» total: planlegger, scenarier, analyse, AI-kommentar~~ | **utført 28. aug — ute i prod** | — |
 | ~~**v1.6.0**~~ | ~~«Liga-pakka»: rival-radar, ligagraf, kaptein-liga, roast-rapport~~ | **utført 28. aug — ute i prod** | — |
-| ~~**v1.7.0**~~ | ~~«/innsikt»: benkesløsing, kapteinsfasit, flaksbarometer, rundens XI~~ | **bygget 31. aug på `feat/innsikt-v170` — 549/549, venter på Marius' klarsignal for merge** | — |
+| ~~**v1.7.0**~~ | ~~«/innsikt»: benkesløsing, kapteinsfasit, flaksbarometer, rundens XI~~ | **utført 31. aug — ute i prod kl. 16:46, 549/549** | — |
 | **v1.8.0** | «Spiller-pakka»: spillerkort, duell, differensialer, straffer | 5 | v1.7.0 |
 | **v1.9.0** | «Planleggingspakka»: chip-planlegger, deadline-sjekk, kalender-feed | 5 | v1.8.0 |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
@@ -123,13 +123,12 @@ stedet for den AI-kostende promptendringen (droppet). Rekkefølge:
   Hver versjon får egen detaljplan-økt (T-tasks, TDD) før bygging.
 - **Status:** v1.6.0 **ute i prod 28. aug** (merget, tagget `v1.6.0`,
   509/509; detaljplan arkivert: `docs/arkiv/plan-liga-v160.md`).
-  **v1.7.0 BYGGET 31. aug** på `feat/innsikt-v170` etter
-  `docs/plan-innsikt-v170.md`: T1–T10 fullført, **549/549 tester**, lint 0,
-  røyktest med tomme nøkler grønn, 0 AI-kall. Ikke merget — venter på
-  Marius' lokale test og klarsignal. v1.8.0 og v1.9.0 planlegges hver for
-  seg etterpå.
-- **Blokkert av:** v1.7.0-merge venter på Marius' klarsignal; v1.8.0
-  starter etter det.
+  **v1.7.0 UTE I PROD 31. aug kl. 16:46** (merget `--no-ff`, tagget
+  `v1.7.0`, **549/549** + lint 0 før og etter, prod-sveip grønt, 0
+  AI-kall; detaljplan arkivert: `docs/arkiv/plan-innsikt-v170.md`).
+  **Neste: v1.8.0 «Spiller-pakka»** — trenger egen detaljplan-økt før
+  bygging, som v1.6.0 og v1.7.0. v1.9.0 planlegges etter det.
+- **Blokkert av:** ingenting — v1.8.0 er klar for planøkt.
 - **Størrelse:** stor (fire releaser).
 
 ## Dokumentkart — hvor alt bor
@@ -146,7 +145,7 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 | `docs/sjekkpunkt-d-kostnad.md` | metode + skript for P4-målingen |
 | `docs/arkiv/plan-sluttspurt.md` | utført plan: robusthetsreleasene, portene og docs-ryddingen |
 | `docs/plan-idepakken-v16-v19.md` | beslutningsfasit for idépakken v1.7.0–v1.9.0 |
-| `docs/plan-innsikt-v170.md` | godkjent detaljplan for v1.7.0 «/innsikt» (T1–T10) |
+| `docs/arkiv/plan-innsikt-v170.md` | utført detaljplan for v1.7.0 «/innsikt» (T1–T10) |
 | `docs/arkiv/plan-v134-ai-swr.md` | utført plan for v1.3.4 (SWR + oppfrisker) |
 | `docs/arkiv/` (20 filer) | utførte planer + historikk (kun sti-referanser rettes ved rydding) |
 

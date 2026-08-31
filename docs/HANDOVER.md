@@ -6,31 +6,31 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-31 (økt 45, Opus: v1.7.0 «/innsikt» bygget, ikke merget)
+**Sist oppdatert:** 2026-08-31 (økt 45, Opus: v1.7.0 «/innsikt» ute i prod)
 
 ## Status akkurat nå
-- **v1.7.0 BYGGET 31. aug på `feat/innsikt-v170`, IKKE merget.** T1–T10
-  fra `docs/plan-innsikt-v170.md` fullført i rekkefølge, TDD hele veien:
-  **549/549 tester (fail 0), `npm run lint` exit 0.** Ni commits.
-  Ny `src/services/insights.js` (optimalXi, buildBenchReport,
+- **v1.7.0 «/innsikt» UTE I PROD 31. aug kl. 16:46.** Marius ga
+  klarsignal på avstand; merget `--no-ff` (`a25ac0a`), tagget `v1.7.0`,
+  én push. **549/549 + lint 0** både på featurebranchen og på merget
+  `main`. Ny `src/services/insights.js` (optimalXi, buildBenchReport,
   buildCaptainAudit, buildLuckMeter, buildDreamTeamSection,
   assembleInsights), ny `src/routes/insights.js`, ny `views/innsikt.ejs`,
-  `getDreamTeam(gw)` i fplClient. **Null endring i `public/style.css`** —
-  kun eksisterende klasser, så `test/style.test.js` er urørt og
-  asset-hashen i prod endres ikke av denne releasen.
-  Røyktest lokalt med TOMME nøkler (port 3117): alle 12 ruter 200
-  inkl. `/innsikt`, `/finnesikke` 404, `/health` → `ai:false,
-  discord:false, teamId:true, leagues:1`, **0 «AI-kall:»-linjer** og null
-  softNull-varsler i loggen. Manuell visning mot ekte FPL-data (G=1):
-  benkesløsing R1 6 p / −1 unngåelig; kapteinsfasit 0 % troppens beste
-  (Haaland 2 p mot Ødegaard 11 p) og 100 % mot global favoritt;
-  flaksbarometer +4 (topp Gvardiol +4,7, bunn Isak −4,4); rundens XI
-  runde 1 med 1 av 11 eid (João Pedro startet), beste De Cuyper 17 p.
-  **Gjenstår: Marius tester lokalt og gir klarsignal for merge.**
+  `getDreamTeam(gw)` i fplClient. **Null endring i `public/style.css`**,
+  så `test/style.test.js` er urørt og asset-hashen står stille.
+  Prod-bevis utenfra 31. aug: footer `v1.7.0 · sist oppdatert mandag
+  31. august kl. 16:46`; `/health` 200 med `ai:true, discord:true,
+  teamId:true, leagues:1`; rutesveip alle 12 ruter 200 inkl. `/innsikt`,
+  `/finnesikke` 404; `style.css?v=f9014751` uendret; `/innsikt` har
+  nav-lenka markert aktiv og alle fire seksjonene med ekte tall (G=1):
+  benkesløsing R1 6 p / −1 unngåelig, kapteinsfasit 0 % troppens beste
+  (Haaland 2 p mot Ødegaard 11 p) og 100 % mot global favoritt,
+  flaksbarometer +4 (topp Gvardiol +4,7), rundens XI 1 av 11 eid, beste
+  De Cuyper 17 p. Lokal røyktest før merge med TOMME nøkler ga
+  `ai:false, discord:false` og **0 «AI-kall:»-linjer**.
+  Planen er arkivert: `docs/arkiv/plan-innsikt-v170.md`.
 - **v1.3.8, v1.4.0, v1.5.0 og v1.6.0 UTE I PROD 28. aug kl. 14:49** —
-  fire `--no-ff`-merger, tagget, 509/509 + lint 0 før og etter. Hele
-  prod-beviset (rutesveip, /health, footer, dataAlder) er rotert til
-  `docs/arkiv/HANDOVER-historikk.md`.
+  fire `--no-ff`-merger, tagget, 509/509 + lint 0. Prod-beviset er
+  rotert til `docs/arkiv/HANDOVER-historikk.md`.
 - **Ekte SIGTERM-bevis mangler.** Deploy-loggen er feil sted; beviset er
   `kill 1` i containerterminalen — de to avslutningslinjene skal stå der.
   Lokalt bevist med `process.emit('SIGINT')`, exit 0.
@@ -50,33 +50,27 @@
   `docs/sjekkpunkt-d-kostnad.md` brukes ved behov. Taktbudsjett
   **~49–53 AI-kall/uke** (v1.7.0 legger til 0). Siste måling 23. aug:
   $0,94/uke.
-- **Git akkurat nå:** `main` ligger 1 docs-commit foran `origin/main`
-  (`02eb9ce`, selve v1.7.0-planen). `feat/innsikt-v170` er branchet fra
-  den toppen og har 9 commits; **ikke pushet, ikke merget, ikke tagget**.
-  `origin` har KUN `main`; taggene t.o.m. `v1.6.0` er pushet. **Rest:**
-  12 gamle, merget lokale brancher fra økt ≤ 35 står igjen (navnene i
-  historikkfila) — ingen finnes på GitHub, ryddes med `git branch -d`
-  når som helst.
+- **Git akkurat nå:** `main` = `origin/main`; `origin` har KUN `main`,
+  og taggene t.o.m. `v1.7.0` er pushet. `feat/innsikt-v170` er slettet
+  lokalt (ble aldri pushet). **Rest:** 12 gamle, merget lokale brancher
+  fra økt ≤ 35 står igjen (navnene i historikkfila) — ingen finnes på
+  GitHub, ryddes med `git branch -d` når som helst.
 - Eldre status og alle detaljer: `docs/arkiv/HANDOVER-historikk.md`.
 
 ## Neste steg (start her)
 
-Køen i `ROADMAP.md` er den langsiktige prioriteringen. Punkt 2–4 kan bare
+Køen i `ROADMAP.md` er den langsiktige prioriteringen. Punkt 1–2 kan bare
 Marius gjøre.
 
-1. **[Marius] Test v1.7.0 lokalt og gi klarsignal:**
-   `git checkout feat/innsikt-v170` + `npm run dev` → se `/innsikt` i
-   begge temaer og på 390 px (nav har nå 9 punkter — sjekk at scrollnavet
-   med kantfade fra v1.1.2 holder). Klarsignal → merge `--no-ff` til
-   `main`, tag `v1.7.0`, ÉN push (= én Coolify-deploy). Aldri torsdag
-   19:00–21:00 (auto-brief), aldri mens kamper pågår, GW3-deadline
-   fre 4. sept 19:30. Deretter arkiveres `docs/plan-innsikt-v170.md` til
-   `docs/arkiv/`. v1.8.0 og v1.9.0 planlegges hver for seg etterpå.
+1. `[Marius]` **Mobil-QA på ekte telefon** (P2-resten) — `/overganger`,
+   `/liga` og nå `/innsikt` på 390 px, i begge temaer. **Nav har nå 9
+   punkter** — sjekk at scrollnavet med kantfade (v1.1.2) holder.
 2. `[Marius]` **`kill 1` i containerterminalen** → de to avslutningslinjene
    («SIGTERM mottatt — lukker serveren», «Serveren lukket ryddig») er det
    siste beviset for v1.3.5.
-3. `[Marius]` **Mobil-QA på ekte telefon** (P2-resten) — `/overganger`,
-   `/liga` og nå `/innsikt` på 390 px, i begge temaer.
+3. **Bygg v1.8.0 «Spiller-pakka»** (kø-punkt 5): spillerkort, duell,
+   differensialer, straffer. Detaljplan-økt først (T-tasks, TDD), som for
+   v1.6.0 og v1.7.0. Fasit: `docs/plan-idepakken-v16-v19.md`.
 4. **P3 ved første ekte transfer:** feltnavnene i
    `entry/5330646/transfers/` (`element_in`, `element_out`, `event`,
    `time`, `event_transfers_cost`) mot ekte API. Marius bytter ikke i GW2
@@ -177,6 +171,12 @@ Marius gjøre.
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
+- 2026-08-31 (økt 45, del 2): «Jeg er ikke hjemme. du kan merge og pushe
+  til main.» Handling: sjekket deploy-vinduet FØRST (mandag 16:44, 0
+  kamper i gang, neste avspark 21:00) → merget `--no-ff`, verifiserte
+  CHANGELOG-rekkefølgen og 549/549 + lint 0 på merget `main`, tagget
+  `v1.7.0`, én push kl. 16:46. Prod grønt utenfra (se statusen).
+  Etterpå: planen arkivert, `feat/innsikt-v170` slettet lokalt, docs ajour.
 - 2026-08-31 (økt 45, Opus, utførelsesøkt): mandat = bygg v1.7.0 etter
   den godkjente detaljplanen, ingen designvalg, TDD strengt, ingen
   merge/tag/push til `main` uten klarsignal. Handling: `feat/innsikt-v170`

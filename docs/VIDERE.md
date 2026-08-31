@@ -5,7 +5,7 @@
 
 **Sist oppdatert:** 31. august 2026
 
-## Klar til test: v1.7.0 «Innsikt» (bygget 31. august)
+## Nytt: v1.7.0 «Innsikt» — i drift siden 31. august
 
 En helt ny side i menyen, rett etter «Liga»: **Innsikt** — fasiten på din
 egen sesong. Fire ting, alle regnet på ferdigspilte runder:
@@ -26,11 +26,11 @@ egen sesong. Fire ting, alle regnet på ferdigspilte runder:
 
 Siden bruker **ingen AI** og koster dermed ingenting å se på.
 
-**Dette ligger på branchen `feat/innsikt-v170`, ikke i drift.** Test det
-lokalt med `git checkout feat/innsikt-v170` og `npm run dev`, så merges det
-til prod når du sier fra.
+**Ute på https://fpl.marsk.no siden 31. august kl. 16:46.** Det eneste som
+gjenstår er at du ser den på telefonen — menyen har nå ni punkter, så sjekk
+at den lar seg dra sidelengs på 390 px.
 
-## Dette har du nå (v1.6.0, sluppet 28. august)
+## Dette hadde du fra før (v1.6.0, sluppet 28. august)
 
 Dashbord med nedtelling og skader · spillertabell med søk og filter · laget
 ditt med kapteinsråd · miniligaen med rival-radar, kaptein-liga og
