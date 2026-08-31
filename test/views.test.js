@@ -486,3 +486,22 @@ test('innsikt.ejs lister topp 3 og bunn 3 på flaks', async () => {
   assert.ok(html.includes('−10'), 'flakspoeng for bunnlista');
   assert.ok(html.includes('gjelder hele sesongen'), 'hintet om spillertallenes vindu mangler');
 });
+
+test('innsikt.ejs viser rundens XI og merker mine spillere', async () => {
+  const html = await renderView('innsikt', fx.insights);
+
+  assert.ok(html.includes('Rundens XI'), 'seksjonen mangler');
+  assert.ok(html.includes('Startet'), 'merking av egne startende mangler');
+  assert.ok(html.includes('Benket'), 'merking av egne benkede mangler');
+  assert.ok(html.includes('6 av 11'), 'oppsummeringen av hvor mange jeg eide mangler');
+  assert.ok(html.includes('Rundens beste'), 'top_player er ikke fremhevet');
+});
+
+test('innsikt.ejs rendrer trendlinjen bare når den finnes', async () => {
+  const med = await renderView('innsikt', fx.insights);
+  const uten = await renderView('innsikt', fx.insightsNoTrend);
+
+  assert.ok(med.includes('Dine i rundens XI per runde'), 'trenden mangler');
+  assert.ok(!uten.includes('Dine i rundens XI per runde'), 'trenden vises uten data');
+  assert.ok(uten.includes('Rundens XI'), 'resten av seksjonen skal stå');
+});

@@ -508,6 +508,15 @@ export const insights = {
   },
 };
 
+// Sesongtrenden mangler når live-svarene ikke har in_dreamteam.
+export const insightsNoTrend = {
+  ...insights,
+  insights: {
+    ...insights.insights,
+    dreamTeam: { ...insights.insights.dreamTeam, trend: null },
+  },
+};
+
 export const insightsEmpty = {
   title: 'Innsikt',
   clubAssets,
