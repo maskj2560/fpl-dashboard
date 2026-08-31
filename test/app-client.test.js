@@ -187,3 +187,29 @@ test('rivalNavAction rydder lagret rival som ikke finnes i ligaen lenger', () =>
     { type: 'none' },
   );
 });
+
+// ---- v1.7.1: sortering og filtrering som rene hjelpere --------------------
+
+test('compareCells sorterer tall numerisk og tekst med norsk locale', () => {
+  assert.ok(app.compareCells('9', '10', 'num') < 0, '9 skal foran 10 numerisk');
+  assert.ok(app.compareCells('Ødegaard', 'Aina', 'text') > 0, 'Ø etter A på norsk');
+  assert.equal(app.compareCells('abc', 'def', 'num'), 0, 'ikke-tall teller som 0');
+});
+
+test('rowMatchesFilters krever at alle aktive filtre treffer', () => {
+  const ds = { name: 'haaland', pos: '4', team: '13', price: '14.1', status: 'a' };
+  assert.equal(app.rowMatchesFilters(ds, {}), true);
+  assert.equal(app.rowMatchesFilters(ds, { q: 'haa' }), true);
+  assert.equal(app.rowMatchesFilters(ds, { q: 'salah' }), false);
+  assert.equal(app.rowMatchesFilters(ds, { pos: '4', status: 'a' }), true);
+  assert.equal(app.rowMatchesFilters(ds, { status: 'i' }), false);
+  assert.equal(app.rowMatchesFilters(ds, { maxPrice: 14 }), false);
+  assert.equal(app.rowMatchesFilters(ds, { maxPrice: 14.5, team: '13' }), true);
+});
+
+test('queryParam leser og dekoder verdien fra søkestrengen', () => {
+  assert.equal(app.queryParam('?sok=Haaland&pos=4', 'sok'), 'Haaland');
+  assert.equal(app.queryParam('?sok=De%20Bruyne', 'sok'), 'De Bruyne');
+  assert.equal(app.queryParam('?sok=Luis+D%C3%ADaz', 'sok'), 'Luis Díaz');
+  assert.equal(app.queryParam('', 'sok'), null);
+});

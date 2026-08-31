@@ -30,13 +30,22 @@
     Maks pris
     <input type="number" id="filter-price" min="3.5" max="16" step="0.1" placeholder="f.eks. 8.0">
   </label>
+  <label>
+    Status
+    <select id="filter-status">
+      <option value="">Alle</option>
+      <% for (const [code, label] of Object.entries(STATUS_LABELS)) { %>
+        <option value="<%= code %>"><%= label %></option>
+      <% } %>
+    </select>
+  </label>
   <button type="button" id="filter-reset">Nullstill</button>
   <span class="dim" id="filter-count" role="status"></span>
 </form>
 
 <section class="card">
   <div class="table-scroll table-scroll--pinned">
-    <table class="data sortable" id="players-table">
+    <table class="data sortable" id="players-table" data-sortable>
       <thead>
         <tr>
           <th data-type="text" aria-sort="none">Spiller</th>
@@ -59,6 +68,7 @@
             data-pos="<%= p.element_type %>"
             data-team="<%= p.team %>"
             data-price="<%= p.now_cost / 10 %>"
+            data-status="<%= p.status %>"
           >
             <td><strong><%= p.web_name %></strong></td>
             <td><%- include('partials/club-badge', { team: teamsById.get(p.team) }) %></td>

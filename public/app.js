@@ -9,6 +9,37 @@ function escapeHtml(s) {
     .replace(/'/g, '&#39;');
 }
 
+// Sortering (v1.7.1): delt av spillertabellen og live-tabellen.
+// 'num' tolker cellen som tall (ikke-tall teller som 0), 'text' bruker norsk locale.
+function compareCells(av, bv, type) {
+  return type === 'num'
+    ? (parseFloat(av) || 0) - (parseFloat(bv) || 0)
+    : av.localeCompare(bv, 'nb');
+}
+
+// Filterfasiten for spillertabellen: alle aktive filtre må treffe raden.
+// ds er radens dataset (name/pos/team/price/status), f de valgte filtrene.
+function rowMatchesFilters(ds, f) {
+  return (
+    (!f.q || ds.name.includes(f.q)) &&
+    (!f.pos || ds.pos === f.pos) &&
+    (!f.team || ds.team === f.team) &&
+    (!Number.isFinite(f.maxPrice) || parseFloat(ds.price) <= f.maxPrice) &&
+    (!f.status || ds.status === f.status)
+  );
+}
+
+// Leser én query-parameter uten URLSearchParams (testbar i ren V8-kontekst).
+function queryParam(qs, name) {
+  for (const part of String(qs).replace(/^\?/, '').split('&')) {
+    const i = part.indexOf('=');
+    if (i > 0 && decodeURIComponent(part.slice(0, i)) === name) {
+      return decodeURIComponent(part.slice(i + 1).replace(/\+/g, ' '));
+    }
+  }
+  return null;
+}
+
 // Live-polling: ett kall i minuttet mens kamper pågår, og et enkelt
 // vekkesignal ved neste avspark ellers. Aldri et intervall utenfor kampvinduer.
 const LIVE_POLL_MS = 60000;
@@ -145,7 +176,61 @@ function initEdgeFades(el, prefix) {
   const timer = setInterval(tick, 1000);
 })();
 
-// Modul 2: Sortering og filtrering av spillertabellen (/spillere).
+// Modul 2: Sortering av tabeller med data-sortable (/spillere, /live).
+(function () {
+  'use strict';
+
+  const tables = document.querySelectorAll('table[data-sortable]');
+  if (tables.length === 0) return;
+
+  function applySort(table, index, dir) {
+    const type = table.tHead.rows[0].cells[index].dataset.type || 'text';
+    const tbody = table.tBodies[0];
+    const rows = [...tbody.rows];
+    rows.sort((a, b) => {
+      const cmp = compareCells(
+        a.cells[index].textContent.trim(),
+        b.cells[index].textContent.trim(),
+        type,
+      );
+      return dir === 'descending' ? -cmp : cmp;
+    });
+    rows.forEach((r) => tbody.appendChild(r));
+  }
+
+  function sortBy(table, th, index) {
+    const dir = th.getAttribute('aria-sort') === 'descending' ? 'ascending' : 'descending';
+    [...table.tHead.rows[0].cells].forEach((h) => h.setAttribute('aria-sort', 'none'));
+    th.setAttribute('aria-sort', dir);
+    applySort(table, index, dir);
+  }
+
+  tables.forEach((table) => {
+    [...table.tHead.rows[0].cells].forEach((th, index) => {
+      th.tabIndex = 0;
+      th.addEventListener('click', () => sortBy(table, th, index));
+      th.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          sortBy(table, th, index);
+        }
+      });
+    });
+  });
+
+  // Live-tabellen bytter ut radene sine ved hver polling og re-appliserer
+  // gjeldende sortering med denne (modul 3).
+  window.reapplySort = function (table) {
+    const headers = [...table.tHead.rows[0].cells];
+    const index = headers.findIndex((h) => {
+      const s = h.getAttribute('aria-sort');
+      return s === 'ascending' || s === 'descending';
+    });
+    if (index !== -1) applySort(table, index, headers[index].getAttribute('aria-sort'));
+  };
+})();
+
+// Modul 2b: Filtrering av spillertabellen (/spillere), uten sidelasting.
 (function () {
   'use strict';
 
@@ -153,63 +238,29 @@ function initEdgeFades(el, prefix) {
   if (!table) return;
 
   const tbody = table.tBodies[0];
-  const headers = [...table.tHead.rows[0].cells];
-
-  // Sortering: klikk på kolonneoverskrift, toggle retning.
-  headers.forEach((th, index) => {
-    th.tabIndex = 0;
-    th.addEventListener('click', () => sortBy(th, index));
-    th.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        sortBy(th, index);
-      }
-    });
-  });
-
-  function sortBy(th, index) {
-    const type = th.dataset.type || 'text';
-    const dir = th.getAttribute('aria-sort') === 'descending' ? 'ascending' : 'descending';
-    headers.forEach((h) => h.setAttribute('aria-sort', 'none'));
-    th.setAttribute('aria-sort', dir);
-
-    const rows = [...tbody.rows];
-    rows.sort((a, b) => {
-      const av = a.cells[index].textContent.trim();
-      const bv = b.cells[index].textContent.trim();
-      const cmp =
-        type === 'num'
-          ? (parseFloat(av) || 0) - (parseFloat(bv) || 0)
-          : av.localeCompare(bv, 'nb');
-      return dir === 'descending' ? -cmp : cmp;
-    });
-    rows.forEach((r) => tbody.appendChild(r));
-  }
-
-  // Filtrering uten sidelasting.
   const search = document.getElementById('filter-search');
   const position = document.getElementById('filter-position');
   const team = document.getElementById('filter-team');
   const price = document.getElementById('filter-price');
+  const status = document.getElementById('filter-status');
   const reset = document.getElementById('filter-reset');
   const count = document.getElementById('filter-count');
   const empty = document.getElementById('players-empty');
   const emptyReset = document.getElementById('players-empty-reset');
 
   function applyFilters() {
-    const q = search.value.trim().toLowerCase();
-    const pos = position.value;
-    const teamId = team.value;
-    const maxPrice = parseFloat(price.value);
+    const filters = {
+      q: search.value.trim().toLowerCase(),
+      pos: position.value,
+      team: team.value,
+      maxPrice: parseFloat(price.value),
+      status: status.value,
+    };
     let shown = 0;
     const total = tbody.rows.length;
 
     for (const row of tbody.rows) {
-      const ok =
-        (!q || row.dataset.name.includes(q)) &&
-        (!pos || row.dataset.pos === pos) &&
-        (!teamId || row.dataset.team === teamId) &&
-        (!Number.isFinite(maxPrice) || parseFloat(row.dataset.price) <= maxPrice);
+      const ok = rowMatchesFilters(row.dataset, filters);
       row.hidden = !ok;
       if (ok) shown++;
     }
@@ -221,14 +272,22 @@ function initEdgeFades(el, prefix) {
   position.addEventListener('change', applyFilters);
   team.addEventListener('change', applyFilters);
   price.addEventListener('input', applyFilters);
+  status.addEventListener('change', applyFilters);
   reset.addEventListener('click', () => {
     search.value = '';
     position.value = '';
     team.value = '';
     price.value = '';
+    status.value = '';
     applyFilters();
   });
   if (emptyReset) emptyReset.addEventListener('click', () => reset.click());
+
+  // Krysslenker (v1.7.1): /spillere?sok=Haaland prefyller søket.
+  const preSearch = queryParam(location.search, 'sok');
+  if (preSearch) search.value = preSearch;
+  const prePos = queryParam(location.search, 'pos');
+  if (prePos) position.value = prePos;
 
   applyFilters();
 })();
@@ -291,6 +350,8 @@ function initEdgeFades(el, prefix) {
         );
       })
       .join('');
+    // Radene er nye — legg dem i samme rekkefølge som brukerens valgte sortering.
+    if (window.reapplySort) window.reapplySort(document.getElementById('live-players'));
     matchesRoot.innerHTML = live.matches
       .map(function (m) {
         const status = m.finished ? 'Slutt' : m.started ? m.minutes + "'" : 'Ikke startet';

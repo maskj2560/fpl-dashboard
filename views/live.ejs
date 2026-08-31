@@ -17,10 +17,11 @@
     <div class="grid">
       <section class="card">
         <h2><span class="h2-title">Mine spillere</span><span class="dim" id="live-count-players"><%= live.myPlayers.length %></span></h2>
-        <div class="table-scroll"><table class="data" id="live-players">
-          <thead><tr><th>Spiller</th><th class="num">Min</th><th class="num">Poeng</th><th class="num">Bonus</th><th class="num">Effektivt</th></tr></thead>
+        <div class="table-scroll"><table class="data sortable" id="live-players" data-sortable>
+          <thead><tr><th data-type="text" aria-sort="none">Spiller</th><th data-type="num" class="num" aria-sort="none">Min</th><th data-type="num" class="num" aria-sort="none">Poeng</th><th data-type="num" class="num" aria-sort="none">Bonus</th><th data-type="num" class="num" aria-sort="none">Effektivt</th></tr></thead>
           <tbody></tbody>
         </table></div>
+        <p class="hint">Bonus estimeres fra BPS til FPL publiserer den — hold over tallet for kilden. Publisert bonus ligger allerede i poengsummen, estimert gjør ikke. Klikk en kolonne for å sortere.</p>
       </section>
       <section class="card">
         <h2><span class="h2-title">Kamper</span><span class="dim" id="live-count-matches"><%= live.matches.length %></span></h2>
