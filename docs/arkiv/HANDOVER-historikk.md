@@ -5,6 +5,45 @@
 > sjekkpunkt-tabellen, versjonshistorikken, utdaterte åpne punkter og hele
 > loggen over brukerbeskjeder til og med økt 22. Nyere logg: HANDOVER.md.
 
+## Rotert 2026-08-31 (økt 46): v1.7.0-prod-bevis (verbatim fra HANDOVER.md)
+
+- **v1.7.0 «/innsikt» UTE I PROD 31. aug kl. 16:46.** Marius ga
+  klarsignal på avstand; merget `--no-ff` (`a25ac0a`), tagget `v1.7.0`,
+  én push. **549/549 + lint 0** både på featurebranchen og på merget
+  `main`. Ny `src/services/insights.js` (optimalXi, buildBenchReport,
+  buildCaptainAudit, buildLuckMeter, buildDreamTeamSection,
+  assembleInsights), ny `src/routes/insights.js`, ny `views/innsikt.ejs`,
+  `getDreamTeam(gw)` i fplClient. **Null endring i `public/style.css`**,
+  så `test/style.test.js` er urørt og asset-hashen står stille.
+  Prod-bevis utenfra 31. aug: footer `v1.7.0 · sist oppdatert mandag
+  31. august kl. 16:46`; `/health` 200 med `ai:true, discord:true,
+  teamId:true, leagues:1`; rutesveip alle 12 ruter 200 inkl. `/innsikt`,
+  `/finnesikke` 404; `style.css?v=f9014751` uendret; `/innsikt` har
+  nav-lenka markert aktiv og alle fire seksjonene med ekte tall (G=1):
+  benkesløsing R1 6 p / −1 unngåelig, kapteinsfasit 0 % troppens beste
+  (Haaland 2 p mot Ødegaard 11 p) og 100 % mot global favoritt,
+  flaksbarometer +4 (topp Gvardiol +4,7), rundens XI 1 av 11 eid, beste
+  De Cuyper 17 p. Lokal røyktest før merge med TOMME nøkler ga
+  `ai:false, discord:false` og **0 «AI-kall:»-linjer**.
+  Planen er arkivert: `docs/arkiv/plan-innsikt-v170.md`.
+
+## Rotert 2026-08-31 (økt 46): eldre statuspunkter + økt 44-loggpost (verbatim fra HANDOVER.md)
+
+- **v1.3.7 ute i prod siden 26. aug**, volumet `/app/data` aktivt
+  (`…-fpl-data`). Gjenstående markør-bevis: «Brief-markør lastet: runde 2
+  er alt sendt» i loggen ved første omstart ETTER torsdagens auto-brief.
+- **P2-skjermbildene tatt 26. aug** (Playwright mot prod, `docs/img/`,
+  lenket fra README). Rest: ekte telefon. **Prod-QA 25. aug: 402 sjekker,
+  0 feil** mot v1.3.4; detaljene i historikken.
+- 2026-08-31 (økt 44, Fable, planøkt): mandat = detaljplan for v1.7.0
+  «/innsikt». Marius godkjente alle seks anbefalingene (begge
+  benkekolonner; kapteinstreff identitet+poeng; flakspoeng + topp/bunn 3;
+  XI-liste + sesongtrend; hele sesongen; nav etter Liga). På spørsmål om
+  risikolista: «Løs det slik at det er minst mulig risiko» → autosub-,
+  BB- og chip-antakelsene MÅLT mot ekte API (re-sortering, points_on_bench=0,
+  bboost/3xc) — null antakelser igjen i datakontrakten. Plan skrevet til
+  `docs/plan-innsikt-v170.md`, kjøreprompt til Opus levert i chatten.
+
 ## Rotert 2026-08-25 (økt 40): prod-QA-blokka for v1.3.4 (verbatim fra HANDOVER.md)
 
 - **Prod-QA 25. aug: 402 sjekker, 0 feil** — kjørt ÉN gang mot v1.3.4 og

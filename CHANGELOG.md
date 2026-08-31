@@ -7,6 +7,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.7.1] - 2026-09-01
+
 ### Added
 
 - Krysslenker: spillernavn på dashbordet (Toppform, Mest kjøpt/solgt),

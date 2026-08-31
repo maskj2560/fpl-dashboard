@@ -6,43 +6,36 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-31 (økt 45, Opus: v1.7.0 «/innsikt» ute i prod)
+**Sist oppdatert:** 2026-08-31 (økt 46, Fable: v1.7.1 bygget — venter på merge)
 
 ## Status akkurat nå
-- **v1.7.0 «/innsikt» UTE I PROD 31. aug kl. 16:46.** Marius ga
-  klarsignal på avstand; merget `--no-ff` (`a25ac0a`), tagget `v1.7.0`,
-  én push. **549/549 + lint 0** både på featurebranchen og på merget
-  `main`. Ny `src/services/insights.js` (optimalXi, buildBenchReport,
-  buildCaptainAudit, buildLuckMeter, buildDreamTeamSection,
-  assembleInsights), ny `src/routes/insights.js`, ny `views/innsikt.ejs`,
-  `getDreamTeam(gw)` i fplClient. **Null endring i `public/style.css`**,
-  så `test/style.test.js` er urørt og asset-hashen står stille.
-  Prod-bevis utenfra 31. aug: footer `v1.7.0 · sist oppdatert mandag
-  31. august kl. 16:46`; `/health` 200 med `ai:true, discord:true,
-  teamId:true, leagues:1`; rutesveip alle 12 ruter 200 inkl. `/innsikt`,
-  `/finnesikke` 404; `style.css?v=f9014751` uendret; `/innsikt` har
-  nav-lenka markert aktiv og alle fire seksjonene med ekte tall (G=1):
-  benkesløsing R1 6 p / −1 unngåelig, kapteinsfasit 0 % troppens beste
-  (Haaland 2 p mot Ødegaard 11 p) og 100 % mot global favoritt,
-  flaksbarometer +4 (topp Gvardiol +4,7), rundens XI 1 av 11 eid, beste
-  De Cuyper 17 p. Lokal røyktest før merge med TOMME nøkler ga
-  `ai:false, discord:false` og **0 «AI-kall:»-linjer**.
-  Planen er arkivert: `docs/arkiv/plan-innsikt-v170.md`.
+- **v1.7.1 «UX-polering» FERDIG BYGGET 31. aug ~21:00 — IKKE merget:**
+  avspark var 21:00, deploy-vinduet stengt. Branch `feat/ux-polering-v171`
+  (7 commits, release-commit inkludert, versjon bumpet): 12 godkjente
+  småfiks fra full funksjonsgjennomgang (Marius valgte «Fiks» på alle 12
+  via tre spørsmålspuljer). Innhold: no-store på /api, «neste tidligst»
+  på /nyheter, grafakser /lag+/liga, statusfilter + sort-generalisering
+  (`table[data-sortable]`, sortering overlever live-polling), krysslenker
+  `/spillere?sok=` (prefill via queryParam), forklaringer (flagg, FDR,
+  xG/xA, lovlig ellever), venter/angret-badges på /overganger. Pakke 8
+  (liga-lenker) og 11 (aria-live) krevde INGEN endring — fantes alt.
+  **556/556 + lint 0**, røyktest med tomme nøkler: `ai:false,
+  discord:false`, 0 «AI-kall:»-linjer, alle 9 ruter 200, begge
+  /api-headere `no-store`. **Neste økt: merge `--no-ff` + tag `v1.7.1` +
+  push UTENFOR kampvindu**, deretter prod-bevis utenfra (asset-hashen
+  SKAL endre seg — style.css og app.js er endret).
+- **v1.7.0 «/innsikt» ute i prod 31. aug kl. 16:46** (`a25ac0a`, tag
+  `v1.7.0`, 549/549). Prod-beviset er rotert til historikkfila.
 - **v1.3.8, v1.4.0, v1.5.0 og v1.6.0 UTE I PROD 28. aug kl. 14:49** —
   fire `--no-ff`-merger, tagget, 509/509 + lint 0. Prod-beviset er
   rotert til `docs/arkiv/HANDOVER-historikk.md`.
 - **Ekte SIGTERM-bevis mangler.** Deploy-loggen er feil sted; beviset er
   `kill 1` i containerterminalen — de to avslutningslinjene skal stå der.
   Lokalt bevist med `process.emit('SIGINT')`, exit 0.
-- **v1.3.7 ute i prod siden 26. aug**, volumet `/app/data` aktivt
-  (`…-fpl-data`). Gjenstående markør-bevis: «Brief-markør lastet: runde 2
-  er alt sendt» i loggen ved første omstart ETTER torsdagens auto-brief.
-- **P2-skjermbildene tatt 26. aug** (Playwright mot prod, `docs/img/`,
-  lenket fra README). Rest: ekte telefon. **Prod-QA 25. aug: 402 sjekker,
-  0 feil** mot v1.3.4; detaljene i historikken.
-- **Asset-hashen i prod er `f9014751` fra 28. aug** og endres IKKE av
-  v1.7.0 (ingen endring i `style.css`/`app.js`). Regn den alltid fra
-  git-blobbene, aldri fra arbeidstreet — se lærdommene.
+- **Asset-hashen i prod er `f9014751` fra 28. aug**; v1.7.1 ENDRER den
+  (style.css + app.js er endret) — ventet og riktig. Regn den alltid fra
+  git-blobbene, aldri fra arbeidstreet — se lærdommene. v1.3.7-markør-
+  beviset og P2-detaljene: rotert til historikkfila 31. aug.
 - **Helsesjekken:** alt. a aktiv (Coolifys sjekk AV, Dockerfilens gjelder).
   Se lærdommene under for hva den IKKE fanger.
 - **Kostnad: måleuka er DROPPET** (Marius 28. aug) — han følger forbruket
@@ -50,11 +43,11 @@
   `docs/sjekkpunkt-d-kostnad.md` brukes ved behov. Taktbudsjett
   **~49–53 AI-kall/uke** (v1.7.0 legger til 0). Siste måling 23. aug:
   $0,94/uke.
-- **Git akkurat nå:** `main` = `origin/main`; `origin` har KUN `main`,
-  og taggene t.o.m. `v1.7.0` er pushet. `feat/innsikt-v170` er slettet
-  lokalt (ble aldri pushet). **Rest:** 12 gamle, merget lokale brancher
-  fra økt ≤ 35 står igjen (navnene i historikkfila) — ingen finnes på
-  GitHub, ryddes med `git branch -d` når som helst.
+- **Git akkurat nå:** `main` = `origin/main`; lokal `feat/ux-polering-v171`
+  ligger 6 commits foran og venter på merge (aldri pushet). `origin` har
+  KUN `main`, taggene t.o.m. `v1.7.0` er pushet. **Rest:** 12 gamle,
+  merget lokale brancher fra økt ≤ 35 (navnene i historikkfila) — ryddes
+  med `git branch -d` når som helst.
 - Eldre status og alle detaljer: `docs/arkiv/HANDOVER-historikk.md`.
 
 ## Neste steg (start her)
@@ -188,13 +181,12 @@ Marius gjøre.
   `buildDreamTeamSection` fikk henholdsvis `teamsById` og `picksByGw` som
   ekstra parametre (`teamCode` og sesongtrenden kan ikke utledes uten
   dem). Ingen push, ingen merge, ingen tag.
-- 2026-08-31 (økt 44, Fable, planøkt): mandat = detaljplan for v1.7.0
-  «/innsikt». Marius godkjente alle seks anbefalingene (begge
-  benkekolonner; kapteinstreff identitet+poeng; flakspoeng + topp/bunn 3;
-  XI-liste + sesongtrend; hele sesongen; nav etter Liga). På spørsmål om
-  risikolista: «Løs det slik at det er minst mulig risiko» → autosub-,
-  BB- og chip-antakelsene MÅLT mot ekte API (re-sortering, points_on_bench=0,
-  bboost/3xc) — null antakelser igjen i datakontrakten. Plan skrevet til
-  `docs/plan-innsikt-v170.md`, kjøreprompt til Opus levert i chatten.
+- 2026-08-31 (økt 46, Fable): «gå gjennom hver eneste funksjon jeg kan
+  gjøre på siden … Spørr meg om jeg vil beholde det slik det er eller det
+  du tenker kunne fikses.» Handling: tre Explore-agenter kartla alle 9
+  sider + tverrgående; 12 forslag i tre AskUserQuestion-puljer — Marius
+  valgte «Fiks (Anbefalt)» på ALLE 12. Bygget som v1.7.1 med TDD på
+  logikken (noStore, nextSummaryUpdateAt, rankGraph-akser, compareCells/
+  rowMatchesFilters/queryParam). Merge holdt tilbake: avspark 21:00.
 - Loggposter fra økt 22–43: rotert til
   `docs/arkiv/HANDOVER-historikk.md` (200-linjerstaket, sist 2026-08-31).
