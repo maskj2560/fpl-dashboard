@@ -35,7 +35,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.5.0**~~ | ~~«Overganger» total: planlegger, scenarier, analyse, AI-kommentar~~ | **utført 28. aug — ute i prod** | — |
 | ~~**v1.6.0**~~ | ~~«Liga-pakka»: rival-radar, ligagraf, kaptein-liga, roast-rapport~~ | **utført 28. aug — ute i prod** | — |
 | ~~**v1.7.0**~~ | ~~«/innsikt»: benkesløsing, kapteinsfasit, flaksbarometer, rundens XI~~ | **utført 31. aug — ute i prod kl. 16:46, 549/549** | — |
-| **v1.7.1** | UX-polering: 12 småfiks fra funksjonsgjennomgang (Marius valgte fiks på alle) | **bygget 31. aug, 556/556 — venter på merge (avspark 21:00)** | deploy-vindu |
+| ~~**v1.7.1**~~ | ~~UX-polering: 12 småfiks fra funksjonsgjennomgang~~ | **utført 1. sep — ute i prod, 556/556** | — |
 | **v1.8.0** | «Spiller-pakka»: spillerkort, duell, differensialer, straffer | 5 | v1.7.0 |
 | **v1.9.0** | «Planleggingspakka»: chip-planlegger, deadline-sjekk, kalender-feed | 5 | v1.8.0 |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |

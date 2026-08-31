@@ -6,24 +6,24 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-08-31 (økt 46, Fable: v1.7.1 bygget — venter på merge)
+**Sist oppdatert:** 2026-09-01 (økt 46, Fable: v1.7.1 ute i prod)
 
 ## Status akkurat nå
-- **v1.7.1 «UX-polering» FERDIG BYGGET 31. aug ~21:00 — IKKE merget:**
-  avspark var 21:00, deploy-vinduet stengt. Branch `feat/ux-polering-v171`
-  (7 commits, release-commit inkludert, versjon bumpet): 12 godkjente
-  småfiks fra full funksjonsgjennomgang (Marius valgte «Fiks» på alle 12
-  via tre spørsmålspuljer). Innhold: no-store på /api, «neste tidligst»
-  på /nyheter, grafakser /lag+/liga, statusfilter + sort-generalisering
-  (`table[data-sortable]`, sortering overlever live-polling), krysslenker
-  `/spillere?sok=` (prefill via queryParam), forklaringer (flagg, FDR,
-  xG/xA, lovlig ellever), venter/angret-badges på /overganger. Pakke 8
-  (liga-lenker) og 11 (aria-live) krevde INGEN endring — fantes alt.
-  **556/556 + lint 0**, røyktest med tomme nøkler: `ai:false,
-  discord:false`, 0 «AI-kall:»-linjer, alle 9 ruter 200, begge
-  /api-headere `no-store`. **Neste økt: merge `--no-ff` + tag `v1.7.1` +
-  push UTENFOR kampvindu**, deretter prod-bevis utenfra (asset-hashen
-  SKAL endre seg — style.css og app.js er endret).
+- **v1.7.1 «UX-polering» UTE I PROD 1. sep rett etter midnatt.** Bygget
+  31. aug (12 godkjente småfiks fra full funksjonsgjennomgang — Marius
+  valgte «Fiks» på alle 12), merge holdt til etter kampslutt («Kampen er
+  ferdig» 1. sep): merget `--no-ff` (`1633969`), tagget `v1.7.1`, én
+  push. **556/556 + lint 0** på branch OG merget main. Innhold: no-store
+  på /api, «neste tidligst» på /nyheter, grafakser /lag+/liga,
+  statusfilter + sort-generalisering (`table[data-sortable]`, sortering
+  overlever live-polling), krysslenker `/spillere?sok=`, forklaringer
+  (flagg, FDR, xG/xA, lovlig ellever), venter/angret-badges på
+  /overganger. Pakke 8 (liga-lenker) og 11 (aria-live) krevde INGEN
+  endring — fantes alt. Prod-bevis utenfra 1. sep: footer `v1.7.1`,
+  `/health` 200 `ai:true, discord:true, leagues:1`, alle 9 ruter 200 +
+  `/finnesikke` 404, `/api/live.json` svarer `Cache-Control: no-store`,
+  alle nye features spot-sjekket i markupen (30 krysslenker på
+  dashbordet). Røyktest 31. aug med tomme nøkler: 0 «AI-kall:»-linjer.
 - **v1.7.0 «/innsikt» ute i prod 31. aug kl. 16:46** (`a25ac0a`, tag
   `v1.7.0`, 549/549). Prod-beviset er rotert til historikkfila.
 - **v1.3.8, v1.4.0, v1.5.0 og v1.6.0 UTE I PROD 28. aug kl. 14:49** —
@@ -32,10 +32,10 @@
 - **Ekte SIGTERM-bevis mangler.** Deploy-loggen er feil sted; beviset er
   `kill 1` i containerterminalen — de to avslutningslinjene skal stå der.
   Lokalt bevist med `process.emit('SIGINT')`, exit 0.
-- **Asset-hashen i prod er `f9014751` fra 28. aug**; v1.7.1 ENDRER den
-  (style.css + app.js er endret) — ventet og riktig. Regn den alltid fra
-  git-blobbene, aldri fra arbeidstreet — se lærdommene. v1.3.7-markør-
-  beviset og P2-detaljene: rotert til historikkfila 31. aug.
+- **Asset-hashen i prod er `397624a7` fra 1. sep** (v1.7.1 endret
+  style.css + app.js — hashen byttet fra `f9014751` som ventet). Regn den
+  alltid fra git-blobbene, aldri fra arbeidstreet — se lærdommene.
+  v1.3.7-markørbeviset og P2-detaljene: rotert til historikkfila 31. aug.
 - **Helsesjekken:** alt. a aktiv (Coolifys sjekk AV, Dockerfilens gjelder).
   Se lærdommene under for hva den IKKE fanger.
 - **Kostnad: måleuka er DROPPET** (Marius 28. aug) — han følger forbruket
@@ -43,11 +43,11 @@
   `docs/sjekkpunkt-d-kostnad.md` brukes ved behov. Taktbudsjett
   **~49–53 AI-kall/uke** (v1.7.0 legger til 0). Siste måling 23. aug:
   $0,94/uke.
-- **Git akkurat nå:** `main` = `origin/main`; lokal `feat/ux-polering-v171`
-  ligger 6 commits foran og venter på merge (aldri pushet). `origin` har
-  KUN `main`, taggene t.o.m. `v1.7.0` er pushet. **Rest:** 12 gamle,
-  merget lokale brancher fra økt ≤ 35 (navnene i historikkfila) — ryddes
-  med `git branch -d` når som helst.
+- **Git akkurat nå:** `main` = `origin/main`; `origin` har KUN `main`,
+  taggene t.o.m. `v1.7.1` er pushet. `feat/ux-polering-v171` er slettet
+  lokalt (ble aldri pushet). **Rest:** 12 gamle, merget lokale brancher
+  fra økt ≤ 35 (navnene i historikkfila) — ryddes med `git branch -d`
+  når som helst.
 - Eldre status og alle detaljer: `docs/arkiv/HANDOVER-historikk.md`.
 
 ## Neste steg (start her)
@@ -181,6 +181,10 @@ Marius gjøre.
   `buildDreamTeamSection` fikk henholdsvis `teamsById` og `picksByGw` som
   ekstra parametre (`teamCode` og sesongtrenden kan ikke utledes uten
   dem). Ingen push, ingen merge, ingen tag.
+- 2026-09-01 (økt 46, del 2): «Kampen er ferdig». Handling: merget
+  `--no-ff`, verifiserte 556/556 + lint 0 og CHANGELOG-rekkefølgen på
+  merget main, tagget `v1.7.1`, pushet, prod-bevis utenfra (se statusen),
+  branch slettet, docs ajour.
 - 2026-08-31 (økt 46, Fable): «gå gjennom hver eneste funksjon jeg kan
   gjøre på siden … Spørr meg om jeg vil beholde det slik det er eller det
   du tenker kunne fikses.» Handling: tre Explore-agenter kartla alle 9
