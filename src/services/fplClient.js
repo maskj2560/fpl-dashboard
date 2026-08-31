@@ -176,6 +176,16 @@ export function getLiveHistoric(gw) {
   return getOrFetch(`live:${gw}`, () => fplFetch(`event/${gw}/live/`), { ttl: 360 * MIN });
 }
 
+/**
+ * Rundens drømmelag (`dream-team/{gw}/`): `{top_player, team[11]}`. Egen
+ * cache-nøkkel — endepunktet deles ikke med noe annet. 6 t TTL, samme
+ * begrunnelse som getLiveHistoric: kalles KUN for ferdige runder, der
+ * utvalget ikke lenger endrer seg.
+ */
+export function getDreamTeam(gw) {
+  return getOrFetch(`dreamteam:${gw}`, () => fplFetch(`dream-team/${gw}/`), { ttl: 360 * MIN });
+}
+
 export function getLeagueStandings(leagueId, page = 1) {
   return getOrFetch(
     `league:${leagueId}:${page}`,

@@ -56,6 +56,8 @@ const cases = [
   ['transfers', fx.transfers, 'I stedet for Haaland'],
   ['transfers', fx.transfers, 'alt-sok'],
   ['transfers', fx.transfers, 'Kommentar til byttene'],
+  ['innsikt', fx.insights, 'Benkesløsing'],
+  ['innsikt', fx.insightsEmpty, 'Innsikt kommer når første runde er ferdigspilt'],
   ['no-team', {}, 'FPL_TEAM_ID'],
   ['404', {}, '404'],
   ['error', { code: 500, heading: 'Noe gikk galt', message: null }, 'Noe gikk galt'],
@@ -85,6 +87,7 @@ const NAV = [
   ['/lag', 'Lag'],
   ['/overganger', 'Overganger'],
   ['/liga', 'Liga'],
+  ['/innsikt', 'Innsikt'],
   ['/brief', 'Brief'],
   ['/live', 'Live'],
   ['/nyheter', 'Nyheter'],
@@ -442,4 +445,63 @@ test('transfers.ejs: detaljraden viser per-runde-tabell og milepæl', async () =
   };
   const html2 = await renderView('transfers', komplett);
   assert.match(html2, /Etter 5 runder: 12/);
+});
+
+// v1.7.0: benkesløsingen skal både summere sesongen og merke chip-rundene —
+// en Bench Boost-runde er 0 sløst, ikke bare 0 benkepoeng.
+test('innsikt.ejs viser sumraden og BB-merket i benkesløsingen', async () => {
+  const html = await renderView('innsikt', fx.insights);
+
+  assert.ok(html.includes('Sum sesongen'), 'sumraden mangler');
+  assert.ok(html.includes('>20<'), 'sum benkepoeng mangler');
+  assert.ok(html.includes('−11'), 'sum unngåelig tap mangler fortegn');
+  assert.ok(html.includes('<span class="status">BB</span>'), 'BB-merket mangler');
+});
+
+test('innsikt.ejs viser kapteinsfasiten med begge treffprosentene', async () => {
+  const html = await renderView('innsikt', fx.insights);
+
+  assert.ok(html.includes('Kapteinsfasit'), 'seksjonen mangler');
+  assert.ok(html.includes('67 %'), 'treffprosent mot troppens beste');
+  assert.ok(html.includes('50 %'), 'treffprosent mot global favoritt');
+  assert.ok(html.includes('Haaland'), 'kapteinsraden mangler');
+  assert.ok(html.includes('Ikke målt'), 'runde uten most_captained skal merkes, ikke telles som bom');
+});
+
+test('innsikt.ejs viser flaksbarometeret med fortegn per runde', async () => {
+  const html = await renderView('innsikt', fx.insights);
+
+  assert.ok(html.includes('Flaksbarometer'), 'seksjonen mangler');
+  assert.ok(html.includes('+4,2'), 'positiv runde mangler fortegn');
+  assert.ok(html.includes('−3,1'), 'negativ runde mangler fortegn');
+  assert.ok(html.includes('+1,1'), 'sesongsummen mangler');
+});
+
+test('innsikt.ejs lister topp 3 og bunn 3 på flaks', async () => {
+  const html = await renderView('innsikt', fx.insights);
+
+  assert.ok(html.includes('Mest flaks'), 'topplista mangler');
+  assert.ok(html.includes('Mest uflaks'), 'bunnlista mangler');
+  assert.ok(html.includes('Watkins'), 'bunnlista har ingen spillere');
+  assert.ok(html.includes('−10'), 'flakspoeng for bunnlista');
+  assert.ok(html.includes('gjelder hele sesongen'), 'hintet om spillertallenes vindu mangler');
+});
+
+test('innsikt.ejs viser rundens XI og merker mine spillere', async () => {
+  const html = await renderView('innsikt', fx.insights);
+
+  assert.ok(html.includes('Rundens XI'), 'seksjonen mangler');
+  assert.ok(html.includes('Startet'), 'merking av egne startende mangler');
+  assert.ok(html.includes('Benket'), 'merking av egne benkede mangler');
+  assert.ok(html.includes('6 av 11'), 'oppsummeringen av hvor mange jeg eide mangler');
+  assert.ok(html.includes('Rundens beste'), 'top_player er ikke fremhevet');
+});
+
+test('innsikt.ejs rendrer trendlinjen bare når den finnes', async () => {
+  const med = await renderView('innsikt', fx.insights);
+  const uten = await renderView('innsikt', fx.insightsNoTrend);
+
+  assert.ok(med.includes('Dine i rundens XI per runde'), 'trenden mangler');
+  assert.ok(!uten.includes('Dine i rundens XI per runde'), 'trenden vises uten data');
+  assert.ok(uten.includes('Rundens XI'), 'resten av seksjonen skal stå');
 });

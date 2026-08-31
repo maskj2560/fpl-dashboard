@@ -406,3 +406,120 @@ export const transfersPending = {
     maxGw: 1,
   },
 };
+
+// ---- /innsikt (v1.7.0) --------------------------------------------------
+
+const dtPlayer = (id, name, teamCode, teamShort, elementType, points, mine, captain = false) =>
+  ({ id, name, teamCode, teamShort, elementType, points, mine, captain });
+
+const luckPlayer = (id, name, teamCode, goals, xg, assists, xa, luck) =>
+  ({ id, name, teamCode, goals, xg, assists, xa, luck });
+
+export const insights = {
+  title: 'Innsikt',
+  clubAssets,
+  formatSigned,
+  insights: {
+    gw: 3,
+    finishedCount: 3,
+    bench: {
+      rows: [
+        { gw: 1, benchPoints: 6, avoidable: 4, chip: null },
+        { gw: 2, benchPoints: 12, avoidable: 0, chip: 'BB' },
+        { gw: 3, benchPoints: 2, avoidable: 7, chip: null },
+      ],
+      totalBench: 20,
+      totalAvoidable: 11,
+    },
+    captains: {
+      rows: [
+        {
+          gw: 1,
+          captain: { id: 10, name: 'Haaland', teamCode: 3, teamShort: 'ARS', points: 13 },
+          squadBest: { name: 'Haaland', points: 13, hit: true },
+          global: { name: 'Salah', points: 9, hit: true },
+        },
+        {
+          gw: 2,
+          captain: { id: 10, name: 'Haaland', teamCode: 3, teamShort: 'ARS', points: 2 },
+          squadBest: { name: 'Saka', points: 11, hit: false },
+          global: { name: 'Salah', points: 14, hit: false },
+        },
+        {
+          gw: 3,
+          captain: { id: 11, name: 'Salah', teamCode: 14, teamShort: 'LIV', points: 8 },
+          squadBest: { name: 'Salah', points: 8, hit: true },
+          global: null,
+        },
+      ],
+      hitSquadPct: 67,
+      hitGlobalPct: 50,
+      counted: { squad: 3, global: 2 },
+    },
+    luck: {
+      rows: [
+        { gw: 1, luck: 4.2 },
+        { gw: 2, luck: -3.1 },
+        { gw: 3, luck: 0 },
+      ],
+      total: 1.1,
+      players: [
+        luckPlayer(10, 'Haaland', 3, 5, 2.4, 1, 0.6, 11.6),
+        luckPlayer(11, 'Salah', 14, 2, 1.2, 3, 1.4, 8.8),
+        luckPlayer(12, 'Saka', 3, 1, 0.4, 2, 1.1, 5.7),
+        luckPlayer(13, 'Watkins', 14, 0, 1.9, 0, 0.8, -10.0),
+        luckPlayer(14, 'Palmer', 3, 1, 2.2, 0, 1.0, -9.0),
+        luckPlayer(15, 'Gordon', 14, 0, 0.7, 1, 1.5, -5.0),
+      ],
+      top: [
+        luckPlayer(10, 'Haaland', 3, 5, 2.4, 1, 0.6, 11.6),
+        luckPlayer(11, 'Salah', 14, 2, 1.2, 3, 1.4, 8.8),
+        luckPlayer(12, 'Saka', 3, 1, 0.4, 2, 1.1, 5.7),
+      ],
+      bottom: [
+        luckPlayer(13, 'Watkins', 14, 0, 1.9, 0, 0.8, -10.0),
+        luckPlayer(14, 'Palmer', 3, 1, 2.2, 0, 1.0, -9.0),
+        luckPlayer(15, 'Gordon', 14, 0, 0.7, 1, 1.5, -5.0),
+      ],
+    },
+    dreamTeam: {
+      gw: 3,
+      topPlayer: { name: 'Salah', points: 17 },
+      xi: [
+        dtPlayer(20, 'Raya', 3, 'ARS', 1, 9, 'startet'),
+        dtPlayer(21, 'Saliba', 3, 'ARS', 2, 12, 'startet'),
+        dtPlayer(22, 'Van Dijk', 14, 'LIV', 2, 11, null),
+        dtPlayer(23, 'Gvardiol', 14, 'LIV', 2, 10, 'benket'),
+        dtPlayer(11, 'Salah', 14, 'LIV', 3, 17, 'startet', true),
+        dtPlayer(12, 'Saka', 3, 'ARS', 3, 14, 'startet'),
+        dtPlayer(24, 'Palmer', 14, 'LIV', 3, 13, null),
+        dtPlayer(25, 'Mbeumo', 3, 'ARS', 3, 12, null),
+        dtPlayer(10, 'Haaland', 3, 'ARS', 4, 15, 'startet'),
+        dtPlayer(26, 'Isak', 14, 'LIV', 4, 12, null),
+        dtPlayer(27, 'Wood', 3, 'ARS', 4, 11, null),
+      ],
+      mineCount: 6,
+      trend: [
+        { gw: 1, count: 2 },
+        { gw: 2, count: 1 },
+        { gw: 3, count: 5 },
+      ],
+    },
+  },
+};
+
+// Sesongtrenden mangler når live-svarene ikke har in_dreamteam.
+export const insightsNoTrend = {
+  ...insights,
+  insights: {
+    ...insights.insights,
+    dreamTeam: { ...insights.insights.dreamTeam, trend: null },
+  },
+};
+
+export const insightsEmpty = {
+  title: 'Innsikt',
+  clubAssets,
+  formatSigned,
+  insights: { gw: 0, finishedCount: 0, bench: null, captains: null, luck: null, dreamTeam: null },
+};

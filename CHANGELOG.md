@@ -7,6 +7,34 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-08-31
+
+### Added
+
+- Ny side «Innsikt» (`/innsikt`, i menyen etter Liga): fasiten på din egen
+  sesong, regnet på rå spillerpoeng uten kapteinsdobling og kun på
+  ferdigspilte runder. Ingen AI — siden koster null kroner å se på.
+- «Benkesløsing» på «Innsikt»: hva benken scoret hver runde, hvor mye av det
+  som var unngåelig (beste lovlige ellever av de femten minus den du faktisk
+  stilte), sum for hele sesongen og merking av chip-runder. En Bench
+  Boost-runde teller som null sløsing — hele troppen spilte.
+- «Kapteinsfasit» på «Innsikt»: kapteinen din mot troppens beste spiller
+  (delt topp teller som treff) og mot rundens globale favoritt, runde for
+  runde, med treffprosent for begge fasitene. Runder der FPL ikke oppgir en
+  global favoritt står som «Ikke målt» og teller ikke mot deg.
+- «Flaksbarometer» på «Innsikt»: over- og underprestasjon mot xG og xA målt
+  i poeng, per runde og for hele sesongen, pluss de tre heldigste og de tre
+  uheldigste spillerne i troppen din.
+- «Rundens XI» på «Innsikt»: FPLs eget drømmelag for siste ferdigspilte
+  runde med draktbilde, posisjon og poeng, merket med hvem av dem du eide
+  (startet eller benket) og hvem som bar kapteinsbindet ditt — pluss en
+  sesongtrend over hvor mange av elleveren din som kom med, runde for runde.
+
+### Changed
+
+- `fplClient` har fått `getDreamTeam(gw)` (`dream-team/{gw}/`, egen
+  cache-nøkkel, 6 t TTL). Hentes kun for siste ferdigspilte runde.
+
 ## [1.6.0] - 2026-08-28
 
 ### Added
