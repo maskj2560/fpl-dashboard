@@ -13,6 +13,11 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   fem runder (dobbeltrunder gir to rader) og de tre neste kampene med FDR
   til ett norsk datasett. Skadenyheter oversettes, og dødballrollene
   (straffer, hjørner, frispark) følger med.
+- Differensial-finner: rangerer spillere med lav global eierandel etter
+  form og kampprogram (score = form × (6 − snitt-FDR neste tre runder)).
+  Terskelen kan settes til 5, 10 eller 15 %, og topp 10 vises per terskel.
+  Før noen har fått form — helt i sesongstart — sier siden fra i stedet
+  for å liste vilkårlige navn.
 
 ### Fixed
 

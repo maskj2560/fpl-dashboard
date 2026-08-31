@@ -6,11 +6,20 @@ import {
   POSITIONS_SHORT,
   STATUS_LABELS,
   formatPrice,
+  teamFdrMap,
   translateFplNews,
 } from './analysis.js';
 
 const SISTE_KAMPER = 5;
 const KOMMENDE_KAMPER = 3;
+
+/** Eierandelene brukeren kan veksle mellom på /spillere. 10 % er default. */
+export const DIFF_TERSKLER = Object.freeze([5, 10, 15]);
+const DIFF_TOPP = 10;
+const DIFF_VINDU = 3;
+// Lag uten kamper i vinduet mangler i teamFdrMap — midt på skalaen er den
+// ærligste antakelsen: verken bonus eller straff for ukjent program.
+const FDR_FALLBACK = 3.5;
 
 /** Motstanderens korte navn ut fra kampen og hvem spilleren spiller for. */
 function opponentShort(fixture, teamsById) {
@@ -89,5 +98,63 @@ export function buildPlayerCard({ element, teamsById, summary }) {
     },
     sisteKamper,
     kommende,
+  };
+}
+
+/** Spillbar spiller med målt form — grunnkravet for å være differensial. */
+function erAktuell(element) {
+  return element.status === 'a' && element.minutes > 0 && parseFloat(element.form) > 0;
+}
+
+function en1(n) {
+  return Math.round(n * 10) / 10;
+}
+
+/**
+ * Global differensial-finner: lavt eid, god form, snilt program.
+ * Eierandelen er FPLs `selected_by_percent` (hele verden), ikke miniligaen —
+ * `differentials()` i analysis.js er den ligavarianten og står urørt.
+ *
+ * Score = form × (6 − snitt-FDR neste 3 runder). Terskelen er STRENGT under:
+ * en spiller eid av nøyaktig 10,0 % er ikke en 10 %-differensial.
+ *
+ * Har ingen spillbar spiller form ennå (sesongstart), finnes det ingen ærlig
+ * rangering å vise — da returneres `null` og viewet sier fra i stedet for å
+ * liste vilkårlige navn.
+ */
+export function buildDifferentials({ elements, fixtures, fromGw, teamsById }) {
+  const aktuelle = elements.filter(erAktuell);
+  if (aktuelle.length === 0) return null;
+
+  const fdrByTeam = teamFdrMap(fixtures ?? [], fromGw, DIFF_VINDU);
+
+  const scored = aktuelle.map((e) => {
+    const fdr3 = en1(fdrByTeam.get(e.team) ?? FDR_FALLBACK);
+    const team = teamsById?.get(e.team) ?? null;
+    return {
+      eidTall: parseFloat(e.selected_by_percent),
+      row: {
+        id: e.id,
+        navn: e.web_name,
+        lag: team ? { kort: team.short_name, kode: team.code, navn: team.name } : null,
+        posKort: POSITIONS_SHORT[e.element_type] ?? null,
+        pris: formatPrice(e.now_cost),
+        form: e.form,
+        eid: e.selected_by_percent,
+        fdr3,
+        score: en1(parseFloat(e.form) * (6 - fdr3)),
+      },
+    };
+  });
+
+  return {
+    terskler: DIFF_TERSKLER.map((prosent) => ({
+      prosent,
+      rows: scored
+        .filter((s) => s.eidTall < prosent)
+        .sort((a, b) => b.row.score - a.row.score)
+        .slice(0, DIFF_TOPP)
+        .map((s) => s.row),
+    })),
   };
 }

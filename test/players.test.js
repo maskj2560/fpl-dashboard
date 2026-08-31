@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildPlayerCard } from '../src/services/players.js';
+import { buildPlayerCard, buildDifferentials } from '../src/services/players.js';
 
 // Fixturene bruker de MÅLTE feltnavnene fra ekte FPL-API (2026-09-01):
 // tallfelter som strenger, now_cost i tideler, *_order for dødballroller.
@@ -233,4 +233,120 @@ test('buildPlayerCard null-guarder alle tre dødballrollene', () => {
     }).dodball,
     { straffer: 1, hjorner: 2, frispark: 3 },
   );
+});
+
+// ---- buildDifferentials --------------------------------------------------
+
+// Kampene gir MCI (13) snitt-FDR 3.0 i vinduet 3–5; LIV (12) har ingen kamper
+// i vinduet og faller tilbake på 3.5. ARS (1) ligger på 1.0.
+const diffFixtures = [
+  { event: 2, team_h: 13, team_a: 1, team_h_difficulty: 5, team_a_difficulty: 5 },
+  { event: 3, team_h: 13, team_a: 20, team_h_difficulty: 2, team_a_difficulty: 4 },
+  { event: 4, team_h: 20, team_a: 13, team_h_difficulty: 4, team_a_difficulty: 3 },
+  { event: 5, team_h: 13, team_a: 1, team_h_difficulty: 4, team_a_difficulty: 1 },
+  { event: 6, team_h: 13, team_a: 1, team_h_difficulty: 1, team_a_difficulty: 1 },
+];
+
+let nextId = 500;
+function kandidat(over = {}) {
+  return el({
+    id: (nextId += 1),
+    web_name: `Spiller${nextId}`,
+    team: 13,
+    selected_by_percent: '4.0',
+    form: '4.0',
+    minutes: 90,
+    status: 'a',
+    ...over,
+  });
+}
+
+function tersklerFor(elements, over = {}) {
+  const r = buildDifferentials({
+    elements,
+    fixtures: diffFixtures,
+    fromGw: 3,
+    teamsById,
+    ...over,
+  });
+  return new Map(r.terskler.map((t) => [t.prosent, t.rows]));
+}
+
+test('buildDifferentials ekskluderer eierandel som er nøyaktig på terskelen', () => {
+  const paa = kandidat({ selected_by_percent: '10.0', web_name: 'Paa' });
+  const under = kandidat({ selected_by_percent: '9.9', web_name: 'Under' });
+
+  const t = tersklerFor([paa, under]);
+
+  assert.deepEqual(t.get(10).map((r) => r.navn), ['Under']);
+  assert.deepEqual(t.get(15).map((r) => r.navn).sort(), ['Paa', 'Under']);
+  assert.deepEqual(t.get(5).map((r) => r.navn), []);
+});
+
+test('buildDifferentials regner score = form × (6 − snitt-FDR) med én desimal', () => {
+  const p = kandidat({ form: '4.0', team: 13 });
+
+  const [row] = tersklerFor([p]).get(5);
+
+  assert.equal(row.fdr3, 3);
+  assert.equal(row.score, 12); // 4.0 × (6 − 3.0)
+  assert.deepEqual(row, {
+    id: p.id,
+    navn: p.web_name,
+    lag: { kort: 'MCI', kode: 43, navn: 'Man City' },
+    posKort: 'A',
+    pris: '14.1',
+    form: '4.0',
+    eid: '4.0',
+    fdr3: 3,
+    score: 12,
+  });
+});
+
+test('buildDifferentials faller tilbake på FDR 3.5 for lag uten kamper i vinduet', () => {
+  const p = kandidat({ team: 12, form: '2.0' });
+
+  const [row] = tersklerFor([p]).get(5);
+
+  assert.equal(row.fdr3, 3.5);
+  assert.equal(row.score, 5); // 2.0 × (6 − 3.5)
+});
+
+test('buildDifferentials sorterer på score og kutter på topp 10', () => {
+  const mange = [];
+  for (let i = 1; i <= 12; i++) {
+    mange.push(kandidat({ form: `${i}.0`, web_name: `F${i}` }));
+  }
+
+  const rows = tersklerFor(mange).get(5);
+
+  assert.equal(rows.length, 10);
+  assert.deepEqual(
+    rows.map((r) => r.navn),
+    ['F12', 'F11', 'F10', 'F9', 'F8', 'F7', 'F6', 'F5', 'F4', 'F3'],
+  );
+  assert.ok(rows[0].score > rows[9].score);
+});
+
+test('buildDifferentials returnerer null når ingen har form ennå', () => {
+  const sesongstart = [
+    kandidat({ form: '0.0', minutes: 0 }),
+    kandidat({ form: '0.0', minutes: 90 }),
+  ];
+
+  assert.equal(
+    buildDifferentials({ elements: sesongstart, fixtures: diffFixtures, fromGw: 3 }),
+    null,
+  );
+});
+
+test('buildDifferentials filtrerer bort skadde, ubrukte og formløse spillere', () => {
+  const ok = kandidat({ web_name: 'Ok' });
+  const skadet = kandidat({ web_name: 'Skadet', status: 'i' });
+  const ubrukt = kandidat({ web_name: 'Ubrukt', minutes: 0 });
+  const formlos = kandidat({ web_name: 'Formlos', form: '0.0' });
+
+  const rows = tersklerFor([ok, skadet, ubrukt, formlos]).get(5);
+
+  assert.deepEqual(rows.map((r) => r.navn), ['Ok']);
 });
