@@ -7,6 +7,13 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+
+- Grunnlaget for spillerkortet: `buildPlayerCard` samler nøkkeltall, siste
+  fem runder (dobbeltrunder gir to rader) og de tre neste kampene med FDR
+  til ett norsk datasett. Skadenyheter oversettes, og dødballrollene
+  (straffer, hjørner, frispark) følger med.
+
 ### Fixed
 
 - Kontrakten for `getElementSummary` er låst med tester: egen cache-nøkkel
