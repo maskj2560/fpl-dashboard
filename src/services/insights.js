@@ -192,3 +192,107 @@ export function buildCaptainAudit({ picksByGw, liveByGw, eventsById, elementsByI
     counted: { squad: rows.length, global: withGlobal.length },
   };
 }
+
+/** Poengverdien av et mål per posisjon: keeper/forsvar 6, midtbane 5, spiss 4. */
+const GOAL_VALUE = { 1: 6, 2: 6, 3: 5, 4: 4 };
+
+/** xG-feltene kommer som strenger («1.47»). Ugyldig eller manglende → 0. */
+const num = (v) => {
+  const n = parseFloat(v);
+  return Number.isFinite(n) ? n : 0;
+};
+
+const round1 = (n) => Math.round(n * 10) / 10;
+
+/**
+ * Flaksbarometeret: hvor mye spillerne over- eller underpresterte mot
+ * forventningen, målt i poeng — (mål − xG) × målverdien for posisjonen
+ * pluss (assist − xA) × 3.
+ *
+ * Rundetallet summerer den XI-en som faktisk spilte. Spillertallene er
+ * sesongsummer for de femten i siste ferdige rundes tropp og gjelder hele
+ * sesongen, uavhengig av når spilleren ble kjøpt — det står som hint i UI.
+ *
+ * Mangler `expected_goals`/`expected_assists` i samtlige runder, blir
+ * hele seksjonen null: heller en utelatt seksjon enn gale tall.
+ *
+ * @returns {{rows:Array, total:number, players:Array, top:Array, bottom:Array}|null}
+ */
+export function buildLuckMeter({ picksByGw, liveByGw, elementsById, teamsById, gws }) {
+  const statsByGw = new Map();
+  let sawExpected = false;
+
+  for (const gw of gws ?? []) {
+    const live = liveByGw?.get(gw);
+    if (!live) continue;
+    const map = new Map();
+    for (const e of live.elements ?? []) {
+      const s = e.stats ?? {};
+      if (s.expected_goals !== undefined || s.expected_assists !== undefined) sawExpected = true;
+      map.set(e.id, {
+        goals: num(s.goals_scored),
+        xg: num(s.expected_goals),
+        assists: num(s.assists),
+        xa: num(s.expected_assists),
+      });
+    }
+    statsByGw.set(gw, map);
+  }
+  if (!sawExpected) return null;
+
+  const luckOf = (id, s) => {
+    if (!s) return 0;
+    const value = GOAL_VALUE[elementsById?.get(id)?.element_type] ?? 0;
+    return (s.goals - s.xg) * value + (s.assists - s.xa) * 3;
+  };
+
+  const rows = [];
+  let total = 0;
+  let lastPicks = null;
+  for (const gw of gws ?? []) {
+    const picks = picksByGw?.get(gw);
+    const stats = statsByGw.get(gw);
+    if (!picks?.picks?.length || !stats) continue;
+    lastPicks = picks;
+
+    let sum = 0;
+    for (const id of actualXiIds(picks)) sum += luckOf(id, stats.get(id));
+    total += sum;
+    rows.push({ gw, luck: round1(sum) });
+  }
+  if (rows.length === 0) return null;
+
+  const players = (lastPicks?.picks ?? []).map((p) => {
+    const id = p.element;
+    const agg = { goals: 0, xg: 0, assists: 0, xa: 0, luck: 0 };
+    for (const stats of statsByGw.values()) {
+      const s = stats.get(id);
+      if (!s) continue;
+      agg.goals += s.goals;
+      agg.xg += s.xg;
+      agg.assists += s.assists;
+      agg.xa += s.xa;
+      agg.luck += luckOf(id, s);
+    }
+    const element = elementsById?.get(id);
+    return {
+      id,
+      name: element?.web_name ?? 'Ukjent',
+      teamCode: teamsById?.get(element?.team)?.code ?? null,
+      goals: agg.goals,
+      xg: round1(agg.xg),
+      assists: agg.assists,
+      xa: round1(agg.xa),
+      luck: round1(agg.luck),
+    };
+  });
+
+  const sorted = [...players].sort((a, b) => b.luck - a.luck || a.id - b.id);
+  return {
+    rows,
+    total: round1(total),
+    players,
+    top: sorted.slice(0, 3),
+    bottom: [...sorted].reverse().slice(0, 3),
+  };
+}

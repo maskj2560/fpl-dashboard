@@ -1,6 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { optimalXi, buildBenchReport, buildCaptainAudit } from '../src/services/insights.js';
+import {
+  optimalXi,
+  buildBenchReport,
+  buildCaptainAudit,
+  buildLuckMeter,
+} from '../src/services/insights.js';
 
 // ---- felles testdata ----------------------------------------------------
 // 15 spillere: 1–2 keeper, 3–7 forsvar, 8–12 midtbane, 13–15 spiss.
@@ -309,4 +314,101 @@ test('buildCaptainAudit hopper over runder uten picks og gir null uten rader', (
     audit({ picksByGw: new Map(), liveByGw: new Map(), eventsById: new Map(), gws: [] }),
     null,
   );
+});
+
+// ---- buildLuckMeter -----------------------------------------------------
+
+/** Live med xG-statistikk: { id: { g, xg, a, xa } }. */
+function luckLive(stats, points = {}) {
+  const extra = {};
+  for (const [id, s] of Object.entries(stats)) {
+    extra[id] = {
+      goals_scored: s.g ?? 0,
+      assists: s.a ?? 0,
+      expected_goals: s.xg ?? '0.0',
+      expected_assists: s.xa ?? '0.0',
+    };
+  }
+  return liveFor(points, extra);
+}
+
+const luck = (args) => buildLuckMeter({ elementsById, teamsById, ...args });
+
+test('buildLuckMeter bruker målverdien for posisjonen og 3 for assist', () => {
+  const m = luck({
+    picksByGw: new Map([[1, picksFor({ xi: XI })]]),
+    liveByGw: new Map([[1, luckLive({
+      3: { g: 1 }, // forsvar: 1 × 6
+      8: { g: 1 }, // midtbane: 1 × 5
+      13: { g: 1 }, // spiss: 1 × 4
+      9: { a: 1 }, // assist: 1 × 3
+    })]]),
+    gws: [1],
+  });
+
+  assert.equal(m.rows[0].luck, 18);
+  assert.equal(m.total, 18);
+});
+
+test('buildLuckMeter parser xG-strengene fra API-et', () => {
+  const m = luck({
+    picksByGw: new Map([[1, picksFor({ xi: XI })]]),
+    liveByGw: new Map([[1, luckLive({ 3: { g: 2, xg: '1.50' } })]]),
+    gws: [1],
+  });
+
+  assert.equal(m.rows[0].luck, 3); // (2 − 1,5) × 6
+});
+
+test('buildLuckMeter teller kun den XI-en som faktisk spilte, per runde', () => {
+  const m = luck({
+    picksByGw: new Map([[1, picksFor({ xi: XI })]]),
+    liveByGw: new Map([[1, luckLive({ 3: { g: 1 }, 6: { g: 3 } })]]), // 6 er benket
+    gws: [1],
+  });
+
+  assert.equal(m.rows[0].luck, 6, 'benkespilleren skal ikke telle i rundetallet');
+  const benched = m.players.find((p) => p.id === 6);
+  assert.equal(benched.luck, 18, 'spillertallet gjelder hele sesongen, også benkerunder');
+});
+
+test('buildLuckMeter behandler ugyldige xG-verdier som 0', () => {
+  const m = luck({
+    picksByGw: new Map([[1, picksFor({ xi: XI })]]),
+    liveByGw: new Map([[1, luckLive({ 3: { g: 1, xg: 'x' }, 8: { a: 1, xa: null } })]]),
+    gws: [1],
+  });
+
+  assert.equal(m.rows[0].luck, 9); // 1 × 6 + 1 × 3, NaN → 0
+});
+
+test('buildLuckMeter gir null når xG-feltene mangler i samtlige runder', () => {
+  const m = luck({
+    picksByGw: new Map([[1, picksFor({ xi: XI })]]),
+    liveByGw: new Map([[1, liveFor({ 3: 6, 8: 5 })]]), // ingen expected_*
+    gws: [1],
+  });
+
+  assert.equal(m, null);
+});
+
+test('buildLuckMeter sorterer topp 3 og bunn 3 på sesongflaks', () => {
+  const m = luck({
+    picksByGw: new Map([[1, picksFor({ xi: XI })]]),
+    liveByGw: new Map([[1, luckLive({
+      3: { g: 2 }, // +12
+      4: { g: 1 }, // +6
+      5: { a: 1 }, // +3
+      8: { g: 0, xg: '2.0' }, // −10
+      9: { g: 0, xg: '1.0' }, // −5
+      10: { a: 0, xa: '1.0' }, // −3
+    })]]),
+    gws: [1],
+  });
+
+  assert.deepEqual(m.top.map((p) => p.id), [3, 4, 5]);
+  assert.deepEqual(m.bottom.map((p) => p.id), [8, 9, 10]);
+  assert.equal(m.top[0].luck, 12);
+  assert.equal(m.bottom[0].luck, -10);
+  assert.equal(m.top[0].teamCode, 3);
 });
