@@ -1291,6 +1291,39 @@ table.sortable th[aria-sort='ascending']::after {
   display: block;
 }
 
+/* Akse-etiketter rundt grafene (v1.7.1). Tekst kan ikke ligge inne i
+   SVG-en: preserveAspectRatio="none" ville strukket den. */
+.graph-wrap {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.graph-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.graph-y {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: right;
+  padding-bottom: 1.4rem; /* linjer opp med SVG-en, over .graph-x-raden */
+}
+
+.graph-x {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.15rem;
+}
+
+.graph-y span,
+.graph-x span {
+  font-size: var(--fs-sm);
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
 .rec-list {
   margin: 0;
   padding-left: 1.25rem;

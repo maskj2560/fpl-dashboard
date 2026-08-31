@@ -9,6 +9,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Added
 
+- Grafene på «Lag» (totalrangering) og «Liga» (sesongutvikling) har fått
+  akse-etiketter: beste/dårligste verdi på y-aksen og første/siste runde
+  på x-aksen — ikke lenger nødvendig å gjette skalaen.
 - «Nyheter» viser nå når neste AI-oppsummering tidligst kommer («generert
   HH:MM · neste tidligst HH:MM») — teksten er timer-styrt som før, ingen
   knapp og ingen ekstra AI-kall.

@@ -370,6 +370,8 @@ export function rankGraph(historyCurrent, width = 600, height = 140) {
     max,
     first: values[0],
     last: values[values.length - 1],
+    gwFirst: ranks[0].event,
+    gwLast: ranks[ranks.length - 1].event,
     single: ranks.length === 1,
   };
 }

@@ -81,7 +81,7 @@ export const team = {
     },
     bench: [{ pick: {}, player: player(5, 'Turner', { element_type: 1 }) }],
   },
-  graph: { points: '0,0 600,140', area: '0,0 600,140 600,140 0,140', min: 400000, last: 500000 },
+  graph: { points: '0,0 600,140', area: '0,0 600,140 600,140 0,140', min: 400000, max: 500000, last: 500000, gwFirst: 1, gwLast: 2 },
   chips: [],
   recommendations: {
     captains: [{ player: player(3, 'Saka'), criterion: 'form', reasons: ['Form 5.5', 'Lett kamp'] }],

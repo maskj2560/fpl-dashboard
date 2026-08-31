@@ -298,6 +298,17 @@ test('rankGraph lager polyline-punkter, lav rank overst', () => {
   assert.equal(rankGraph([{ event: 1, overall_rank: 5 }], 600, 140).points, '0,70');
 });
 
+// v1.7.1: aksene på grafen trenger rundespennet, ikke bare rank-spennet.
+test('rankGraph oppgir første og siste runde for x-aksen', () => {
+  const g = rankGraph([
+    { event: 2, overall_rank: 100 },
+    { event: 3, overall_rank: 200 },
+    { event: 5, overall_rank: 150 },
+  ], 600, 140);
+  assert.equal(g.gwFirst, 2);
+  assert.equal(g.gwLast, 5);
+});
+
 test('rankGraph gir lukket areal-polygon under linjen', () => {
   const g = rankGraph([{ event: 1, overall_rank: 100 }, { event: 2, overall_rank: 50 }], 600, 140);
   assert.equal(g.area, `${g.points} 600,140 0,140`);
