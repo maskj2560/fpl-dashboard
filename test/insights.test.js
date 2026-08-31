@@ -5,6 +5,7 @@ import {
   buildBenchReport,
   buildCaptainAudit,
   buildLuckMeter,
+  buildDreamTeamSection,
 } from '../src/services/insights.js';
 
 // ---- felles testdata ----------------------------------------------------
@@ -411,4 +412,102 @@ test('buildLuckMeter sorterer topp 3 og bunn 3 på sesongflaks', () => {
   assert.equal(m.top[0].luck, 12);
   assert.equal(m.bottom[0].luck, -10);
   assert.equal(m.top[0].teamCode, 3);
+});
+
+// ---- buildDreamTeamSection ----------------------------------------------
+
+/** Dream-team-svar: elleve elementer, posisjon 1–11. */
+const dtFor = (ids, topId = ids[0]) => ({
+  top_player: { id: topId, points: 20 },
+  team: ids.map((element, i) => ({ element, points: 10 - i, position: i + 1 })),
+});
+
+// 6 er benket hos meg, 99 eier jeg ikke — resten startet.
+const DT_IDS = [1, 3, 4, 6, 8, 9, 10, 11, 13, 14, GLOBAL_ID];
+
+const dream = (args) =>
+  buildDreamTeamSection({ elementsById, teamsById, lastGw: 1, gws: [1], ...args });
+
+test('buildDreamTeamSection mapper rundens XI og merker mine spillere', () => {
+  const myPicks = picksFor({ xi: XI, captain: 13 });
+  const s = dream({
+    dreamTeam: dtFor(DT_IDS),
+    myPicks,
+    picksByGw: new Map([[1, myPicks]]),
+    liveByGw: new Map([[1, liveFor({})]]),
+  });
+
+  assert.equal(s.gw, 1);
+  assert.equal(s.xi.length, 11);
+  assert.deepEqual(s.xi.map((p) => p.id), DT_IDS, 'sortert på position');
+  assert.equal(s.xi[0].points, 10);
+  assert.equal(s.xi[0].mine, 'startet');
+  assert.equal(s.xi.find((p) => p.id === 6).mine, 'benket');
+  assert.equal(s.xi.find((p) => p.id === GLOBAL_ID).mine, null);
+  assert.equal(s.xi[1].teamShort, 'ARS');
+  assert.equal(s.topPlayer.name, 'S1');
+  assert.equal(s.topPlayer.points, 20);
+});
+
+test('buildDreamTeamSection merker kapteinen min i rundens XI', () => {
+  const myPicks = picksFor({ xi: XI, captain: 13 });
+  const s = dream({
+    dreamTeam: dtFor(DT_IDS),
+    myPicks,
+    picksByGw: new Map([[1, myPicks]]),
+    liveByGw: new Map([[1, liveFor({})]]),
+  });
+
+  assert.equal(s.xi.find((p) => p.id === 13).captain, true);
+  assert.equal(s.xi.filter((p) => p.captain).length, 1);
+});
+
+test('buildDreamTeamSection teller hvor mange av elleveren jeg eide', () => {
+  const myPicks = picksFor({ xi: XI, captain: 13 });
+  const s = dream({
+    dreamTeam: dtFor(DT_IDS),
+    myPicks,
+    picksByGw: new Map([[1, myPicks]]),
+    liveByGw: new Map([[1, liveFor({})]]),
+  });
+
+  assert.equal(s.mineCount, 10, 'ti av elleve, inkludert den benkede');
+});
+
+test('buildDreamTeamSection bygger sesongtrenden fra in_dreamteam', () => {
+  const myPicks = picksFor({ xi: XI, captain: 13 });
+  const s = dream({
+    dreamTeam: dtFor(DT_IDS),
+    myPicks,
+    picksByGw: new Map([[1, myPicks], [2, myPicks]]),
+    liveByGw: new Map([
+      // 6 er benket og skal ikke telle i runde 1.
+      [1, liveFor({}, { 3: { in_dreamteam: true }, 8: { in_dreamteam: true }, 6: { in_dreamteam: true } })],
+      [2, liveFor({}, { 13: { in_dreamteam: true } })],
+    ]),
+    gws: [1, 2],
+  });
+
+  assert.deepEqual(s.trend, [{ gw: 1, count: 2 }, { gw: 2, count: 1 }]);
+});
+
+test('buildDreamTeamSection dropper trenden uten in_dreamteam og seksjonen uten dream-team', () => {
+  const myPicks = picksFor({ xi: XI, captain: 13 });
+  const utenFelt = dream({
+    dreamTeam: dtFor(DT_IDS),
+    myPicks,
+    picksByGw: new Map([[1, myPicks]]),
+    liveByGw: new Map([[1, liveFor({})]]),
+  });
+  assert.equal(utenFelt.trend, null);
+  assert.ok(utenFelt.xi.length === 11, 'resten av seksjonen står');
+
+  const tom = dream({
+    dreamTeam: { team: [] },
+    myPicks,
+    picksByGw: new Map([[1, myPicks]]),
+    liveByGw: new Map([[1, liveFor({})]]),
+  });
+  assert.equal(tom, null);
+  assert.equal(dream({ dreamTeam: null, myPicks, picksByGw: new Map(), liveByGw: new Map() }), null);
 });

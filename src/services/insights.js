@@ -296,3 +296,77 @@ export function buildLuckMeter({ picksByGw, liveByGw, elementsById, teamsById, g
     bottom: [...sorted].reverse().slice(0, 3),
   };
 }
+
+/**
+ * Rundens XI: FPLs eget drømmelag for siste ferdige runde, merket med
+ * hvem av dem jeg eide (startet/benket) og hvem som bar bindet mitt.
+ *
+ * Sesongtrenden teller, per ferdig runde, hvor mange av MIN faktiske XI
+ * som havnet i rundens drømmelag (`in_dreamteam` i live). Mangler feltet,
+ * blir trenden null — resten av seksjonen står. Tomt eller ugyldig
+ * dream-team-svar (f.eks. 404 rett etter rundeslutt) gir null seksjon.
+ *
+ * @returns {{gw:number, topPlayer:object|null, xi:Array, mineCount:number,
+ *   trend:Array|null}|null}
+ */
+export function buildDreamTeamSection({
+  dreamTeam,
+  lastGw,
+  myPicks,
+  picksByGw,
+  liveByGw,
+  elementsById,
+  teamsById,
+  gws,
+}) {
+  const rows = dreamTeam?.team ?? [];
+  if (rows.length === 0) return null;
+
+  const nameOf = (id) => elementsById?.get(id)?.web_name ?? 'Ukjent';
+  const owned = new Set((myPicks?.picks ?? []).map((p) => p.element));
+  const started = new Set(actualXiIds(myPicks));
+  const captainId = effectiveCaptain(myPicks)?.element ?? null;
+
+  const xi = [...rows]
+    .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+    .map((row) => {
+      const id = row.element;
+      const element = elementsById?.get(id);
+      const club = teamsById?.get(element?.team);
+      return {
+        id,
+        name: nameOf(id),
+        teamCode: club?.code ?? null,
+        teamShort: club?.short_name ?? '',
+        elementType: element?.element_type ?? null,
+        points: row.points ?? 0,
+        mine: started.has(id) ? 'startet' : owned.has(id) ? 'benket' : null,
+        captain: id === captainId,
+      };
+    });
+
+  const top = dreamTeam?.top_player;
+  const topPlayer = top?.id != null ? { name: nameOf(top.id), points: top.points ?? 0 } : null;
+
+  let sawFlag = false;
+  const trend = [];
+  for (const gw of gws ?? []) {
+    const live = liveByGw?.get(gw);
+    const picks = picksByGw?.get(gw);
+    if (!live || !picks?.picks?.length) continue;
+    const flags = new Map();
+    for (const e of live.elements ?? []) {
+      if (e.stats?.in_dreamteam !== undefined) sawFlag = true;
+      flags.set(e.id, e.stats?.in_dreamteam === true);
+    }
+    trend.push({ gw, count: actualXiIds(picks).filter((id) => flags.get(id)).length });
+  }
+
+  return {
+    gw: lastGw,
+    topPlayer,
+    xi,
+    mineCount: xi.filter((p) => p.mine).length,
+    trend: sawFlag && trend.length > 0 ? trend : null,
+  };
+}
