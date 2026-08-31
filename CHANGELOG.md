@@ -30,6 +30,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   spillerkortet, og hver rad har en avkrysningsboks for spillerduellen.
   Terskelbytte (5/10/15 %) skjer i nettleseren — ingen sidelasting, ingen
   nye kall mot FPL.
+- Spillerkort: klikk på et spillernavn åpner et kort med nøkkeltall,
+  dødballroller, de fem siste rundene og de tre neste kampene med
+  FDR-farge. Kortet lukkes med ×, Esc eller klikk utenfor, tastaturfokus
+  holdes inne i dialogen, og fokus går tilbake til navnet du klikket på.
 
 ### Fixed
 

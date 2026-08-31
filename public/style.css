@@ -77,6 +77,8 @@
   --pitch-stripe-a: rgba(0, 255, 135, 0.055);
   --pitch-stripe-b: rgba(0, 255, 135, 0.03);
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  /* Bakteppet bak spillerkort-modalen (v1.8.0). */
+  --overlay: rgba(10, 3, 18, 0.72);
   --scrollbar-thumb: #5c4a80;
   --scrollbar-thumb-hover: #7a66a3;
   --focus: #00ff87;
@@ -161,6 +163,7 @@
   --pitch-stripe-a: rgba(0, 255, 135, 0.16);
   --pitch-stripe-b: rgba(0, 255, 135, 0.1);
   --shadow: 0 2px 8px rgba(55, 0, 60, 0.12);
+  --overlay: rgba(55, 0, 60, 0.45);
   --scrollbar-thumb: #c9bfd6;
   --scrollbar-thumb-hover: #b1a4c2;
   --focus: #37003C;
@@ -1837,4 +1840,122 @@ footer .version {
 
 .terskel-velger input {
   accent-color: var(--accent);
+}
+
+/* Spillerkort-modalen. Bakteppet bruker --overlay, som finnes i begge temaer. */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 1.2rem 0.8rem;
+  overflow-y: auto;
+}
+
+.modal[hidden] {
+  display: none;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay);
+}
+
+.modal-dialog {
+  position: relative;
+  width: min(46rem, 100%);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 1rem 1.1rem 1.2rem;
+}
+
+.modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-bottom: 0.6rem;
+}
+
+.modal-head h2 {
+  margin: 0;
+}
+
+.modal-close {
+  flex: none;
+  line-height: 1;
+  font-size: 1.3rem;
+  padding: 0.15rem 0.5rem;
+}
+
+body.modal-apen {
+  overflow: hidden;
+}
+
+/* Innholdet i kortet */
+.kort-topp {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.kort-topp p {
+  margin: 0 0 0.25rem;
+}
+
+.kort-navn {
+  font-weight: 700;
+  font-size: var(--fs-lg);
+}
+
+.kort-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(5.2rem, 1fr));
+  gap: 0.5rem;
+  margin: 0.9rem 0 0.2rem;
+}
+
+.kort-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-2);
+}
+
+.kort-stat-navn {
+  font-size: var(--fs-sm);
+  color: var(--text-dim);
+}
+
+.kort-stat-val {
+  font-weight: 700;
+}
+
+.kort-dodball,
+.kort-kommende {
+  list-style: none;
+  padding: 0;
+  margin: 0.3rem 0 0;
+}
+
+.kort-kommende {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.7rem;
+  align-items: center;
+}
+
+.kort-kommende li {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }

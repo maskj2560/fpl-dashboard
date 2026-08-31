@@ -29,6 +29,74 @@ function rowMatchesFilters(ds, f) {
   );
 }
 
+// Spillerkortet (v1.8.0): ren strengbygger, testet uten DOM. ALT som kommer
+// fra FPL escapes — navn, nyhetstekst og motstandere. shirtHtml er derimot
+// server-rendret av clubAssets-vokteren (en klonet <template>) og settes inn rå.
+const DODBALL_ETIKETTER = [
+  ['straffer', 'Straffer'],
+  ['hjorner', 'Hjørner/indirekte'],
+  ['frispark', 'Direkte frispark'],
+];
+
+function playerCardHtml(d, shirtHtml) {
+  const e = escapeHtml;
+  const stat = (navn, verdi) =>
+    '<div class="kort-stat"><span class="kort-stat-navn">' + e(navn) +
+    '</span><span class="kort-stat-val">' + e(verdi) + '</span></div>';
+
+  let html = '<div class="kort-topp">' + (shirtHtml || '') +
+    '<div><p class="kort-navn">' + e(d.fulltNavn) + '</p>' +
+    '<p class="dim">' + e((d.lag && d.lag.navn) || '–') + ' · ' + e(d.posisjon) +
+    ' · £' + e(d.pris) + 'm</p>' +
+    '<p><span class="status status-' + e(d.status) + '">' + e(d.statusTekst) + '</span>' +
+    (d.spillesjanse == null ? '' : ' <span class="dim">' + e(d.spillesjanse) + ' % sjanse</span>') +
+    '</p>' + (d.nytt ? '<p class="dim">' + e(d.nytt) + '</p>' : '') +
+    '</div></div>';
+
+  html += '<div class="kort-stats">' +
+    stat('Form', d.form) + stat('Poeng', d.totalPoeng) + stat('P/K', d.poengPerKamp) +
+    stat('Eid %', d.eid) + stat('xG', d.xg) + stat('xA', d.xa) +
+    stat('Minutter', d.minutter) + '</div>';
+
+  const roller = DODBALL_ETIKETTER.filter(([key]) => d.dodball && d.dodball[key] != null);
+  if (roller.length > 0) {
+    html += '<h3>Dødball</h3><ul class="kort-dodball">' +
+      roller.map(([key, label]) =>
+        '<li>' + e(label) + ': ' + e(d.dodball[key]) + '. valg</li>').join('') +
+      '</ul>';
+  }
+
+  html += '<h3>Siste kamper</h3>';
+  if (d.sisteKamper.length === 0) {
+    html += '<p class="empty">Ingen spilte kamper ennå.</p>';
+  } else {
+    html += '<div class="table-scroll"><table class="data"><thead><tr>' +
+      '<th>Runde</th><th>Mot</th><th class="num">P</th><th class="num">Min</th>' +
+      '<th class="num">Mål</th><th class="num">A</th><th class="num">xG</th>' +
+      '<th class="num">xA</th><th class="num">Bonus</th></tr></thead><tbody>' +
+      d.sisteKamper.map((k) =>
+        '<tr><td>' + e(k.runde) + '</td><td>' + e(k.motstander || '–') +
+        (k.hjemme == null ? '' : ' <span class="dim">' + (k.hjemme ? 'H' : 'B') + '</span>') +
+        '</td><td class="num"><strong>' + e(k.poeng) + '</strong></td>' +
+        '<td class="num">' + e(k.minutter) + '</td><td class="num">' + e(k.mal) + '</td>' +
+        '<td class="num">' + e(k.assists) + '</td><td class="num">' + e(k.xg) + '</td>' +
+        '<td class="num">' + e(k.xa) + '</td><td class="num">' + e(k.bonus) + '</td></tr>').join('') +
+      '</tbody></table></div>';
+  }
+
+  html += '<h3>Neste kamper</h3>';
+  if (d.kommende.length === 0) {
+    html += '<p class="empty">Ingen kamper er satt opp ennå.</p>';
+  } else {
+    html += '<ul class="kort-kommende">' + d.kommende.map((k) =>
+      '<li><span class="dim">R' + e(k.runde) + '</span> ' +
+      '<span class="fdr fdr-' + e(k.fdr) + '">' + e(k.motstander || '–') + ' ' +
+      (k.hjemme ? 'H' : 'B') + '</span></li>').join('') + '</ul>';
+  }
+
+  return html;
+}
+
 // Leser én query-parameter uten URLSearchParams (testbar i ren V8-kontekst).
 function queryParam(qs, name) {
   for (const part of String(qs).replace(/^\?/, '').split('&')) {
@@ -828,4 +896,107 @@ function rivalNavAction({ search, stored, validIds }) {
     return;
   }
   if (action.type === 'redirect') location.replace(action.to);
+})();
+
+// Modul 9: Spillerkort-modalen (/spillere). Henter lazy fra /api/spiller/:id
+// ved klikk — én gang per spiller per sidevisning (serveren cacher 30 min).
+(function () {
+  'use strict';
+
+  const root = document.getElementById('spillerkort');
+  if (!root) return;
+
+  const body = document.getElementById('spillerkort-body');
+  const tittel = document.getElementById('spillerkort-tittel');
+  const lukkKnapp = document.getElementById('spillerkort-lukk');
+  const dialog = root.querySelector('[role="dialog"]');
+  const cache = new Map();
+  let utloser = null;
+
+  function shirtFor(data) {
+    const lagId = data.lag && data.lag.id;
+    if (lagId == null) return '';
+    const attr = data.erKeeper ? 'data-shirt-keeper' : 'data-shirt';
+    const tpl = document.querySelector('template[' + attr + '="' + lagId + '"]');
+    return tpl ? tpl.innerHTML : '';
+  }
+
+  function fokuserbare() {
+    return [...dialog.querySelectorAll('button, [href], input, select, textarea, [tabindex]')]
+      .filter((el) => !el.disabled && el.tabIndex !== -1);
+  }
+
+  function apne(knapp) {
+    utloser = knapp;
+    root.hidden = false;
+    document.body.classList.add('modal-apen');
+    lukkKnapp.focus();
+  }
+
+  function lukk() {
+    root.hidden = true;
+    document.body.classList.remove('modal-apen');
+    if (utloser) utloser.focus();
+    utloser = null;
+  }
+
+  async function vis(id, navn) {
+    tittel.textContent = navn || 'Spillerkort';
+    if (cache.has(id)) {
+      const data = cache.get(id);
+      tittel.textContent = data.fulltNavn;
+      body.innerHTML = playerCardHtml(data, shirtFor(data));
+      return;
+    }
+
+    body.innerHTML = '<p class="loading">Henter spillerkort <span class="dots"><i></i><i></i><i></i></span></p>';
+    try {
+      const res = await fetch('/api/spiller/' + encodeURIComponent(id));
+      const data = await res.json();
+      if (!res.ok) {
+        body.innerHTML = '<p class="empty">' + escapeHtml(data.error || 'Fikk ikke hentet spillerkortet — prøv igjen.') + '</p>';
+        return;
+      }
+      cache.set(id, data);
+      tittel.textContent = data.fulltNavn;
+      body.innerHTML = playerCardHtml(data, shirtFor(data));
+    } catch {
+      body.innerHTML = '<p class="empty">Fikk ikke hentet spillerkortet — prøv igjen.</p>';
+    }
+  }
+
+  document.addEventListener('click', (e) => {
+    const knapp = e.target.closest && e.target.closest('.js-spillerkort');
+    if (knapp) {
+      e.preventDefault();
+      apne(knapp);
+      vis(knapp.dataset.id, knapp.textContent.trim());
+      return;
+    }
+    if (!root.hidden && e.target.hasAttribute && e.target.hasAttribute('data-modal-close')) lukk();
+  });
+
+  lukkKnapp.addEventListener('click', lukk);
+
+  // Esc lukker, Tab holdes inne i dialogen så lang tid den er åpen.
+  document.addEventListener('keydown', (e) => {
+    if (root.hidden) return;
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      lukk();
+      return;
+    }
+    if (e.key !== 'Tab') return;
+    const felt = fokuserbare();
+    if (felt.length === 0) return;
+    const forste = felt[0];
+    const siste = felt[felt.length - 1];
+    if (e.shiftKey && document.activeElement === forste) {
+      e.preventDefault();
+      siste.focus();
+    } else if (!e.shiftKey && document.activeElement === siste) {
+      e.preventDefault();
+      forste.focus();
+    }
+  });
 })();
