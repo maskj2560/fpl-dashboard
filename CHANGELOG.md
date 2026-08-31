@@ -7,6 +7,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Fixed
+
+- Kontrakten for `getElementSummary` er låst med tester: egen cache-nøkkel
+  per spiller og 30 minutters levetid. Funksjonen fantes fra før, men var
+  ubrukt og utestet — nå er den grunnmuren spillerkortet hviler på.
+
 ## [1.7.1] - 2026-09-01
 
 ### Added

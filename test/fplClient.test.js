@@ -12,6 +12,7 @@ import {
   getPicks,
   getPicksHistoric,
   getDreamTeam,
+  getElementSummary,
   isGameUpdating,
   staleInfo,
   FplError,
@@ -229,6 +230,37 @@ test('getDreamTeam deler ikke nøkkel med live', async () => {
   assert.equal(fetchCalls.length, 2);
   assert.match(fetchCalls[0].url, /dream-team\/3\/$/);
   assert.match(fetchCalls[1].url, /event\/3\/live\/$/);
+});
+
+// ---- v1.8.0: element-summary (spillerkortet) -----------------------------
+
+test('getElementSummary henter element-summary/{id}/ og cacher i 30 min', async () => {
+  mockFetch(() => jsonResponse({ fixtures: [], history: [] }));
+  let clock = 1_000_000;
+  _setNow(() => clock);
+  try {
+    const first = await getElementSummary(411);
+    assert.deepEqual(first, { fixtures: [], history: [] });
+    assert.equal(fetchCalls.length, 1);
+    assert.match(fetchCalls[0].url, /element-summary\/411\/$/);
+
+    clock += 29 * 60_000; // innenfor 30 min
+    await getElementSummary(411);
+    assert.equal(fetchCalls.length, 1, 'innenfor TTL skal ikke gi nytt kall');
+  } finally {
+    _setNow(null);
+  }
+});
+
+test('getElementSummary deler ikke nøkkel mellom spillere', async () => {
+  mockFetch(() => jsonResponse({ fixtures: [], history: [] }));
+
+  await getElementSummary(1);
+  await getElementSummary(2);
+
+  assert.equal(fetchCalls.length, 2);
+  assert.match(fetchCalls[0].url, /element-summary\/1\/$/);
+  assert.match(fetchCalls[1].url, /element-summary\/2\/$/);
 });
 
 test('gameUpdating utløper av seg selv 5 min etter siste 503', async () => {
