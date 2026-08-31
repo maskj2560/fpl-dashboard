@@ -52,4 +52,102 @@
     </section>
   <% } %>
 
+  <% if (insights.captains) { %>
+    <section class="card card-wide">
+      <h2>Kapteinsfasit</h2>
+      <p class="hint">To fasiter per runde. «Troppens beste» spør om kapteinen
+      din fikk flest rå poeng av de femten — delt topp teller som treff.
+      «Global favoritt» spør om kapteinen din fikk minst like mange poeng som
+      spilleren flest i verden kapteinet. Runder der FPL ikke oppgir en global
+      favoritt står som «Ikke målt» og teller ikke mot deg.</p>
+      <div class="stat-strip">
+        <div class="stat"><span class="stat-val"><%= insights.captains.hitSquadPct %> %</span><span class="stat-lbl">Traff troppens beste · <%= insights.captains.counted.squad %> runder</span></div>
+        <div class="stat"><span class="stat-val"><%= insights.captains.hitGlobalPct === null ? '–' : insights.captains.hitGlobalPct + ' %' %></span><span class="stat-lbl">Minst like god som global favoritt · <%= insights.captains.counted.global %> runder</span></div>
+      </div>
+      <div class="table-scroll">
+        <table class="data">
+          <thead>
+            <tr><th>Runde</th><th>Kaptein</th><th>Troppens beste</th><th>Global favoritt</th></tr>
+          </thead>
+          <tbody>
+            <% for (const r of insights.captains.rows) { %>
+              <tr>
+                <td>R<%= r.gw %></td>
+                <td><%- include('partials/club-badge', { team: { short_name: r.captain.teamShort, code: r.captain.teamCode, name: r.captain.teamShort }, showName: false }) %> <%= r.captain.name %> <span class="dim"><%= r.captain.points %> p</span></td>
+                <td>
+                  <%= r.squadBest.name %> <span class="dim"><%= r.squadBest.points %> p</span>
+                  <span class="status <%= r.squadBest.hit ? 'status-best' : 'status-worst' %>"><%= r.squadBest.hit ? '✓' : '–' %></span>
+                </td>
+                <td>
+                  <% if (r.global) { %>
+                    <%= r.global.name %> <span class="dim"><%= r.global.points %> p</span>
+                    <span class="status <%= r.global.hit ? 'status-best' : 'status-worst' %>"><%= r.global.hit ? '✓' : '–' %></span>
+                  <% } else { %>
+                    <span class="dim">Ikke målt</span>
+                  <% } %>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  <% } %>
+
+  <% if (insights.luck) { %>
+    <section class="card card-wide">
+      <h2>Flaksbarometer</h2>
+      <p class="hint">Flakspoeng er avstanden mellom det spillerne dine faktisk
+      leverte og det de var forventet å levere: (mål − xG) ganget med
+      poengverdien for posisjonen, pluss (assist − xA) ganget med 3. Positivt
+      tall betyr at du fikk mer enn statistikken tilsa. Rundetallet gjelder
+      elleveren som spilte; spillertallene under gjelder hele sesongen,
+      uavhengig av når du kjøpte spilleren.</p>
+      <div class="stat-strip">
+        <div class="stat"><span class="stat-val <%= insights.luck.total > 0 ? 'accent' : (insights.luck.total < 0 ? 'negative' : '') %>"><%= formatSigned(insights.luck.total) %></span><span class="stat-lbl">Flakspoeng i sesongen</span></div>
+      </div>
+      <div class="table-scroll">
+        <table class="data">
+          <thead>
+            <tr><th>Runde</th><th class="num">Flakspoeng</th></tr>
+          </thead>
+          <tbody>
+            <% for (const r of insights.luck.rows) { %>
+              <tr>
+                <td>R<%= r.gw %></td>
+                <td class="num <%= r.luck > 0 ? 'accent' : (r.luck < 0 ? 'negative' : '') %>"><%= formatSigned(r.luck) %></td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid grid--start">
+        <% for (const [tittel, liste] of [['Mest flaks', insights.luck.top], ['Mest uflaks', insights.luck.bottom]]) { %>
+          <div>
+            <h3 class="sub-head"><%= tittel %></h3>
+            <div class="table-scroll">
+              <table class="data">
+                <thead>
+                  <tr><th></th><th>Spiller</th><th class="num">Mål/xG</th><th class="num">A/xA</th><th class="num">Flaks</th></tr>
+                </thead>
+                <tbody>
+                  <% for (const p of liste) { %>
+                    <tr>
+                      <td><%- include('partials/club-shirt', { team: { code: p.teamCode }, keeper: false }) %></td>
+                      <td><%= p.name %></td>
+                      <td class="num"><%= p.goals %>/<%= p.xg.toLocaleString('nb-NO') %></td>
+                      <td class="num"><%= p.assists %>/<%= p.xa.toLocaleString('nb-NO') %></td>
+                      <td class="num <%= p.luck > 0 ? 'accent' : (p.luck < 0 ? 'negative' : '') %>"><%= formatSigned(p.luck) %></td>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        <% } %>
+      </div>
+    </section>
+  <% } %>
+
 <% } %>

@@ -435,19 +435,19 @@ export const insights = {
       rows: [
         {
           gw: 1,
-          captain: { id: 10, name: 'Haaland', teamCode: 3, points: 13 },
+          captain: { id: 10, name: 'Haaland', teamCode: 3, teamShort: 'ARS', points: 13 },
           squadBest: { name: 'Haaland', points: 13, hit: true },
           global: { name: 'Salah', points: 9, hit: true },
         },
         {
           gw: 2,
-          captain: { id: 10, name: 'Haaland', teamCode: 3, points: 2 },
+          captain: { id: 10, name: 'Haaland', teamCode: 3, teamShort: 'ARS', points: 2 },
           squadBest: { name: 'Saka', points: 11, hit: false },
           global: { name: 'Salah', points: 14, hit: false },
         },
         {
           gw: 3,
-          captain: { id: 11, name: 'Salah', teamCode: 14, points: 8 },
+          captain: { id: 11, name: 'Salah', teamCode: 14, teamShort: 'LIV', points: 8 },
           squadBest: { name: 'Salah', points: 8, hit: true },
           global: null,
         },

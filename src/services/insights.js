@@ -177,6 +177,7 @@ export function buildCaptainAudit({ picksByGw, liveByGw, eventsById, elementsByI
         id: cap.element,
         name: nameOf(cap.element),
         teamCode: teamsById?.get(element?.team)?.code ?? null,
+        teamShort: teamsById?.get(element?.team)?.short_name ?? '',
         points: capPoints,
       },
       squadBest,

@@ -457,3 +457,32 @@ test('innsikt.ejs viser sumraden og BB-merket i benkesløsingen', async () => {
   assert.ok(html.includes('−11'), 'sum unngåelig tap mangler fortegn');
   assert.ok(html.includes('<span class="status">BB</span>'), 'BB-merket mangler');
 });
+
+test('innsikt.ejs viser kapteinsfasiten med begge treffprosentene', async () => {
+  const html = await renderView('innsikt', fx.insights);
+
+  assert.ok(html.includes('Kapteinsfasit'), 'seksjonen mangler');
+  assert.ok(html.includes('67 %'), 'treffprosent mot troppens beste');
+  assert.ok(html.includes('50 %'), 'treffprosent mot global favoritt');
+  assert.ok(html.includes('Haaland'), 'kapteinsraden mangler');
+  assert.ok(html.includes('Ikke målt'), 'runde uten most_captained skal merkes, ikke telles som bom');
+});
+
+test('innsikt.ejs viser flaksbarometeret med fortegn per runde', async () => {
+  const html = await renderView('innsikt', fx.insights);
+
+  assert.ok(html.includes('Flaksbarometer'), 'seksjonen mangler');
+  assert.ok(html.includes('+4,2'), 'positiv runde mangler fortegn');
+  assert.ok(html.includes('−3,1'), 'negativ runde mangler fortegn');
+  assert.ok(html.includes('+1,1'), 'sesongsummen mangler');
+});
+
+test('innsikt.ejs lister topp 3 og bunn 3 på flaks', async () => {
+  const html = await renderView('innsikt', fx.insights);
+
+  assert.ok(html.includes('Mest flaks'), 'topplista mangler');
+  assert.ok(html.includes('Mest uflaks'), 'bunnlista mangler');
+  assert.ok(html.includes('Watkins'), 'bunnlista har ingen spillere');
+  assert.ok(html.includes('−10'), 'flakspoeng for bunnlista');
+  assert.ok(html.includes('gjelder hele sesongen'), 'hintet om spillertallenes vindu mangler');
+});
