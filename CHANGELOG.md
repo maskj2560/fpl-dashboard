@@ -25,6 +25,11 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   Detaljdataene lastes først når du klikker på et navn — aldri for alle
   626 spillerne — og en ukjent id svares med 404 uten å koste et kall mot
   FPL. Svaret oppgir også hvor gamle dataene er (`dataAlder`).
+- «Spillere» er nå tre seksjoner med hopplenker øverst: Tabell,
+  Differensialer og Dødballtakere. Spillernavn er blitt knapper som åpner
+  spillerkortet, og hver rad har en avkrysningsboks for spillerduellen.
+  Terskelbytte (5/10/15 %) skjer i nettleseren — ingen sidelasting, ingen
+  nye kall mot FPL.
 
 ### Fixed
 

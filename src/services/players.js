@@ -173,6 +173,8 @@ const DODBALL_TOPP = 2;
  * ordenstallene (`*_order`) er den eneste kilden.
  * Klubber uten kjente takere beholder raden med tomme lister, så tabellen
  * alltid speiler hele serien.
+ * Takerne er `{ id, navn }` og ikke bare navn: viewet gjør dem til knapper
+ * som åpner det samme spillerkortet som tabellen over.
  */
 export function buildSetPieceTable({ elements, teams }) {
   const perTeam = new Map(
@@ -193,7 +195,7 @@ export function buildSetPieceTable({ elements, teams }) {
       .sort((a, b) => a[felt] - b[felt]);
     for (const e of kandidater) {
       const rad = perTeam.get(e.team);
-      if (rad[rolle].length < DODBALL_TOPP) rad[rolle].push(e.web_name);
+      if (rad[rolle].length < DODBALL_TOPP) rad[rolle].push({ id: e.id, navn: e.web_name });
     }
   }
 

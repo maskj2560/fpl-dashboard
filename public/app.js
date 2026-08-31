@@ -207,6 +207,8 @@ function initEdgeFades(el, prefix) {
 
   tables.forEach((table) => {
     [...table.tHead.rows[0].cells].forEach((th, index) => {
+      // Duell-kolonnen på /spillere holder avkrysningsbokser, ikke data.
+      if (th.hasAttribute('data-nosort')) return;
       th.tabIndex = 0;
       th.addEventListener('click', () => sortBy(table, th, index));
       th.addEventListener('keydown', (e) => {

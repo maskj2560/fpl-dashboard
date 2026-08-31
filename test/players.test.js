@@ -377,6 +377,9 @@ function radFor(tabell, kort) {
   return tabell.find((r) => r.lag.kort === kort);
 }
 
+// Takerne er { id, navn } — viewet trenger id-en for å åpne spillerkortet.
+const navn = (takere) => takere.map((t) => t.navn);
+
 test('buildSetPieceTable sorterer takerne på ordenstall, ikke på listerekkefølge', () => {
   const elements = [
     taker('Tredje', 1, { penalties_order: 3 }),
@@ -388,15 +391,16 @@ test('buildSetPieceTable sorterer takerne på ordenstall, ikke på listerekkefø
 
   const rad = radFor(buildSetPieceTable({ elements, teams }), 'ARS');
 
-  assert.deepEqual(rad.straffer, ['Forste', 'Tredje']);
-  assert.deepEqual(rad.hjorner, ['Hjorne1', 'Hjorne2']);
-  assert.deepEqual(rad.frispark, ['Frispark1']);
+  assert.deepEqual(navn(rad.straffer), ['Forste', 'Tredje']);
+  assert.deepEqual(navn(rad.hjorner), ['Hjorne1', 'Hjorne2']);
+  assert.deepEqual(navn(rad.frispark), ['Frispark1']);
+  assert.deepEqual(Object.keys(rad.straffer[0]), ['id', 'navn']);
 });
 
 test('buildSetPieceTable viser bare de to første i køen per rolle', () => {
   const elements = [1, 2, 3, 4].map((n) => taker(`S${n}`, 13, { penalties_order: n }));
 
-  assert.deepEqual(radFor(buildSetPieceTable({ elements, teams }), 'MCI').straffer, ['S1', 'S2']);
+  assert.deepEqual(navn(radFor(buildSetPieceTable({ elements, teams }), 'MCI').straffer), ['S1', 'S2']);
 });
 
 test('buildSetPieceTable beholder raden for klubber uten kjente takere', () => {

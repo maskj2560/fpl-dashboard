@@ -23,7 +23,9 @@ const player = (id, name, extra = {}) => ({
   total_points: 42, points_per_game: '4.2', selected_by_percent: '12.3',
   expected_goals: '3.40', expected_assists: '2.10', status: 'a', news: '',
   chance_of_playing_next_round: null, transfers_in_event: 1000,
-  transfers_out_event: 500, ...extra,
+  transfers_out_event: 500, minutes: 900, bonus: 7,
+  penalties_order: null, corners_and_indirect_freekicks_order: null,
+  direct_freekicks_order: null, ...extra,
 });
 
 const shared = {
@@ -101,10 +103,40 @@ export const teamEmpty = {
   recommendations: null,
 };
 
+const diffRow = (id, navn, over = {}) => ({
+  id, navn, lag: { kort: 'ARS', kode: 3, navn: 'Arsenal' }, posKort: 'M',
+  pris: '5.5', form: '5.5', eid: '4.2', fdr3: 2.7, score: 18.2, ...over,
+});
+
 export const players = {
   teamsById, clubAssets, POSITIONS, POSITIONS_SHORT, STATUS_LABELS, formatPrice, teams,
-  players: [player(1, 'Saka'), player(2, 'Salah', { team: 2, status: 'd' })],
+  players: [player(1, 'Saka', { penalties_order: 1 }), player(2, 'Salah', { team: 2, status: 'd' })],
+  differentials: {
+    terskler: [
+      { prosent: 5, rows: [diffRow(1, 'Saka')] },
+      {
+        prosent: 10,
+        rows: [
+          diffRow(1, 'Saka'),
+          diffRow(2, 'Salah', { lag: { kort: 'LIV', kode: 14, navn: 'Liverpool' }, score: 12.5 }),
+        ],
+      },
+      { prosent: 15, rows: [diffRow(1, 'Saka')] },
+    ],
+  },
+  setPieces: [
+    {
+      lag: { id: 1, navn: 'Arsenal', kort: 'ARS', kode: 3 },
+      straffer: [{ id: 1, navn: 'Saka' }],
+      hjorner: [{ id: 1, navn: 'Saka' }],
+      frispark: [],
+    },
+    { lag: { id: 2, navn: 'Liverpool', kort: 'LIV', kode: 14 }, straffer: [], hjorner: [], frispark: [] },
+  ],
 };
+
+// Sesongstart: ingen har form ennå, så differensiallista finnes ikke.
+export const playersNoDiff = { ...players, differentials: null };
 
 const leagueResults = [
   { entry: 123, entry_name: 'Marius XI', player_name: 'Marius S.', rank: 1, last_rank: 3, event_total: 60, total: 100 },

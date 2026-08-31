@@ -1,7 +1,13 @@
 <section class="page-head">
   <h1>Spillere</h1>
-  <p class="dim">Klikk på en kolonne for å sortere. Filtrene virker uten sidelasting.
+  <p class="dim">Klikk på en kolonne for å sortere, og på et spillernavn for å se
+  spillerkortet. Filtrene virker uten sidelasting.
   xG/xA er FPLs forventede mål og målgivende for sesongen.</p>
+  <nav class="jump-nav" aria-label="Snarveier på siden">
+    <a href="#tabell">Tabell</a>
+    <a href="#differensialer">Differensialer</a>
+    <a href="#dodballtakere">Dødballtakere</a>
+  </nav>
 </section>
 
 <form class="filters" id="player-filters" onsubmit="return false">
@@ -44,11 +50,17 @@
   <span class="dim" id="filter-count" role="status"></span>
 </form>
 
-<section class="card">
+<section class="card" id="tabell">
+  <div class="duell-bar">
+    <span class="dim" id="duell-teller" role="status">0 av 2 valgt</span>
+    <button type="button" id="duell-start" disabled>Sammenlign</button>
+    <button type="button" class="btn-link" id="duell-tom">Tøm valg</button>
+  </div>
   <div class="table-scroll table-scroll--pinned">
     <table class="data sortable" id="players-table" data-sortable>
       <thead>
         <tr>
+          <th data-nosort><span class="sr-only">Velg til duell</span></th>
           <th data-type="text" aria-sort="none">Spiller</th>
           <th data-type="text" aria-sort="none">Lag</th>
           <th data-type="text" aria-sort="none">Pos</th>
@@ -70,8 +82,23 @@
             data-team="<%= p.team %>"
             data-price="<%= p.now_cost / 10 %>"
             data-status="<%= p.status %>"
+            data-id="<%= p.id %>"
+            data-navn="<%= p.web_name %>"
+            data-lag="<%= (teamsById.get(p.team) || {}).short_name || '' %>"
+            data-form="<%= p.form %>"
+            data-poeng="<%= p.total_points %>"
+            data-pk="<%= p.points_per_game %>"
+            data-eid="<%= p.selected_by_percent %>"
+            data-xg="<%= p.expected_goals %>"
+            data-xa="<%= p.expected_assists %>"
+            data-min="<%= p.minutes %>"
+            data-bonus="<%= p.bonus %>"
+            data-straffer="<%= p.penalties_order == null ? '' : p.penalties_order %>"
+            data-hjorner="<%= p.corners_and_indirect_freekicks_order == null ? '' : p.corners_and_indirect_freekicks_order %>"
+            data-frispark="<%= p.direct_freekicks_order == null ? '' : p.direct_freekicks_order %>"
           >
-            <td><strong><%= p.web_name %></strong></td>
+            <td><input type="checkbox" class="duell-velg" aria-label="Velg <%= p.web_name %> til duell"></td>
+            <td><button type="button" class="btn-link js-spillerkort" data-id="<%= p.id %>"><%= p.web_name %></button></td>
             <td><%- include('partials/club-badge', { team: teamsById.get(p.team) }) %></td>
             <td><%= POSITIONS_SHORT[p.element_type] %></td>
             <td class="num"><%= formatPrice(p.now_cost) %></td>
@@ -90,3 +117,108 @@
   <p class="empty" id="players-empty" hidden>Ingen spillere matcher filtrene.
     <button type="button" class="btn-link" id="players-empty-reset">Nullstill filtrene</button></p>
 </section>
+
+<section class="card" id="duell" hidden></section>
+
+<section class="card" id="differensialer">
+  <h2>Differensialer</h2>
+  <p class="dim">Spillere få eier globalt, rangert etter form og kampprogram:
+  score = form × (6 − snitt-FDR de neste tre rundene). Høy score betyr god form
+  mot et snilt program.</p>
+  <% if (!differentials) { %>
+    <p class="empty">Differensialer kommer når formtallene finnes — etter første runde.</p>
+  <% } else { %>
+    <fieldset class="terskel-velger">
+      <legend>Maks global eierandel</legend>
+      <% for (const t of differentials.terskler) { %>
+        <label><input type="radio" name="diff-terskel" value="<%= t.prosent %>"<%= t.prosent === 10 ? ' checked' : '' %>> under <%= t.prosent %>&nbsp;%</label>
+      <% } %>
+    </fieldset>
+    <% for (const t of differentials.terskler) { %>
+      <div class="table-scroll" data-terskel="<%= t.prosent %>"<%= t.prosent === 10 ? '' : ' hidden' %>>
+        <% if (t.rows.length === 0) { %>
+          <p class="empty">Ingen spillere under <%= t.prosent %>&nbsp;% har form akkurat nå.</p>
+        <% } else { %>
+          <table class="data">
+            <thead>
+              <tr>
+                <th>Spiller</th>
+                <th>Lag</th>
+                <th>Pos</th>
+                <th class="num">Pris</th>
+                <th class="num">Form</th>
+                <th class="num">Eid&nbsp;%</th>
+                <th class="num" title="Snitt-FDR de neste tre rundene">FDR&nbsp;3</th>
+                <th class="num">Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% for (const r of t.rows) { %>
+                <tr>
+                  <td><button type="button" class="btn-link js-spillerkort" data-id="<%= r.id %>"><%= r.navn %></button></td>
+                  <td><%- include('partials/club-badge', { team: r.lag && { code: r.lag.kode, short_name: r.lag.kort, name: r.lag.navn } }) %></td>
+                  <td><%= r.posKort %></td>
+                  <td class="num"><%= r.pris %></td>
+                  <td class="num"><%= r.form %></td>
+                  <td class="num"><%= r.eid %></td>
+                  <td class="num"><%= r.fdr3 %></td>
+                  <td class="num"><strong><%= r.score %></strong></td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        <% } %>
+      </div>
+    <% } %>
+  <% } %>
+</section>
+
+<section class="card" id="dodballtakere">
+  <h2>Dødballtakere</h2>
+  <p class="dim">De to første i køen per klubb, hentet fra FPLs egne ordenstall.
+  «–» betyr at FPL ikke har oppgitt noen taker for rollen.</p>
+  <div class="table-scroll">
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Klubb</th>
+          <th>Straffer</th>
+          <th>Hjørner/indirekte</th>
+          <th>Direkte frispark</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (const rad of setPieces) { %>
+          <tr>
+            <td><%- include('partials/club-badge', { team: { code: rad.lag.kode, short_name: rad.lag.kort, name: rad.lag.navn } }) %></td>
+            <% for (const rolle of ['straffer', 'hjorner', 'frispark']) { %>
+              <td>
+                <% if (rad[rolle].length === 0) { %>–<% } else { %>
+                  <% rad[rolle].forEach((t, i) => { %><% if (i > 0) { %> · <% } %><button type="button" class="btn-link js-spillerkort" data-id="<%= t.id %>"><%= t.navn %></button><% }) %>
+                <% } %>
+              </td>
+            <% } %>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<%# Draktene rendres server-side av clubAssets-vokteren og klones av klienten.
+    Modalen skriver derfor aldri en <img> for en fil som ikke finnes. %>
+<% for (const t of teams) { %>
+<template data-shirt="<%= t.id %>"><%- include('partials/club-shirt', { team: t, keeper: false }) %></template>
+<template data-shirt-keeper="<%= t.id %>"><%- include('partials/club-shirt', { team: t, keeper: true }) %></template>
+<% } %>
+
+<div id="spillerkort" class="modal" hidden>
+  <div class="modal-backdrop" data-modal-close></div>
+  <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="spillerkort-tittel">
+    <div class="modal-head">
+      <h2 id="spillerkort-tittel">Spillerkort</h2>
+      <button type="button" class="modal-close" id="spillerkort-lukk" aria-label="Lukk spillerkortet">×</button>
+    </div>
+    <div class="modal-body" id="spillerkort-body" aria-live="polite"></div>
+  </div>
+</div>
