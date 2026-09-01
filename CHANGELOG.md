@@ -15,6 +15,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   `Referrer-Policy` og `Permissions-Policy`. JSON-kropper begrenses til
   32 kB. Ny `createSecurityHeaders`/`buildCsp` i `middleware.js`, låst av
   tester på hodene, noncen og monteringsrekkefølgen.
+- Takstbegrensning på skrivende API-kall: POST/DELETE under `/api` tåler
+  30 kall per IP per 5 minutter, deretter 429 med `Retry-After`. IP-en
+  leses fra `CF-Connecting-IP` bak Cloudflare (så `X-Forwarded-For`, så
+  socketen). GET er uberørt — de leser serverens cache.
 
 ### Fixed
 

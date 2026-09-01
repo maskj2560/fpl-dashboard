@@ -90,3 +90,15 @@ test('hele API-routeren svarer med no-store', () => {
     'api.js mangler router.use(noStore) fra middleware.js',
   );
 });
+
+// v1.8.3: skrivende kall (POST/DELETE) takstbegrenses per IP. GET er
+// gratis (serverens cache), og AI-klikket er alt cachet én time — dette
+// stopper bare rå spamming av scenario-fila og rådgiveren.
+test('hele API-routeren begrenser POST/DELETE per IP', () => {
+  const code = read('api.js');
+  assert.match(
+    code,
+    /router\.use\(rateLimitWrites\)/,
+    'api.js mangler router.use(rateLimitWrites) fra middleware.js',
+  );
+});

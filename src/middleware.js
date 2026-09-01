@@ -51,6 +51,62 @@ export function createSecurityHeaders({ nonce = randomNonce } = {}) {
   };
 }
 
+// ---- Takstbegrensning (v1.8.3) --------------------------------------------
+
+/**
+ * Klientens IP bak Cloudflare + Traefik. CF-Connecting-IP settes av
+ * Cloudflare og kan ikke forfalskes gjennom den; X-Forwarded-For er
+ * reserven, socketen det siste.
+ */
+export function clientIp(req) {
+  const headers = req.headers ?? {};
+  const cf = headers['cf-connecting-ip'];
+  if (cf) return String(cf).trim();
+  const xff = headers['x-forwarded-for'];
+  if (xff) return String(xff).split(',')[0].trim();
+  return req.socket?.remoteAddress ?? 'ukjent';
+}
+
+/**
+ * Enkel teller per IP i et fast vindu, kun for de oppgitte metodene. GET
+ * slipper alltid gjennom — de leser serverens cache og koster ingenting.
+ * 429 svares som JSON fordi den kun monteres på /api.
+ */
+export function createRateLimiter({
+  windowMs = 5 * 60_000,
+  max = 30,
+  methods = ['POST', 'DELETE'],
+  now = Date.now,
+  keyOf = clientIp,
+} = {}) {
+  const buckets = new Map();
+  const limiter = (req, res, next) => {
+    if (!methods.includes(req.method)) return next();
+    const t = now();
+    const key = keyOf(req);
+    let bucket = buckets.get(key);
+    if (!bucket || bucket.resetAt <= t) {
+      bucket = { count: 0, resetAt: t + windowMs };
+      buckets.set(key, bucket);
+    }
+    bucket.count += 1;
+    if (bucket.count > max) {
+      res.setHeader('Retry-After', String(Math.ceil((bucket.resetAt - t) / 1000)));
+      return res.status(429).json({ error: 'For mange forespørsler — prøv igjen om litt.' });
+    }
+    // Hold mappa liten: rydd utgåtte bøtter når den vokser.
+    if (buckets.size > 1000) {
+      for (const [k, b] of buckets) if (b.resetAt <= t) buckets.delete(k);
+    }
+    next();
+  };
+  limiter.reset = () => buckets.clear();
+  return limiter;
+}
+
+/** Delt instans for /api — 30 skrivende kall per IP per 5 min. */
+export const rateLimitWrites = createRateLimiter();
+
 // Fonten er uendret innhold og versjoneres for hånd i layout.ejs og style.css
 // (`?v=1`). Bumpes den, bumpes denne — se DEPLOY.md.
 export const FONT_VERSION = '1';

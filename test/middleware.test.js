@@ -86,6 +86,76 @@ test('server.js monterer securityHeaders før rutene og begrenser JSON-kroppen t
   assert.ok(headersAt < jsonAt && headersAt < staticAt, 'sikkerhetshodene må monteres før JSON-parser og static');
 });
 
+// ---- v1.8.3: takstbegrensning på skrivende API-kall -------------------------
+
+function fakeLimitRes() {
+  const res = {
+    statusCode: 200,
+    headers: {},
+    body: null,
+    setHeader: (navn, verdi) => { res.headers[navn] = verdi; },
+    status: (code) => { res.statusCode = code; return res; },
+    json: (body) => { res.body = body; return res; },
+  };
+  return res;
+}
+
+function fakeReq(method, headers = {}, remoteAddress = '10.0.0.1') {
+  return { method, headers, socket: { remoteAddress } };
+}
+
+test('rateLimiter slipper GET gjennom uansett', () => {
+  const limiter = mw.createRateLimiter({ max: 2 });
+  let passed = 0;
+  for (let i = 0; i < 50; i++) limiter(fakeReq('GET'), fakeLimitRes(), () => { passed++; });
+  assert.equal(passed, 50);
+});
+
+test('rateLimiter svarer 429 med Retry-After etter maks POST i vinduet', () => {
+  const limiter = mw.createRateLimiter({ max: 3, windowMs: 60_000, now: () => 1_000_000 });
+  let passed = 0;
+  for (let i = 0; i < 3; i++) limiter(fakeReq('POST'), fakeLimitRes(), () => { passed++; });
+  assert.equal(passed, 3);
+  const res = fakeLimitRes();
+  let nextCalled = false;
+  limiter(fakeReq('DELETE'), res, () => { nextCalled = true; });
+  assert.equal(nextCalled, false, 'fjerde kall skulle stoppes');
+  assert.equal(res.statusCode, 429);
+  assert.equal(res.headers['Retry-After'], '60');
+  assert.match(res.body.error, /For mange forespørsler/);
+});
+
+test('rateLimiter nullstiller telleren når vinduet er over', () => {
+  let t = 0;
+  const limiter = mw.createRateLimiter({ max: 1, windowMs: 1_000, now: () => t });
+  let passed = 0;
+  limiter(fakeReq('POST'), fakeLimitRes(), () => { passed++; });
+  limiter(fakeReq('POST'), fakeLimitRes(), () => { passed++; });
+  assert.equal(passed, 1);
+  t = 1_000;
+  limiter(fakeReq('POST'), fakeLimitRes(), () => { passed++; });
+  assert.equal(passed, 2, 'nytt vindu skulle slippe kallet gjennom');
+});
+
+test('rateLimiter teller per IP, ikke globalt', () => {
+  const limiter = mw.createRateLimiter({ max: 1, now: () => 0 });
+  let passed = 0;
+  limiter(fakeReq('POST', {}, '10.0.0.1'), fakeLimitRes(), () => { passed++; });
+  limiter(fakeReq('POST', {}, '10.0.0.2'), fakeLimitRes(), () => { passed++; });
+  limiter(fakeReq('POST', {}, '10.0.0.1'), fakeLimitRes(), () => { passed++; });
+  assert.equal(passed, 2);
+});
+
+test('clientIp foretrekker CF-Connecting-IP foran X-Forwarded-For og socket', () => {
+  assert.equal(
+    mw.clientIp(fakeReq('POST', { 'cf-connecting-ip': '1.2.3.4', 'x-forwarded-for': '5.6.7.8, 9.9.9.9' })),
+    '1.2.3.4',
+  );
+  assert.equal(mw.clientIp(fakeReq('POST', { 'x-forwarded-for': '5.6.7.8, 9.9.9.9' })), '5.6.7.8');
+  assert.equal(mw.clientIp(fakeReq('POST', {}, '10.0.0.7')), '10.0.0.7');
+  assert.equal(mw.clientIp({ method: 'POST', headers: {} }), 'ukjent');
+});
+
 // ---- P1-10: bare kjente versjonsstrenger får immutable --------------------
 
 const IMMUTABLE = 'public, max-age=31536000, immutable';
