@@ -7,6 +7,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Fixed
+
+- «Spillere»: spillernavn vises som lavmælte tekstlenker i stedet for fylte
+  grønne knapper. Veggen av 772 like knapper er borte, og den grønne
+  knappen er igjen reservert for ekte handlinger.
+
 ### Planlagt
 
 - Detaljplan for v1.8.1 — visuell redesign av «Spillere» — skrevet og

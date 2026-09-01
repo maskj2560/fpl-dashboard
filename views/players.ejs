@@ -98,7 +98,7 @@
             data-frispark="<%= p.direct_freekicks_order == null ? '' : p.direct_freekicks_order %>"
           >
             <td><input type="checkbox" class="duell-velg" aria-label="Velg <%= p.web_name %> til duell"></td>
-            <td><button type="button" class="btn-link js-spillerkort" data-id="<%= p.id %>"><%= p.web_name %></button></td>
+            <td><button type="button" class="navn-lenke js-spillerkort" data-id="<%= p.id %>"><%= p.web_name %></button></td>
             <td><%- include('partials/club-badge', { team: teamsById.get(p.team) }) %></td>
             <td><%= POSITIONS_SHORT[p.element_type] %></td>
             <td class="num"><%= formatPrice(p.now_cost) %></td>
@@ -155,7 +155,7 @@
             <tbody>
               <% for (const r of t.rows) { %>
                 <tr>
-                  <td><button type="button" class="btn-link js-spillerkort" data-id="<%= r.id %>"><%= r.navn %></button></td>
+                  <td><button type="button" class="navn-lenke js-spillerkort" data-id="<%= r.id %>"><%= r.navn %></button></td>
                   <td><%- include('partials/club-badge', { team: r.lag && { code: r.lag.kode, short_name: r.lag.kort, name: r.lag.navn } }) %></td>
                   <td><%= r.posKort %></td>
                   <td class="num"><%= r.pris %></td>
@@ -194,7 +194,7 @@
             <% for (const rolle of ['straffer', 'hjorner', 'frispark']) { %>
               <td>
                 <% if (rad[rolle].length === 0) { %>–<% } else { %>
-                  <% rad[rolle].forEach((t, i) => { %><% if (i > 0) { %> · <% } %><button type="button" class="btn-link js-spillerkort" data-id="<%= t.id %>"><%= t.navn %></button><% }) %>
+                  <% rad[rolle].forEach((t, i) => { %><% if (i > 0) { %> · <% } %><button type="button" class="navn-lenke js-spillerkort" data-id="<%= t.id %>"><%= t.navn %></button><% }) %>
                 <% } %>
               </td>
             <% } %>

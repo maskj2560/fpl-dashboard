@@ -362,7 +362,8 @@ test('players.ejs har hopplenker til alle tre seksjonene', async () => {
 
 test('players.ejs gjør spillernavn klikkbare og gir radene duell-data', async () => {
   const html = await renderView('players', fx.players);
-  assert.match(html, /class="btn-link js-spillerkort" data-id="1"[^>]*>Saka</);
+  assert.match(html, /class="navn-lenke js-spillerkort" data-id="1"[^>]*>Saka</);
+  assert.doesNotMatch(html, /btn-link js-spillerkort/, 'spillernavn skal være lavmælte lenker, ikke fylte knapper');
   assert.match(html, /data-navn="Saka"/);
   assert.match(html, /data-lag="ARS"/);
   assert.match(html, /data-bonus="7"/);
@@ -398,7 +399,7 @@ test('players.ejs sier fra når differensiallista ikke finnes ennå', async () =
 test('players.ejs lister dødballtakere per klubb med – for tomme roller', async () => {
   const html = await renderView('players', fx.players);
   const rad = html.slice(html.indexOf('id="dodballtakere"'));
-  assert.match(rad, /js-spillerkort" data-id="1"[^>]*>Saka</);
+  assert.match(rad, /class="navn-lenke js-spillerkort" data-id="1"[^>]*>Saka</);
   assert.match(rad, /club-name">LIV</, 'klubber uten takere skal ha rad likevel');
   assert.match(rad, /–/, 'tomme roller skal vises som tankestrek');
 });

@@ -1799,6 +1799,29 @@ footer .version {
   border-bottom-color: var(--accent);
 }
 
+/* Spillernavn: lavmælt tekstlenke. Fylt grønn knapp er for ekte handlinger. */
+.navn-lenke {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--accent-text);
+  text-align: left;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.navn-lenke:hover,
+.navn-lenke:focus-visible {
+  text-decoration: underline;
+}
+
+.navn-lenke:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
 /* Duell-linja over spillertabellen. */
 .duell-bar {
   display: flex;
