@@ -7,6 +7,15 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Security
+
+- Sikkerhetshoder på alle svar: `Content-Security-Policy` med
+  per-forespørsel-nonce for tema-scriptet (ingen `unsafe-inline` for script),
+  `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`,
+  `Referrer-Policy` og `Permissions-Policy`. JSON-kropper begrenses til
+  32 kB. Ny `createSecurityHeaders`/`buildCsp` i `middleware.js`, låst av
+  tester på hodene, noncen og monteringsrekkefølgen.
+
 ### Fixed
 
 - «Spillere»: filterskjemaet brukte et inline `onsubmit` for å hindre at

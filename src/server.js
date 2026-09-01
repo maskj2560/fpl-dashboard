@@ -8,7 +8,12 @@ import config from './config.js';
 import { isGameUpdating, staleInfo } from './services/fplClient.js';
 import { loadClubAssets } from './services/clubAssets.js';
 import { formatDateTime, formatTime } from './services/format.js';
-import { cacheControlFor, createErrorHandler, createShutdown } from './middleware.js';
+import {
+  cacheControlFor,
+  createErrorHandler,
+  createSecurityHeaders,
+  createShutdown,
+} from './middleware.js';
 import indexRouter from './routes/index.js';
 import healthRouter from './routes/health.js';
 import playersRouter from './routes/players.js';
@@ -50,7 +55,11 @@ app.set('views', path.join(rootDir, 'views'));
 app.locals.clubAssets = loadClubAssets(path.join(rootDir, 'public', 'img', 'clubs'));
 
 app.use(compression());
-app.use(express.json());
+// Sikkerhetshoder + CSP-nonce på alt, også assets. Må ligge før static.
+app.use(createSecurityHeaders());
+// POST-kroppene er små (/api/ai-rad tom, /api/scenarier < 1 kB) — taket
+// stopper bare misbruk. 413 svares som JSON av feilhandleren på /api.
+app.use(express.json({ limit: '32kb' }));
 app.use(
   express.static(path.join(rootDir, 'public'), {
     setHeaders(res) {

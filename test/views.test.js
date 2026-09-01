@@ -81,7 +81,19 @@ for (const [name, locals, marker] of cases) {
 const layoutLocals = (path) => ({
   body: '<p>innhold</p>', title: 'Test', path,
   gameUpdating: false, staleSince: null, version: '1.0.1', assetVersion: 'a1b2c3d4',
-  startedAt: '19.08.2026, 21:00',
+  startedAt: '19.08.2026, 21:00', cspNonce: 'testnonce',
+});
+
+test('layout.ejs gir tema-scriptet CSP-noncen', async () => {
+  const html = await renderView('layout', layoutLocals('/'));
+  assert.ok(html.includes('<script nonce="testnonce">'), 'tema-scriptet mangler nonce');
+});
+
+test('layout.ejs har nøyaktig ett inline-script, og det bærer nonce', async () => {
+  const html = await renderView('layout', layoutLocals('/'));
+  const inline = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>/g)].map((m) => m[0]);
+  assert.equal(inline.length, 1, `fant ${inline.length} inline-script: ${inline.join(' ')}`);
+  assert.match(inline[0], /nonce="testnonce"/);
 });
 
 const NAV = [

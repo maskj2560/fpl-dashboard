@@ -8,6 +8,83 @@ import {
   IMG_VERSION,
   noStore,
 } from '../src/middleware.js';
+import * as mw from '../src/middleware.js';
+import fs from 'node:fs';
+
+// ---- v1.8.3: sikkerhetshoder + CSP ---------------------------------------------
+
+function fakeHeaderRes() {
+  const headers = {};
+  return {
+    headers,
+    locals: {},
+    setHeader: (navn, verdi) => { headers[navn] = verdi; },
+  };
+}
+
+test('securityHeaders setter CSP med per-forespørsel-nonce og speiler den i res.locals', () => {
+  const handler = mw.createSecurityHeaders({ nonce: () => 'abc123' });
+  const res = fakeHeaderRes();
+  let nextCalled = false;
+  handler({}, res, () => { nextCalled = true; });
+  assert.ok(nextCalled, 'next() ble ikke kalt');
+  assert.equal(res.locals.cspNonce, 'abc123');
+  assert.match(res.headers['Content-Security-Policy'], /script-src 'self' 'nonce-abc123'/);
+});
+
+test('securityHeaders gir ny nonce for hver forespørsel', () => {
+  const handler = mw.createSecurityHeaders();
+  const a = fakeHeaderRes();
+  const b = fakeHeaderRes();
+  handler({}, a, () => {});
+  handler({}, b, () => {});
+  assert.notEqual(a.locals.cspNonce, b.locals.cspNonce);
+  assert.ok(a.locals.cspNonce.length >= 16, 'noncen er for kort');
+  assert.match(a.locals.cspNonce, /^[A-Za-z0-9+/=]+$/, 'noncen er ikke base64');
+});
+
+test('securityHeaders setter nosniff, DENY, Referrer-Policy og Permissions-Policy', () => {
+  const res = fakeHeaderRes();
+  mw.createSecurityHeaders()({}, res, () => {});
+  assert.equal(res.headers['X-Content-Type-Options'], 'nosniff');
+  assert.equal(res.headers['X-Frame-Options'], 'DENY');
+  assert.equal(res.headers['Referrer-Policy'], 'strict-origin-when-cross-origin');
+  assert.match(res.headers['Permissions-Policy'], /camera=\(\)/);
+  assert.match(res.headers['Permissions-Policy'], /geolocation=\(\)/);
+});
+
+test('CSP-en har aldri unsafe-inline for script og alltid frame-ancestors none', () => {
+  const csp = mw.buildCsp('n0nce');
+  const directives = Object.fromEntries(
+    csp.split(';').map((d) => d.trim()).filter(Boolean).map((d) => {
+      const [name, ...rest] = d.split(/\s+/);
+      return [name, rest.join(' ')];
+    }),
+  );
+  assert.equal(directives['default-src'], "'self'");
+  assert.equal(directives['script-src'], "'self' 'nonce-n0nce'");
+  assert.ok(!directives['script-src'].includes('unsafe-inline'));
+  assert.equal(directives['frame-ancestors'], "'none'");
+  assert.equal(directives['object-src'], "'none'");
+  assert.equal(directives['base-uri'], "'self'");
+  assert.equal(directives['form-action'], "'self'");
+  // Inline style-attributter finnes i players.ejs (--andel) og league.ejs
+  // (seriefarge); SVG-favicon er en data:-URL.
+  assert.equal(directives['style-src'], "'self' 'unsafe-inline'");
+  assert.equal(directives['img-src'], "'self' data:");
+  assert.equal(directives['connect-src'], "'self'");
+  assert.equal(directives['font-src'], "'self'");
+});
+
+test('server.js monterer securityHeaders før rutene og begrenser JSON-kroppen til 32kb', () => {
+  const src = fs.readFileSync(new URL('../src/server.js', import.meta.url), 'utf8');
+  const headersAt = src.indexOf('app.use(createSecurityHeaders())');
+  const jsonAt = src.indexOf("app.use(express.json({ limit: '32kb' }))");
+  const staticAt = src.indexOf('express.static(');
+  assert.ok(headersAt > 0, 'createSecurityHeaders() monteres ikke');
+  assert.ok(jsonAt > 0, 'express.json mangler 32kb-taket');
+  assert.ok(headersAt < jsonAt && headersAt < staticAt, 'sikkerhetshodene må monteres før JSON-parser og static');
+});
 
 // ---- P1-10: bare kjente versjonsstrenger får immutable --------------------
 

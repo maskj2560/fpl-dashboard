@@ -1,7 +1,55 @@
 // Små, rene middleware-byggere. Ligger utenfor server.js fordi den starter
 // lytteren ved import og derfor ikke kan lastes i tester.
 
+import crypto from 'node:crypto';
+
 const IMMUTABLE = 'public, max-age=31536000, immutable';
+
+// ---- Sikkerhetshoder (v1.8.3) ---------------------------------------------
+
+/**
+ * Content-Security-Policy. script-src er streng: kun egne filer + tema-
+ * scriptet i layout.ejs via en nonce per forespørsel (ingen 'unsafe-inline').
+ * style-src tillater inline fordi players.ejs (--andel) og league.ejs
+ * (seriefarge) setter style-attributter; img-src data: er SVG-favicon-en.
+ * worker-src/manifest-src arver default-src, så PWA-en trenger ingen unntak.
+ */
+export function buildCsp(nonce) {
+  return [
+    "default-src 'self'",
+    `script-src 'self' 'nonce-${nonce}'`,
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data:",
+    "font-src 'self'",
+    "connect-src 'self'",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "object-src 'none'",
+  ].join('; ');
+}
+
+function randomNonce() {
+  return crypto.randomBytes(16).toString('base64');
+}
+
+/**
+ * Setter sikkerhetshodene på alle svar og legger noncen i res.locals, som
+ * Express fletter inn i alle res.render-kall (renderPage, 404, feilsiden).
+ * Monteres før static og rutene, så også assets får hodene.
+ */
+export function createSecurityHeaders({ nonce = randomNonce } = {}) {
+  return (req, res, next) => {
+    const n = nonce();
+    res.locals.cspNonce = n;
+    res.setHeader('Content-Security-Policy', buildCsp(n));
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=()');
+    next();
+  };
+}
 
 // Fonten er uendret innhold og versjoneres for hånd i layout.ejs og style.css
 // (`?v=1`). Bumpes den, bumpes denne — se DEPLOY.md.
