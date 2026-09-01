@@ -2145,3 +2145,34 @@ body.modal-apen {
 .dodball-takere:last-child {
   margin-bottom: 0;
 }
+
+/* Duell-hodet: drakt + navn + klubb per spiller, i tabellens overskriftsrad. */
+.duell-hode-celle {
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.duell-hode {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.duell-hode .shirt {
+  margin: 0;
+  flex: none;
+}
+
+.duell-hode-navn {
+  display: block;
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--text);
+}
+
+.duell-hode-lag {
+  display: block;
+  font-size: var(--fs-sm);
+  font-weight: 400;
+  color: var(--text-dim);
+}

@@ -39,6 +39,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   klubb med merke og de tre rollene under hverandre («Straffer: 1. Saka ·
   2. Ødegaard») — i stedet for en bred tabell med fire kolonner. Navnene er
   fortsatt klikkbare.
+- «Spillere»: duellen får et hode per spiller med klubbdrakt, navn og klubb,
+  så det er tydelig hvem som er hvem i sammenligningen.
 
 ### Planlagt
 

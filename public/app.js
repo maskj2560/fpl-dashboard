@@ -100,6 +100,18 @@ function playerCardHtml(d, shirtHtml) {
 // Spillerduellen (v1.8.0). Alt bygges av radenes data-attributter — ingen
 // nettverkskall. Tallene er FPL-strenger: parseFloat brukes KUN til å
 // sammenligne, cellene viser strengen slik FPL skrev den.
+/**
+ * Henter drakt-markupen for et lag fra <template>-elementene som serveren
+ * rendret via clubAssets-vokteren. Delt av spillerkortet (Modul 9) og
+ * duellen (Modul 10) — klienten skriver aldri en <img> i blinde.
+ */
+function shirtHtmlFor(lagId, erKeeper) {
+  if (lagId == null || lagId === '') return '';
+  const attr = erKeeper ? 'data-shirt-keeper' : 'data-shirt';
+  const tpl = document.querySelector('template[' + attr + '="' + lagId + '"]');
+  return tpl ? tpl.innerHTML : '';
+}
+
 const DUELL_RADER = [
   ['pris', 'Pris', 'lav'],
   ['form', 'Form', 'hoy'],
@@ -125,6 +137,8 @@ function duelData(ds) {
     id: ds.id,
     navn: ds.navn,
     lag: ds.lag,
+    // Lag-id-en peker på drakt-templaten som duell-hodet kloner.
+    teamId: ds.team,
     pris: ds.price,
     form: ds.form,
     poeng: ds.poeng,
@@ -166,16 +180,24 @@ function duelWinners(a, b) {
   return winners;
 }
 
-function duelHtml(a, b, winners) {
+/**
+ * Draktene er server-rendret markup fra <template>-elementene på siden, så
+ * `shirtHtml` settes inn RÅTT — den kommer aldri fra brukerdata. Navnene
+ * escapes som før.
+ */
+function duelHtml(a, b, winners, shirtA, shirtB) {
   const e = escapeHtml;
   const celle = (verdi, vant) => {
     const tekst = e(verdi == null ? '–' : verdi);
     return '<td class="num">' + (vant ? '<strong class="accent">' + tekst + '</strong>' : tekst) + '</td>';
   };
+  const hode = (d, shirtHtml) =>
+    '<th class="duell-hode-celle"><div class="duell-hode">' + (shirtHtml || '') +
+    '<span><span class="duell-hode-navn">' + e(d.navn) + '</span>' +
+    '<span class="duell-hode-lag">' + e(d.lag) + '</span></span></div></th>';
 
   return '<h2>Duell</h2><div class="table-scroll"><table class="data"><thead><tr>' +
-    '<th></th><th class="num">' + e(a.navn) + ' <span class="dim">' + e(a.lag) + '</span></th>' +
-    '<th class="num">' + e(b.navn) + ' <span class="dim">' + e(b.lag) + '</span></th>' +
+    '<th></th>' + hode(a, shirtA) + hode(b, shirtB) +
     '</tr></thead><tbody>' +
     DUELL_RADER.map(([key, label]) =>
       '<tr><th scope="row">' + e(label) + '</th>' +
@@ -1003,11 +1025,7 @@ function rivalNavAction({ search, stored, validIds }) {
   let utloser = null;
 
   function shirtFor(data) {
-    const lagId = data.lag && data.lag.id;
-    if (lagId == null) return '';
-    const attr = data.erKeeper ? 'data-shirt-keeper' : 'data-shirt';
-    const tpl = document.querySelector('template[' + attr + '="' + lagId + '"]');
-    return tpl ? tpl.innerHTML : '';
+    return shirtHtmlFor(data.lag && data.lag.id, data.erKeeper);
   }
 
   function fokuserbare() {
@@ -1127,7 +1145,7 @@ function rivalNavAction({ search, stored, validIds }) {
     // Dataene kopieres ut nå, så duellen består om radene filtreres bort etterpå.
     const a = duelData(rader[0].dataset);
     const b = duelData(rader[1].dataset);
-    seksjon.innerHTML = duelHtml(a, b, duelWinners(a, b));
+    seksjon.innerHTML = duelHtml(a, b, duelWinners(a, b), shirtHtmlFor(a.teamId), shirtHtmlFor(b.teamId));
     seksjon.hidden = false;
     seksjon.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
