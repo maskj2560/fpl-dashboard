@@ -6,17 +6,16 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-09-01 (økt 50, Opus: v1.8.1 bygget, venter på merge)
+**Sist oppdatert:** 2026-09-01 (økt 50, Opus: v1.8.1 merget og pushet)
 
 ## Status akkurat nå
-- **v1.8.1 (redesign av /spillere) BYGGET 1. sep (økt 50) — IKKE MERGET.**
-  Branch `fix/spillere-redesign-v181`, 11 commits (T1–T11, TDD med rød før
-  grønn i hver task), CHANGELOG-linje i hver commit. **Sluttstatus:
-  613/613 + lint 0** (baseline 602/602); `style.test.js` og
-  `routes.test.js` urørt og grønne. **Venter på klarsignal for merge
-  `--no-ff`, tag `v1.8.1` og push.** CHANGELOG-punktene står under
-  `[Unreleased]` — flyttes til `[1.8.1]` ved release, med arkivering av
-  planfila.
+- **v1.8.1 «Redesign av /spillere» MERGET TIL MAIN 1. sep (økt 50).**
+  Bygget på `fix/spillere-redesign-v181` (11 commits T1–T11, TDD med rød
+  før grønn i hver task, CHANGELOG-linje i hver), release-commit
+  `102b6de`, merget `--no-ff` (`35258a7`), tagget `v1.8.1`, pushet.
+  **613/613 + lint 0 på branch OG merget main** (baseline 602/602);
+  `style.test.js` og `routes.test.js` urørt og grønne.
+  CHANGELOG-rekkefølgen kontrollert (1.8.1 → 1.8.0 → 1.7.1).
   Innhold: faner (Modul 12), lavmælte `.navn-lenke`-navn, statusbadge kun
   ved avvik, zebra + «Duell»-etikett, snudd knappehierarki i duell-linja,
   én desimal + `andel` fra `players.js`, segmentbryter + søylestripe,
@@ -28,38 +27,26 @@
   mot ekte FPL-data, `abc` 400, `999999` 404, `/finnesikke` 404, **0
   «AI-kall:»-linjer**. Rendret side: 3 faneknapper, 20 dødballkort, 772
   navnelenker, ekte `--andel`-verdier, INGEN `status-a`-badge (kun d/i/s/u).
-- **Sju tekniske avvik fra detaljplanen** (ingen designvalg endret):
-  (1) zebra + strammere radhøyde scopet til `#players-table`, ikke alle
-  `table.data` — skal ikke endre åtte andre sider, QA dekker bare
-  /spillere. (2) `#duell` flyttet inn i `#tabell` som planlagt, men som
-  `class="duell-panel"` — kort-i-kort ga dobbel flate/kant.
-  (3) Terskel-labelene fikk wrapperen `<div class="terskel-segmenter">`
-  inne i fieldsetet — `<legend>` i en flex-fieldset er upålitelig.
-  (4) Modul 12 skjuler også `#player-filters` utenfor Tabell-fanen.
-  (5) `.modal .shirt` er `110px × 145px`, ikke `height: auto` — `.shirt`
-  er en span uten egen høyde og ville kollapset (samme forhold som 44/58).
-  (6) Duell-hodene ligger i tabellens `<th>`-celler, ikke i en egen rad
-  over den — ellers sto navnet to ganger. (7) Escapingtesten for
-  `playerCardHtml` sjekker nyhetsteksten i stedet for `&lt;script&gt;`,
-  siden `fulltNavn` ikke lenger rendres i brødteksten.
+  **Sju tekniske planavvik** (bl.a. zebra scopet til `#players-table`,
+  `.duell-panel` i stedet for kort-i-kort, `.modal .shirt` med fast
+  høyde): rotert til historikkfila, avsnittet «planavvikene i v1.8.1».
 - **v1.7.1 og v1.7.0 ute i prod 1. sep/31. aug; v1.3.8–v1.6.0 ute
   28. aug** — alle detaljer og prod-bevis i historikkfila.
 - **Ekte SIGTERM-bevis mangler.** Deploy-loggen er feil sted; beviset er
   `kill 1` i containerterminalen — de to avslutningslinjene skal stå der.
   Lokalt bevist med `process.emit('SIGINT')`, exit 0.
-- **Asset-hashen i prod skal være `7a3c28b8` etter v1.8.0** (byttet fra
-  `397624a7`). **Ny hash for v1.8.1 må regnes ETTER mergen** — både
-  style.css og app.js er endret. Regnes fra git-blobbene på `main`-toppen,
-  aldri fra arbeidstreet — se lærdommene.
+- **Asset-hashen i prod skal være `51d1bbb4` etter v1.8.1** (byttet fra
+  `7a3c28b8`; både style.css og app.js endret). Regnet fra git-blobbene på
+  `main`-toppen, aldri fra arbeidstreet — metoden er kontrollert ved at
+  v1.8.0-blobbene fortsatt gir `7a3c28b8`. Se lærdommene.
 - **Helsesjekken:** alt. a aktiv (Coolifys sjekk AV, Dockerfilens gjelder).
   Se lærdommene under for hva den IKKE fanger.
 - **Kostnad: måleuka DROPPET** (28. aug) — følges i `console.anthropic.com`,
   terskler i `docs/sjekkpunkt-d-kostnad.md`. Takt **~49–53 AI-kall/uke**
   (v1.7.0/v1.8.0/v1.8.1 legger til 0).
-- **Git akkurat nå:** `main` = `origin/main` (`fcd5994`); tagger t.o.m.
-  `v1.8.0` pushet. Arbeidet ligger på `fix/spillere-redesign-v181` (11
-  commits, ikke pushet). **Rest:** 12 gamle, merget lokale brancher fra
-  økt ≤ 35 (navnene i historikkfila) — ryddes med `git branch -d`.
+- **Git akkurat nå:** `main` = `origin/main` (`35258a7`+docs); tagger
+  t.o.m. `v1.8.1` pushet. **Rest:** 13 gamle, merget lokale brancher
+  (inkl. `fix/spillere-redesign-v181`) — ryddes med `git branch -d`.
 - Eldre status og alle detaljer: `docs/arkiv/HANDOVER-historikk.md`.
 
 ## Neste steg (start her)
@@ -67,11 +54,12 @@
 Køen i `ROADMAP.md` er den langsiktige prioriteringen. Punkt 0–3 kan bare
 Marius gjøre.
 
-0. `[Marius]` **Visuell QA av v1.8.1 lokalt** (`npm run dev`) før merge:
-   begge temaer × 390 px og desktop × alle tre faner. Sjekk zebra sammen
-   med filtrene (annenhver stripe på SYNLIGE rader), segmentbryteren
-   5/10/15 (skal nå faktisk bytte tabell), søylestripa, dødballkortene,
-   duellen med drakter og spillerkortet. Gi så klarsignal til merge.
+0. `[Marius]` **Visuell QA av v1.8.1 i prod** (den gikk ut uten lokal
+   test): begge temaer × 390 px og desktop × alle tre faner. Sjekk zebra
+   sammen med filtrene (annenhver stripe på SYNLIGE rader),
+   segmentbryteren 5/10/15 (skal nå faktisk bytte tabell), søylestripa,
+   dødballkortene, duellen med drakter og spillerkortet. Kontroller også
+   at `?v=51d1bbb4` står i HTML-en (ny CSS/JS er faktisk ute).
 1. `[Marius]` **QA av v1.8.0-funksjonene** — spillerkortet (klikk, Esc, ×,
    backdrop, fokus tilbake til navnet) og duellen (to valgte, tredje hake
    avvises, filtrering fjerner haken, sortering beholder valget).
@@ -195,6 +183,11 @@ Marius gjøre.
   med rød før grønn i hver task, 11 conventional commits med
   CHANGELOG-linje i hver, røyktest med tomme nøkler (0 AI-kall), docs
   ajour. Sluttstatus **613/613 + lint 0**. Sju tekniske planavvik
-  dokumentert i statusen over. Stoppet før merge, som avtalt.
+  dokumentert i statusen over. Stoppet før merge, som avtalt. Deretter:
+  «Klar push» — sjekket deploy-vinduet FØRST (tirsdag 04:56, ingen kamper,
+  ikke torsdag 19–21), release-commit på branchen (versjon 1.8.1,
+  CHANGELOG `[1.8.1]`, VIDERE.md), merget `--no-ff`, verifiserte 613/613 +
+  lint 0 og CHANGELOG-rekkefølgen på merget main, tagget `v1.8.1`,
+  arkiverte planfila, regnet ny asset-hash, én push.
 - Loggposter fra økt 22–48: rotert til
   `docs/arkiv/HANDOVER-historikk.md` (200-linjerstaket, sist 2026-09-01).

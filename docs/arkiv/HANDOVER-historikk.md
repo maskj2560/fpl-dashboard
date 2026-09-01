@@ -1586,3 +1586,23 @@ nødvendige i den daglige HANDOVER-fila):
   identitet og poeng; flakspoeng + topp/bunn 3; XI-liste + sesongtrend;
   vindu = hele sesongen; nav-plass etter Liga. Fasit i planen
   (`docs/arkiv/plan-innsikt-v170.md`).
+
+## Rotert 2026-09-01 (økt 50, etter v1.8.1-mergen): planavvikene i v1.8.1
+
+Sju tekniske avvik fra `docs/arkiv/plan-spillere-redesign-v181.md` (ingen
+designvalg endret) — verbatim fra HANDOVER.md:
+
+1. Zebra + strammere radhøyde scopet til `#players-table`, ikke alle
+   `table.data` — skal ikke endre åtte andre sider, QA dekker bare
+   /spillere.
+2. `#duell` flyttet inn i `#tabell` som planlagt, men som
+   `class="duell-panel"` — kort-i-kort ga dobbel flate/kant.
+3. Terskel-labelene fikk wrapperen `<div class="terskel-segmenter">` inne i
+   fieldsetet — `<legend>` i en flex-fieldset er upålitelig.
+4. Modul 12 skjuler også `#player-filters` utenfor Tabell-fanen.
+5. `.modal .shirt` er `110px × 145px`, ikke `height: auto` — `.shirt` er en
+   span uten egen høyde og ville kollapset (samme forhold som 44/58).
+6. Duell-hodene ligger i tabellens `<th>`-celler, ikke i en egen rad over
+   den — ellers sto navnet to ganger.
+7. Escapingtesten for `playerCardHtml` sjekker nyhetsteksten i stedet for
+   `&lt;script&gt;`, siden `fulltNavn` ikke lenger rendres i brødteksten.
