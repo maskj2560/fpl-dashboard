@@ -36,8 +36,8 @@ ligger uutgitt på main under `[Unreleased]`)
 - **Ekte SIGTERM-bevis mangler.** Deploy-loggen er feil sted; beviset er
   `kill 1` i containerterminalen — de to avslutningslinjene skal stå der.
   Lokalt bevist med `process.emit('SIGINT')`, exit 0.
-- **Asset-hashen i prod skal være `3eef00bb` etter tabellfiksen i økt 51**
-  (v1.8.1 hadde `51d1bbb4`, v1.8.0 `7a3c28b8`; kun style.css endret nå).
+- **Asset-hashen i prod skal være `257cfce2` etter v1.8.2** (økt 51-QA-
+  fiksene endret style.css + app.js; før: `3eef00bb`, v1.8.1 `51d1bbb4`).
   Regnet fra git-blobbene på `main`-toppen, aldri fra arbeidstreet — metoden
   er kontrollert ved at v1.8.0-blobbene fortsatt gir `7a3c28b8` (lærdommene).
 - **Helsesjekken:** alt. a aktiv (Coolifys sjekk AV, Dockerfilens gjelder).
@@ -60,7 +60,7 @@ sjekkliste og ferdige kjøreprompter: `docs/oppgaveliste.md` (økt 51).
    sammen med filtrene (annenhver stripe på SYNLIGE rader),
    segmentbryteren 5/10/15 (skal nå faktisk bytte tabell), søylestripa,
    dødballkortene, duellen med drakter og spillerkortet. Kontroller også
-   at `?v=3eef00bb` står i HTML-en (ny CSS/JS er faktisk ute). Sjekk samtidig
+   at `?v=257cfce2` står i HTML-en (ny CSS/JS er faktisk ute). Sjekk samtidig
    tallkolonnene på /innsikt, /liga, /live og /overganger: hodene flyttet seg
    i økt 51 (24 stk `th.num` er nå høyrestilt).
 1. `[Marius]` **QA av v1.8.0-funksjonene** — spillerkortet (klikk, Esc, ×,
@@ -205,5 +205,9 @@ sjekkliste og ferdige kjøreprompter: `docs/oppgaveliste.md` (økt 51).
   med tre nye seksjoner + regler 250–320 ord og «hvert lag minst én gang»,
   maxTokens 3000. chipLabel flyttet insights.js → league-insights.js
   (unngå sirkulær import). TDD: 5 røde tester før grønn. **626/626 +
-  lint 0.**
+  lint 0.** Deretter: mergeoversikten fra økt A limt inn → v1.8.2 godkjent
+  av Marius, hele løypa: deploy-vindu sjekket (tirsdag 17:58, 0 kamper),
+  release-commit, merge `--no-ff`, 626/626 + lint 0 PÅ merget main,
+  CHANGELOG-rekkefølge ok, hash `257cfce2` bekreftet fra main-blobbene,
+  tag `v1.8.2`, push.
   `docs/arkiv/HANDOVER-historikk.md` (200-linjerstaket, sist 2026-09-01).
