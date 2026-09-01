@@ -6,9 +6,17 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-09-01 (økt 48, Opus: v1.8.0 bygget og merget)
+**Sist oppdatert:** 2026-09-01 (økt 49, Fable: detaljplan v1.8.1 godkjent)
 
 ## Status akkurat nå
+- **Planøkt v1.8.1 (redesign av /spillere) UTFØRT 1. sep (økt 49).**
+  Detaljplan godkjent: `docs/plan-spillere-redesign-v181.md` — 11 valg
+  avgjort (faner, lavmælte navnelenker, status kun ved avvik, zebra, én
+  desimal i servicen, segmentbryter + søylestripe, dødball-klubbkort,
+  duell-hoder, strammere spillerkort, mer luft, versjon v1.8.1).
+  STEG 0: modalen VIRKER i prod (skjermbilde, privat vindu — de ustylede
+  skjermbildene var cache/verktøy). **Funn: terskelvelgeren 5/10/15 % er
+  DØD i prod** (JS mangler; fikses i T6). Neste: utførelses-økt T1–T12.
 - **v1.8.0 «Spiller-pakka» MERGET TIL MAIN 1. sep (økt 48).** Bygget på
   `feat/spillere-v180` (9 commits, T1–T9, TDD), merget `--no-ff`
   (`ed164c5`), tagget `v1.8.0`, pushet. **602/602 + lint 0 på branch OG
@@ -30,13 +38,8 @@
   Payload /spillere: 528 → 911 KB ukomprimert, men **22,6 → 44,4 KB gzip**
   (compression() aktiv) — mer enn planens anslag ukomprimert, uproblematisk
   over nett. Detaljplan arkivert: `docs/arkiv/plan-spillerpakka-v180.md`.
-- **v1.7.1 «UX-polering» UTE I PROD 1. sep** (`1633969`, tag `v1.7.1`,
-  556/556 + lint 0, prod-bevis utenfra grønt). Detaljene og prod-beviset
-  er rotert til `docs/arkiv/HANDOVER-historikk.md`.
-- **v1.7.0 «/innsikt» ute i prod 31. aug kl. 16:46** (`a25ac0a`, tag
-  `v1.7.0`, 549/549). Prod-beviset er rotert til historikkfila.
-- **v1.3.8, v1.4.0, v1.5.0 og v1.6.0 ute i prod 28. aug kl. 14:49** — fire
-  `--no-ff`-merger, tagget, 509/509 + lint 0. Prod-bevis: historikkfila.
+- **v1.7.1 og v1.7.0 ute i prod 1. sep/31. aug; v1.3.8–v1.6.0 ute
+  28. aug** — alle detaljer og prod-bevis i historikkfila.
 - **Ekte SIGTERM-bevis mangler.** Deploy-loggen er feil sted; beviset er
   `kill 1` i containerterminalen — de to avslutningslinjene skal stå der.
   Lokalt bevist med `process.emit('SIGINT')`, exit 0.
@@ -46,16 +49,12 @@
   v1.3.7-markørbeviset og P2-detaljene: rotert til historikkfila 31. aug.
 - **Helsesjekken:** alt. a aktiv (Coolifys sjekk AV, Dockerfilens gjelder).
   Se lærdommene under for hva den IKKE fanger.
-- **Kostnad: måleuka er DROPPET** (Marius 28. aug) — han følger forbruket
-  løpende i `console.anthropic.com`; tersklene og skriptet i
-  `docs/sjekkpunkt-d-kostnad.md` brukes ved behov. Taktbudsjett
-  **~49–53 AI-kall/uke** (v1.7.0 og v1.8.0 legger til 0). Siste måling 23. aug:
-  $0,94/uke.
-- **Git akkurat nå:** `main` = `origin/main`; `origin` har KUN `main`,
-  taggene t.o.m. `v1.8.0` er pushet. `feat/spillere-v180` er slettet
-  lokalt (ble aldri pushet). **Rest:** 12 gamle, merget lokale brancher
-  fra økt ≤ 35 (navnene i historikkfila) — ryddes med `git branch -d`
-  når som helst.
+- **Kostnad: måleuka er DROPPET** (Marius 28. aug) — forbruket følges i
+  `console.anthropic.com`; terskler/skript i `docs/sjekkpunkt-d-kostnad.md`.
+  Taktbudsjett **~49–53 AI-kall/uke** (v1.7.0/v1.8.0 legger til 0).
+- **Git akkurat nå:** `main` = `origin/main`; tagger t.o.m. `v1.8.0`
+  pushet. **Rest:** 12 gamle, merget lokale brancher fra økt ≤ 35
+  (navnene i historikkfila) — ryddes med `git branch -d` når som helst.
 - Eldre status og alle detaljer: `docs/arkiv/HANDOVER-historikk.md`.
 
 ## Neste steg (start her)
@@ -64,10 +63,10 @@ Køen i `ROADMAP.md` er den langsiktige prioriteringen. Punkt 1–2 kan bare
 Marius gjøre.
 
 1. `[Marius]` **QA av v1.8.0 i prod** — den gikk ut uten lokal test.
-   Spillerkortet (klikk, Esc, ×, backdrop, at fokus går tilbake til navnet),
-   duellen (to valgte, tredje hake avvises, filtrering fjerner haken,
-   sortering beholder valget) og terskelbytte 5/10/15. Meld fra ved funn —
-   det blir en `fix:` på neste patchnummer.
+   Spillerkortet (klikk, Esc, ×, backdrop, at fokus går tilbake til navnet)
+   og duellen (to valgte, tredje hake avvises, filtrering fjerner haken,
+   sortering beholder valget). Terskelbytte 5/10/15 er KJENT dødt
+   (JS mangler) — ikke test det, fiksen ligger i v1.8.1-planen (T6).
 2. `[Marius]` **Mobil-QA på ekte telefon** (P2-resten) — `/overganger`,
    `/liga`, `/innsikt` og nå `/spillere` (checkbox-kolonne + modal + duell)
    på 390 px, i begge temaer. **Nav har 9 punkter** — sjekk at scrollnavet
@@ -180,6 +179,13 @@ Marius gjøre.
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
+- 2026-09-01 (økt 49, Fable, planøkt): mandat = detaljplan for visuell
+  redesign av /spillere, ingen kode. Underveis: «Jeg kan sende
+  skjermbilde» (STEG 0) — skjermbildet beviste at modalen virker i prod.
+  Fire AskUserQuestion-runder — Marius valgte anbefalingen i alle 11
+  spørsmål; versjon v1.8.1. Funn: terskelvelger-JS mangler helt (død i
+  prod, fikses i T6). Plan skrevet og godkjent, ROADMAP/CHANGELOG/
+  HANDOVER ajour, loggpost økt 47 rotert til historikkfila.
 - 2026-09-01 (økt 48, Opus, utførelse): mandat = bygg v1.8.0 etter planen,
   TDD strengt, stopp etter T9 uten merge/tag/push. Handling: verifiserte
   baseline 556/556 + lint 0 på main, branch `feat/spillere-v180`, T1–T9
@@ -190,11 +196,5 @@ Marius gjøre.
   verifiserte 602/602 + lint 0 og CHANGELOG-rekkefølgen på merget main,
   tagget `v1.8.0`, arkiverte detaljplanen, pushet. Marius testet IKKE
   lokalt først, så prod-QA av modal/duell er lagt inn som køpunkt 1.
-- 2026-09-01 (økt 47, Fable, planøkt): mandat = detaljplan v1.8.0, ingen
-  kode. Handling: målte FPL-API-et (bootstrap 109 felter, element-summary-
-  strukturen), fire AskUserQuestion-runder — Marius valgte anbefalingen i
-  alle 11 spørsmål. Underveis: «planen så detaljert at Opus gjennomfører
-  like bra», «kjøreprompt i chatten, ikke fil». Plan skrevet, docs ajour,
-  loggposter økt 45 rotert til historikkfila (200-linjerstaket).
-- Loggposter fra økt 22–46: rotert til
+- Loggposter fra økt 22–47: rotert til
   `docs/arkiv/HANDOVER-historikk.md` (200-linjerstaket, sist 2026-09-01).

@@ -37,6 +37,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.7.0**~~ | ~~«/innsikt»: benkesløsing, kapteinsfasit, flaksbarometer, rundens XI~~ | **utført 31. aug — ute i prod kl. 16:46, 549/549** | — |
 | ~~**v1.7.1**~~ | ~~UX-polering: 12 småfiks fra funksjonsgjennomgang~~ | **utført 1. sep — ute i prod, 556/556** | — |
 | ~~**v1.8.0**~~ | ~~«Spiller-pakka»: spillerkort, duell, differensialer, straffer~~ | **utført 1. sep — ute i prod, 602/602** | — |
+| **v1.8.1** | Redesign av /spillere: faner, lavmælte lenker, klubbkort — plan klar | 5 | — |
 | **v1.9.0** | «Planleggingspakka»: chip-planlegger, deadline-sjekk, kalender-feed | 5 | — |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
@@ -130,9 +131,11 @@ stedet for den AI-kostende promptendringen (droppet). Rekkefølge:
   **v1.8.0 «Spiller-pakka» UTE I PROD 1. sep** (merget `--no-ff`, tagget
   `v1.8.0`, **602/602** + lint 0 før og etter merge, røyktest med tomme
   nøkler grønn — 0 AI-kall; detaljplan arkivert:
-  `docs/arkiv/plan-spillerpakka-v180.md`). **Neste: v1.9.0
-  «Planleggingspakka»** — trenger egen detaljplan-økt først.
-- **Blokkert av:** ingenting — v1.9.0 er klar for detaljplan-økt.
+  `docs/arkiv/plan-spillerpakka-v180.md`). **Neste: v1.8.1 redesign av
+  /spillere** — detaljplan godkjent 1. sep
+  (`docs/plan-spillere-redesign-v181.md`, klar for utførelses-økt).
+  Deretter v1.9.0 «Planleggingspakka» (trenger egen detaljplan-økt).
+- **Blokkert av:** ingenting — v1.8.1 er klar for utførelses-økt.
 - **Størrelse:** stor (fire releaser).
 
 ## Dokumentkart — hvor alt bor
@@ -149,6 +152,7 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 | `docs/sjekkpunkt-d-kostnad.md` | metode + skript for P4-målingen |
 | `docs/arkiv/plan-sluttspurt.md` | utført plan: robusthetsreleasene, portene og docs-ryddingen |
 | `docs/plan-idepakken-v16-v19.md` | beslutningsfasit for idépakken v1.7.0–v1.9.0 |
+| `docs/plan-spillere-redesign-v181.md` | godkjent detaljplan for v1.8.1 (redesign av /spillere, T1–T12) |
 | `docs/arkiv/plan-innsikt-v170.md` | utført detaljplan for v1.7.0 «/innsikt» (T1–T10) |
 | `docs/arkiv/plan-v134-ai-swr.md` | utført plan for v1.3.4 (SWR + oppfrisker) |
 | `docs/arkiv/` (20 filer) | utførte planer + historikk (kun sti-referanser rettes ved rydding) |

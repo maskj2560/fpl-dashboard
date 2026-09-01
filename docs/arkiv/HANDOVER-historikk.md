@@ -1516,3 +1516,22 @@ Loggposter:
   valgte «Fiks (Anbefalt)» på ALLE 12. Bygget som v1.7.1 med TDD på
   logikken (noStore, nextSummaryUpdateAt, rankGraph-akser, compareCells/
   rowMatchesFilters/queryParam). Merge holdt tilbake: avspark 21:00.
+
+## Rotert 2026-09-01 (økt 49, planøkt v1.8.1) — loggpost økt 47 + små statusdetaljer
+
+Statusdetaljer komprimert ut av HANDOVER (verbatim-fakta):
+- v1.7.1: `1633969`, tag `v1.7.1`, 556/556 + lint 0, prod-bevis utenfra
+  grønt. v1.7.0: `a25ac0a`, tag `v1.7.0`, 549/549, ute 31. aug kl. 16:46.
+  v1.3.8–v1.6.0: fire `--no-ff`-merger 28. aug kl. 14:49, 509/509.
+- Kostnad: siste måling 23. aug var $0,94/uke.
+- Git: `origin` har KUN `main`; `feat/spillere-v180` ble slettet lokalt
+  etter v1.8.0-mergen (ble aldri pushet).
+
+Loggpost:
+
+- 2026-09-01 (økt 47, Fable, planøkt): mandat = detaljplan v1.8.0, ingen
+  kode. Handling: målte FPL-API-et (bootstrap 109 felter, element-summary-
+  strukturen), fire AskUserQuestion-runder — Marius valgte anbefalingen i
+  alle 11 spørsmål. Underveis: «planen så detaljert at Opus gjennomfører
+  like bra», «kjøreprompt i chatten, ikke fil». Plan skrevet, docs ajour,
+  loggposter økt 45 rotert til historikkfila (200-linjerstaket).
