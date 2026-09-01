@@ -15,6 +15,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - «Spillere»: statusmerket vises kun når spilleren har et avvik (skadet,
   tvilsom, suspendert, utilgjengelig, utlånt). «Klar» på nesten alle 626
   rader var støy. Statusfilteret virker som før.
+- «Spillere»: spillertabellen har fått zebra-striper og strammere radhøyde,
+  og checkbox-kolonnen har en synlig «Duell»-overskrift i stedet for tekst
+  kun for skjermlesere. Stripene teller bare synlige rader, så rytmen holder
+  når filtrene brukes.
 
 ### Planlagt
 

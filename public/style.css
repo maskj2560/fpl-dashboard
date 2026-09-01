@@ -20,6 +20,7 @@
   --surface-3: #3a2358;
   --border: rgba(190, 160, 255, 0.14);
   --border-strong: rgba(190, 160, 255, 0.3);
+  --row-alt: rgba(190, 160, 255, 0.05);
 
   /* Tekst */
   --text: #f4f1fa;
@@ -125,6 +126,7 @@
   --surface-3: #e3dcec;
   --border: rgba(55, 0, 60, 0.12);
   --border-strong: rgba(55, 0, 60, 0.25);
+  --row-alt: rgba(55, 0, 60, 0.04);
   --text: #37003C;
   --text-dim: #5c4a6b;
   --dim-strong: #665573;
@@ -1981,4 +1983,24 @@ body.modal-apen {
   display: flex;
   align-items: center;
   gap: 0.35rem;
+}
+
+/* ---- v1.8.1: redesign av /spillere ------------------------------------ */
+
+/* Zebra-rytme, scopet til spillertabellen: 626 rader trenger radankeret,
+   de andre tabellene i appen er korte og skal se ut som før.
+   «of :not([hidden])» hopper over filtrerte rader, slik at stripene forblir
+   annenhver på det som faktisk vises. Eldre nettlesere mister kun zebraen. */
+#players-table tbody tr:nth-child(even of :not([hidden])) {
+  background: var(--row-alt);
+}
+
+/* Hover må vinne over zebra — derfor gjentas nth-child-leddet her. */
+#players-table tbody tr:hover,
+#players-table tbody tr:nth-child(even of :not([hidden])):hover {
+  background: var(--surface-2);
+}
+
+#players-table td {
+  padding: 0.4rem 0.6rem;
 }

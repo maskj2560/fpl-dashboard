@@ -372,6 +372,13 @@ test('players.ejs gjør spillernavn klikkbare og gir radene duell-data', async (
   assert.match(html, /class="duell-velg"[^>]*aria-label="Velg Saka til duell"/);
 });
 
+test('players.ejs gir duell-kolonnen en synlig overskrift', async () => {
+  const html = await renderView('players', fx.players);
+  const head = html.slice(html.indexOf('id="players-table"'), html.indexOf('</thead>'));
+  assert.match(head, /<th data-nosort>Duell<\/th>/, 'checkbox-kolonnen skal ha synlig etikett');
+  assert.doesNotMatch(head, /sr-only/, 'etiketten skal være synlig, ikke bare for skjermlesere');
+});
+
 test('players.ejs viser statusbadge kun ved avvik — «Klar» er stille', async () => {
   const html = await renderView('players', fx.players);
   const rad = (navn) => {
