@@ -33,6 +33,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   skjermleser-caption; «Live» annonserer kampstatus (`role="status"`) og
   totalsummen (`aria-live="polite"`). Testlåst: hver `<table>` følges av
   `<caption>`, og hver ikon-knapp har `aria-label`.
+- Tilgjengelighet: ny `test/a11y.test.js` låser at alle skjemafelt (views
+  og klientrendret markup) har etikett, at all bevegelse ligger bak
+  `prefers-reduced-motion`, og at den globale fokusringen består.
 
 ### Fixed
 
