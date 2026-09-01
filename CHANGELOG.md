@@ -7,6 +7,13 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Fixed
+
+- «Spillere»: filterskjemaet brukte et inline `onsubmit` for å hindre at
+  Enter sendte skjemaet. Flyttet til app.js — CSP-en som kommer i samme
+  versjon ville blokkert inline-handlere stille. Testlåst: ingen view har
+  `on*`-attributter.
+
 ## [1.8.2] - 2026-09-01
 
 ### Changed

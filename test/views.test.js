@@ -638,3 +638,20 @@ test('innsikt.ejs rendrer trendlinjen bare når den finnes', async () => {
   assert.ok(!uten.includes('Dine i rundens XI per runde'), 'trenden vises uten data');
   assert.ok(uten.includes('Rundens XI'), 'resten av seksjonen skal stå');
 });
+
+// ---- v1.8.3: CSP -------------------------------------------------------------
+
+// CSP-en (script-src 'self' + nonce) blokkerer inline-hendelsesattributter
+// stille — et onsubmit/onclick i et view ville bare slutte å virke i prod.
+test('ingen view har inline on*-hendelsesattributter (CSP)', async () => {
+  const inlineHandler = /\son[a-z]+=["']/i;
+  for (const [name, locals] of cases) {
+    const html = await renderView(name, locals);
+    assert.ok(!inlineHandler.test(html), `${name}.ejs rendrer et inline on*-attributt`);
+  }
+  const files = (await fsp.readdir(VIEWS, { recursive: true })).filter((f) => f.endsWith('.ejs'));
+  for (const file of files) {
+    const src = await fsp.readFile(path.join(VIEWS, file), 'utf8');
+    assert.ok(!inlineHandler.test(src), `${file} har et inline on*-attributt i kilden`);
+  }
+});

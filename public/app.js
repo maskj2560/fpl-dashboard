@@ -463,6 +463,11 @@ function initEdgeFades(el, prefix) {
     if (window.duellRyddSkjulte) window.duellRyddSkjulte();
   }
 
+  // Enter i søkefeltet skal ikke sende skjemaet. Lå før som inline
+  // onsubmit i viewet — CSP-en (v1.8.3) blokkerer inline-handlere stille.
+  const form = document.getElementById('player-filters');
+  if (form) form.addEventListener('submit', (e) => e.preventDefault());
+
   search.addEventListener('input', applyFilters);
   position.addEventListener('change', applyFilters);
   team.addEventListener('change', applyFilters);
