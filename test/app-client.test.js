@@ -251,7 +251,8 @@ test('playerCardHtml escaper navn og nyhetstekst', () => {
   assert.ok(!html.includes('<script>'), 'uescapet script-tag i modalen');
   assert.ok(!html.includes('<b>Ankelskade</b>'), 'uescapet nyhetstekst');
   assert.ok(!html.includes('"><img>'), 'uescapet motstandernavn');
-  assert.ok(html.includes('&lt;script&gt;'));
+  // Navnet eies av modaltittelen (v1.8.1) — nyhetsteksten er escapet her.
+  assert.match(html, /&lt;b&gt;Ankelskade&lt;\/b&gt;/);
   // Drakta kommer fra en server-rendret template og settes inn rå.
   assert.ok(html.includes('<span class="shirt"></span>'));
 });
@@ -292,12 +293,28 @@ test('playerCardHtml utelater dødball-seksjonen helt uten roller', () => {
   assert.ok(!html.includes('Dødball'), 'ingen roller → ingen seksjon');
 });
 
+test('playerCardHtml lar modaltittelen eie navnet — ingen dublett i brødteksten', () => {
+  const html = app.playerCardHtml(kort(), '');
+
+  assert.ok(!html.includes('Erling Haaland'), 'navnet står allerede i modaltittelen');
+  assert.doesNotMatch(html, /kort-navn/);
+  assert.match(html, /Man City · Angrep · £14\.1m/, 'linja under drakta består');
+});
+
+test('playerCardHtml vekter Form, Poeng og P/K over de sekundære tallene', () => {
+  const html = app.playerCardHtml(kort(), '');
+
+  assert.equal((html.match(/kort-stat--stor/g) ?? []).length, 3, 'tre primærtall');
+  assert.match(html, /class="kort-stat kort-stat--stor"><span class="kort-stat-navn">Form</);
+  assert.match(html, /class="kort-stat"><span class="kort-stat-navn">Eid %</);
+});
+
 // ---- v1.8.0: spillerduellen ----------------------------------------------
 
 // Radenes dataset — tallene er strenger fra FPL, tomme dødballattributter
 // betyr «ingen rolle».
 const ds = (over = {}) => ({
-  id: '1', navn: 'Saka', lag: 'ARS', pos: '3', price: '5.5',
+  id: '1', navn: 'Saka', lag: 'ARS', team: '1', pos: '3', price: '5.5',
   form: '5.5', poeng: '42', pk: '4.2', eid: '12.3',
   xg: '3.40', xa: '2.10', min: '900', bonus: '7',
   straffer: '', hjorner: '', frispark: '',
@@ -322,6 +339,8 @@ test('duelData beholder FPL-strengene og gjør tomme dødballfelt til null', () 
   assert.equal(d.straffer, 2);
   assert.equal(d.hjorner, null);
   assert.equal(d.frispark, null);
+  // Lag-id-en trengs for å finne riktig drakt-template til duell-hodet.
+  assert.equal(d.teamId, '1');
 });
 
 test('duelWinners lar laveste pris vinne og resten høyeste', () => {
@@ -366,4 +385,44 @@ test('duelHtml escaper navn og markerer vinnercellene', () => {
   assert.match(html, /&lt;script&gt;/);
   assert.match(html, /<strong class="accent">5\.5<\/strong>/, 'billigste pris skal markeres');
   assert.ok(!html.includes('<strong class="accent">12.5</strong>'), 'taperen skal ikke markeres');
+});
+
+test('duelHtml gir hver spiller et hode med drakt, navn og klubb', () => {
+  const a = app.duelData(ds());
+  const b = app.duelData(ds({ navn: 'Salah', lag: 'LIV', team: '2' }));
+
+  // Draktene er server-rendret markup fra <template>, samme kontrakt som i
+  // spillerkortet: de settes inn rått, aldri escapet.
+  const html = app.duelHtml(a, b, app.duelWinners(a, b), '<span class="shirt">A</span>', '<span class="shirt">B</span>');
+
+  assert.equal((html.match(/class="duell-hode"/g) ?? []).length, 2, 'ett hode per spiller');
+  assert.match(html, /<span class="shirt">A<\/span>/, 'drakta settes inn som markup');
+  assert.match(html, /duell-hode-navn">Saka</);
+  assert.match(html, /duell-hode-lag">LIV</);
+});
+
+test('duelHtml escaper navnet også i hodet, og takler manglende drakt', () => {
+  const a = app.duelData(ds({ navn: '<script>x</script>' }));
+  const b = app.duelData(ds({ navn: 'Salah' }));
+
+  const html = app.duelHtml(a, b, app.duelWinners(a, b), '', '');
+
+  assert.ok(!html.includes('<script>'), 'uescapet navn i duell-hodet');
+  assert.match(html, /class="duell-hode"/);
+});
+
+// ---- v1.8.1: terskelvelgeren paa /spillere --------------------------------
+
+test('terskelSynlighet viser bare den valgte terskelen', () => {
+  assert.deepEqual({ ...app.terskelSynlighet('10') }, { 5: true, 10: false, 15: true });
+  assert.deepEqual({ ...app.terskelSynlighet('5') }, { 5: false, 10: true, 15: true });
+  assert.deepEqual({ ...app.terskelSynlighet('15') }, { 5: true, 10: true, 15: false });
+});
+
+test('terskelSynlighet sammenligner verdi, ikke type — radioverdier er strenger', () => {
+  assert.deepEqual({ ...app.terskelSynlighet(10) }, { 5: true, 10: false, 15: true });
+});
+
+test('terskelSynlighet tar tersklene som finnes i markupen', () => {
+  assert.deepEqual({ ...app.terskelSynlighet('15', [5, 15]) }, { 5: true, 15: false });
 });

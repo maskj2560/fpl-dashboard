@@ -40,12 +40,13 @@ const DODBALL_ETIKETTER = [
 
 function playerCardHtml(d, shirtHtml) {
   const e = escapeHtml;
-  const stat = (navn, verdi) =>
-    '<div class="kort-stat"><span class="kort-stat-navn">' + e(navn) +
+  const stat = (navn, verdi, stor) =>
+    '<div class="kort-stat' + (stor ? ' kort-stat--stor' : '') + '"><span class="kort-stat-navn">' + e(navn) +
     '</span><span class="kort-stat-val">' + e(verdi) + '</span></div>';
 
+  // Navnet står i modaltittelen (Modul 9 setter den) — det gjentas ikke her.
   let html = '<div class="kort-topp">' + (shirtHtml || '') +
-    '<div><p class="kort-navn">' + e(d.fulltNavn) + '</p>' +
+    '<div>' +
     '<p class="dim">' + e((d.lag && d.lag.navn) || '–') + ' · ' + e(d.posisjon) +
     ' · £' + e(d.pris) + 'm</p>' +
     '<p><span class="status status-' + e(d.status) + '">' + e(d.statusTekst) + '</span>' +
@@ -53,8 +54,10 @@ function playerCardHtml(d, shirtHtml) {
     '</p>' + (d.nytt ? '<p class="dim">' + e(d.nytt) + '</p>' : '') +
     '</div></div>';
 
-  html += '<div class="kort-stats">' +
-    stat('Form', d.form) + stat('Poeng', d.totalPoeng) + stat('P/K', d.poengPerKamp) +
+  html += '<div class="kort-stats kort-stats--primar">' +
+    stat('Form', d.form, true) + stat('Poeng', d.totalPoeng, true) +
+    stat('P/K', d.poengPerKamp, true) + '</div>' +
+    '<div class="kort-stats">' +
     stat('Eid %', d.eid) + stat('xG', d.xg) + stat('xA', d.xa) +
     stat('Minutter', d.minutter) + '</div>';
 
@@ -100,6 +103,18 @@ function playerCardHtml(d, shirtHtml) {
 // Spillerduellen (v1.8.0). Alt bygges av radenes data-attributter — ingen
 // nettverkskall. Tallene er FPL-strenger: parseFloat brukes KUN til å
 // sammenligne, cellene viser strengen slik FPL skrev den.
+/**
+ * Henter drakt-markupen for et lag fra <template>-elementene som serveren
+ * rendret via clubAssets-vokteren. Delt av spillerkortet (Modul 9) og
+ * duellen (Modul 10) — klienten skriver aldri en <img> i blinde.
+ */
+function shirtHtmlFor(lagId, erKeeper) {
+  if (lagId == null || lagId === '') return '';
+  const attr = erKeeper ? 'data-shirt-keeper' : 'data-shirt';
+  const tpl = document.querySelector('template[' + attr + '="' + lagId + '"]');
+  return tpl ? tpl.innerHTML : '';
+}
+
 const DUELL_RADER = [
   ['pris', 'Pris', 'lav'],
   ['form', 'Form', 'hoy'],
@@ -125,6 +140,8 @@ function duelData(ds) {
     id: ds.id,
     navn: ds.navn,
     lag: ds.lag,
+    // Lag-id-en peker på drakt-templaten som duell-hodet kloner.
+    teamId: ds.team,
     pris: ds.price,
     form: ds.form,
     poeng: ds.poeng,
@@ -166,16 +183,24 @@ function duelWinners(a, b) {
   return winners;
 }
 
-function duelHtml(a, b, winners) {
+/**
+ * Draktene er server-rendret markup fra <template>-elementene på siden, så
+ * `shirtHtml` settes inn RÅTT — den kommer aldri fra brukerdata. Navnene
+ * escapes som før.
+ */
+function duelHtml(a, b, winners, shirtA, shirtB) {
   const e = escapeHtml;
   const celle = (verdi, vant) => {
     const tekst = e(verdi == null ? '–' : verdi);
     return '<td class="num">' + (vant ? '<strong class="accent">' + tekst + '</strong>' : tekst) + '</td>';
   };
+  const hode = (d, shirtHtml) =>
+    '<th class="duell-hode-celle"><div class="duell-hode">' + (shirtHtml || '') +
+    '<span><span class="duell-hode-navn">' + e(d.navn) + '</span>' +
+    '<span class="duell-hode-lag">' + e(d.lag) + '</span></span></div></th>';
 
   return '<h2>Duell</h2><div class="table-scroll"><table class="data"><thead><tr>' +
-    '<th></th><th class="num">' + e(a.navn) + ' <span class="dim">' + e(a.lag) + '</span></th>' +
-    '<th class="num">' + e(b.navn) + ' <span class="dim">' + e(b.lag) + '</span></th>' +
+    '<th></th>' + hode(a, shirtA) + hode(b, shirtB) +
     '</tr></thead><tbody>' +
     DUELL_RADER.map(([key, label]) =>
       '<tr><th scope="row">' + e(label) + '</th>' +
@@ -1003,11 +1028,7 @@ function rivalNavAction({ search, stored, validIds }) {
   let utloser = null;
 
   function shirtFor(data) {
-    const lagId = data.lag && data.lag.id;
-    if (lagId == null) return '';
-    const attr = data.erKeeper ? 'data-shirt-keeper' : 'data-shirt';
-    const tpl = document.querySelector('template[' + attr + '="' + lagId + '"]');
-    return tpl ? tpl.innerHTML : '';
+    return shirtHtmlFor(data.lag && data.lag.id, data.erKeeper);
   }
 
   function fokuserbare() {
@@ -1127,7 +1148,7 @@ function rivalNavAction({ search, stored, validIds }) {
     // Dataene kopieres ut nå, så duellen består om radene filtreres bort etterpå.
     const a = duelData(rader[0].dataset);
     const b = duelData(rader[1].dataset);
-    seksjon.innerHTML = duelHtml(a, b, duelWinners(a, b));
+    seksjon.innerHTML = duelHtml(a, b, duelWinners(a, b), shirtHtmlFor(a.teamId), shirtHtmlFor(b.teamId));
     seksjon.hidden = false;
     seksjon.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
@@ -1151,4 +1172,77 @@ function rivalNavAction({ search, stored, validIds }) {
   };
 
   oppdater();
+})();
+
+// Terskelvelgeren paa /spillere: hvilke differensialtabeller som skal ligge
+// skjult. Ren funksjon, saa regelen kan testes uten DOM.
+function terskelSynlighet(valgt, terskler = [5, 10, 15]) {
+  const ut = {};
+  for (const t of terskler) ut[t] = String(t) !== String(valgt);
+  return ut;
+}
+
+// Modul 11: terskelvelgeren (/spillere). Tabellene er pre-rendret av serveren
+// og byttes bare ut med hidden — ingen henting, ingen omregning.
+(function () {
+  'use strict';
+
+  const velger = document.querySelector('.terskel-velger');
+  const bokser = Array.from(document.querySelectorAll('[data-terskel]'));
+  if (!velger || bokser.length === 0) return;
+
+  const terskler = bokser.map((b) => Number(b.dataset.terskel));
+
+  velger.addEventListener('change', (e) => {
+    const input = e.target;
+    if (!input || input.name !== 'diff-terskel') return;
+    const skjult = terskelSynlighet(input.value, terskler);
+    for (const boks of bokser) boks.hidden = skjult[Number(boks.dataset.terskel)];
+  });
+})();
+
+// Modul 12: fanene paa /spillere. Seksjonene er server-rendret; fanen bytter
+// bare hidden. Filterskjemaet hoerer til tabellen og foelger den fanen.
+(function () {
+  'use strict';
+
+  const rad = document.querySelector('.fane-rad');
+  if (!rad) return;
+
+  const knapper = Array.from(rad.querySelectorAll('[data-fane]'));
+  if (knapper.length === 0) return;
+
+  const filtre = document.getElementById('player-filters');
+
+  function vis(navn, flyttFokus) {
+    for (const knapp of knapper) {
+      const aktiv = knapp.dataset.fane === navn;
+      knapp.setAttribute('aria-selected', aktiv ? 'true' : 'false');
+      knapp.tabIndex = aktiv ? 0 : -1;
+      const panel = document.getElementById(knapp.dataset.fane);
+      if (panel) panel.hidden = !aktiv;
+      if (aktiv && flyttFokus) knapp.focus();
+    }
+    if (filtre) filtre.hidden = navn !== 'tabell';
+    history.replaceState(null, '', '#' + navn);
+  }
+
+  rad.addEventListener('click', (e) => {
+    const knapp = e.target.closest('[data-fane]');
+    if (knapp) vis(knapp.dataset.fane, false);
+  });
+
+  rad.addEventListener('keydown', (e) => {
+    let steg = 0;
+    if (e.key === 'ArrowRight') steg = 1;
+    if (e.key === 'ArrowLeft') steg = -1;
+    if (steg === 0) return;
+    e.preventDefault();
+    const i = knapper.findIndex((k) => k.getAttribute('aria-selected') === 'true');
+    vis(knapper[(i + steg + knapper.length) % knapper.length].dataset.fane, true);
+  });
+
+  // Dyplenke: /spillere#differensialer aapner riktig fane ved last.
+  const fraHash = decodeURIComponent(location.hash.slice(1));
+  if (knapper.some((k) => k.dataset.fane === fraHash)) vis(fraHash, false);
 })();

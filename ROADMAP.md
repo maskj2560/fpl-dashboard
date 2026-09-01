@@ -37,7 +37,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.7.0**~~ | ~~«/innsikt»: benkesløsing, kapteinsfasit, flaksbarometer, rundens XI~~ | **utført 31. aug — ute i prod kl. 16:46, 549/549** | — |
 | ~~**v1.7.1**~~ | ~~UX-polering: 12 småfiks fra funksjonsgjennomgang~~ | **utført 1. sep — ute i prod, 556/556** | — |
 | ~~**v1.8.0**~~ | ~~«Spiller-pakka»: spillerkort, duell, differensialer, straffer~~ | **utført 1. sep — ute i prod, 602/602** | — |
-| **v1.8.1** | Redesign av /spillere: faner, lavmælte lenker, klubbkort — plan klar | 5 | — |
+| **v1.8.1** | Redesign av /spillere: faner, lavmælte lenker, klubbkort | **bygget 1. sep — 613/613, venter på merge** | — |
 | **v1.9.0** | «Planleggingspakka»: chip-planlegger, deadline-sjekk, kalender-feed | 5 | — |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
@@ -131,11 +131,12 @@ stedet for den AI-kostende promptendringen (droppet). Rekkefølge:
   **v1.8.0 «Spiller-pakka» UTE I PROD 1. sep** (merget `--no-ff`, tagget
   `v1.8.0`, **602/602** + lint 0 før og etter merge, røyktest med tomme
   nøkler grønn — 0 AI-kall; detaljplan arkivert:
-  `docs/arkiv/plan-spillerpakka-v180.md`). **Neste: v1.8.1 redesign av
-  /spillere** — detaljplan godkjent 1. sep
-  (`docs/plan-spillere-redesign-v181.md`, klar for utførelses-økt).
-  Deretter v1.9.0 «Planleggingspakka» (trenger egen detaljplan-økt).
-- **Blokkert av:** ingenting — v1.8.1 er klar for utførelses-økt.
+  `docs/arkiv/plan-spillerpakka-v180.md`). **v1.8.1 redesign av /spillere
+  BYGGET 1. sep** på `fix/spillere-redesign-v181` — T1–T11 ferdig, 613/613
+  + lint 0, røyktest grønn. **Venter på Marius' klarsignal for merge, tag
+  og push.** Deretter v1.9.0 «Planleggingspakka» (trenger egen
+  detaljplan-økt).
+- **Blokkert av:** v1.8.1 venter på klarsignal til merge/tag/push.
 - **Størrelse:** stor (fire releaser).
 
 ## Dokumentkart — hvor alt bor

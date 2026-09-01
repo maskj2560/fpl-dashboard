@@ -6,67 +6,75 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-09-01 (økt 49, Fable: detaljplan v1.8.1 godkjent)
+**Sist oppdatert:** 2026-09-01 (økt 50, Opus: v1.8.1 bygget, venter på merge)
 
 ## Status akkurat nå
-- **Planøkt v1.8.1 (redesign av /spillere) UTFØRT 1. sep (økt 49).**
-  Detaljplan godkjent: `docs/plan-spillere-redesign-v181.md` — 11 valg
-  avgjort (faner, lavmælte navnelenker, status kun ved avvik, zebra, én
-  desimal i servicen, segmentbryter + søylestripe, dødball-klubbkort,
-  duell-hoder, strammere spillerkort, mer luft, versjon v1.8.1).
-  STEG 0: modalen VIRKER i prod (skjermbilde, privat vindu — de ustylede
-  skjermbildene var cache/verktøy). **Funn: terskelvelgeren 5/10/15 % er
-  DØD i prod** (JS mangler; fikses i T6). Neste: utførelses-økt T1–T12.
-- **v1.8.0 «Spiller-pakka» MERGET TIL MAIN 1. sep (økt 48).** Bygget på
-  `feat/spillere-v180` (9 commits, T1–T9, TDD), merget `--no-ff`
-  (`ed164c5`), tagget `v1.8.0`, pushet. **602/602 + lint 0 på branch OG
-  merget main**, CHANGELOG-rekkefølgen kontrollert. Marius ga klarsignal
-  uten egen lokal test — mobil-/tastatur-QA gjenstår derfor (køpunkt 1).
-  Innhold: `src/services/players.js` (buildPlayerCard, buildDifferentials,
-  buildSetPieceTable, assemblePlayerCard), `GET /api/spiller/:id`,
-  `elementSummaryAgeSec` i fplClient, /spillere i tre seksjoner med
-  hopplenker, modal-spillerkort, duell og terskelvelger.
-  **To dokumenterte avvik fra planen (begge teknisk nødvendige):**
-  (1) `buildDifferentials` tok ikke `teamsById` i planens signatur, men
-  rad-kontrakten krever `lag: {kort, kode, navn}` — parameteren er lagt til.
-  (2) `buildSetPieceTable` returnerer `{id, navn}` per taker, ikke bare
-  navn: T6 krever at navnene er knapper som åpner spillerkortet, og en
-  knapp trenger id-en. T4-testene ble justert i T6-commiten.
-  **Røyktest 1. sep med tomme nøkler** (`ai:false, discord:false`): alle 9
-  ruter 200, `/finnesikke` 404, `/api/spiller/411` 200 mot ekte FPL-data,
-  `/api/spiller/abc` 400, `/api/spiller/999999` 404, **0 «AI-kall:»-linjer**.
-  Payload /spillere: 528 → 911 KB ukomprimert, men **22,6 → 44,4 KB gzip**
-  (compression() aktiv) — mer enn planens anslag ukomprimert, uproblematisk
-  over nett. Detaljplan arkivert: `docs/arkiv/plan-spillerpakka-v180.md`.
+- **v1.8.1 (redesign av /spillere) BYGGET 1. sep (økt 50) — IKKE MERGET.**
+  Branch `fix/spillere-redesign-v181`, 11 commits (T1–T11, TDD med rød før
+  grønn i hver task), CHANGELOG-linje i hver commit. **Sluttstatus:
+  613/613 + lint 0** (baseline 602/602); `style.test.js` og
+  `routes.test.js` urørt og grønne. **Venter på klarsignal for merge
+  `--no-ff`, tag `v1.8.1` og push.** CHANGELOG-punktene står under
+  `[Unreleased]` — flyttes til `[1.8.1]` ved release, med arkivering av
+  planfila.
+  Innhold: faner (Modul 12), lavmælte `.navn-lenke`-navn, statusbadge kun
+  ved avvik, zebra + «Duell»-etikett, snudd knappehierarki i duell-linja,
+  én desimal + `andel` fra `players.js`, segmentbryter + søylestripe,
+  **terskelvelger-JS-en som manglet i v1.8.0 (Modul 11)**, dødballkort,
+  duell-hoder med drakter, strammere spillerkort, kortere ingress. Ny
+  token `--row-alt` i begge temablokker.
+  **Røyktest 1. sep med tomme nøkler** (`ai:false, discord:false`):
+  `/spillere` 200 (919 KB rå / **44,7 KB gzip**), `/api/spiller/411` 200
+  mot ekte FPL-data, `abc` 400, `999999` 404, `/finnesikke` 404, **0
+  «AI-kall:»-linjer**. Rendret side: 3 faneknapper, 20 dødballkort, 772
+  navnelenker, ekte `--andel`-verdier, INGEN `status-a`-badge (kun d/i/s/u).
+- **Sju tekniske avvik fra detaljplanen** (ingen designvalg endret):
+  (1) zebra + strammere radhøyde scopet til `#players-table`, ikke alle
+  `table.data` — skal ikke endre åtte andre sider, QA dekker bare
+  /spillere. (2) `#duell` flyttet inn i `#tabell` som planlagt, men som
+  `class="duell-panel"` — kort-i-kort ga dobbel flate/kant.
+  (3) Terskel-labelene fikk wrapperen `<div class="terskel-segmenter">`
+  inne i fieldsetet — `<legend>` i en flex-fieldset er upålitelig.
+  (4) Modul 12 skjuler også `#player-filters` utenfor Tabell-fanen.
+  (5) `.modal .shirt` er `110px × 145px`, ikke `height: auto` — `.shirt`
+  er en span uten egen høyde og ville kollapset (samme forhold som 44/58).
+  (6) Duell-hodene ligger i tabellens `<th>`-celler, ikke i en egen rad
+  over den — ellers sto navnet to ganger. (7) Escapingtesten for
+  `playerCardHtml` sjekker nyhetsteksten i stedet for `&lt;script&gt;`,
+  siden `fulltNavn` ikke lenger rendres i brødteksten.
 - **v1.7.1 og v1.7.0 ute i prod 1. sep/31. aug; v1.3.8–v1.6.0 ute
   28. aug** — alle detaljer og prod-bevis i historikkfila.
 - **Ekte SIGTERM-bevis mangler.** Deploy-loggen er feil sted; beviset er
   `kill 1` i containerterminalen — de to avslutningslinjene skal stå der.
   Lokalt bevist med `process.emit('SIGINT')`, exit 0.
 - **Asset-hashen i prod skal være `7a3c28b8` etter v1.8.0** (byttet fra
-  `397624a7`; både style.css og app.js endret). Regnet fra git-blobbene på
-  `main`-toppen, aldri fra arbeidstreet — se lærdommene.
-  v1.3.7-markørbeviset og P2-detaljene: rotert til historikkfila 31. aug.
+  `397624a7`). **Ny hash for v1.8.1 må regnes ETTER mergen** — både
+  style.css og app.js er endret. Regnes fra git-blobbene på `main`-toppen,
+  aldri fra arbeidstreet — se lærdommene.
 - **Helsesjekken:** alt. a aktiv (Coolifys sjekk AV, Dockerfilens gjelder).
   Se lærdommene under for hva den IKKE fanger.
-- **Kostnad: måleuka er DROPPET** (Marius 28. aug) — forbruket følges i
-  `console.anthropic.com`; terskler/skript i `docs/sjekkpunkt-d-kostnad.md`.
-  Taktbudsjett **~49–53 AI-kall/uke** (v1.7.0/v1.8.0 legger til 0).
-- **Git akkurat nå:** `main` = `origin/main`; tagger t.o.m. `v1.8.0`
-  pushet. **Rest:** 12 gamle, merget lokale brancher fra økt ≤ 35
-  (navnene i historikkfila) — ryddes med `git branch -d` når som helst.
+- **Kostnad: måleuka DROPPET** (28. aug) — følges i `console.anthropic.com`,
+  terskler i `docs/sjekkpunkt-d-kostnad.md`. Takt **~49–53 AI-kall/uke**
+  (v1.7.0/v1.8.0/v1.8.1 legger til 0).
+- **Git akkurat nå:** `main` = `origin/main` (`fcd5994`); tagger t.o.m.
+  `v1.8.0` pushet. Arbeidet ligger på `fix/spillere-redesign-v181` (11
+  commits, ikke pushet). **Rest:** 12 gamle, merget lokale brancher fra
+  økt ≤ 35 (navnene i historikkfila) — ryddes med `git branch -d`.
 - Eldre status og alle detaljer: `docs/arkiv/HANDOVER-historikk.md`.
 
 ## Neste steg (start her)
 
-Køen i `ROADMAP.md` er den langsiktige prioriteringen. Punkt 1–2 kan bare
+Køen i `ROADMAP.md` er den langsiktige prioriteringen. Punkt 0–3 kan bare
 Marius gjøre.
 
-1. `[Marius]` **QA av v1.8.0 i prod** — den gikk ut uten lokal test.
-   Spillerkortet (klikk, Esc, ×, backdrop, at fokus går tilbake til navnet)
-   og duellen (to valgte, tredje hake avvises, filtrering fjerner haken,
-   sortering beholder valget). Terskelbytte 5/10/15 er KJENT dødt
-   (JS mangler) — ikke test det, fiksen ligger i v1.8.1-planen (T6).
+0. `[Marius]` **Visuell QA av v1.8.1 lokalt** (`npm run dev`) før merge:
+   begge temaer × 390 px og desktop × alle tre faner. Sjekk zebra sammen
+   med filtrene (annenhver stripe på SYNLIGE rader), segmentbryteren
+   5/10/15 (skal nå faktisk bytte tabell), søylestripa, dødballkortene,
+   duellen med drakter og spillerkortet. Gi så klarsignal til merge.
+1. `[Marius]` **QA av v1.8.0-funksjonene** — spillerkortet (klikk, Esc, ×,
+   backdrop, fokus tilbake til navnet) og duellen (to valgte, tredje hake
+   avvises, filtrering fjerner haken, sortering beholder valget).
 2. `[Marius]` **Mobil-QA på ekte telefon** (P2-resten) — `/overganger`,
    `/liga`, `/innsikt` og nå `/spillere` (checkbox-kolonne + modal + duell)
    på 390 px, i begge temaer. **Nav har 9 punkter** — sjekk at scrollnavet
@@ -145,8 +153,6 @@ Marius gjøre.
 - Tiltale: **Marius** — alle svar starter med «Hei Marius!».
 - AI-modell: `claude-sonnet-5` via `AI_MODEL`-env (`claude-haiku-4-5` billig-alternativ).
 - Kostnadskrav: AI billig for én person — alt on-demand + cachet.
-- Layout: egen liten EJS-layout-helper, IKKE express-ejs-layouts.
-- «Overganger»: egen side på `/overganger`, uten AI-kommentar i v1.
 - Økter stoppes ved ~95 % usage → oppdater denne filen grundig først.
 - Alle beskjeder fra Marius loggføres i loggen nederst.
 - ROADMAP/CHANGELOG/CLAUDE.md/HANDOVER oppdateres løpende, i samme commit
@@ -157,11 +163,7 @@ Marius gjøre.
 - Doks-opprydningen (økt 24): konsumerte prompter slettes, utførte planer
   arkiveres til `docs/arkiv/`, docs/-rot holdes lav (nå 4 filer + arkiv),
   HANDOVER-tak 200 linjer med rotering til historikkfila.
-- **Måleuka droppet (28. aug):** kostnaden følges løpende av Marius i
-  `console.anthropic.com`. Samme dag: ingen bytter i GW2, så P3 venter.
-- **v1.7.0 (31. aug):** begge benkekolonner; kapteinstreff på både
-  identitet og poeng; flakspoeng + topp/bunn 3; XI-liste + sesongtrend;
-  vindu = hele sesongen; nav-plass etter Liga. Fasit i planen.
+- Eldre, fortsatt gyldige beslutninger: rotert til historikkfila.
 - **v1.8.0 (1. sep):** alle fire deler i én versjon; modal-spillerkort med
   element-summary KUN lazy per klikk; duell fra data-attrs (pris lavest,
   dødball satt-slår-null, ellers høyest, likhet umarkert); global
@@ -186,15 +188,13 @@ Marius gjøre.
   spørsmål; versjon v1.8.1. Funn: terskelvelger-JS mangler helt (død i
   prod, fikses i T6). Plan skrevet og godkjent, docs ajour, økt 47-loggen
   rotert. Så: «kjøreprompt til opus» → levert i chatten (stopp før merge).
-- 2026-09-01 (økt 48, Opus, utførelse): mandat = bygg v1.8.0 etter planen,
-  TDD strengt, stopp etter T9 uten merge/tag/push. Handling: verifiserte
-  baseline 556/556 + lint 0 på main, branch `feat/spillere-v180`, T1–T9
-  med rød→grønn i hver task, 9 conventional commits, CHANGELOG i hver
-  commit, røyktest med tomme nøkler, docs ajour. Sluttstatus 602/602 +
-  lint 0. To planavvik dokumentert i statusen over. Stoppet før merge.
-  Deretter: «push og merge til main» — merget `--no-ff` (`ed164c5`),
-  verifiserte 602/602 + lint 0 og CHANGELOG-rekkefølgen på merget main,
-  tagget `v1.8.0`, arkiverte detaljplanen, pushet. Marius testet IKKE
-  lokalt først, så prod-QA av modal/duell er lagt inn som køpunkt 1.
-- Loggposter fra økt 22–47: rotert til
+- 2026-09-01 (økt 50, Opus, utførelse): mandat = bygg v1.8.1 etter den
+  godkjente detaljplanen, TDD strengt, STOPP etter sluttkontrollen i T12 —
+  ingen merge, tag eller push. Handling: verifiserte baseline 602/602 +
+  lint 0 på main, branch `fix/spillere-redesign-v181`, T1–T11 i rekkefølge
+  med rød før grønn i hver task, 11 conventional commits med
+  CHANGELOG-linje i hver, røyktest med tomme nøkler (0 AI-kall), docs
+  ajour. Sluttstatus **613/613 + lint 0**. Sju tekniske planavvik
+  dokumentert i statusen over. Stoppet før merge, som avtalt.
+- Loggposter fra økt 22–48: rotert til
   `docs/arkiv/HANDOVER-historikk.md` (200-linjerstaket, sist 2026-09-01).

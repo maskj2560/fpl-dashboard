@@ -1535,3 +1535,54 @@ Loggpost:
   alle 11 spørsmål. Underveis: «planen så detaljert at Opus gjennomfører
   like bra», «kjøreprompt i chatten, ikke fil». Plan skrevet, docs ajour,
   loggposter økt 45 rotert til historikkfila (200-linjerstaket).
+
+## Rotert 2026-09-01 (økt 50): v1.8.0-statusblokka og loggpost økt 48
+
+Statusblokk (verbatim fra HANDOVER.md, avsluttet da v1.8.1 ble bygget):
+
+- **v1.8.0 «Spiller-pakka» MERGET TIL MAIN 1. sep (økt 48).** Bygget på
+  `feat/spillere-v180` (9 commits, T1–T9, TDD), merget `--no-ff`
+  (`ed164c5`), tagget `v1.8.0`, pushet. **602/602 + lint 0 på branch OG
+  merget main**, CHANGELOG-rekkefølgen kontrollert. Marius ga klarsignal
+  uten egen lokal test — mobil-/tastatur-QA gjenstår derfor (køpunkt 1).
+  Innhold: `src/services/players.js` (buildPlayerCard, buildDifferentials,
+  buildSetPieceTable, assemblePlayerCard), `GET /api/spiller/:id`,
+  `elementSummaryAgeSec` i fplClient, /spillere i tre seksjoner med
+  hopplenker, modal-spillerkort, duell og terskelvelger.
+  **To dokumenterte avvik fra planen (begge teknisk nødvendige):**
+  (1) `buildDifferentials` tok ikke `teamsById` i planens signatur, men
+  rad-kontrakten krever `lag: {kort, kode, navn}` — parameteren er lagt til.
+  (2) `buildSetPieceTable` returnerer `{id, navn}` per taker, ikke bare
+  navn: T6 krever at navnene er knapper som åpner spillerkortet, og en
+  knapp trenger id-en. T4-testene ble justert i T6-commiten.
+  **Røyktest 1. sep med tomme nøkler** (`ai:false, discord:false`): alle 9
+  ruter 200, `/finnesikke` 404, `/api/spiller/411` 200 mot ekte FPL-data,
+  `/api/spiller/abc` 400, `/api/spiller/999999` 404, **0 «AI-kall:»-linjer**.
+  Payload /spillere: 528 → 911 KB ukomprimert, men **22,6 → 44,4 KB gzip**
+  (compression() aktiv) — mer enn planens anslag ukomprimert, uproblematisk
+  over nett. Detaljplan arkivert: `docs/arkiv/plan-spillerpakka-v180.md`.
+
+Loggpost:
+
+- 2026-09-01 (økt 48, Opus, utførelse): mandat = bygg v1.8.0 etter planen,
+  TDD strengt, stopp etter T9 uten merge/tag/push. Handling: verifiserte
+  baseline 556/556 + lint 0 på main, branch `feat/spillere-v180`, T1–T9
+  med rød→grønn i hver task, 9 conventional commits, CHANGELOG i hver
+  commit, røyktest med tomme nøkler, docs ajour. Sluttstatus 602/602 +
+  lint 0. To planavvik dokumentert i statusen over. Stoppet før merge.
+  Deretter: «push og merge til main» — merget `--no-ff` (`ed164c5`),
+  verifiserte 602/602 + lint 0 og CHANGELOG-rekkefølgen på merget main,
+  tagget `v1.8.0`, arkiverte detaljplanen, pushet. Marius testet IKKE
+  lokalt først, så prod-QA av modal/duell er lagt inn som køpunkt 1.
+
+Beslutninger rotert samtidig (verbatim, fortsatt gyldige — bare ikke lenger
+nødvendige i den daglige HANDOVER-fila):
+
+- Layout: egen liten EJS-layout-helper, IKKE express-ejs-layouts.
+- «Overganger»: egen side på `/overganger`, uten AI-kommentar i v1.
+- **Måleuka droppet (28. aug):** kostnaden følges løpende av Marius i
+  `console.anthropic.com`. Samme dag: ingen bytter i GW2, så P3 venter.
+- **v1.7.0 (31. aug):** begge benkekolonner; kapteinstreff på både
+  identitet og poeng; flakspoeng + topp/bunn 3; XI-liste + sesongtrend;
+  vindu = hele sesongen; nav-plass etter Liga. Fasit i planen
+  (`docs/arkiv/plan-innsikt-v170.md`).

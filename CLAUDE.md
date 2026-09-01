@@ -81,7 +81,11 @@ src/services/
                    ingen har form ennå), buildSetPieceTable (dødballtakere
                    per klubb, `{id, navn}` × topp 2 per rolle) og
                    assemblePlayerCard (bootstrap FØRST — ukjent id koster
-                   aldri et element-summary-kall). Element-summary hentes
+                   aldri et element-summary-kall). (v1.8.1) buildDifferentials
+                   sorterer NUMERISK og formaterer så: `fdr3`/`score` er
+                   «x.y»-strenger, og hver rad får `andel` (0–100 = score i
+                   prosent av toppscoren i den tabellen) til søylestripa.
+                   Element-summary hentes
                    KUN lazy per klikk, aldri i bulk. ALDRI ai.js
   clubAssets.js    hvilke klubbbilder som finnes i public/img/clubs/. Leses én
                    gang ved oppstart til app.locals.clubAssets; partialene spør

@@ -1,13 +1,13 @@
 <section class="page-head">
   <h1>Spillere</h1>
-  <p class="dim">Klikk på en kolonne for å sortere, og på et spillernavn for å se
-  spillerkortet. Filtrene virker uten sidelasting.
-  xG/xA er FPLs forventede mål og målgivende for sesongen.</p>
-  <nav class="jump-nav" aria-label="Snarveier på siden">
-    <a href="#tabell">Tabell</a>
-    <a href="#differensialer">Differensialer</a>
-    <a href="#dodballtakere">Dødballtakere</a>
-  </nav>
+  <p class="dim">Klikk på et spillernavn for spillerkortet.
+  <span title="Forventede mål og målgivende for sesongen, fra FPL">xG/xA</span>
+  er FPLs forventede tall for sesongen.</p>
+  <div class="fane-rad" role="tablist" aria-label="Seksjoner på siden">
+    <button type="button" class="fane-knapp" role="tab" id="fane-tabell" data-fane="tabell" aria-controls="tabell" aria-selected="true">Tabell</button>
+    <button type="button" class="fane-knapp" role="tab" id="fane-differensialer" data-fane="differensialer" aria-controls="differensialer" aria-selected="false" tabindex="-1">Differensialer</button>
+    <button type="button" class="fane-knapp" role="tab" id="fane-dodballtakere" data-fane="dodballtakere" aria-controls="dodballtakere" aria-selected="false" tabindex="-1">Dødballtakere</button>
+  </div>
 </section>
 
 <form class="filters" id="player-filters" onsubmit="return false">
@@ -50,17 +50,17 @@
   <span class="dim" id="filter-count" role="status"></span>
 </form>
 
-<section class="card" id="tabell">
+<section class="card" id="tabell" role="tabpanel" aria-labelledby="fane-tabell">
   <div class="duell-bar">
     <span class="dim" id="duell-teller" role="status">0 av 2 valgt</span>
-    <button type="button" id="duell-start" disabled>Sammenlign</button>
-    <button type="button" class="btn-link" id="duell-tom">Tøm valg</button>
+    <button type="button" class="btn-accent" id="duell-start" disabled>Sammenlign</button>
+    <button type="button" class="btn-quiet" id="duell-tom">Tøm valg</button>
   </div>
   <div class="table-scroll table-scroll--pinned">
     <table class="data sortable" id="players-table" data-sortable>
       <thead>
         <tr>
-          <th data-nosort><span class="sr-only">Velg til duell</span></th>
+          <th data-nosort>Duell</th>
           <th data-type="text" aria-sort="none">Spiller</th>
           <th data-type="text" aria-sort="none">Lag</th>
           <th data-type="text" aria-sort="none">Pos</th>
@@ -98,7 +98,7 @@
             data-frispark="<%= p.direct_freekicks_order == null ? '' : p.direct_freekicks_order %>"
           >
             <td><input type="checkbox" class="duell-velg" aria-label="Velg <%= p.web_name %> til duell"></td>
-            <td><button type="button" class="btn-link js-spillerkort" data-id="<%= p.id %>"><%= p.web_name %></button></td>
+            <td><button type="button" class="navn-lenke js-spillerkort" data-id="<%= p.id %>"><%= p.web_name %></button></td>
             <td><%- include('partials/club-badge', { team: teamsById.get(p.team) }) %></td>
             <td><%= POSITIONS_SHORT[p.element_type] %></td>
             <td class="num"><%= formatPrice(p.now_cost) %></td>
@@ -108,7 +108,7 @@
             <td class="num"><%= p.selected_by_percent %></td>
             <td class="num"><%= p.expected_goals %></td>
             <td class="num"><%= p.expected_assists %></td>
-            <td><span class="status status-<%= p.status %>"><%= STATUS_LABELS[p.status] ?? p.status %></span></td>
+            <td><% if (p.status !== 'a') { %><span class="status status-<%= p.status %>"><%= STATUS_LABELS[p.status] ?? p.status %></span><% } %></td>
           </tr>
         <% } %>
       </tbody>
@@ -116,11 +116,13 @@
   </div>
   <p class="empty" id="players-empty" hidden>Ingen spillere matcher filtrene.
     <button type="button" class="btn-link" id="players-empty-reset">Nullstill filtrene</button></p>
+
+  <%# Duellen hører til tabellen og bor derfor i samme fane — da følger den
+      fanens synlighet uten egen logikk. %>
+  <section id="duell" class="duell-panel" hidden></section>
 </section>
 
-<section class="card" id="duell" hidden></section>
-
-<section class="card" id="differensialer">
+<section class="card" id="differensialer" role="tabpanel" aria-labelledby="fane-differensialer" hidden>
   <h2>Differensialer</h2>
   <p class="dim">Spillere få eier globalt, rangert etter form og kampprogram:
   score = form × (6 − snitt-FDR de neste tre rundene). Høy score betyr god form
@@ -130,9 +132,11 @@
   <% } else { %>
     <fieldset class="terskel-velger">
       <legend>Maks global eierandel</legend>
-      <% for (const t of differentials.terskler) { %>
-        <label><input type="radio" name="diff-terskel" value="<%= t.prosent %>"<%= t.prosent === 10 ? ' checked' : '' %>> under <%= t.prosent %>&nbsp;%</label>
-      <% } %>
+      <div class="terskel-segmenter">
+        <% for (const t of differentials.terskler) { %>
+          <label><input type="radio" name="diff-terskel" value="<%= t.prosent %>"<%= t.prosent === 10 ? ' checked' : '' %>><span>under <%= t.prosent %>&nbsp;%</span></label>
+        <% } %>
+      </div>
     </fieldset>
     <% for (const t of differentials.terskler) { %>
       <div class="table-scroll" data-terskel="<%= t.prosent %>"<%= t.prosent === 10 ? '' : ' hidden' %>>
@@ -155,14 +159,14 @@
             <tbody>
               <% for (const r of t.rows) { %>
                 <tr>
-                  <td><button type="button" class="btn-link js-spillerkort" data-id="<%= r.id %>"><%= r.navn %></button></td>
+                  <td><button type="button" class="navn-lenke js-spillerkort" data-id="<%= r.id %>"><%= r.navn %></button></td>
                   <td><%- include('partials/club-badge', { team: r.lag && { code: r.lag.kode, short_name: r.lag.kort, name: r.lag.navn } }) %></td>
                   <td><%= r.posKort %></td>
                   <td class="num"><%= r.pris %></td>
                   <td class="num"><%= r.form %></td>
                   <td class="num"><%= r.eid %></td>
                   <td class="num"><%= r.fdr3 %></td>
-                  <td class="num"><strong><%= r.score %></strong></td>
+                  <td class="num score-celle" style="--andel: <%= r.andel %>%"><strong><%= r.score %></strong></td>
                 </tr>
               <% } %>
             </tbody>
@@ -173,35 +177,22 @@
   <% } %>
 </section>
 
-<section class="card" id="dodballtakere">
+<section class="card" id="dodballtakere" role="tabpanel" aria-labelledby="fane-dodballtakere" hidden>
   <h2>Dødballtakere</h2>
   <p class="dim">De to første i køen per klubb, hentet fra FPLs egne ordenstall.
   «–» betyr at FPL ikke har oppgitt noen taker for rollen.</p>
-  <div class="table-scroll">
-    <table class="data">
-      <thead>
-        <tr>
-          <th>Klubb</th>
-          <th>Straffer</th>
-          <th>Hjørner/indirekte</th>
-          <th>Direkte frispark</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% for (const rad of setPieces) { %>
-          <tr>
-            <td><%- include('partials/club-badge', { team: { code: rad.lag.kode, short_name: rad.lag.kort, name: rad.lag.navn } }) %></td>
-            <% for (const rolle of ['straffer', 'hjorner', 'frispark']) { %>
-              <td>
-                <% if (rad[rolle].length === 0) { %>–<% } else { %>
-                  <% rad[rolle].forEach((t, i) => { %><% if (i > 0) { %> · <% } %><button type="button" class="btn-link js-spillerkort" data-id="<%= t.id %>"><%= t.navn %></button><% }) %>
-                <% } %>
-              </td>
-            <% } %>
-          </tr>
-        <% } %>
-      </tbody>
-    </table>
+  <div class="dodball-grid">
+    <% for (const rad of setPieces) { %>
+      <article class="dodball-kort">
+        <div class="dodball-klubb"><%- include('partials/club-badge', { team: { code: rad.lag.kode, short_name: rad.lag.kort, name: rad.lag.navn } }) %></div>
+        <dl class="dodball-roller">
+          <% for (const [rolle, etikett] of [['straffer', 'Straffer'], ['hjorner', 'Hjørner/indirekte'], ['frispark', 'Direkte frispark']]) { %>
+            <dt class="dodball-rolle"><%= etikett %></dt>
+            <dd class="dodball-takere"><% if (rad[rolle].length === 0) { %>–<% } else { %><% rad[rolle].forEach((t, i) => { %><% if (i > 0) { %> · <% } %><%= i + 1 %>. <button type="button" class="navn-lenke js-spillerkort" data-id="<%= t.id %>"><%= t.navn %></button><% }) %><% } %></dd>
+          <% } %>
+        </dl>
+      </article>
+    <% } %>
   </div>
 </section>
 

@@ -132,8 +132,10 @@ export function buildDifferentials({ elements, fixtures, fromGw, teamsById }) {
   const scored = aktuelle.map((e) => {
     const fdr3 = en1(fdrByTeam.get(e.team) ?? FDR_FALLBACK);
     const team = teamsById?.get(e.team) ?? null;
+    const score = en1(parseFloat(e.form) * (6 - fdr3));
     return {
       eidTall: parseFloat(e.selected_by_percent),
+      score,
       row: {
         id: e.id,
         navn: e.web_name,
@@ -142,21 +144,30 @@ export function buildDifferentials({ elements, fixtures, fromGw, teamsById }) {
         pris: formatPrice(e.now_cost),
         form: e.form,
         eid: e.selected_by_percent,
-        fdr3,
-        score: en1(parseFloat(e.form) * (6 - fdr3)),
+        // Egne tall formateres her, ikke i viewet: «3.0» leser roligere enn «3»
+        // ved siden av «3.5». FPLs egne strenger (form, eid) røres aldri.
+        fdr3: fdr3.toFixed(1),
+        score: score.toFixed(1),
       },
     };
   });
 
   return {
-    terskler: DIFF_TERSKLER.map((prosent) => ({
-      prosent,
-      rows: scored
+    terskler: DIFF_TERSKLER.map((prosent) => {
+      // Sorter på tallet FØR formateringen — strengsortering ville satt
+      // «9.0» over «36.0».
+      const topp = scored
         .filter((s) => s.eidTall < prosent)
-        .sort((a, b) => b.row.score - a.row.score)
-        .slice(0, DIFF_TOPP)
-        .map((s) => s.row),
-    })),
+        .sort((a, b) => b.score - a.score)
+        .slice(0, DIFF_TOPP);
+      const maks = topp.length > 0 ? topp[0].score : 0;
+      return {
+        prosent,
+        // andel = score i prosent av toppscoren i DENNE tabellen; viewet
+        // tegner den som en diskret søylestripe bak tallet.
+        rows: topp.map((s) => ({ ...s.row, andel: maks > 0 ? Math.round((s.score / maks) * 100) : 0 })),
+      };
+    }),
   };
 }
 

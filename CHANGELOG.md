@@ -7,14 +7,48 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
-### Planlagt
+## [1.8.1] - 2026-09-01
 
-- Detaljplan for v1.8.1 — visuell redesign av «Spillere» — skrevet og
-  godkjent (`docs/plan-spillere-redesign-v181.md`): faner, lavmælte
-  navnelenker, status kun ved avvik, zebra-rytme, faste desimaler,
-  segmentert terskelbryter, dødball-klubbkort, duell-hoder og strammere
-  spillerkort. Funn fra planøkten: terskelvelgeren 5/10/15 % mangler JS og
-  er uten funksjon i v1.8.0 — fikses i v1.8.1.
+### Fixed
+
+- «Spillere»: spillernavn vises som lavmælte tekstlenker i stedet for fylte
+  grønne knapper. Veggen av 772 like knapper er borte, og den grønne
+  knappen er igjen reservert for ekte handlinger.
+- «Spillere»: statusmerket vises kun når spilleren har et avvik (skadet,
+  tvilsom, suspendert, utilgjengelig, utlånt). «Klar» på nesten alle 626
+  rader var støy. Statusfilteret virker som før.
+- «Spillere»: spillertabellen har fått zebra-striper og strammere radhøyde,
+  og checkbox-kolonnen har en synlig «Duell»-overskrift i stedet for tekst
+  kun for skjermlesere. Stripene teller bare synlige rader, så rytmen holder
+  når filtrene brukes.
+- «Spillere»: knappehierarkiet i duell-linja er snudd. «Sammenlign» er nå
+  primærknappen (grønn, deaktivert til to spillere er valgt), «Tøm valg» er
+  en lavmælt tekstknapp.
+- «Spillere»: FDR 3 og score i differensialtabellen har alltid én desimal
+  («3.0», ikke «3»), så kolonnene står rett under hverandre. Sorteringen
+  skjer fortsatt på tallet, og FPLs egne tall (form, eid, xG, xA) er urørt.
+- «Spillere»: terskelvelgeren 5/10/15 % under Differensialer virker igjen.
+  I v1.8.0 fantes ingen kode som lyttet på valget, så bare 10 %-tabellen
+  kunne vises. Regelen er nå en ren funksjon og låst med test.
+- «Spillere»: terskelvelgeren er en segmentert pillebryter i stedet for tre
+  løse radioknapper, og score-kolonnen har fått en diskret søylestripe som
+  viser hvor sterk scoren er i forhold til den beste i tabellen.
+- «Spillere» er delt i tre faner — Tabell, Differensialer og Dødballtakere —
+  i stedet for ett langt scroll-dokument. Faneraden kan styres med piltaster,
+  og `/spillere#differensialer` åpner riktig fane direkte. Duellen og
+  filtrene hører til Tabell-fanen.
+- «Spillere»: dødballtakerne vises som klubbkort i et rutenett — ett kort per
+  klubb med merke og de tre rollene under hverandre («Straffer: 1. Saka ·
+  2. Ødegaard») — i stedet for en bred tabell med fire kolonner. Navnene er
+  fortsatt klikkbare.
+- «Spillere»: duellen får et hode per spiller med klubbdrakt, navn og klubb,
+  så det er tydelig hvem som er hvem i sammenligningen.
+- «Spillere»: spillerkortet har fått ryddigere hierarki — navnet står kun i
+  modaltittelen, drakta er stor (110 px), Form/Poeng/P/K vises som store
+  primærtall over de mindre (Eid %, xG, xA, Minutter), og kamptabellen er
+  strammet inn.
+- «Spillere»: kortere ingress, mer luft rundt faneraden og tydeligere
+  seksjonstitler.
 
 ## [1.8.0] - 2026-09-01
 

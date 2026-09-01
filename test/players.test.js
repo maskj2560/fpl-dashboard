@@ -294,8 +294,9 @@ test('buildDifferentials regner score = form × (6 − snitt-FDR) med én desima
 
   const [row] = tersklerFor([p]).get(5);
 
-  assert.equal(row.fdr3, 3);
-  assert.equal(row.score, 12); // 4.0 × (6 − 3.0)
+  // Tallene formateres i servicen, ikke i viewet: alltid én desimal.
+  assert.equal(row.fdr3, '3.0');
+  assert.equal(row.score, '12.0'); // 4.0 × (6 − 3.0)
   assert.deepEqual(row, {
     id: p.id,
     navn: p.web_name,
@@ -304,8 +305,9 @@ test('buildDifferentials regner score = form × (6 − snitt-FDR) med én desima
     pris: '14.1',
     form: '4.0',
     eid: '4.0',
-    fdr3: 3,
-    score: 12,
+    fdr3: '3.0',
+    score: '12.0',
+    andel: 100,
   });
 });
 
@@ -314,8 +316,8 @@ test('buildDifferentials faller tilbake på FDR 3.5 for lag uten kamper i vindue
 
   const [row] = tersklerFor([p]).get(5);
 
-  assert.equal(row.fdr3, 3.5);
-  assert.equal(row.score, 5); // 2.0 × (6 − 3.5)
+  assert.equal(row.fdr3, '3.5');
+  assert.equal(row.score, '5.0'); // 2.0 × (6 − 3.5)
 });
 
 test('buildDifferentials sorterer på score og kutter på topp 10', () => {
@@ -331,7 +333,12 @@ test('buildDifferentials sorterer på score og kutter på topp 10', () => {
     rows.map((r) => r.navn),
     ['F12', 'F11', 'F10', 'F9', 'F8', 'F7', 'F6', 'F5', 'F4', 'F3'],
   );
-  assert.ok(rows[0].score > rows[9].score);
+  // Sorteringen skjer numerisk FØR formateringen — ellers ville '9.0' > '36.0'.
+  assert.ok(parseFloat(rows[0].score) > parseFloat(rows[9].score));
+  // andel = score i prosent av toppscoren i DENNE tabellen (søylestripa).
+  assert.equal(rows[0].andel, 100);
+  assert.ok(rows.every((r) => r.andel >= 0 && r.andel <= 100), 'andel skal ligge i 0–100');
+  assert.equal(rows[9].andel, Math.round((parseFloat(rows[9].score) / parseFloat(rows[0].score)) * 100));
 });
 
 test('buildDifferentials returnerer null når ingen har form ennå', () => {
