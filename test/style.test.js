@@ -130,6 +130,12 @@ test('style.css: tallkolonnens hode står til høyre, som tallene', () => {
   assert.match(block('.num'), /text-align: right/);
 });
 
+// QA-funn (økt 51): filterraden ble stående på alle fanene på /spillere.
+// `hidden` er en UA-regel og taper mot enhver display-regel med klasse.
+test('style.css: hidden slår gjennom mot display-reglene', () => {
+  assert.match(css, /\[hidden\]\s*\{\s*display: none !important;/);
+});
+
 test('style.css: smale tabeller krymper til innholdet', () => {
   assert.match(block('table.data.data--fit'), /width: auto/);
   assert.match(block('table.data.data--fit'), /min-width: min\(100%, 30rem\)/);

@@ -176,6 +176,15 @@
   box-sizing: border-box;
 }
 
+/* `hidden` er nettleserens egen UA-regel og har null spesifisitet — enhver
+   `display`-regel med en klasse slår den. Filterraden på /spillere ble
+   derfor stående på alle tre fanene (`.filters { display: flex }`).
+   Én regel her lukker hele feilklassen, i stedet for én `[hidden]`-variant
+   per komponent. */
+[hidden] {
+  display: none !important;
+}
+
 body {
   margin: 0;
   background: var(--bg);
