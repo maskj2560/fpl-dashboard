@@ -108,7 +108,7 @@
             <td class="num"><%= p.selected_by_percent %></td>
             <td class="num"><%= p.expected_goals %></td>
             <td class="num"><%= p.expected_assists %></td>
-            <td><span class="status status-<%= p.status %>"><%= STATUS_LABELS[p.status] ?? p.status %></span></td>
+            <td><% if (p.status !== 'a') { %><span class="status status-<%= p.status %>"><%= STATUS_LABELS[p.status] ?? p.status %></span><% } %></td>
           </tr>
         <% } %>
       </tbody>

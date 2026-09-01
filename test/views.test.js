@@ -372,6 +372,18 @@ test('players.ejs gjør spillernavn klikkbare og gir radene duell-data', async (
   assert.match(html, /class="duell-velg"[^>]*aria-label="Velg Saka til duell"/);
 });
 
+test('players.ejs viser statusbadge kun ved avvik — «Klar» er stille', async () => {
+  const html = await renderView('players', fx.players);
+  const rad = (navn) => {
+    const i = html.indexOf(`data-name="${navn.toLowerCase()}"`);
+    assert.notEqual(i, -1, `fant ikke raden til ${navn}`);
+    return html.slice(i, html.indexOf('</tr>', i));
+  };
+  assert.doesNotMatch(rad('Saka'), /class="status /, 'status a skal gi tom statuscelle');
+  assert.match(rad('Salah'), /class="status status-d"/, 'avvik skal fortsatt vises');
+  assert.match(rad('Saka'), /data-status="a"/, 'statusfilteret leser data-status, ikke cella');
+});
+
 test('players.ejs har duell-skallet og en tom duell-seksjon', async () => {
   const html = await renderView('players', fx.players);
   assert.match(html, /id="duell-teller"[^>]*>0 av 2 valgt</);

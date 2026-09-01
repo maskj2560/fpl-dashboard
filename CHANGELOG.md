@@ -12,6 +12,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - «Spillere»: spillernavn vises som lavmælte tekstlenker i stedet for fylte
   grønne knapper. Veggen av 772 like knapper er borte, og den grønne
   knappen er igjen reservert for ekte handlinger.
+- «Spillere»: statusmerket vises kun når spilleren har et avvik (skadet,
+  tvilsom, suspendert, utilgjengelig, utlånt). «Klar» på nesten alle 626
+  rader var støy. Statusfilteret virker som før.
 
 ### Planlagt
 
