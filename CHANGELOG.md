@@ -9,6 +9,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Fixed
 
+- «Spillere»: duellen var bredere enn kortet på mobil, så spiller 2 lå
+  utenfor og måtte dras fram sidelengs. På smale skjermer deler de tre
+  kolonnene bredden i stedet, og duell-hodet stables.
 - «Liga»: kolonnehodet «#» sto over trendpila i stedet for over plassifferet,
   fordi hele cellen er høyrestilt. Pila har nå en fast plass ytterst, og
   hodet reserverer den samme plassen.

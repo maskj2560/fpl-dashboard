@@ -2298,4 +2298,23 @@ body.modal-apen {
 
 #tabell .duell-bar {
   margin-bottom: var(--space-4);
+}/* Duellen på mobil: tabellen var bredere enn kortet, så spiller 2 lå
+   utenfor og måtte dras fram sidelengs (QA-funn, økt 51). Fast
+   tabellbredde med ombrekking lar de tre kolonnene dele plassen. */
+@media (max-width: 640px) {
+  .duell-panel table.data {
+    width: 100%;
+    table-layout: fixed;
+    white-space: normal;
+  }
+
+  .duell-panel .duell-hode {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .duell-panel .duell-hode-navn {
+    font-size: var(--fs-base);
+  }
 }

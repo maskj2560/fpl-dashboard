@@ -150,6 +150,12 @@ test('style.css: plassifferet reserverer plass til trendpila', () => {
   assert.match(css, /td\.rang \.rank-same \{[\s\S]{0,80}position: absolute/);
 });
 
+// QA-funn (økt 51): duell-tabellen var 492 px i et 335 px kort på 390 px,
+// så spiller 2 måtte dras fram sidelengs.
+test('style.css: duellen deler bredden på mobil i stedet for å scrolle', () => {
+  assert.match(css, /\.duell-panel table\.data \{\s*width: 100%;\s*table-layout: fixed;\s*white-space: normal;/);
+});
+
 test('style.css: smale tabeller krymper til innholdet', () => {
   assert.match(block('table.data.data--fit'), /width: auto/);
   assert.match(block('table.data.data--fit'), /min-width: min\(100%, 30rem\)/);
