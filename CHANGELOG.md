@@ -22,6 +22,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - «Spillere»: knappehierarkiet i duell-linja er snudd. «Sammenlign» er nå
   primærknappen (grønn, deaktivert til to spillere er valgt), «Tøm valg» er
   en lavmælt tekstknapp.
+- «Spillere»: FDR 3 og score i differensialtabellen har alltid én desimal
+  («3.0», ikke «3»), så kolonnene står rett under hverandre. Sorteringen
+  skjer fortsatt på tallet, og FPLs egne tall (form, eid, xG, xA) er urørt.
 
 ### Planlagt
 
