@@ -6,7 +6,8 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-09-01 (økt 50, Opus: v1.8.1 merget og pushet)
+**Sist oppdatert:** 2026-09-01 (økt 51, Opus: tabell-UI på /innsikt fikset,
+ligger uutgitt på main under `[Unreleased]`)
 
 ## Status akkurat nå
 - **v1.8.1 «Redesign av /spillere» MERGET TIL MAIN 1. sep (økt 50).**
@@ -169,13 +170,6 @@ Marius gjøre.
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
-- 2026-09-01 (økt 49, Fable, planøkt): mandat = detaljplan for visuell
-  redesign av /spillere, ingen kode. Underveis: «Jeg kan sende
-  skjermbilde» (STEG 0) — skjermbildet beviste at modalen virker i prod.
-  Fire AskUserQuestion-runder — Marius valgte anbefalingen i alle 11
-  spørsmål; versjon v1.8.1. Funn: terskelvelger-JS mangler helt (død i
-  prod, fikses i T6). Plan skrevet og godkjent, docs ajour, økt 47-loggen
-  rotert. Så: «kjøreprompt til opus» → levert i chatten (stopp før merge).
 - 2026-09-01 (økt 50, Opus, utførelse): mandat = bygg v1.8.1 etter den
   godkjente detaljplanen, TDD strengt, STOPP etter sluttkontrollen i T12 —
   ingen merge, tag eller push. Handling: verifiserte baseline 602/602 +
@@ -189,5 +183,14 @@ Marius gjøre.
   CHANGELOG `[1.8.1]`, VIDERE.md), merget `--no-ff`, verifiserte 613/613 +
   lint 0 og CHANGELOG-rekkefølgen på merget main, tagget `v1.8.1`,
   arkiverte planfila, regnet ny asset-hash, én push.
-- Loggposter fra økt 22–48: rotert til
+- 2026-09-01 (økt 51, Opus): skjermbilde av benkesløsingen på /innsikt +
+  «Kan du fikse opp i UIen her?». Funn: `table.data th` (spesifisitet
+  0-1-2) slår `.num` (0-1-0), så tallhodene sto til venstre mens tallene
+  sto til høyre — «6» leste som «Unngåelig tap» og «−1» som «Chip». Fikset
+  globalt med `table.data th.num`. I tillegg: `.data--fit` på de to smale
+  tabellene på /innsikt, sumraden skjules ved én runde og har fått egen
+  skillestrek, «–» i tom chip-celle, luft mellom `.hint` og tabell/stripe,
+  78ch tak på ingress og hint, kortere benke-forklaring. To nye
+  style-tester. **615/615 + lint 0.** CHANGELOG under `[Unreleased]`.
+- Loggposter fra økt 22–49: rotert til
   `docs/arkiv/HANDOVER-historikk.md` (200-linjerstaket, sist 2026-09-01).

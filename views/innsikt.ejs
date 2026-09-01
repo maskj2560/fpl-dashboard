@@ -20,13 +20,12 @@
     <section class="card card-wide">
       <h2>Benkesløsing</h2>
       <p class="hint">«På benken» er FPLs eget benkepoengtall. «Unngåelig tap»
-      er differansen mellom den beste lovlige elleveren du kunne stilt med av
-      de femten (en gyldig FPL-formasjon: 1 keeper, minst 3 forsvarere,
-      minst 1 spiss), og den du faktisk stilte — altså den delen av benkepoengene
-      du kunne hentet med et annet oppsett. I en Bench Boost-runde teller hele
-      troppen, og da er ingenting sløst.</p>
+      er den delen du kunne hentet med et annet oppsett: differansen mellom
+      den beste lovlige elleveren av de femten (1 keeper, minst 3 forsvarere,
+      minst 1 spiss) og den du faktisk stilte. I en Bench Boost-runde teller
+      hele troppen, og da er ingenting sløst.</p>
       <div class="table-scroll">
-        <table class="data">
+        <table class="data data--fit">
           <thead>
             <tr><th>Runde</th><th class="num">På benken</th><th class="num">Unngåelig tap</th><th>Chip</th></tr>
           </thead>
@@ -36,18 +35,22 @@
                 <td>R<%= r.gw %></td>
                 <td class="num"><%= r.benchPoints %></td>
                 <td class="num <%= r.avoidable > 0 ? 'negative' : '' %>"><%= r.avoidable > 0 ? formatSigned(-r.avoidable) : '0' %></td>
-                <td><% if (r.chip) { %><span class="status"><%= r.chip %></span><% } %></td>
+                <td><% if (r.chip) { %><span class="status"><%= r.chip %></span><% } else { %><span class="dim">–</span><% } %></td>
               </tr>
             <% } %>
           </tbody>
-          <tfoot>
-            <tr>
-              <th scope="row">Sum sesongen</th>
-              <td class="num"><%= insights.bench.totalBench %></td>
-              <td class="num <%= insights.bench.totalAvoidable > 0 ? 'negative' : '' %>"><%= insights.bench.totalAvoidable > 0 ? formatSigned(-insights.bench.totalAvoidable) : '0' %></td>
-              <td></td>
-            </tr>
-          </tfoot>
+          <%# Med én ferdigspilt runde er sumraden bare radens egne tall om
+              igjen — den kommer når det finnes noe å summere. %>
+          <% if (insights.bench.rows.length > 1) { %>
+            <tfoot>
+              <tr>
+                <th scope="row">Sum sesongen</th>
+                <td class="num"><%= insights.bench.totalBench %></td>
+                <td class="num <%= insights.bench.totalAvoidable > 0 ? 'negative' : '' %>"><%= insights.bench.totalAvoidable > 0 ? formatSigned(-insights.bench.totalAvoidable) : '0' %></td>
+                <td></td>
+              </tr>
+            </tfoot>
+          <% } %>
         </table>
       </div>
     </section>
@@ -110,7 +113,7 @@
         <div class="stat"><span class="stat-val <%= insights.luck.total > 0 ? 'accent' : (insights.luck.total < 0 ? 'negative' : '') %>"><%= formatSigned(insights.luck.total) %></span><span class="stat-lbl">Flakspoeng i sesongen</span></div>
       </div>
       <div class="table-scroll">
-        <table class="data">
+        <table class="data data--fit">
           <thead>
             <tr><th>Runde</th><th class="num">Flakspoeng</th></tr>
           </thead>

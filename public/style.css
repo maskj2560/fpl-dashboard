@@ -642,6 +642,14 @@ table.data th {
   border-bottom: 1px solid var(--border-strong);
 }
 
+/* Talltabellhodet må følge tallene sine. `table.data th` er mer spesifikk
+   enn `.num`, så uten denne regelen står etiketten til venstre i kolonnen
+   mens verdien står til høyre — og tallet ser ut til å høre til
+   nabokolonnen. Gjelder alle tabellene, ikke bare /innsikt. */
+table.data th.num {
+  text-align: right;
+}
+
 table.data td {
   padding: 0.5rem 0.6rem;
   border-bottom: 1px solid var(--border);
@@ -650,6 +658,28 @@ table.data td {
 
 table.data tbody tr:last-child td {
   border-bottom: none;
+}
+
+/* Sumraden skal leses som en sum. Siste tbody-rad mister bunnstreken sin
+   (regelen over), så skillet mot totalen hører hjemme her. */
+table.data tfoot th,
+table.data tfoot td {
+  border-top: 1px solid var(--border-strong);
+  border-bottom: none;
+  padding-top: 0.5rem;
+}
+
+table.data tfoot td {
+  font-weight: 700;
+}
+
+/* Smale tabeller (to–fire korte kolonner) blir uleselige på full kortbredde:
+   verdien havner en halv skjerm fra etiketten. .data--fit lar tabellen
+   krympe til innholdet, med et gulv så den ikke ser puslete ut i et bredt
+   kort. Mobil: gulvet gir etter for kortbredden. */
+table.data.data--fit {
+  width: auto;
+  min-width: min(100%, 30rem);
 }
 
 table.data tbody tr:hover {
@@ -1007,8 +1037,17 @@ table.data tbody tr:hover {
 
 .hint {
   margin: 0.6rem 0 0;
+  max-width: 78ch;
   font-size: var(--fs-sm);
   color: var(--text-dim);
+}
+
+/* Forklaringen har ingen bunnmarg — den skal kunne stå tett på det den
+   forklarer. Står den rett over en tabell eller en tallstripe, trenger den
+   luft, ellers klistrer teksten seg til tabellhodet. */
+.hint + .table-scroll,
+.hint + .stat-strip {
+  margin-top: var(--space-3);
 }
 
 /* ---------- Tomtilstander / feilsider ---------- */
@@ -1056,8 +1095,11 @@ table.data tbody tr:hover {
   letter-spacing: -0.025em;
 }
 
+/* Ingressen leses, den fyller ikke. Uten et tak blir linjene over 150 tegn
+   på brede skjermer, og øyet mister linjeskiftet. */
 .page-head p {
   margin: 0.25rem 0 0;
+  max-width: 78ch;
 }
 
 /* Filterpanelet er et kort med samme rytme som de øvrige. */

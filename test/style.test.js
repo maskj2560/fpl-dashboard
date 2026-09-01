@@ -122,3 +122,15 @@ test('style.css: tabellboksene har samme kantfade-mekanikk som menyen', () => {
   assert.match(css, /\.table-scroll\.table-fade-left \{ --fade-l: 28px; \}/);
   assert.match(css, /\.table-scroll\.table-fade-right \{ --fade-r: 28px; \}/);
 });
+
+// `table.data th` er mer spesifikk enn `.num`, så uten den egne regelen
+// faller tallhodene tilbake til venstrestilling og peker på nabokolonnen.
+test('style.css: tallkolonnens hode står til høyre, som tallene', () => {
+  assert.match(block('table.data th.num'), /text-align: right/);
+  assert.match(block('.num'), /text-align: right/);
+});
+
+test('style.css: smale tabeller krymper til innholdet', () => {
+  assert.match(block('table.data.data--fit'), /width: auto/);
+  assert.match(block('table.data.data--fit'), /min-width: min\(100%, 30rem\)/);
+});

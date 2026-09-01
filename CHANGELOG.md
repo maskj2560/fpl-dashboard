@@ -7,6 +7,23 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Fixed
+
+- Tabellhoder over tallkolonner sto til venstre mens tallene sto til høyre,
+  så verdien så ut til å høre til nabokolonnen (tydeligst i benkesløsingen
+  på «Innsikt», der «6» havnet under «Unngåelig tap» og «−1» under «Chip»).
+  Gjelder alle tabellene på alle sider.
+- «Innsikt»: benkesløsingen og flakstabellen krymper til innholdet i stedet
+  for å strekke fire korte kolonner over hele kortbredden.
+- «Innsikt»: sumraden i benkesløsingen vises først når det finnes mer enn
+  én ferdigspilt runde — med én runde gjentok den bare radens egne tall.
+  Sumraden har fått en egen skillestrek, så den leses som en sum.
+- «Innsikt»: chip-kolonnen viser «–» i runder uten chip i stedet for en
+  tom celle.
+- Forklaringstekst rett over en tabell eller tallstripe har fått luft, og
+  ingresser og forklaringer brytes på 78 tegn i stedet for å gå i én lang
+  linje over hele skjermen.
+
 ## [1.8.1] - 2026-09-01
 
 ### Fixed

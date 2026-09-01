@@ -1606,3 +1606,13 @@ designvalg endret) — verbatim fra HANDOVER.md:
    den — ellers sto navnet to ganger.
 7. Escapingtesten for `playerCardHtml` sjekker nyhetsteksten i stedet for
    `&lt;script&gt;`, siden `fulltNavn` ikke lenger rendres i brødteksten.
+
+## Rotert 2026-09-01 (økt 51): loggpost økt 49 (verbatim fra HANDOVER.md)
+
+- 2026-09-01 (økt 49, Fable, planøkt): mandat = detaljplan for visuell
+  redesign av /spillere, ingen kode. Underveis: «Jeg kan sende
+  skjermbilde» (STEG 0) — skjermbildet beviste at modalen virker i prod.
+  Fire AskUserQuestion-runder — Marius valgte anbefalingen i alle 11
+  spørsmål; versjon v1.8.1. Funn: terskelvelger-JS mangler helt (død i
+  prod, fikses i T6). Plan skrevet og godkjent, docs ajour, økt 47-loggen
+  rotert. Så: «kjøreprompt til opus» → levert i chatten (stopp før merge).
