@@ -289,6 +289,28 @@ test('news.ejs blokkerer lenker som ikke er http(s)', async () => {
   assert.ok(html.includes('href="#"'), 'forventet at usikker lenke ble byttet til #');
 });
 
+test('brief.ejs viser Lagsjekk med funn, grunnlag og gratisbytter', async () => {
+  const html = await renderView('brief', fx.brief);
+  assert.ok(html.includes('id="lagsjekk"'), 'Lagsjekk-kortet mangler');
+  assert.ok(html.includes('Kaptein'), 'kapteinsfunnet mangler etiketten');
+  assert.ok(html.includes('Saka'), 'kapteinsfunnet mangler spilleren');
+  assert.ok(html.includes('Skadet — Kneskade'), 'detaljen mangler');
+  assert.ok(html.includes('Uten kamp'), 'blank-funnet mangler etiketten');
+  assert.ok(html.includes('har ingen kamp i runden'), 'blank-detaljen mangler');
+  assert.ok(html.includes('Gratisbytter igjen: 1'), 'footer mangler gratisbytter');
+  assert.ok(html.includes('laget fra runde 1 + byttene dine for runde 2'), 'grunnlaget mangler');
+  assert.ok(!html.includes('Alt klart'), 'viste «Alt klart» tross funn');
+});
+
+test('brief.ejs viser «Alt klart» uten funn og skjuler kortet uten sjekk', async () => {
+  const clean = await renderView('brief', { ...fx.brief, deadlineCheck: fx.deadlineCheckClean });
+  assert.ok(clean.includes('Alt klart'), '«Alt klart» mangler');
+  assert.ok(clean.includes('Wildcard'), 'aktiv chip mangler i footer');
+  assert.ok(!clean.includes('lagsjekk-liste'), 'funnliste rendret uten funn');
+  const none = await renderView('brief', fx.briefEmpty);
+  assert.ok(!none.includes('id="lagsjekk"'), 'kortet vises uten deadlineCheck');
+});
+
 test('brief.ejs escaper AI-tekst men beholder **fet**', async () => {
   const html = await renderView('brief', {
     ...fx.brief,

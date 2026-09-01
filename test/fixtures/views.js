@@ -314,10 +314,34 @@ const briefData = {
   },
 };
 
+// Lagsjekk (v1.9.0): samme form som buildDeadlineCheck gir.
+export const deadlineCheck = {
+  gw: 2,
+  gwName: 'Runde 2',
+  deadline: '2026-08-28T17:30:00Z',
+  basis: 'laget fra runde 1 + byttene dine for runde 2',
+  findings: [
+    { type: 'kaptein', player: { id: 3, name: 'Saka', teamShort: 'ARS', teamCode: 3 }, detail: 'Skadet — Kneskade, ventes tilbake 1. nov.' },
+    { type: 'tvilsom', player: { id: 6, name: 'Isak', teamShort: 'LIV', teamCode: 14 }, detail: 'Usikker — 50 % sjanse for spilletid' },
+    { type: 'blank', player: { id: 9, name: 'Haaland', teamShort: 'MCI', teamCode: 43 }, detail: 'har ingen kamp i runden' },
+  ],
+  footer: { freeTransfers: 1, transfersMade: 1, activeChip: null },
+  ok: false,
+};
+
+export const deadlineCheckClean = {
+  ...deadlineCheck,
+  findings: [],
+  footer: { freeTransfers: 2, transfersMade: 0, activeChip: 'wildcard' },
+  ok: true,
+};
+
 export const brief = {
   clubAssets,
   brief: briefData,
   aiBrief: { text: '### Kort oppsummert\n- **Salah** er kapteinsvalget\n', generatedAt: Date.parse('2026-08-19T10:00:00Z') },
+  deadlineCheck,
+  CHIP_LABELS,
 };
 
 // Uten nøkkel og uten FPL_TEAM_ID: ingen AI-brief, ingen personlige anbefalinger.

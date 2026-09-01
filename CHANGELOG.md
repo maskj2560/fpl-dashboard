@@ -38,6 +38,11 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   redeploy dobbel-poster aldri); sen omstart sjekker fortsatt, men aldri
   de siste 15 min før deadline (`sendDecision` fikk valgfri `maxLateMs`).
   Ny env-variabel i `.env.example` og README. Fire nye tester.
+- Lagsjekk (kort): `/brief` viser kortet «Lagsjekk» under sidehodet — alltid
+  synlig når det finnes en kommende runde og picks: funnliste med etikett
+  (Kaptein/Visekaptein/Ute/Tvilsom/Uten kamp), klubbmerke og detalj, eller
+  «Alt klart»; footer med gratisbytter, aktiv chip og grunnlaget. Ruta
+  henter sjekken mykt (feil → kortet skjules, briefen vises). To nye tester.
 
 ## [1.8.3] - 2026-09-02
 

@@ -14,6 +14,36 @@
   <% } %>
 </section>
 
+<% if (typeof deadlineCheck !== 'undefined' && deadlineCheck) {
+  // Samme innhold som Discord-meldingen (deadlineCheckText) — kortet er alltid synlig.
+  const FUNN_LABEL = { kaptein: 'Kaptein', vise: 'Visekaptein', ute: 'Ute', tvilsom: 'Tvilsom', blank: 'Uten kamp' };
+  const FUNN_CLASS = { kaptein: 'status-i', vise: 'status-i', ute: 'status-i', tvilsom: 'status-d', blank: 'status-i' };
+  const ft = deadlineCheck.footer.freeTransfers == null ? 'ukjent' : deadlineCheck.footer.freeTransfers;
+  const chip = deadlineCheck.footer.activeChip ? (CHIP_LABELS[deadlineCheck.footer.activeChip] ?? deadlineCheck.footer.activeChip) : 'ingen';
+%>
+  <section class="card card-wide" id="lagsjekk">
+    <h2>
+      <span class="h2-title">Lagsjekk</span>
+      <span class="dim"><%= deadlineCheck.gwName %></span>
+    </h2>
+    <% if (deadlineCheck.ok) { %>
+      <p class="lagsjekk-ok"><span class="status status-best">Alt klart</span> Ingen skadde, suspenderte eller kampløse startere — kaptein og vise er tilgjengelige.</p>
+    <% } else { %>
+      <ul class="rec-list lagsjekk-liste">
+        <% for (const f of deadlineCheck.findings) { %>
+          <li>
+            <span class="status <%= FUNN_CLASS[f.type] ?? '' %>"><%= FUNN_LABEL[f.type] ?? f.type %></span>
+            <strong><%= f.player.name %></strong>
+            <%- include('partials/club-badge', { team: { short_name: f.player.teamShort, code: f.player.teamCode } }) %>
+            <span class="dim"><%= f.type === 'blank' ? '' : 'er ' %><%= f.detail %></span>
+          </li>
+        <% } %>
+      </ul>
+    <% } %>
+    <p class="hint">Gratisbytter igjen: <%= ft %> (<%= deadlineCheck.footer.transfersMade %> brukt) · Chip: <%= chip %> · Grunnlag: <%= deadlineCheck.basis %> — FPL viser ikke det nye laget før deadline.</p>
+  </section>
+<% } %>
+
 <% if (typeof aiBrief !== 'undefined' && aiBrief?.text) { %>
   <section class="card card-wide card-ai">
     <h2>
