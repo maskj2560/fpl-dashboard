@@ -102,6 +102,41 @@ test('layout.ejs har hopp-lenken «Hopp til innhold» som første fokuserbare el
   assert.ok(body.includes('<main id="innhold">'), 'main mangler id="innhold"');
 });
 
+// Skjermlesere leser tabellens caption før de går inn i cellene. Alle
+// datatabeller får en (sr-only der overskriften alt står synlig over).
+test('hver datatabell har caption rett etter <table>', async () => {
+  const rendered = new Map();
+  for (const [name, locals] of cases) rendered.set(`${name}:${JSON.stringify(locals).length}`, [name, await renderView(name, locals)]);
+  let tables = 0;
+  for (const [name, html] of rendered.values()) {
+    for (const m of html.matchAll(/<table[^>]*>([\s\S]{0,120})/g)) {
+      tables += 1;
+      assert.match(m[1], /^\s*<caption/, `${name}.ejs: tabell uten caption: <table${m[0].slice(6, 60)}`);
+    }
+  }
+  assert.ok(tables >= 20, `fant bare ${tables} tabeller — mønsteret matcher ikke lenger`);
+});
+
+// Knapper uten lesbar tekst (×, ikon-SVG) må ha aria-label, ellers leses de
+// som «knapp».
+test('alle ikon-knapper har aria-label', async () => {
+  const pages = [...cases.map(([name, locals]) => [name, locals]), ['layout', layoutLocals('/')]];
+  for (const [name, locals] of pages) {
+    const html = await renderView(name, locals);
+    for (const m of html.matchAll(/<button\b([^>]*)>([\s\S]*?)<\/button>/g)) {
+      const text = m[2].replace(/<[^>]+>/g, '').trim();
+      if (/\p{L}/u.test(text)) continue;
+      assert.match(m[1], /aria-label="[^"]+"/, `${name}.ejs: ikon-knapp uten aria-label: <button${m[1]}>${m[2].slice(0, 40)}`);
+    }
+  }
+});
+
+test('live.ejs annonserer status og totalsum med aria-live', async () => {
+  const html = await renderView('live', fx.live);
+  assert.match(html, /<span id="live-status" role="status"/);
+  assert.match(html, /<span class="stat-val" id="live-total" aria-live="polite"/);
+});
+
 test('dashboard.ejs merker nedtellingen som timer (aldri opplest hvert sekund)', async () => {
   const html = await renderView('dashboard', fx.dashboard);
   assert.match(html, /<div class="countdown" role="timer"/);
@@ -435,8 +470,10 @@ test('players.ejs gjør spillernavn klikkbare og gir radene duell-data', async (
 test('players.ejs gir duell-kolonnen en synlig overskrift', async () => {
   const html = await renderView('players', fx.players);
   const head = html.slice(html.indexOf('id="players-table"'), html.indexOf('</thead>'));
-  assert.match(head, /<th[^>]*data-nosort[^>]*>Duell<\/th>/, 'checkbox-kolonnen skal ha synlig etikett');
-  assert.doesNotMatch(head, /sr-only/, 'etiketten skal være synlig, ikke bare for skjermlesere');
+  const duellTh = head.match(/<th[^>]*data-nosort[^>]*>[\s\S]*?<\/th>/);
+  assert.ok(duellTh, 'checkbox-kolonnen mangler');
+  assert.match(duellTh[0], />Duell<\/th>/, 'checkbox-kolonnen skal ha synlig etikett');
+  assert.doesNotMatch(duellTh[0], /sr-only/, 'etiketten skal være synlig, ikke bare for skjermlesere');
 });
 
 test('players.ejs viser statusbadge kun ved avvik — «Klar» er stille', async () => {

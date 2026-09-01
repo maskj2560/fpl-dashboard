@@ -20,7 +20,7 @@
         </p>
       <% } else { %>
       <div class="table-scroll">
-        <table class="data">
+        <table class="data"><caption class="sr-only">Ligatabell <%= l.league.name %></caption>
           <thead><tr><th class="num rang">#</th><th>Lag</th><th class="num">GW</th><th class="num">Totalt</th></tr></thead>
           <tbody>
             <% for (const r of l.standings.results) { %>
@@ -103,7 +103,7 @@
       <div>
         <h4 class="sub-head dim">De har — jeg mangler</h4>
         <% if (rv.diff.theirs.length === 0) { %><p class="empty">Ingen.</p><% } else { %>
-        <div class="table-scroll"><table class="data">
+        <div class="table-scroll"><table class="data"><caption class="sr-only">De har — jeg mangler</caption>
           <thead><tr><th>Spiller</th><th class="num">Poeng</th></tr></thead>
           <tbody><% for (const p of rv.diff.theirs) { %>
             <tr><td><%- include('partials/club-badge', radarBadge(p)) %> <strong><%= p.name %></strong></td><td class="num"><%= p.eventPoints %></td></tr>
@@ -114,7 +114,7 @@
       <div>
         <h4 class="sub-head dim">Jeg har — de mangler</h4>
         <% if (rv.diff.mine.length === 0) { %><p class="empty">Ingen.</p><% } else { %>
-        <div class="table-scroll"><table class="data">
+        <div class="table-scroll"><table class="data"><caption class="sr-only">Jeg har — de mangler</caption>
           <thead><tr><th>Spiller</th><th class="num">Poeng</th></tr></thead>
           <tbody><% for (const p of rv.diff.mine) { %>
             <tr><td><%- include('partials/club-badge', radarBadge(p)) %> <strong><%= p.name %></strong></td><td class="num"><%= p.eventPoints %></td></tr>
@@ -141,7 +141,7 @@
   <section class="card card-wide">
     <h2>Kaptein-liga <span class="dim">Runde <%= cl.lastGw %></span></h2>
     <div class="table-scroll">
-      <table class="data">
+      <table class="data"><caption class="sr-only">Kaptein-liga runde <%= cl.lastGw %></caption>
         <thead><tr><th>Manager</th><th>Kaptein</th><th class="num">Poeng</th><th class="num">Tapt mot optimal</th><th class="num">Sum poeng</th><th class="num">Sum tapt</th></tr></thead>
         <tbody>
           <% for (const r of cl.rows) { %>

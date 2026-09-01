@@ -25,7 +25,7 @@
       <p class="empty">Ingen spillere er flagget nå. Status endrer seg ofte etter pressekonferansene — sjekk igjen nærmere deadline.</p>
     <% } else { %>
       <div class="table-scroll">
-        <table class="data">
+        <table class="data"><caption class="sr-only">Ukens flagg</caption>
           <thead>
             <tr><th>Spiller</th><th>Lag</th><th class="num">Eid</th><th>Status</th></tr>
           </thead>
@@ -59,7 +59,7 @@
       <p class="empty">Formtallene nullstilles mellom sesongene. Toppformlisten fylles så snart den første runden er spilt.</p>
     <% } else { %>
       <div class="table-scroll">
-        <table class="data">
+        <table class="data"><caption class="sr-only">Toppform</caption>
           <thead>
             <tr><th>Spiller</th><th>Lag</th><th>Pos</th><th class="num">Form</th><th class="num">Poeng</th></tr>
           </thead>
@@ -85,7 +85,7 @@
       <p class="empty">Ingen overganger er registrert i denne runden ennå. Listen fylles etter hvert som managerne begynner å bytte.</p>
     <% } else { %>
       <div class="table-scroll">
-        <table class="data">
+        <table class="data"><caption class="sr-only">Mest kjøpt denne runden</caption>
           <thead>
             <tr><th>Spiller</th><th class="num">Pris</th><th class="num">Inn</th></tr>
           </thead>
@@ -109,7 +109,7 @@
       <p class="empty">Ingen overganger er registrert i denne runden ennå. Listen fylles etter hvert som managerne begynner å bytte.</p>
     <% } else { %>
       <div class="table-scroll">
-        <table class="data">
+        <table class="data"><caption class="sr-only">Mest solgt denne runden</caption>
           <thead>
             <tr><th>Spiller</th><th class="num">Pris</th><th class="num">Ut</th></tr>
           </thead>
@@ -138,7 +138,7 @@
     <span class="fdr fdr-5">5 vanskelig</span>
   </p>
   <div class="table-scroll">
-    <table class="data fdr-table">
+    <table class="data fdr-table"><caption class="sr-only">Fixture-vanskelighet per lag og runde</caption>
       <thead>
         <tr>
           <th>Lag</th>

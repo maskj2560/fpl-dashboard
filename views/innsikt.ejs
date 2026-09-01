@@ -25,7 +25,7 @@
       minst 1 spiss) og den du faktisk stilte. I en Bench Boost-runde teller
       hele troppen, og da er ingenting sløst.</p>
       <div class="table-scroll">
-        <table class="data data--fit">
+        <table class="data data--fit"><caption class="sr-only">Benkesløsing per runde</caption>
           <thead>
             <tr><th>Runde</th><th class="num">På benken</th><th class="num">Unngåelig tap</th><th>Chip</th></tr>
           </thead>
@@ -69,7 +69,7 @@
         <div class="stat"><span class="stat-val"><%= insights.captains.hitGlobalPct === null ? '–' : insights.captains.hitGlobalPct + ' %' %></span><span class="stat-lbl">Minst like god som global favoritt · <%= insights.captains.counted.global %> runde<%= insights.captains.counted.global === 1 ? '' : 'r' %></span></div>
       </div>
       <div class="table-scroll">
-        <table class="data">
+        <table class="data"><caption class="sr-only">Kapteinsfasit per runde</caption>
           <thead>
             <tr><th>Runde</th><th>Kaptein</th><th>Troppens beste</th><th>Global favoritt</th></tr>
           </thead>
@@ -113,7 +113,7 @@
         <div class="stat"><span class="stat-val <%= insights.luck.total > 0 ? 'accent' : (insights.luck.total < 0 ? 'negative' : '') %>"><%= formatSigned(insights.luck.total) %></span><span class="stat-lbl">Flakspoeng i sesongen</span></div>
       </div>
       <div class="table-scroll">
-        <table class="data data--fit">
+        <table class="data data--fit"><caption class="sr-only">Flaksbarometer per runde</caption>
           <thead>
             <tr><th>Runde</th><th class="num">Flakspoeng</th></tr>
           </thead>
@@ -133,7 +133,7 @@
           <div>
             <h3 class="sub-head"><%= tittel %></h3>
             <div class="table-scroll">
-              <table class="data">
+              <table class="data"><caption class="sr-only"><%= tittel %></caption>
                 <thead>
                   <tr><th></th><th>Spiller</th><th class="num">Mål/xG</th><th class="num">A/xA</th><th class="num">Flaks</th></tr>
                 </thead>
@@ -170,7 +170,7 @@
         <% } %>
       </div>
       <div class="table-scroll">
-        <table class="data">
+        <table class="data"><caption class="sr-only">Rundens XI</caption>
           <thead>
             <tr><th></th><th>Spiller</th><th>Posisjon</th><th class="num">Poeng</th><th>Din</th></tr>
           </thead>
@@ -198,7 +198,7 @@
       <% if (insights.dreamTeam.trend) { %>
         <h3 class="sub-head">Dine i rundens XI per runde</h3>
         <div class="table-scroll">
-          <table class="data">
+          <table class="data"><caption class="sr-only">Dine i rundens XI per runde</caption>
             <thead>
               <tr><% for (const t of insights.dreamTeam.trend) { %><th class="num">R<%= t.gw %></th><% } %></tr>
             </thead>

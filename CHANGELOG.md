@@ -29,6 +29,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Tilgjengelighet: kolonnehodene i de sorterbare tabellene («Spillere»,
   «Live») har `scope="col"`; `aria-sort`-vekslingen er trukket ut som ren
   `nextSortDir` og testlåst.
+- Tilgjengelighet: alle datatabeller (26, også de klientrendrede) har en
+  skjermleser-caption; «Live» annonserer kampstatus (`role="status"`) og
+  totalsummen (`aria-live="polite"`). Testlåst: hver `<table>` følges av
+  `<caption>`, og hver ikon-knapp har `aria-label`.
 
 ### Fixed
 

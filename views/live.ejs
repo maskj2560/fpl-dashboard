@@ -1,7 +1,7 @@
 <section class="page-head">
   <h1>Live<% if (gw) { %> — Runde <%= gw %><% } %></h1>
   <p class="dim">
-    <span id="live-status"><%= live && live.anyLive ? 'Kamper pågår' : 'Ingen kamper pågår akkurat nå' %></span>
+    <span id="live-status" role="status"><%= live && live.anyLive ? 'Kamper pågår' : 'Ingen kamper pågår akkurat nå' %></span>
     <span class="pulse<%= live && live.anyLive ? ' pulse-on' : '' %>" id="live-pulse" aria-hidden="true"></span>
     · <span id="live-updated">Sist oppdatert <%= new Date().toLocaleTimeString('nb-NO') %></span>
   </p>
@@ -12,12 +12,12 @@
     <section class="card"><p class="empty">Ingen aktiv runde. Live-visningen våkner av seg selv når første kamp i runden sparkes i gang.</p></section>
   <% } else { %>
     <div class="stat-strip">
-      <div class="stat"><span class="stat-val" id="live-total"><%= live.totalLive ?? '–' %></span><span class="stat-lbl">Mine live-poeng</span></div>
+      <div class="stat"><span class="stat-val" id="live-total" aria-live="polite"><%= live.totalLive ?? '–' %></span><span class="stat-lbl">Mine live-poeng</span></div>
     </div>
     <div class="grid">
       <section class="card">
         <h2><span class="h2-title">Mine spillere</span><span class="dim" id="live-count-players"><%= live.myPlayers.length %></span></h2>
-        <div class="table-scroll"><table class="data sortable" id="live-players" data-sortable>
+        <div class="table-scroll"><table class="data sortable" id="live-players" data-sortable><caption class="sr-only">Mine spillere denne runden</caption>
           <thead><tr><th scope="col" data-type="text" aria-sort="none">Spiller</th><th scope="col" data-type="num" class="num" aria-sort="none">Min</th><th scope="col" data-type="num" class="num" aria-sort="none">Poeng</th><th scope="col" data-type="num" class="num" aria-sort="none">Bonus</th><th scope="col" data-type="num" class="num" aria-sort="none">Effektivt</th></tr></thead>
           <tbody></tbody>
         </table></div>
