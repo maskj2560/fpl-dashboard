@@ -26,6 +26,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   sider (synlig kun ved fokus) og peker på `<main id="innhold">`;
   nedtellingen på dashbordet er merket `role="timer"` så sekundene aldri
   leses opp.
+- Tilgjengelighet: kolonnehodene i de sorterbare tabellene («Spillere»,
+  «Live») har `scope="col"`; `aria-sort`-vekslingen er trukket ut som ren
+  `nextSortDir` og testlåst.
 
 ### Fixed
 

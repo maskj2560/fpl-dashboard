@@ -437,3 +437,12 @@ test('terskelSynlighet sammenligner verdi, ikke type — radioverdier er strenge
 test('terskelSynlighet tar tersklene som finnes i markupen', () => {
   assert.deepEqual({ ...app.terskelSynlighet('15', [5, 15]) }, { 5: true, 15: false });
 });
+
+// ---- v1.8.3: sortering (Modul 2) -------------------------------------------
+
+test('nextSortDir veksler descending → ascending og alt annet → descending', () => {
+  assert.equal(app.nextSortDir('descending'), 'ascending');
+  assert.equal(app.nextSortDir('ascending'), 'descending');
+  assert.equal(app.nextSortDir('none'), 'descending');
+  assert.equal(app.nextSortDir(null), 'descending');
+});

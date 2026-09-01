@@ -390,7 +390,7 @@ function initEdgeFades(el, prefix) {
   }
 
   function sortBy(table, th, index) {
-    const dir = th.getAttribute('aria-sort') === 'descending' ? 'ascending' : 'descending';
+    const dir = nextSortDir(th.getAttribute('aria-sort'));
     [...table.tHead.rows[0].cells].forEach((h) => h.setAttribute('aria-sort', 'none'));
     th.setAttribute('aria-sort', dir);
     applySort(table, index, dir);
@@ -1198,6 +1198,12 @@ function rivalNavAction({ search, stored, validIds }) {
 
 // Terskelvelgeren paa /spillere: hvilke differensialtabeller som skal ligge
 // skjult. Ren funksjon, saa regelen kan testes uten DOM.
+// Modul 2: neste sorteringsretning fra dagens aria-sort. Første klikk på en
+// kolonne gir synkende (høyest først), klikk på den synkende gir stigende.
+function nextSortDir(current) {
+  return current === 'descending' ? 'ascending' : 'descending';
+}
+
 function terskelSynlighet(valgt, terskler = [5, 10, 15]) {
   const ut = {};
   for (const t of terskler) ut[t] = String(t) !== String(valgt);

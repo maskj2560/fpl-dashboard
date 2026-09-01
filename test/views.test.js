@@ -380,6 +380,23 @@ test('players.ejs: alle kolonneoverskrifter beholder data-type og aria-sort (sor
   assert.equal((head.match(/aria-sort="descending"/g) ?? []).length, 1, 'nøyaktig én startsortering');
 });
 
+// v1.8.3: kolonnehoder i sorterbare tabeller har scope=col, så skjermlesere
+// kobler cellen til riktig overskrift også etter at radene er sortert om.
+test('sorterbare kolonnehoder har scope=col og aria-sort', async () => {
+  const spillere = await renderView('players', fx.players);
+  const live = await renderView('live', fx.live);
+  for (const [navn, html, id] of [['players', spillere, 'players-table'], ['live', live, 'live-players']]) {
+    const start = html.indexOf(`id="${id}"`);
+    const head = html.slice(start, html.indexOf('</thead>', start));
+    const ths = head.match(/<th[ >][^>]*>/g) ?? [];
+    assert.ok(ths.length >= 5, `${navn}: fant for få kolonnehoder`);
+    for (const th of ths) {
+      assert.match(th, /scope="col"/, `${navn}: ${th}`);
+      if (!th.includes('data-nosort')) assert.match(th, /aria-sort="/, `${navn}: ${th}`);
+    }
+  }
+});
+
 // ---- v1.8.0: spiller-pakka ------------------------------------------------
 
 test('players.ejs har kort ingress — forklaringene ligger i tittelattributter', async () => {
@@ -418,7 +435,7 @@ test('players.ejs gjør spillernavn klikkbare og gir radene duell-data', async (
 test('players.ejs gir duell-kolonnen en synlig overskrift', async () => {
   const html = await renderView('players', fx.players);
   const head = html.slice(html.indexOf('id="players-table"'), html.indexOf('</thead>'));
-  assert.match(head, /<th data-nosort>Duell<\/th>/, 'checkbox-kolonnen skal ha synlig etikett');
+  assert.match(head, /<th[^>]*data-nosort[^>]*>Duell<\/th>/, 'checkbox-kolonnen skal ha synlig etikett');
   assert.doesNotMatch(head, /sr-only/, 'etiketten skal være synlig, ikke bare for skjermlesere');
 });
 
