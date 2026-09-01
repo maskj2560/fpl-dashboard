@@ -134,6 +134,17 @@ function duelStatus(count) {
   return { enabled: count === 2, tekst: count + ' av 2 valgt' };
 }
 
+/**
+ * Duellen tar nøyaktig to spillere. Når begge er valgt, låses de ledige
+ * boksene — en tredje hake som bare spratt tilbake uten tilbakemelding leses
+ * som en feil (QA-funn, økt 51). Returnerer om duellen er full.
+ */
+function duellLaas(bokser, antallValgte) {
+  const full = antallValgte >= 2;
+  for (const boks of bokser) boks.disabled = full && !boks.checked;
+  return full;
+}
+
 function duelData(ds) {
   const rolle = (v) => (v === '' || v == null ? null : parseInt(v, 10));
   return {
@@ -1124,14 +1135,20 @@ function rivalNavAction({ search, stored, validIds }) {
   const start = document.getElementById('duell-start');
   const tom = document.getElementById('duell-tom');
 
+  function alle() {
+    return [...table.tBodies[0].querySelectorAll('.duell-velg')];
+  }
+
   function valgte() {
     return [...table.tBodies[0].querySelectorAll('.duell-velg:checked')];
   }
 
   function oppdater() {
-    const s = duelStatus(valgte().length);
+    const antall = valgte().length;
+    const s = duelStatus(antall);
     teller.textContent = s.tekst;
     start.disabled = !s.enabled;
+    duellLaas(alle(), antall);
   }
 
   table.addEventListener('change', (e) => {

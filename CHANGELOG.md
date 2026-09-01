@@ -9,6 +9,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Fixed
 
+- «Spillere»: en tredje avkryssing i duellen ble avvist uten et eneste
+  synlig tegn. Når to spillere er valgt, låses de øvrige boksene i stedet.
 - «Spillere»: duellen var bredere enn kortet på mobil, så spiller 2 lå
   utenfor og måtte dras fram sidelengs. På smale skjermer deler de tre
   kolonnene bredden i stedet, og duell-hodet stables.

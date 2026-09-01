@@ -2132,6 +2132,12 @@ body.modal-apen {
   cursor: not-allowed;
 }
 
+/* Låst boks når duellen allerede har to spillere — markøren sier det samme
+   som den nedtonede boksen. */
+.duell-velg:disabled {
+  cursor: not-allowed;
+}
+
 /* Score-cellen i differensialtabellen: en tynn søyle langs bunnen av cellen.
    --andel settes inline av viewet (andel av toppscoren i den tabellen).
    Full cellehøyde ble lest som et fargefelt, ikke som en måling (QA-funn,

@@ -330,6 +330,17 @@ test('duelStatus åpner Sammenlign først ved nøyaktig to valgte', () => {
   }
 });
 
+// QA-funn (økt 51): en tredje hake ble avvist uten et eneste synlig tegn.
+test('duellLaas låser de ledige boksene når duellen er full', () => {
+  const full = [{ checked: true }, { checked: true }, { checked: false }];
+  assert.equal(app.duellLaas(full, 2), true);
+  assert.deepEqual(full.map((b) => b.disabled), [false, false, true]);
+
+  const halv = [{ checked: true, disabled: true }, { checked: false, disabled: true }];
+  assert.equal(app.duellLaas(halv, 1), false);
+  assert.deepEqual(halv.map((b) => b.disabled), [false, false]);
+});
+
 test('duelData beholder FPL-strengene og gjør tomme dødballfelt til null', () => {
   const d = app.duelData(ds({ straffer: '2' }));
 
