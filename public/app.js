@@ -1179,3 +1179,49 @@ function terskelSynlighet(valgt, terskler = [5, 10, 15]) {
     for (const boks of bokser) boks.hidden = skjult[Number(boks.dataset.terskel)];
   });
 })();
+
+// Modul 12: fanene paa /spillere. Seksjonene er server-rendret; fanen bytter
+// bare hidden. Filterskjemaet hoerer til tabellen og foelger den fanen.
+(function () {
+  'use strict';
+
+  const rad = document.querySelector('.fane-rad');
+  if (!rad) return;
+
+  const knapper = Array.from(rad.querySelectorAll('[data-fane]'));
+  if (knapper.length === 0) return;
+
+  const filtre = document.getElementById('player-filters');
+
+  function vis(navn, flyttFokus) {
+    for (const knapp of knapper) {
+      const aktiv = knapp.dataset.fane === navn;
+      knapp.setAttribute('aria-selected', aktiv ? 'true' : 'false');
+      knapp.tabIndex = aktiv ? 0 : -1;
+      const panel = document.getElementById(knapp.dataset.fane);
+      if (panel) panel.hidden = !aktiv;
+      if (aktiv && flyttFokus) knapp.focus();
+    }
+    if (filtre) filtre.hidden = navn !== 'tabell';
+    history.replaceState(null, '', '#' + navn);
+  }
+
+  rad.addEventListener('click', (e) => {
+    const knapp = e.target.closest('[data-fane]');
+    if (knapp) vis(knapp.dataset.fane, false);
+  });
+
+  rad.addEventListener('keydown', (e) => {
+    let steg = 0;
+    if (e.key === 'ArrowRight') steg = 1;
+    if (e.key === 'ArrowLeft') steg = -1;
+    if (steg === 0) return;
+    e.preventDefault();
+    const i = knapper.findIndex((k) => k.getAttribute('aria-selected') === 'true');
+    vis(knapper[(i + steg + knapper.length) % knapper.length].dataset.fane, true);
+  });
+
+  // Dyplenke: /spillere#differensialer aapner riktig fane ved last.
+  const fraHash = decodeURIComponent(location.hash.slice(1));
+  if (knapper.some((k) => k.dataset.fane === fraHash)) vis(fraHash, false);
+})();

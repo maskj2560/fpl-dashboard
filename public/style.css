@@ -2067,3 +2067,42 @@ body.modal-apen {
 .score-celle {
   background: linear-gradient(90deg, var(--accent-soft) var(--andel, 0%), transparent var(--andel, 0%)) no-repeat;
 }
+
+/* Fanene paa /spillere: én seksjon om gangen i stedet for ett langt dokument. */
+.fane-rad {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+  margin-top: 0.9rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.fane-knapp {
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  padding: 0.5rem 0.9rem;
+  font: inherit;
+  font-weight: 600;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
+.fane-knapp:hover {
+  color: var(--text);
+  background: var(--surface-2);
+}
+
+.fane-knapp[aria-selected="true"] {
+  color: var(--text);
+  background: var(--surface-2);
+  border-bottom-color: var(--accent);
+}
+
+/* Duellen ligger inne i tabellkortet — en avdelt bunnseksjon, ikke eget kort. */
+.duell-panel {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+}

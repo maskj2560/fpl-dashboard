@@ -31,6 +31,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - «Spillere»: terskelvelgeren er en segmentert pillebryter i stedet for tre
   løse radioknapper, og score-kolonnen har fått en diskret søylestripe som
   viser hvor sterk scoren er i forhold til den beste i tabellen.
+- «Spillere» er delt i tre faner — Tabell, Differensialer og Dødballtakere —
+  i stedet for ett langt scroll-dokument. Faneraden kan styres med piltaster,
+  og `/spillere#differensialer` åpner riktig fane direkte. Duellen og
+  filtrene hører til Tabell-fanen.
 
 ### Planlagt
 

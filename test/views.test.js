@@ -352,12 +352,18 @@ test('players.ejs: alle kolonneoverskrifter beholder data-type og aria-sort (sor
 
 // ---- v1.8.0: spiller-pakka ------------------------------------------------
 
-test('players.ejs har hopplenker til alle tre seksjonene', async () => {
+test('players.ejs deler siden i tre faner og viser bare tabellen fra serveren', async () => {
   const html = await renderView('players', fx.players);
+  assert.match(html, /class="fane-rad" role="tablist"/, 'fanene erstatter hopplenkene');
+  assert.doesNotMatch(html, /class="jump-nav"/, 'hopplenkene skal være borte');
   for (const id of ['tabell', 'differensialer', 'dodballtakere']) {
-    assert.match(html, new RegExp(`href="#${id}"`), `mangler hopplenke til #${id}`);
+    assert.match(html, new RegExp(`data-fane="${id}"[^>]*aria-controls="${id}"`), `mangler fane for #${id}`);
     assert.match(html, new RegExp(`id="${id}"`), `mangler seksjonen #${id}`);
   }
+  assert.equal((html.match(/aria-selected="true"/g) ?? []).length, 1, 'nøyaktig én aktiv fane');
+  assert.match(html, /id="tabell"(?![^>]*hidden)/, 'Tabell er standardfanen');
+  assert.match(html, /id="differensialer"[^>]*hidden/, 'Differensialer skal ligge skjult');
+  assert.match(html, /id="dodballtakere"[^>]*hidden/, 'Dødballtakere skal ligge skjult');
 });
 
 test('players.ejs gjør spillernavn klikkbare og gir radene duell-data', async () => {
@@ -397,7 +403,10 @@ test('players.ejs har duell-skallet og en tom duell-seksjon', async () => {
   assert.match(html, /class="btn-accent"[^>]*id="duell-start"[^>]*disabled/, 'Sammenlign er primærknappen');
   assert.match(html, /class="btn-quiet"[^>]*id="duell-tom"/, 'Tøm valg skal være lavmælt');
   assert.doesNotMatch(html, /class="btn-link"[^>]*id="duell-tom"/);
-  assert.match(html, /<section class="card" id="duell" hidden>/);
+  // Duellen bor inne i Tabell-fanen og følger dens synlighet.
+  assert.match(html, /<section id="duell" class="duell-panel" hidden>/);
+  const tabell = html.slice(html.indexOf('id="tabell"'), html.indexOf('id="differensialer"'));
+  assert.ok(tabell.includes('id="duell"'), 'duell-seksjonen skal ligge inne i Tabell-fanen');
 });
 
 test('players.ejs viser tre terskler, men bare 10 % synlig fra start', async () => {
