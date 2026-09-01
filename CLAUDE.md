@@ -29,9 +29,12 @@ src/middleware.js  rene middleware-byggere: cacheControlFor, createErrorHandler,
                    per IP per 5 min på /api (CF-Connecting-IP bak Cloudflare)
 src/config.js      env-variabler: PORT, FPL_TEAM_ID, LEAGUE_IDS, TZ,
                    NEWS_FEEDS, ANTHROPIC_API_KEY (valgfri), AI_MODEL,
-                   DISCORD_WEBHOOK_URL (valgfri), BRIEF_HOURS_BEFORE_DEADLINE
+                   DISCORD_WEBHOOK_URL (valgfri), BRIEF_HOURS_BEFORE_DEADLINE,
+                   DEADLINE_CHECK_HOURS_BEFORE (v1.9.0, default 3),
                    DATA_DIR (default `data`)
-src/routes/        tynne ruter: én fil per side + api.js
+src/routes/        tynne ruter: én fil per side + api.js + calendar.js
+                   (v1.9.0: GET /kalender.ics, createCalendarHandler med
+                   injiserbar load/now så ruta testes uten nett)
 src/services/
   fplClient.js     ENESTE modul med nettverkskall til FPL-API-et
   cache.js         TTL-cache med stale-while-revalidate, in-flight dedup
@@ -93,6 +96,22 @@ src/services/
                    prosent av toppscoren i den tabellen) til søylestripa.
                    Element-summary hentes
                    KUN lazy per klikk, aldri i bulk. ALDRI ai.js
+  chips.js         (v1.9.0) chip-planleggeren på /lag: chipHalves, specialGws
+                   (dobbel-/blankrunder fra fixtureGrid i analysis.js — delt
+                   med fdrMatrix), buildChipPlan (BB/TC/FH/WC per halvdel:
+                   brukt eller anbefalt m/ begrunnelse), describeRec. Rent,
+                   0 ekstra FPL-kall (team.js henter alt alt). ALDRI ai.js
+  deadline.js      (v1.9.0) «Lagsjekk»: applyTransfers (picks N−1 + bytter
+                   for N — FPL gir 404 på picks for kommende runde før
+                   deadline), buildDeadlineCheck (funn: ute/tvilsom ≤ 50 %/
+                   flagget kaptein og vise/starter uten kamp; footer m/
+                   gratisbytter fra buildFtLedger og aktiv chip),
+                   deadlineCheckText (Discord) og assembleDeadlineCheck
+                   (henter; null uten kommende runde/picks). ALDRI ai.js
+  calendar.js      (v1.9.0) /kalender.ics: icsDate, escapeText, foldLine
+                   (75 oktetter, æøå-sikker), buildCalendar (38 deadlines
+                   m/ VALARM -PT3H + troppens kamper fra neste runde; CRLF,
+                   UTC Z, ingen VTIMEZONE). Rent. ALDRI ai.js
   clubAssets.js    hvilke klubbbilder som finnes i public/img/clubs/. Leses én
                    gang ved oppstart til app.locals.clubAssets; partialene spør
                    hasBadge/hasShirt/hasKeeper og skriver aldri <img> i blinde.
@@ -106,6 +125,10 @@ src/services/
                    (v1.6.0) også «Rundens rapport»: reportDecision + checkReport
                    på samme 6 t-tikk — markør OG tekst i DATA_DIR/report-state.json
                    (webvisningen overlever redeploy, aldri dobbel-post)
+                   (v1.9.0) også «Lagsjekk»: checkDeadline på samme tikk,
+                   DEADLINE_CHECK_HOURS_BEFORE t før deadline, poster KUN
+                   ved funn; markøren i DATA_DIR/check-state.json settes
+                   uansett (ren tropp re-sjekkes ikke). 0 AI-kall
   refresh.js       (v1.3.4) timer-styrt oppfrisking av AI-tekstene:
                    refreshDecision (ren beslutning) + startAiRefresher
                    (ett tikk ved oppstart, så hver 30. min). Sender aldri
@@ -152,6 +175,9 @@ Base `https://fantasy.premierleague.com/api/` — åpent, ingen nøkkel. Viktig:
   KUN lazy per klikk via `GET /api/spiller/:id`. Aldri i bulk (en
   sidevisning av /spillere skal koste 0 element-summary-kall);
   `elementSummaryAgeSec(id)` gir alderen på nøkkelen til `dataAlder`
+- `entry/{id}/event/{gw}/picks/` for KOMMENDE runde gir 404 før deadline.
+  Alt som skal vise «laget for runde N» før deadline (Lagsjekk, v1.9.0)
+  bruker picks fra N−1 + `entry/{id}/transfers/` (synlig før deadline)
 - Frontend poller live-data kun mens kamper pågår — aldri poll utenfor
   kampvinduer, og all polling går via serverens cache (aldri rett mot FPL)
 - Alderstak (v1.4.0): stale data eldre enn 60 min (10 min for live) vises
@@ -209,7 +235,8 @@ overgangskommentaren 1x/døgn (fra v1.5.0), ligarapporten 1x per
 ferdigspilt runde (fra v1.6.0), pluss ett tikk ved
 oppstart (AI-cachen bor i minnet og er tom etter hver deploy) — til sammen
 ~49–53 kall/uke. `/innsikt` (v1.7.0) og spiller-pakka på `/spillere`
-(v1.8.0, inkludert `/api/spiller/:id`) er utenfor dette regnskapet: de
+(v1.8.0, inkludert `/api/spiller/:id`) og planleggingspakka (v1.9.0:
+`chips.js`, `deadline.js`, `calendar.js`) er utenfor dette regnskapet: de
 importerer aldri `ai.js` og koster **0 AI-kall** i alle tilstander — låst
 på kilden i `test/routes.test.js`.
 Prompts holdes korte. Uten nøkkel vises rå data

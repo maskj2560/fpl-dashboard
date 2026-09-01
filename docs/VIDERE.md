@@ -11,7 +11,7 @@ Alt som sto igjen på idélista bygges nå ferdig, i denne rekkefølgen — hver
 går ut i drift for seg:
 
 1. ~~**v1.8.3 — herding og tilgjengelighet.**~~ Se under.
-2. **v1.9.0 — planleggingspakka.** Chip-planlegger på Lag-siden (beste
+2. ~~**v1.9.0 — planleggingspakka.**~~ Ute 2. september, se under. Chip-planlegger på Lag-siden (beste
    vindu for Bench Boost, Triple Captain, Free Hit og Wildcard), en
    «Lagsjekk» tre timer før deadline (Discord kun når noe er galt: skadet
    starter, flagget kaptein, spiller uten kamp) og en kalender du kan
@@ -27,7 +27,32 @@ går ut i drift for seg:
 Ingen av delene bruker AI, så kostnaden er uendret. Til slutt får du én
 ferdig prompt til Claude for Chrome som tester alt i drift.
 
-## Nytt: v1.8.3 — herding og tilgjengelighet (2. september)
+## Nytt: v1.9.0 — planleggingspakka (2. september)
+
+Tre ting som hjelper deg å planlegge, ingen av dem bruker AI:
+
+- **Chip-planlegger på Lag-siden.** For hver halvdel av sesongen og hver
+  chip (Bench Boost, Triple Captain, Free Hit, Wildcard) ser du enten
+  «Brukt i runde N» eller en anbefalt runde med begrunnelse — regnet ut
+  fra troppen din og kampprogrammet. Dobbel- og blankrunder listes når
+  FPL har lagt dem ut; før det sier kortet at ingen er kjent ennå.
+- **Lagsjekk tre timer før deadline.** Kortet øverst på Rundebrief viser
+  om noen i startelleveren er skadet, suspendert, tvilsom (≤ 50 %) eller
+  uten kamp, og om kaptein eller vise er flagget — eller «Alt klart».
+  Samme sjekk går til Discord automatisk, men **bare når noe er galt**.
+  Grunnlaget er laget fra forrige runde pluss byttene du alt har gjort,
+  fordi FPL ikke viser det nye laget ditt før deadline. Timetallet
+  styres av `DEADLINE_CHECK_HOURS_BEFORE` i Coolify (standard 3).
+- **Kalender du kan abonnere på.** «Abonner på kalender» under
+  nedtellingen (og på Rundebrief) legger alle 38 deadlines (med varsel
+  tre timer før) og kampene til spillerne dine inn i kalenderappen din.
+  Adressen er `webcal://fpl.marsk.no/kalender.ics`; kalenderen
+  oppdaterer seg selv hver sjette time.
+
+Hva du bør gjøre: trykk «Abonner på kalender» på telefonen én gang, og
+sjekk at Lagsjekk-kortet på Rundebrief ser riktig ut før neste deadline.
+
+## Før det: v1.8.3 — herding og tilgjengelighet (2. september)
 
 Ingen nye funksjoner, men appen er strammere under panseret:
 

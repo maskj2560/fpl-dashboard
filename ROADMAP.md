@@ -19,7 +19,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**P0**~~ | ~~Coolify-helsesjekk fiks + bevis~~ | **utført 25. aug — alt. a aktiv** | — |
 | ~~**P1**~~ | ~~Marius: bekreft auto-briefen 20. aug i Discord~~ | **utført 25. aug — brief bekreftet i kanalen** | — |
 | **P2** | Marius: README-skjermbilder + mobil-QA | 3 | **skjermbilder utført 26. aug** — gjenstår mobil-QA på ekte telefon |
-| **P3** | Etter GW2: transfers-skjema mot ekte data | 2 | GW2 spilt (~29.–31. aug) |
+| ~~**P3**~~ | ~~Etter GW2: transfers-skjema mot ekte data~~ | **utført 2. sep — verifisert read-only mot en rivals transfers, feltene stemmer** | — |
 | **P4** | Kostnadsmåling uken etter 1. sep | 1 | dato |
 | ~~**v1.2.5**~~ | ~~Brief-kvalitetstrioen~~ | **utført 24. aug** | — |
 | ~~**v1.3.0**~~ | ~~UI-overhaling, etappe 1: fundament (tokens i to temaer, temabryter, lilla topbar)~~ | **utført 24. aug** | — |
@@ -39,9 +39,9 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.8.0**~~ | ~~«Spiller-pakka»: spillerkort, duell, differensialer, straffer~~ | **utført 1. sep — ute i prod, 602/602** | — |
 | ~~**v1.8.1**~~ | ~~Redesign av /spillere: faner, lavmælte lenker, klubbkort~~ | **utført 1. sep — ute i prod, 613/613** | — |
 | ~~**v1.8.2**~~ | ~~QA-fikser fra prod-gjennomgang + rikere «Rundens rapport»~~ | **utført 1. sep — 626/626** | — |
-| **v1.8.3** | «Herding + tilgjengelighet»: CSP m/ nonce, sikkerhetshoder, JSON-tak, takstbegrensning, a11y-pass, branch-rydding | 0 | **i gang (økt 53)** |
-| **v1.9.0** | «Planleggingspakka»: chip-planlegger (/lag), «Lagsjekk» (/brief + Discord), `/kalender.ics` + P3 | 0 | v1.8.3 |
-| **v1.10.0** | «Prisvarsler»: timesnapshot, Discord maks 1/natt, kort på /overganger | 0 | v1.9.0 |
+| ~~**v1.8.3**~~ | ~~«Herding + tilgjengelighet»: CSP m/ nonce, sikkerhetshoder, JSON-tak, takstbegrensning, a11y-pass, branch-rydding~~ | **utført 2. sep — 655/655** | — |
+| ~~**v1.9.0**~~ | ~~«Planleggingspakka»: chip-planlegger (/lag), «Lagsjekk» (/brief + Discord), `/kalender.ics` + P3~~ | **utført 2. sep — 691/691** | — |
+| **v1.10.0** | «Prisvarsler»: timesnapshot, Discord maks 1/natt, kort på /overganger | 0 | **neste** |
 | **v1.11.0** | «Karriere-pakka»: FPL-karrieren + merkedager (/innsikt), bonuskamp (/live) | 0 | v1.10.0 |
 | **v1.12.0** | «PWA»: manifest, ikoner, service worker, /offline | 0 | v1.11.0 |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
@@ -62,6 +62,8 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
   testnavn, beslutningsfasit med 9 punkter — ikke re-spør).
 - **Blokkert av:** ingenting. AI-økten merger `--no-ff`, tagger og pusher
   selv per versjon etter deploy-vindu-sjekk (Marius' beslutning).
+- **Status:** v1.8.3 ute 2. sep (655/655), v1.9.0 ute 2. sep (691/691).
+  Neste: v1.10.0 prisvarsler.
 - **Størrelse:** stor (fem releaser).
 
 ### 1. (P4) Løpende kostnadskontroll
@@ -78,20 +80,15 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
 - **Blokkert av:** ingenting — løpende oppfølging hos Marius.
 - **Størrelse:** liten.
 
-### 2. (P3) Etter GW2: verifiser transfers-skjemaet mot ekte data
+### 2. ~~(P3) Etter GW2: verifiser transfers-skjemaet mot ekte data~~ — utført 2. sep (økt 53)
 
-- **Hva:** feltnavnene i `entry/5330646/transfers/` (`element_in`,
-  `element_out`, `event`, `time`, `event_transfers_cost`) er antatt og lest
-  med guards — bekreftes mot ekte data når første transfer finnes. Pluss:
-  se `/overganger` med ekte data på mobil 390 px (scroll kun i
-  `.table-scroll`). Avvik → `fix:`-commit med oppdaterte fixtures.
-- **Eier detaljene:** sjekklisten «Etter GW2» i
-  `docs/arkiv/plan-hva-hvis-transfers.md`.
-- **Blokkert av:** **første ekte transfer** — Marius bytter ikke i GW2
-  (besluttet 28. aug), så porten er åpen først når han faktisk gjør et
-  bytte. Til da viser `/overganger` tomtilstanden, og det er korrekt
-  (0 bytter). Feltnavnene verifiseres mot prod ved første bytte.
-- **Størrelse:** liten.
+- **Utført:** verifisert read-only mot en rivals `entry/7185653/transfers/`
+  (fra ligaens standings). Radene har nøyaktig `element_in`,
+  `element_in_cost`, `element_out`, `element_out_cost`, `entry`, `event`,
+  `time` — som `pricing.js`/`transfers.js` antar. `event_transfers_cost`
+  ligger i `history.current`, ikke på transfer-radene (formuleringen her
+  var upresis; koden var riktig). Ingen avvik, ingen fix. Gjenstår kun
+  Marius' egen mobil-sjekk av `/overganger` når han har gjort et bytte.
 
 ### 3. (P2) README-skjermbilder + mobil-QA `[Marius]`
 
@@ -139,8 +136,8 @@ stedet for den AI-kostende promptendringen (droppet). Rekkefølge:
 - **Hva:** 16 nye funksjoner valgt av Marius, alle nøkkelvalg avgjort i
   fire spørsmålsrunder. Fire versjoner: liga-pakka → /innsikt →
   spiller-pakka → planleggingspakka.
-- **Eier detaljene:** `docs/plan-idepakken-v16-v19.md` (beslutningsfasit).
-  Hver versjon får egen detaljplan-økt (T-tasks, TDD) før bygging.
+- **Eier detaljene:** `docs/arkiv/plan-idepakken-v16-v19.md` (beslutningsfasit,
+  arkivert 2. sep). Hver versjon fikk egen detaljplan (T-tasks, TDD).
 - **Status:** v1.6.0 **ute i prod 28. aug** (merget, tagget `v1.6.0`,
   509/509; detaljplan arkivert: `docs/arkiv/plan-liga-v160.md`).
   **v1.7.0 UTE I PROD 31. aug kl. 16:46** (merget `--no-ff`, tagget
@@ -153,10 +150,13 @@ stedet for den AI-kostende promptendringen (droppet). Rekkefølge:
   /spillere» UTE I PROD 1. sep** (merget `--no-ff` `35258a7`, tagget
   `v1.8.1`, **613/613** + lint 0 før og etter merge, røyktest med tomme
   nøkler grønn — 0 AI-kall; detaljplan arkivert:
-  `docs/arkiv/plan-spillere-redesign-v181.md`). **Neste: v1.9.0
-  «Planleggingspakka»** (trenger egen detaljplan-økt).
-- **Blokkert av:** ingenting — v1.9.0 trenger en detaljplan-økt først.
-- **Størrelse:** stor (fire releaser).
+  `docs/arkiv/plan-spillere-redesign-v181.md`). **v1.9.0
+  «Planleggingspakka» UTE I PROD 2. sep** (merget `--no-ff`, tagget
+  `v1.9.0`, **691/691** + lint 0, røyktest med tomme nøkler grønn — 0
+  AI-kall; detaljene i `docs/plan-sluttpakka-v183-v1120.md`). **Idépakken
+  er dermed ferdig levert.**
+- **Blokkert av:** —
+- **Størrelse:** stor (fire releaser) — **utført**.
 
 ## Dokumentkart — hvor alt bor
 
@@ -171,7 +171,7 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 | `docs/arkiv/plan-v130-ui-overhaul.md` | godkjent plan for v1.3.0–v1.3.3 (UI-overhaling), utføres etappevis |
 | `docs/sjekkpunkt-d-kostnad.md` | metode + skript for P4-målingen |
 | `docs/arkiv/plan-sluttspurt.md` | utført plan: robusthetsreleasene, portene og docs-ryddingen |
-| `docs/plan-idepakken-v16-v19.md` | beslutningsfasit for idépakken v1.7.0–v1.9.0 |
+| `docs/arkiv/plan-idepakken-v16-v19.md` | beslutningsfasit for idépakken v1.7.0–v1.9.0 (utført, arkivert 2. sep) |
 | `docs/plan-sluttpakka-v183-v1120.md` | godkjent plan for v1.8.3–v1.12.0 (T-tasks, testnavn, 9-punkts fasit) — arkiveres når alt er ute |
 | `docs/arkiv/plan-spillere-redesign-v181.md` | utført detaljplan for v1.8.1 (redesign av /spillere, T1–T12) |
 | `docs/arkiv/plan-innsikt-v170.md` | utført detaljplan for v1.7.0 «/innsikt» (T1–T10) |

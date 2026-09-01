@@ -21,13 +21,14 @@ Mobil (390 px): [dashbord](docs/img/dashbord-mobil.png) ·
 |---|---|---|
 | `/` | Deadline-nedtelling, ukens flagg, toppform, mest kjøpt/solgt, FDR-matrise | ✅ |
 | `/spillere` | Full spillertabell med sortering, filtrering og søk | ✅ |
-| `/lag` | Mitt lag, kaptein- og transferanbefalinger | ✅ |
+| `/lag` | Mitt lag, kaptein- og transferanbefalinger, chip-planlegger | ✅ |
 | `/liga` | Miniliga-tabeller og differensial-analyse | ✅ |
 | `/live` | Live-poeng under pågående gameweek | ✅ |
-| `/brief` | Gameweek-brief (data + valgfri AI) | ✅ |
+| `/brief` | Gameweek-brief (data + valgfri AI) + «Lagsjekk» før deadline | ✅ |
 | `/nyheter` | FPL-nyheter fra RSS + valgfri AI-oppsummering | ✅ |
 | `/api/brief.json` | Briefen som JSON | ✅ |
 | `/api/live.json` | Live-data som JSON (polles kun under kamper) | ✅ |
+| `/kalender.ics` | Kalenderabonnement (webcal): alle deadlines med varsel + troppens kamper | ✅ |
 | `POST /api/ai-rad` | AI-råd for laget ditt (krever `ANTHROPIC_API_KEY`) | ✅ |
 | `/health` | `{"status":"ok"}` for helsesjekk | ✅ |
 

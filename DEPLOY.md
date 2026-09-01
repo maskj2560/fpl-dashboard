@@ -125,6 +125,11 @@ i containeren `/app/data`) så en redeploy i kvarteret etter sendetidspunktet
 ikke re-poster briefen til Discord. Uten volum tømmes fila ved hver deploy,
 og appen oppfører seg som før v1.3.7 — den krasjer aldri.
 
+Samme volum rommer i dag også `report-state.json` (rundens rapport, v1.6.0),
+`scenarios.json` (hva hvis-planleggeren, v1.5.0) og `check-state.json`
+(Lagsjekk-markøren, v1.9.0 — settes uansett funn, så en redeploy rett etter
+sjekken aldri dobbel-poster).
+
 Oppsett i Coolify (én gang): **Storages → Add → destination path**
 `/app/data`. Satt opp 26. aug 2026 — navngitt volum
 `liq9mdauin1nj74631t37aaz-fpl-data` (Coolify prefikser med app-UUID).
