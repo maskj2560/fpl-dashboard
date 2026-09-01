@@ -5,6 +5,58 @@
 > sjekkpunkt-tabellen, versjonshistorikken, utdaterte åpne punkter og hele
 > loggen over brukerbeskjeder til og med økt 22. Nyere logg: HANDOVER.md.
 
+## Rotert 2026-09-01 (økt 53): v1.8.1-statusblokka + loggposter økt 50–51 (verbatim fra HANDOVER.md)
+
+- **v1.8.1 «Redesign av /spillere» MERGET TIL MAIN 1. sep (økt 50).**
+  Bygget på `fix/spillere-redesign-v181` (11 commits T1–T11, TDD med rød
+  før grønn i hver task, CHANGELOG-linje i hver), release-commit
+  `102b6de`, merget `--no-ff` (`35258a7`), tagget `v1.8.1`, pushet.
+  **613/613 + lint 0 på branch OG merget main** (baseline 602/602);
+  `style.test.js` og `routes.test.js` urørt og grønne.
+  CHANGELOG-rekkefølgen kontrollert (1.8.1 → 1.8.0 → 1.7.1).
+  Innhold: faner (Modul 12), lavmælte `.navn-lenke`-navn, statusbadge kun
+  ved avvik, zebra + «Duell»-etikett, snudd knappehierarki i duell-linja,
+  én desimal + `andel` fra `players.js`, segmentbryter + søylestripe,
+  **terskelvelger-JS-en som manglet i v1.8.0 (Modul 11)**, dødballkort,
+  duell-hoder med drakter, strammere spillerkort, kortere ingress. Ny
+  token `--row-alt` i begge temablokker.
+  **Røyktest 1. sep med tomme nøkler** (`ai:false, discord:false`):
+  `/spillere` 200 (919 KB rå / **44,7 KB gzip**), `/api/spiller/411` 200
+  mot ekte FPL-data, `abc` 400, `999999` 404, `/finnesikke` 404, **0
+  «AI-kall:»-linjer**. Rendret side: 3 faneknapper, 20 dødballkort, 772
+  navnelenker, ekte `--andel`-verdier, INGEN `status-a`-badge (kun d/i/s/u).
+  **Sju tekniske planavvik** (bl.a. zebra scopet til `#players-table`,
+  `.duell-panel` i stedet for kort-i-kort, `.modal .shirt` med fast
+  høyde): se avsnittet «planavvikene i v1.8.1» lenger ned i denne fila.
+- **v1.7.1 og v1.7.0 ute i prod 1. sep/31. aug; v1.3.8–v1.6.0 ute
+  28. aug** — alle detaljer og prod-bevis lenger ned i denne fila.
+- Asset-hash-historikk: v1.8.0 `7a3c28b8`, v1.8.1 `51d1bbb4`, økt 51-fiksen
+  `3eef00bb`, v1.8.2 `257cfce2`.
+- 2026-09-01 (økt 50, Opus, utførelse): mandat = bygg v1.8.1 etter den
+  godkjente detaljplanen, TDD strengt, STOPP etter sluttkontrollen i T12 —
+  ingen merge, tag eller push. Handling: verifiserte baseline 602/602 +
+  lint 0 på main, branch `fix/spillere-redesign-v181`, T1–T11 i rekkefølge
+  med rød før grønn i hver task, 11 conventional commits med
+  CHANGELOG-linje i hver, røyktest med tomme nøkler (0 AI-kall), docs
+  ajour. Sluttstatus **613/613 + lint 0**. Sju tekniske planavvik
+  dokumentert i statusen over. Stoppet før merge, som avtalt. Deretter:
+  «Klar push» — sjekket deploy-vinduet FØRST (tirsdag 04:56, ingen kamper,
+  ikke torsdag 19–21), release-commit på branchen (versjon 1.8.1,
+  CHANGELOG `[1.8.1]`, VIDERE.md), merget `--no-ff`, verifiserte 613/613 +
+  lint 0 og CHANGELOG-rekkefølgen på merget main, tagget `v1.8.1`,
+  arkiverte planfila, regnet ny asset-hash, én push.
+- 2026-09-01 (økt 51, Opus): skjermbilde av benkesløsingen på /innsikt +
+  «Kan du fikse opp i UIen her?». Funn: `table.data th` (spesifisitet
+  0-1-2) slår `.num` (0-1-0), så tallhodene sto til venstre mens tallene
+  sto til høyre — «6» leste som «Unngåelig tap» og «−1» som «Chip». Fikset
+  globalt med `table.data th.num`. Ellers: `.data--fit` på de to smale
+  tabellene, sumraden skjules ved én runde og har egen skillestrek, «–» i
+  tom chip-celle, luft mellom `.hint` og tabell/stripe, 78ch tak på ingress
+  og hint. To nye style-tester. **615/615 + lint 0**, CHANGELOG under
+  `[Unreleased]` (ingen versjonsbump). Så: «Push til main» — deploy-vinduet
+  sjekket FØRST (tirsdag 16:08, GW2, 0 kamper i gang), `2080cb7` + docs
+  pushet, ny asset-hash `3eef00bb`.
+
 ## Rotert 2026-09-01 (økt 47): loggposter økt 45 (verbatim fra HANDOVER.md)
 
 - 2026-08-31 (økt 45, del 2): «Jeg er ikke hjemme. du kan merge og pushe
