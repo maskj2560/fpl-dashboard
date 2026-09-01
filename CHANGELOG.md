@@ -43,6 +43,11 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   (Kaptein/Visekaptein/Ute/Tvilsom/Uten kamp), klubbmerke og detalj, eller
   «Alt klart»; footer med gratisbytter, aktiv chip og grunnlaget. Ruta
   henter sjekken mykt (feil → kortet skjules, briefen vises). To nye tester.
+- Kalender (grunnlag): `calendar.js` bygger en RFC 5545-kalender — én
+  hendelse per deadline (alle 38, VALARM 3 t før, stabil UID per sesong)
+  og troppens klubbers kamper fra og med neste runde (2 t, FDR i
+  beskrivelsen). CRLF, folding på 75 oktetter (æøå er to byte), UTC med Z,
+  ingen VTIMEZONE. Seks nye tester.
 
 ## [1.8.3] - 2026-09-02
 
