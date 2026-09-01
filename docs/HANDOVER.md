@@ -6,13 +6,14 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-09-01 (økt 48, Opus: v1.8.0 bygget, venter test)
+**Sist oppdatert:** 2026-09-01 (økt 48, Opus: v1.8.0 bygget og merget)
 
 ## Status akkurat nå
-- **v1.8.0 «Spiller-pakka» FERDIG BYGGET 1. sep (økt 48) — IKKE merget.**
-  Branch `feat/spillere-v180`, 9 commits (T1–T9), **602/602 + lint 0**.
-  Bygget nøyaktig etter `docs/plan-spillerpakka-v180.md` med TDD (rød før
-  grønn i T2–T8; T1 var en låsetest som planen forutså ville bestå direkte).
+- **v1.8.0 «Spiller-pakka» MERGET TIL MAIN 1. sep (økt 48).** Bygget på
+  `feat/spillere-v180` (9 commits, T1–T9, TDD), merget `--no-ff`
+  (`ed164c5`), tagget `v1.8.0`, pushet. **602/602 + lint 0 på branch OG
+  merget main**, CHANGELOG-rekkefølgen kontrollert. Marius ga klarsignal
+  uten egen lokal test — mobil-/tastatur-QA gjenstår derfor (køpunkt 1).
   Innhold: `src/services/players.js` (buildPlayerCard, buildDifferentials,
   buildSetPieceTable, assemblePlayerCard), `GET /api/spiller/:id`,
   `elementSummaryAgeSec` i fplClient, /spillere i tre seksjoner med
@@ -28,35 +29,33 @@
   `/api/spiller/abc` 400, `/api/spiller/999999` 404, **0 «AI-kall:»-linjer**.
   Payload /spillere: 528 → 911 KB ukomprimert, men **22,6 → 44,4 KB gzip**
   (compression() aktiv) — mer enn planens anslag ukomprimert, uproblematisk
-  over nett. **Marius tester selv før merge — ingen tag/push uten klarsignal.**
+  over nett. Detaljplan arkivert: `docs/arkiv/plan-spillerpakka-v180.md`.
 - **v1.7.1 «UX-polering» UTE I PROD 1. sep** (`1633969`, tag `v1.7.1`,
   556/556 + lint 0, prod-bevis utenfra grønt). Detaljene og prod-beviset
   er rotert til `docs/arkiv/HANDOVER-historikk.md`.
 - **v1.7.0 «/innsikt» ute i prod 31. aug kl. 16:46** (`a25ac0a`, tag
   `v1.7.0`, 549/549). Prod-beviset er rotert til historikkfila.
-- **v1.3.8, v1.4.0, v1.5.0 og v1.6.0 UTE I PROD 28. aug kl. 14:49** —
-  fire `--no-ff`-merger, tagget, 509/509 + lint 0. Prod-beviset er
-  rotert til `docs/arkiv/HANDOVER-historikk.md`.
+- **v1.3.8, v1.4.0, v1.5.0 og v1.6.0 ute i prod 28. aug kl. 14:49** — fire
+  `--no-ff`-merger, tagget, 509/509 + lint 0. Prod-bevis: historikkfila.
 - **Ekte SIGTERM-bevis mangler.** Deploy-loggen er feil sted; beviset er
   `kill 1` i containerterminalen — de to avslutningslinjene skal stå der.
   Lokalt bevist med `process.emit('SIGINT')`, exit 0.
-- **Asset-hashen i prod er `397624a7` fra 1. sep** (v1.7.1 endret
-  style.css + app.js — hashen byttet fra `f9014751` som ventet). Regn den
-  alltid fra git-blobbene, aldri fra arbeidstreet — se lærdommene.
+- **Asset-hashen i prod skal være `7a3c28b8` etter v1.8.0** (byttet fra
+  `397624a7`; både style.css og app.js endret). Regnet fra git-blobbene på
+  `main`-toppen, aldri fra arbeidstreet — se lærdommene.
   v1.3.7-markørbeviset og P2-detaljene: rotert til historikkfila 31. aug.
 - **Helsesjekken:** alt. a aktiv (Coolifys sjekk AV, Dockerfilens gjelder).
   Se lærdommene under for hva den IKKE fanger.
 - **Kostnad: måleuka er DROPPET** (Marius 28. aug) — han følger forbruket
   løpende i `console.anthropic.com`; tersklene og skriptet i
   `docs/sjekkpunkt-d-kostnad.md` brukes ved behov. Taktbudsjett
-  **~49–53 AI-kall/uke** (v1.7.0 legger til 0). Siste måling 23. aug:
+  **~49–53 AI-kall/uke** (v1.7.0 og v1.8.0 legger til 0). Siste måling 23. aug:
   $0,94/uke.
-- **Git akkurat nå:** aktiv branch `feat/spillere-v180` (9 commits, ikke
-  pushet). Lokal `main` ligger **1 commit foran `origin/main`** (docs-
-  commiten fra økt 47) — den må pushes sammen med merge-en. `origin` har
-  KUN `main`, taggene t.o.m. `v1.7.1` er pushet. **Rest:** 12 gamle,
-  merget lokale brancher fra økt ≤ 35 (navnene i historikkfila) — ryddes
-  med `git branch -d` når som helst.
+- **Git akkurat nå:** `main` = `origin/main`; `origin` har KUN `main`,
+  taggene t.o.m. `v1.8.0` er pushet. `feat/spillere-v180` er slettet
+  lokalt (ble aldri pushet). **Rest:** 12 gamle, merget lokale brancher
+  fra økt ≤ 35 (navnene i historikkfila) — ryddes med `git branch -d`
+  når som helst.
 - Eldre status og alle detaljer: `docs/arkiv/HANDOVER-historikk.md`.
 
 ## Neste steg (start her)
@@ -64,17 +63,18 @@
 Køen i `ROADMAP.md` er den langsiktige prioriteringen. Punkt 1–2 kan bare
 Marius gjøre.
 
-1. `[Marius]` **Mobil-QA på ekte telefon** (P2-resten) — `/overganger`,
-   `/liga` og nå `/innsikt` på 390 px, i begge temaer. **Nav har nå 9
-   punkter** — sjekk at scrollnavet med kantfade (v1.1.2) holder.
-2. `[Marius]` **`kill 1` i containerterminalen** → de to avslutningslinjene
+1. `[Marius]` **QA av v1.8.0 i prod** — den gikk ut uten lokal test.
+   Spillerkortet (klikk, Esc, ×, backdrop, at fokus går tilbake til navnet),
+   duellen (to valgte, tredje hake avvises, filtrering fjerner haken,
+   sortering beholder valget) og terskelbytte 5/10/15. Meld fra ved funn —
+   det blir en `fix:` på neste patchnummer.
+2. `[Marius]` **Mobil-QA på ekte telefon** (P2-resten) — `/overganger`,
+   `/liga`, `/innsikt` og nå `/spillere` (checkbox-kolonne + modal + duell)
+   på 390 px, i begge temaer. **Nav har 9 punkter** — sjekk at scrollnavet
+   med kantfade (v1.1.2) holder.
+3. `[Marius]` **`kill 1` i containerterminalen** → de to avslutningslinjene
    («SIGTERM mottatt — lukker serveren», «Serveren lukket ryddig») er det
    siste beviset for v1.3.5.
-3. `[Marius]` **Test v1.8.0 lokalt** (`npm run dev` på
-   `feat/spillere-v180`): modal (klikk, Esc, fokus tilbake), duell (to
-   valgte, filtrering fjerner haken), terskelbytte 5/10/15, 390 px i BEGGE
-   temaer. Deretter klarsignal → merge `--no-ff`, tag `v1.8.0`, push,
-   arkiver detaljplanen til `docs/arkiv/`.
 4. **P3 ved første ekte transfer:** feltnavnene i
    `entry/5330646/transfers/` (`element_in`, `element_out`, `event`,
    `time`, `event_transfers_cost`) mot ekte API. Marius bytter ikke i GW2
@@ -167,7 +167,7 @@ Marius gjøre.
   element-summary KUN lazy per klikk; duell fra data-attrs (pris lavest,
   dødball satt-slår-null, ellers høyest, likhet umarkert); global
   eierandel med terskel 5/10/15 % (default 10); alle tre dødball-roller.
-  Full fasit: `docs/plan-spillerpakka-v180.md` §Beslutningsfasit.
+  Full fasit: `docs/arkiv/plan-spillerpakka-v180.md` §Beslutningsfasit.
 
 ## Miljø
 
@@ -186,6 +186,10 @@ Marius gjøre.
   med rød→grønn i hver task, 9 conventional commits, CHANGELOG i hver
   commit, røyktest med tomme nøkler, docs ajour. Sluttstatus 602/602 +
   lint 0. To planavvik dokumentert i statusen over. Stoppet før merge.
+  Deretter: «push og merge til main» — merget `--no-ff` (`ed164c5`),
+  verifiserte 602/602 + lint 0 og CHANGELOG-rekkefølgen på merget main,
+  tagget `v1.8.0`, arkiverte detaljplanen, pushet. Marius testet IKKE
+  lokalt først, så prod-QA av modal/duell er lagt inn som køpunkt 1.
 - 2026-09-01 (økt 47, Fable, planøkt): mandat = detaljplan v1.8.0, ingen
   kode. Handling: målte FPL-API-et (bootstrap 109 felter, element-summary-
   strukturen), fire AskUserQuestion-runder — Marius valgte anbefalingen i

@@ -5,7 +5,7 @@
 
 **Sist oppdatert:** 1. september 2026
 
-## Klar til test: v1.8.0 «Spiller-pakka» — ikke ute i drift ennå
+## Nytt: v1.8.0 «Spiller-pakka» — i drift siden 1. september
 
 Fire nye ting på **Spillere**-siden, som nå er delt i tre seksjoner med
 snarveier øverst (Tabell · Differensialer · Dødballtakere):
@@ -27,9 +27,10 @@ snarveier øverst (Tabell · Differensialer · Dødballtakere):
 
 Hele pakka bruker **ingen AI** og koster dermed ingenting å bruke.
 
-**Status:** bygget 1. september på branchen `feat/spillere-v180`, 602 tester
-grønne. Den er **ikke** merget eller lagt ut ennå — du skal prøve den lokalt
-først (`npm run dev`), så merger vi når du sier fra.
+**Ute på https://fpl.marsk.no siden 1. september**, 602 tester grønne. Den
+gikk ut uten at du testet lokalt først, så gi den en runde i nettleseren:
+spillerkortet (åpne, lukke med Esc), duellen (kryss av to) og
+terskelbyttet. Finner du noe rart, fikser vi det som en liten oppdatering.
 
 ## Før det: v1.7.0 «Innsikt» — i drift siden 31. august
 

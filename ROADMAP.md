@@ -36,8 +36,8 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.6.0**~~ | ~~«Liga-pakka»: rival-radar, ligagraf, kaptein-liga, roast-rapport~~ | **utført 28. aug — ute i prod** | — |
 | ~~**v1.7.0**~~ | ~~«/innsikt»: benkesløsing, kapteinsfasit, flaksbarometer, rundens XI~~ | **utført 31. aug — ute i prod kl. 16:46, 549/549** | — |
 | ~~**v1.7.1**~~ | ~~UX-polering: 12 småfiks fra funksjonsgjennomgang~~ | **utført 1. sep — ute i prod, 556/556** | — |
-| ~~**v1.8.0**~~ | ~~«Spiller-pakka»: spillerkort, duell, differensialer, straffer~~ | **bygget 1. sep — 602/602 på `feat/spillere-v180`, venter Marius' test før merge** | — |
-| **v1.9.0** | «Planleggingspakka»: chip-planlegger, deadline-sjekk, kalender-feed | 5 | v1.8.0 |
+| ~~**v1.8.0**~~ | ~~«Spiller-pakka»: spillerkort, duell, differensialer, straffer~~ | **utført 1. sep — ute i prod, 602/602** | — |
+| **v1.9.0** | «Planleggingspakka»: chip-planlegger, deadline-sjekk, kalender-feed | 5 | — |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
 Kalenderlogikk: utviklingssporet (v1.3.0 → v1.3.1+) går uavbrutt;
@@ -127,12 +127,12 @@ stedet for den AI-kostende promptendringen (droppet). Rekkefølge:
   **v1.7.0 UTE I PROD 31. aug kl. 16:46** (merget `--no-ff`, tagget
   `v1.7.0`, **549/549** + lint 0 før og etter, prod-sveip grønt, 0
   AI-kall; detaljplan arkivert: `docs/arkiv/plan-innsikt-v170.md`).
-  **v1.8.0 «Spiller-pakka» BYGGET 1. sep (økt 48)** på branch
-  `feat/spillere-v180`: T1–T9 med TDD, **602/602** + lint 0, røyktest med
-  tomme nøkler grønn (0 AI-kall). IKKE merget — Marius tester selv først.
-  Detaljplan: `docs/plan-spillerpakka-v180.md` (arkiveres ved merge).
-  v1.9.0 planlegges etter det.
-- **Blokkert av:** v1.8.0 venter på Marius' test + klarsignal for merge.
+  **v1.8.0 «Spiller-pakka» UTE I PROD 1. sep** (merget `--no-ff`, tagget
+  `v1.8.0`, **602/602** + lint 0 før og etter merge, røyktest med tomme
+  nøkler grønn — 0 AI-kall; detaljplan arkivert:
+  `docs/arkiv/plan-spillerpakka-v180.md`). **Neste: v1.9.0
+  «Planleggingspakka»** — trenger egen detaljplan-økt først.
+- **Blokkert av:** ingenting — v1.9.0 er klar for detaljplan-økt.
 - **Størrelse:** stor (fire releaser).
 
 ## Dokumentkart — hvor alt bor
