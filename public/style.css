@@ -2004,3 +2004,27 @@ body.modal-apen {
 #players-table td {
   padding: 0.4rem 0.6rem;
 }
+
+/* Lavmælt sekundærknapp — samme klikkflate som .btn-accent, ingen fyll. */
+.btn-quiet {
+  display: inline-block;
+  background: none;
+  border: 0;
+  padding: 0.5rem 1rem;
+  font: inherit;
+  color: var(--text-dim);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-quiet:hover,
+.btn-quiet:focus-visible {
+  color: var(--text);
+  text-decoration: underline;
+}
+
+/* Delt .btn-accent-blokk bruker «wait» — riktig for AI-knappen, feil her:
+   duell-knappen venter ikke, den mangler to valgte spillere. */
+.duell-bar .btn-accent:disabled {
+  cursor: not-allowed;
+}

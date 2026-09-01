@@ -19,6 +19,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   og checkbox-kolonnen har en synlig «Duell»-overskrift i stedet for tekst
   kun for skjermlesere. Stripene teller bare synlige rader, så rytmen holder
   når filtrene brukes.
+- «Spillere»: knappehierarkiet i duell-linja er snudd. «Sammenlign» er nå
+  primærknappen (grønn, deaktivert til to spillere er valgt), «Tøm valg» er
+  en lavmælt tekstknapp.
 
 ### Planlagt
 

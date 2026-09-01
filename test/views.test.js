@@ -394,8 +394,9 @@ test('players.ejs viser statusbadge kun ved avvik — «Klar» er stille', async
 test('players.ejs har duell-skallet og en tom duell-seksjon', async () => {
   const html = await renderView('players', fx.players);
   assert.match(html, /id="duell-teller"[^>]*>0 av 2 valgt</);
-  assert.match(html, /id="duell-start"[^>]*disabled/);
-  assert.match(html, /id="duell-tom"/);
+  assert.match(html, /class="btn-accent"[^>]*id="duell-start"[^>]*disabled/, 'Sammenlign er primærknappen');
+  assert.match(html, /class="btn-quiet"[^>]*id="duell-tom"/, 'Tøm valg skal være lavmælt');
+  assert.doesNotMatch(html, /class="btn-link"[^>]*id="duell-tom"/);
   assert.match(html, /<section class="card" id="duell" hidden>/);
 });
 
