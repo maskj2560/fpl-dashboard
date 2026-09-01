@@ -60,7 +60,9 @@ Marius gjøre.
    sammen med filtrene (annenhver stripe på SYNLIGE rader),
    segmentbryteren 5/10/15 (skal nå faktisk bytte tabell), søylestripa,
    dødballkortene, duellen med drakter og spillerkortet. Kontroller også
-   at `?v=51d1bbb4` står i HTML-en (ny CSS/JS er faktisk ute).
+   at `?v=3eef00bb` står i HTML-en (ny CSS/JS er faktisk ute). Sjekk samtidig
+   tallkolonnene på /innsikt, /liga, /live og /overganger: hodene flyttet seg
+   i økt 51 (24 stk `th.num` er nå høyrestilt).
 1. `[Marius]` **QA av v1.8.0-funksjonene** — spillerkortet (klikk, Esc, ×,
    backdrop, fokus tilbake til navnet) og duellen (to valgte, tredje hake
    avvises, filtrering fjerner haken, sortering beholder valget).
@@ -187,14 +189,12 @@ Marius gjøre.
   «Kan du fikse opp i UIen her?». Funn: `table.data th` (spesifisitet
   0-1-2) slår `.num` (0-1-0), så tallhodene sto til venstre mens tallene
   sto til høyre — «6» leste som «Unngåelig tap» og «−1» som «Chip». Fikset
-  globalt med `table.data th.num`. I tillegg: `.data--fit` på de to smale
-  tabellene på /innsikt, sumraden skjules ved én runde og har fått egen
-  skillestrek, «–» i tom chip-celle, luft mellom `.hint` og tabell/stripe,
-  78ch tak på ingress og hint, kortere benke-forklaring. To nye
-  style-tester. **615/615 + lint 0.** CHANGELOG under `[Unreleased]`.
-  Så: «Push til main» — deploy-vinduet sjekket FØRST (tirsdag 16:08, GW2,
-  0 pågående kamper, ikke torsdag 19–21), commit `2080cb7` + docs-commit
-  pushet til main. Ingen versjonsbump: fiksen ligger uutgitt under
-  `[Unreleased]`. Ny asset-hash `3eef00bb`.
+  globalt med `table.data th.num`. Ellers: `.data--fit` på de to smale
+  tabellene, sumraden skjules ved én runde og har egen skillestrek, «–» i
+  tom chip-celle, luft mellom `.hint` og tabell/stripe, 78ch tak på ingress
+  og hint. To nye style-tester. **615/615 + lint 0**, CHANGELOG under
+  `[Unreleased]` (ingen versjonsbump). Så: «Push til main» — deploy-vinduet
+  sjekket FØRST (tirsdag 16:08, GW2, 0 kamper i gang), `2080cb7` + docs
+  pushet, ny asset-hash `3eef00bb`.
 - Loggposter fra økt 22–49: rotert til
   `docs/arkiv/HANDOVER-historikk.md` (200-linjerstaket, sist 2026-09-01).
