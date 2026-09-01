@@ -143,6 +143,13 @@ test('style.css: score-søyla er en tynn stripe, ikke et fylt felt', () => {
   assert.match(b, /background-position: left bottom/);
 });
 
+// QA-funn (økt 51): trendpila dyttet plassifferet til venstre for «#».
+test('style.css: plassifferet reserverer plass til trendpila', () => {
+  assert.match(css, /table\.data th\.rang,\s*table\.data td\.rang \{\s*padding-right: 2rem;/);
+  assert.match(css, /\ntable\.data td\.rang \{\s*position: relative;/);
+  assert.match(css, /td\.rang \.rank-same \{[\s\S]{0,80}position: absolute/);
+});
+
 test('style.css: smale tabeller krymper til innholdet', () => {
   assert.match(block('table.data.data--fit'), /width: auto/);
   assert.match(block('table.data.data--fit'), /min-width: min\(100%, 30rem\)/);

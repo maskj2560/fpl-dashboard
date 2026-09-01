@@ -1433,6 +1433,25 @@ table.sortable th[aria-sort='ascending']::after {
   box-shadow: inset 3px 0 0 var(--accent-2);
 }
 
+/* Plassifferet skal stå under «#», ikke trendpila. Cellen er høyrestilt, så
+   pila dyttet tallet til venstre for hodet (QA-funn, økt 51). Pila får en
+   fast plass ytterst, og hodet reserverer nøyaktig den samme plassen. */
+table.data th.rang,
+table.data td.rang {
+  padding-right: 2rem;
+}
+
+table.data td.rang {
+  position: relative;
+}
+
+td.rang .rank-up,
+td.rang .rank-down,
+td.rang .rank-same {
+  position: absolute;
+  right: 0.6rem;
+}
+
 .rank-up {
   color: var(--accent-text);
 }

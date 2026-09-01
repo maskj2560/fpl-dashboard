@@ -473,6 +473,14 @@ test('league.ejs viser retningsmarkører med skjermlesertekst', async () => {
   assert.match(html, /class="rank-down" aria-label="ned 1 plass">▼/);
 });
 
+// QA-funn (økt 51): «#» sto over trendpila fordi hele cellen er høyrestilt.
+// Hode og celle deler klassen som reserverer plass til pila.
+test('league.ejs gir plassifferet og hodet samme rang-klasse', async () => {
+  const html = await renderView('league', fx.league);
+  assert.match(html, /<th class="num rang">#<\/th>/);
+  assert.match(html, /<td class="num rang">/);
+});
+
 test('league.ejs viser nøytral markør uten historikk', async () => {
   const html = await renderView('league', fx.league);
   assert.match(html, /class="rank-same" aria-label="uendret plassering">–/);

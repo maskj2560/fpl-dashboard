@@ -9,6 +9,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Fixed
 
+- «Liga»: kolonnehodet «#» sto over trendpila i stedet for over plassifferet,
+  fordi hele cellen er høyrestilt. Pila har nå en fast plass ytterst, og
+  hodet reserverer den samme plassen.
 - «Spillere»: søylestripa bak score-tallet i differensialtabellen fylte hele
   cellehøyden og leste som et fargefelt. Nå er den en tynn søyle langs
   bunnen av cellen.
