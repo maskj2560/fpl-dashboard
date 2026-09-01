@@ -71,6 +71,15 @@ test('calendar.js, chips.js og deadline.js importerer aldri ai.js', () => {
   }
 });
 
+// v1.10.0: prisvarslene koster 0 AI-kall, og Discord-sendingen blir i notify.js.
+test('prices.js importerer aldri ai.js og bruker postToDiscord fra notify.js', () => {
+  const code = readService('prices.js');
+  assert.ok(!/from '\.\/ai\.js'/.test(code), 'prices.js skal ikke importere ai.js');
+  assert.ok(!/\bai\.generate\(/.test(code), 'prices.js skal aldri generere AI-tekst');
+  assert.match(code, /import \{ postToDiscord \} from '\.\/notify\.js'/, 'Discord-sendingen skal lånes fra notify.js');
+  assert.ok(!/discordWebhookUrl,\s*\{/.test(code) && !/fetch\(config\.discordWebhookUrl/.test(code), 'ingen egen webhook-fetch');
+});
+
 test('kalender-ruta svarer med text/calendar, no-store og inline filnavn', async () => {
   const { createCalendarHandler } = await import('../src/routes/calendar.js');
   const events = [{ id: 1, name: 'Gameweek 1', deadline_time: '2026-08-14T17:30:00Z' }];

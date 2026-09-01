@@ -26,6 +26,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   sammen (første `from`, siste `to`, netto null faller bort) uten ny
   melding. Uten webhook: snapshot + kort, aldri post. `postToDiscord`
   eksporteres fra `notify.js` (Discord blir der). Fem nye tester.
+- Prisvarsler (kort): «Prisendringer natt til …» øverst på `/overganger`
+  når det finnes en rapport — troppen din (eller «Ingen endringer i troppen
+  din.»), så topp 5 opp og ned med klubbmerke, pris før/etter og delta.
+  Ruta leser kun `getLastPriceChanges()` (0 FPL-kall, 0 AI-kall).
+  Kildelås: `prices.js` importerer aldri `ai.js` og låner Discord-sendingen
+  fra `notify.js`. Tre nye tester.
 
 ## [1.9.0] - 2026-09-02
 
