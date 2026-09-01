@@ -25,6 +25,7 @@ import briefRouter from './routes/brief.js';
 import apiRouter from './routes/api.js';
 import liveRouter from './routes/live.js';
 import newsRouter from './routes/news.js';
+import { createCalendarHandler } from './routes/calendar.js';
 import { startScheduler } from './services/notify.js';
 import { startAiRefresher } from './services/refresh.js';
 
@@ -110,6 +111,8 @@ app.use('/brief', briefRouter);
 app.use('/api', apiRouter);
 app.use('/live', liveRouter);
 app.use('/nyheter', newsRouter);
+// Kalenderabonnement (v1.9.0): webcal://<host>/kalender.ics — ren tekst, aldri cachet.
+app.get('/kalender.ics', createCalendarHandler({ version }));
 
 app.use((req, res) => {
   res.status(404).renderPage('404', { title: 'Ikke funnet' });

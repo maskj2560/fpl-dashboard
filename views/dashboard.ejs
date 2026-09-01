@@ -10,6 +10,9 @@
       <div class="unit"><span class="val" data-unit="m">–</span><span class="lbl">min</span></div>
       <div class="unit"><span class="val" data-unit="s">–</span><span class="lbl">sek</span></div>
     </div>
+    <% if (typeof calendarUrl !== 'undefined' && calendarUrl) { %>
+      <p class="hero-links"><a href="<%= calendarUrl %>">Abonner på kalender</a> <span class="hero-links-hint">— alle deadlines og troppens kamper, eller lim inn <code><%= calendarUrl %></code> i kalenderappen</span></p>
+    <% } %>
   </section>
 <% } else { %>
   <section class="hero">

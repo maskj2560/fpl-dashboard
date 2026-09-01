@@ -12,6 +12,9 @@
   <% if (brief.gameweek) { %>
     <p class="dim"><span class="gw-badge"><%= brief.gameweek.name %></span> · Deadline <strong><%= brief.gameweek.deadlineFormatted %></strong></p>
   <% } %>
+  <% if (typeof calendarUrl !== 'undefined' && calendarUrl) { %>
+    <p class="hero-links"><a href="<%= calendarUrl %>">Abonner på kalender</a> <span class="hero-links-hint">— alle deadlines og troppens kamper, eller lim inn <code><%= calendarUrl %></code> i kalenderappen</span></p>
+  <% } %>
 </section>
 
 <% if (typeof deadlineCheck !== 'undefined' && deadlineCheck) {

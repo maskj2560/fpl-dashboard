@@ -37,6 +37,7 @@ const shared = {
 export const dashboard = {
   ...shared,
   deadlineEvent: { name: 'Runde 1', deadline_time: '2026-08-21T17:30:00Z' },
+  calendarUrl: 'webcal://fpl.marsk.no/kalender.ics',
   flagged: [player(1, 'Saka', { status: 'i', news: 'Knee injury - 25% chance of playing', chance_of_playing_next_round: 25 })],
   inForm: [player(2, 'Salah', { team: 2 })],
   boughtMost: [player(3, 'Haaland')],
@@ -342,6 +343,7 @@ export const brief = {
   aiBrief: { text: '### Kort oppsummert\n- **Salah** er kapteinsvalget\n', generatedAt: Date.parse('2026-08-19T10:00:00Z') },
   deadlineCheck,
   CHIP_LABELS,
+  calendarUrl: 'webcal://fpl.marsk.no/kalender.ics',
 };
 
 // Uten nøkkel og uten FPL_TEAM_ID: ingen AI-brief, ingen personlige anbefalinger.

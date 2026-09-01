@@ -289,6 +289,17 @@ test('news.ejs blokkerer lenker som ikke er http(s)', async () => {
   assert.ok(html.includes('href="#"'), 'forventet at usikker lenke ble byttet til #');
 });
 
+test('dashboard.ejs og brief.ejs viser kalenderlenken med webcal-adresse', async () => {
+  for (const [name, locals] of [['dashboard', fx.dashboard], ['brief', fx.brief]]) {
+    const html = await renderView(name, locals);
+    assert.ok(html.includes('href="webcal://fpl.marsk.no/kalender.ics"'), `${name}: webcal-lenken mangler`);
+    assert.ok(html.includes('Abonner på kalender'), `${name}: lenketeksten mangler`);
+    assert.ok(html.includes('webcal://fpl.marsk.no/kalender.ics</code>'), `${name}: adressen til å lime inn mangler`);
+  }
+  const none = await renderView('dashboard', fx.dashboardEmpty ?? { ...fx.dashboard, deadlineEvent: null, calendarUrl: null });
+  assert.ok(!none.includes('Abonner på kalender'), 'kalenderlenken vises uten calendarUrl');
+});
+
 test('brief.ejs viser Lagsjekk med funn, grunnlag og gratisbytter', async () => {
   const html = await renderView('brief', fx.brief);
   assert.ok(html.includes('id="lagsjekk"'), 'Lagsjekk-kortet mangler');

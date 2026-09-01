@@ -62,6 +62,41 @@ test('spiller-pakka importerer aldri ai.js', () => {
   }
 });
 
+// v1.9.0: planleggingspakka (chip-planlegger, Lagsjekk, kalender) koster 0 AI-kall.
+test('calendar.js, chips.js og deadline.js importerer aldri ai.js', () => {
+  const sources = [read('calendar.js'), readService('calendar.js'), readService('chips.js'), readService('deadline.js')];
+  for (const code of sources) {
+    assert.ok(!/from '\.\.?\/(services\/)?ai\.js'/.test(code), 'planleggingspakka skal ikke importere ai.js');
+    assert.ok(!/\bai\.generate\(/.test(code), 'planleggingspakka skal aldri generere AI-tekst');
+  }
+});
+
+test('kalender-ruta svarer med text/calendar, no-store og inline filnavn', async () => {
+  const { createCalendarHandler } = await import('../src/routes/calendar.js');
+  const events = [{ id: 1, name: 'Gameweek 1', deadline_time: '2026-08-14T17:30:00Z' }];
+  const teams = [{ id: 1, name: 'Arsenal', short_name: 'ARS' }];
+  const handler = createCalendarHandler({
+    load: async () => ({ events, fixtures: [], teams, squadTeamIds: [], fromGw: 1 }),
+    now: () => Date.UTC(2026, 8, 1, 12),
+  });
+  const headers = {};
+  let body = null;
+  const res = { set(h) { Object.assign(headers, h); return this; }, send(b) { body = b; } };
+  const req = { get: (name) => (name === 'host' ? 'fpl.marsk.no' : undefined), app: { locals: { version: '1.9.0' } } };
+  await handler(req, res, (err) => assert.fail(`next ble kalt: ${err?.message}`));
+  assert.equal(headers['Content-Type'], 'text/calendar; charset=utf-8');
+  assert.equal(headers['Cache-Control'], 'no-store');
+  assert.equal(headers['Content-Disposition'], 'inline; filename="fpl-dashboard.ics"');
+  assert.ok(body.startsWith('BEGIN:VCALENDAR\r\n'), 'kroppen er ikke en kalender');
+  assert.ok(body.includes('PRODID:-//FPL-dashboard//v1.9.0//NB\r\n'), 'versjonen mangler i PRODID');
+  assert.ok(body.includes('URL:https://fpl.marsk.no/brief\r\n'), 'URL bruker ikke forespørselens host');
+
+  const failing = createCalendarHandler({ load: async () => { throw new Error('FPL nede'); } });
+  let passed = null;
+  await failing(req, res, (err) => { passed = err; });
+  assert.equal(passed?.message, 'FPL nede', 'feil skal gå til next(err)');
+});
+
 test('kun api.js når element-summary — aldri /spillere-sidevisningen', () => {
   for (const file of routeFiles) {
     if (file === 'api.js') continue;

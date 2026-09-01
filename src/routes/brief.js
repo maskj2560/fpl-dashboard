@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { assembleBrief, getCachedAiBrief } from '../services/brief.js';
 import { assembleDeadlineCheck } from '../services/deadline.js';
 import { CHIP_LABELS } from '../services/chips.js';
+import { calendarUrlFor } from './calendar.js';
 
 const router = Router();
 
@@ -21,7 +22,14 @@ router.get('/', async (req, res, next) => {
     // Kun cachen: siden skal aldri vente på en Claude-rundtur. Er teksten
     // ikke generert ennå, viser viewet data-briefen (den dokumenterte
     // fallbacken), og refresh.js genererer den på neste tikk.
-    res.renderPage('brief', { title: 'Rundebrief', brief, aiBrief: getCachedAiBrief(brief), deadlineCheck, CHIP_LABELS });
+    res.renderPage('brief', {
+      title: 'Rundebrief',
+      brief,
+      aiBrief: getCachedAiBrief(brief),
+      deadlineCheck,
+      CHIP_LABELS,
+      calendarUrl: calendarUrlFor(req),
+    });
   } catch (err) {
     next(err);
   }

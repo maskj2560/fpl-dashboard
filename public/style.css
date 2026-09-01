@@ -476,6 +476,26 @@ footer {
   color: var(--hero-dim);
 }
 
+/* Kalenderabonnement (v1.9.0): lenke under nedtellingen på / og i sidehodet på /brief */
+.hero-links {
+  margin: var(--space-4) 0 0;
+  font-size: var(--fs-sm);
+}
+
+.hero-links-hint {
+  color: var(--text-dim);
+}
+
+.hero .hero-links-hint {
+  color: var(--hero-dim);
+}
+
+.hero-links code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: var(--fs-xs);
+  word-break: break-all;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;

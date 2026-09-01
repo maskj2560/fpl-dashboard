@@ -48,6 +48,11 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   og troppens klubbers kamper fra og med neste runde (2 t, FDR i
   beskrivelsen). CRLF, folding på 75 oktetter (æøå er to byte), UTC med Z,
   ingen VTIMEZONE. Seks nye tester.
+- Kalender (rute og lenker): `GET /kalender.ics` (`text/calendar`, no-store,
+  inline filnavn; feil går til feilhandleren) og «Abonner på kalender» med
+  webcal-adressen under nedtellingen på `/` og i sidehodet på `/brief`.
+  Kildelås: `calendar.js`, `chips.js` og `deadline.js` importerer aldri
+  `ai.js`. Tre nye tester.
 
 ## [1.8.3] - 2026-09-02
 
