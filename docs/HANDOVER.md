@@ -196,5 +196,14 @@ sjekkliste og ferdige kjøreprompter: `docs/oppgaveliste.md` (økt 51).
   `[Unreleased]` (ingen versjonsbump). Så: «Push til main» — deploy-vinduet
   sjekket FØRST (tirsdag 16:08, GW2, 0 kamper i gang), `2080cb7` + docs
   pushet, ny asset-hash `3eef00bb`.
-- Loggposter fra økt 22–49: rotert til
+- 2026-09-01 (økt 52, Fable): «Runderapporten skal ha mer detaljert prompt,
+  bruke eksempler fra lagene mer, kan være lenger. Kom med forslag og
+  spør.» Valg via spørsmål: alle fire datapunkter (benk, chips+hits,
+  toppscorer per lag, differensial/flopp), ~300 ord, alle lag nevnes,
+  samme tone. Handling: buildReportData utvidet (teams/differentials/
+  flops — picks+live som alt hentes, 0 nye kall), buildLeagueReportPrompt
+  med tre nye seksjoner + regler 250–320 ord og «hvert lag minst én gang»,
+  maxTokens 3000. chipLabel flyttet insights.js → league-insights.js
+  (unngå sirkulær import). TDD: 5 røde tester før grønn. **626/626 +
+  lint 0.**
   `docs/arkiv/HANDOVER-historikk.md` (200-linjerstaket, sist 2026-09-01).

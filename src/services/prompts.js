@@ -372,6 +372,34 @@ export function buildLeagueReportPrompt(data) {
       ),
     );
   }
+  if (data.teams?.length > 0) {
+    parts.push(
+      '',
+      'Lagdetaljer (chip, bytter, hit = poengstraff, benkepoeng, rundens beste spiller):',
+      ...data.teams.map((t) => {
+        const bits = [];
+        if (t.chip) bits.push(`chip ${t.chip}`);
+        bits.push(`${t.transfers} bytter${t.hit > 0 ? ` (hit -${t.hit})` : ''}`);
+        bits.push(`${t.bench} p på benken`);
+        if (t.topScorer) bits.push(`beste: ${t.topScorer.name} ${t.topScorer.points} p`);
+        return `- ${t.entryName}: ${bits.join(', ')}`;
+      }),
+    );
+  }
+  if (data.differentials?.length > 0) {
+    parts.push(
+      '',
+      'Differensialer (spillere kun ett lag eide):',
+      ...data.differentials.map((d) => `- ${d.name} (${d.entryName}): ${d.points} p`),
+    );
+  }
+  if (data.flops?.length > 0) {
+    parts.push(
+      '',
+      'Flopper (bredt eid i ligaen, få poeng):',
+      ...data.flops.map((f) => `- ${f.name}: ${f.points} p — eid av ${f.owners} lag`),
+    );
+  }
   if (data.mine) {
     const cap = data.mine.captain
       ? ` Kaptein: ${data.mine.captain.name} med ${data.mine.captain.points} p (tapte ${data.mine.captain.lost} mot optimal).`
@@ -389,7 +417,9 @@ export function buildLeagueReportPrompt(data) {
     'REGLER:',
     '- Bruk kun tall og navn som står i grunnlaget over. Finn aldri på tall, kamper eller hendelser.',
     '- Manager- og lagnavn skrives nøyaktig som de står.',
-    '- Maks ~180 ord, norsk, 2–4 korte avsnitt. Ingen innledning, ingen overskrifter, ingen punktlister.',
+    '- Sikt på 250–320 ord, norsk, 4–6 korte avsnitt. Ingen innledning, ingen overskrifter, ingen punktlister.',
+    '- Nevn hvert lag i ligaen minst én gang med et konkret tall- eller spillereksempel fra grunnlaget.',
+    '- Trekk fram de beste historiene: poeng som råtnet på benken, bortkastede chips, hits som ikke betalte seg, differensialer som banket.',
     '- Spillernavn i **fet**.',
     '- Skriv «runde», aldri «gameweek».',
   );

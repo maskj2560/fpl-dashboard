@@ -130,6 +130,32 @@ test('style.css: tallkolonnens hode står til høyre, som tallene', () => {
   assert.match(block('.num'), /text-align: right/);
 });
 
+// QA-funn (økt 51): filterraden ble stående på alle fanene på /spillere.
+// `hidden` er en UA-regel og taper mot enhver display-regel med klasse.
+test('style.css: hidden slår gjennom mot display-reglene', () => {
+  assert.match(css, /\[hidden\]\s*\{\s*display: none !important;/);
+});
+
+// QA-funn (økt 51): fylte hele cellehøyden og leste som et fargefelt.
+test('style.css: score-søyla er en tynn stripe, ikke et fylt felt', () => {
+  const b = block('.score-celle');
+  assert.match(b, /background-size: 100% 0\.3rem/);
+  assert.match(b, /background-position: left bottom/);
+});
+
+// QA-funn (økt 51): trendpila dyttet plassifferet til venstre for «#».
+test('style.css: plassifferet reserverer plass til trendpila', () => {
+  assert.match(css, /table\.data th\.rang,\s*table\.data td\.rang \{\s*padding-right: 2rem;/);
+  assert.match(css, /\ntable\.data td\.rang \{\s*position: relative;/);
+  assert.match(css, /td\.rang \.rank-same \{[\s\S]{0,80}position: absolute/);
+});
+
+// QA-funn (økt 51): duell-tabellen var 492 px i et 335 px kort på 390 px,
+// så spiller 2 måtte dras fram sidelengs.
+test('style.css: duellen deler bredden på mobil i stedet for å scrolle', () => {
+  assert.match(css, /\.duell-panel table\.data \{\s*width: 100%;\s*table-layout: fixed;\s*white-space: normal;/);
+});
+
 test('style.css: smale tabeller krymper til innholdet', () => {
   assert.match(block('table.data.data--fit'), /width: auto/);
   assert.match(block('table.data.data--fit'), /min-width: min\(100%, 30rem\)/);

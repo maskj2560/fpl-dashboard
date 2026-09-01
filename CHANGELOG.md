@@ -7,8 +7,34 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.8.2] - 2026-09-01
+
+### Changed
+
+- «Rundens rapport»: rikere grunnlag og lengre tekst. Rapporten får nå
+  lagdetaljer per manager (benkepoeng, chip, bytter/hit, rundens beste
+  spiller), differensialer (aleneeid spiller ≥ 8 p) og flopper (bredt eid,
+  ≤ 2 p) — alt fra picks + live som allerede hentes, 0 nye FPL-kall.
+  Prompten ber om 250–320 ord (før ~180) og at hvert lag nevnes med et
+  konkret eksempel; `max_tokens` 2000 → 3000. Samme tone som før.
+
 ### Fixed
 
+- «Spillere»: en tredje avkryssing i duellen ble avvist uten et eneste
+  synlig tegn. Når to spillere er valgt, låses de øvrige boksene i stedet.
+- «Spillere»: duellen var bredere enn kortet på mobil, så spiller 2 lå
+  utenfor og måtte dras fram sidelengs. På smale skjermer deler de tre
+  kolonnene bredden i stedet, og duell-hodet stables.
+- «Liga»: kolonnehodet «#» sto over trendpila i stedet for over plassifferet,
+  fordi hele cellen er høyrestilt. Pila har nå en fast plass ytterst, og
+  hodet reserverer den samme plassen.
+- «Spillere»: søylestripa bak score-tallet i differensialtabellen fylte hele
+  cellehøyden og leste som et fargefelt. Nå er den en tynn søyle langs
+  bunnen av cellen.
+- «Spillere»: filterraden ble stående på alle tre fanene og filtrerte bare
+  tabellen — et søk viste «Viser 1 av 629 spillere» over en ufiltrert
+  differensialtabell. `hidden` taper mot enhver `display`-regel med klasse;
+  nå slår `hidden` gjennom overalt.
 - Tabellhoder over tallkolonner sto til venstre mens tallene sto til høyre,
   så verdien så ut til å høre til nabokolonnen (tydeligst i benkesløsingen
   på «Innsikt», der «6» havnet under «Unngåelig tap» og «−1» under «Chip»).

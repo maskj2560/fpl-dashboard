@@ -5,7 +5,24 @@
 
 **Sist oppdatert:** 1. september 2026
 
-## Nytt: v1.8.1 — Spillere-siden er ryddet opp (1. september)
+## Nytt: v1.8.2 — QA-fikser og fyldigere runderapport (1. september)
+
+Fem feil funnet i en prod-gjennomgang med Claude for Chrome er fikset, og
+«Rundens rapport» i Discord/på Liga-siden er blitt mye fyldigere:
+
+- **Rapporten bruker lagene dine.** Den får nå benkepoeng, chip, bytter/hits
+  og rundens beste spiller for hvert lag i miniligaen, pluss differensialer
+  (spillere bare ett lag eide som banket) og flopper (bredt eid, få poeng).
+  Den sikter på 250–320 ord (før ~180) og skal nevne hvert lag minst én
+  gang. Alt bygges av data som allerede hentes — null ekstra FPL-kall.
+- **Filterraden på Spillere** vises kun på Tabell-fanen, ikke på alle tre.
+- **Score-søyla** i differensialtabellen er en tynn stripe, ikke et fargefelt.
+- **«#» på Liga** står rett over plassifferet, ikke over trendpila.
+- **Duellen på mobil** deler bredden i stedet for å stikke utenfor kortet.
+- **Tredje avkryssing i duellen**: de ledige boksene låses synlig når to
+  spillere er valgt, i stedet for at klikket bare forsvinner.
+
+## Før det: v1.8.1 — Spillere-siden er ryddet opp (1. september)
 
 Ingen nye funksjoner, men siden ser ferdig ut nå. Det viktigste:
 

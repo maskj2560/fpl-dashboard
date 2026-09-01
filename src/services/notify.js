@@ -237,7 +237,7 @@ async function composeReport(event) {
     minIntervalMs: 7 * 24 * 60 * 60_000,
     system: 'Du er en vittig norsk Fantasy Premier League-kommentator. Roast med glimt i øyet — aldri ondsinnet.',
     prompt: buildLeagueReportPrompt(data),
-    maxTokens: 2000,
+    maxTokens: 3000,
   });
   if (generated?.text) return { text: generated.text, source: 'ai' };
   return { text: dataReportText(data), source: 'data' };

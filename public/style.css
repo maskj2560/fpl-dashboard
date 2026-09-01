@@ -176,6 +176,15 @@
   box-sizing: border-box;
 }
 
+/* `hidden` er nettleserens egen UA-regel og har null spesifisitet — enhver
+   `display`-regel med en klasse slår den. Filterraden på /spillere ble
+   derfor stående på alle tre fanene (`.filters { display: flex }`).
+   Én regel her lukker hele feilklassen, i stedet for én `[hidden]`-variant
+   per komponent. */
+[hidden] {
+  display: none !important;
+}
+
 body {
   margin: 0;
   background: var(--bg);
@@ -1424,6 +1433,25 @@ table.sortable th[aria-sort='ascending']::after {
   box-shadow: inset 3px 0 0 var(--accent-2);
 }
 
+/* Plassifferet skal stå under «#», ikke trendpila. Cellen er høyrestilt, så
+   pila dyttet tallet til venstre for hodet (QA-funn, økt 51). Pila får en
+   fast plass ytterst, og hodet reserverer nøyaktig den samme plassen. */
+table.data th.rang,
+table.data td.rang {
+  padding-right: 2rem;
+}
+
+table.data td.rang {
+  position: relative;
+}
+
+td.rang .rank-up,
+td.rang .rank-down,
+td.rang .rank-same {
+  position: absolute;
+  right: 0.6rem;
+}
+
 .rank-up {
   color: var(--accent-text);
 }
@@ -2104,10 +2132,21 @@ body.modal-apen {
   cursor: not-allowed;
 }
 
-/* Score-cellen i differensialtabellen: diskret søylestripe bak tallet.
-   --andel settes inline av viewet (andel av toppscoren i den tabellen). */
+/* Låst boks når duellen allerede har to spillere — markøren sier det samme
+   som den nedtonede boksen. */
+.duell-velg:disabled {
+  cursor: not-allowed;
+}
+
+/* Score-cellen i differensialtabellen: en tynn søyle langs bunnen av cellen.
+   --andel settes inline av viewet (andel av toppscoren i den tabellen).
+   Full cellehøyde ble lest som et fargefelt, ikke som en måling (QA-funn,
+   økt 51) — derfor 0.3rem og --accent-text, som holder 3:1 i begge temaer. */
 .score-celle {
-  background: linear-gradient(90deg, var(--accent-soft) var(--andel, 0%), transparent var(--andel, 0%)) no-repeat;
+  background-image: linear-gradient(90deg, var(--accent-text) var(--andel, 0%), transparent var(--andel, 0%));
+  background-repeat: no-repeat;
+  background-size: 100% 0.3rem;
+  background-position: left bottom;
 }
 
 /* Fanene paa /spillere: én seksjon om gangen i stedet for ett langt dokument. */
@@ -2265,4 +2304,23 @@ body.modal-apen {
 
 #tabell .duell-bar {
   margin-bottom: var(--space-4);
+}/* Duellen på mobil: tabellen var bredere enn kortet, så spiller 2 lå
+   utenfor og måtte dras fram sidelengs (QA-funn, økt 51). Fast
+   tabellbredde med ombrekking lar de tre kolonnene dele plassen. */
+@media (max-width: 640px) {
+  .duell-panel table.data {
+    width: 100%;
+    table-layout: fixed;
+    white-space: normal;
+  }
+
+  .duell-panel .duell-hode {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .duell-panel .duell-hode-navn {
+    font-size: var(--fs-base);
+  }
 }

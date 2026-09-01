@@ -182,8 +182,11 @@ ubrukte tokens koster ingenting. Lengden styres av instruksjonene i prompten.
    (0 bytter = 0 kall). Ruta leser kun cachen.
 6. **Rundens rapport** (/liga + Discord, fra v1.6.0): roast-rapport om
    miniligaen etter hver ferdigspilte runde (`finished && data_checked`).
-   Genereres av `notify.js` på 6 t-tikket, `max_tokens` 2000, maks 1 kall
+   Genereres av `notify.js` på 6 t-tikket, `max_tokens` 3000, maks 1 kall
    per runde (event-nøkkel + 7-døgnsintervall + persistert markør).
+   Grunnlaget (buildReportData) har også lagdetaljer per manager
+   (benk, chip, bytter/hit, toppscorer) + differensialer/flopper — bygget
+   av picks + live som uansett hentes, 0 ekstra FPL-kall.
    Datafallback uten nøkkel. Ruta leser kun `getLeagueReport()`.
 
 Ved feil eller tomt svar venter `ai.js` 5 minutter før nytt forsøk på samme
