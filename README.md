@@ -58,6 +58,7 @@ npm run lint           # ESLint
 | `AI_MODEL` | nei (`claude-sonnet-5`) | Claude-modell. Billig-alternativ: `claude-haiku-4-5` |
 | `DISCORD_WEBHOOK_URL` | nei | Aktiverer auto-brief før deadline |
 | `BRIEF_HOURS_BEFORE_DEADLINE` | nei (24) | Timer før deadline auto-briefen sendes |
+| `DEADLINE_CHECK_HOURS_BEFORE` | nei (3) | Timer før deadline «Lagsjekk» kjøres — Discord-melding kun ved funn (skadet/suspendert starter, flagget kaptein, spiller uten kamp) |
 | `TZ` | nei (`Europe/Oslo`) | Tidssone for visning |
 
 Appen starter og viser `/` uten noen av disse satt.

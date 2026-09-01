@@ -31,6 +31,13 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   tvilsom ≤ 50 %, flagget kaptein/vise, starter uten kamp; footer med
   gratisbytter fra FT-regnskapet og aktiv chip) og `deadlineCheckText`
   (Discord-teksten). Åtte nye tester.
+- Lagsjekk (timer): `notify.js` kjører `assembleDeadlineCheck`
+  `DEADLINE_CHECK_HOURS_BEFORE` timer (default 3) før deadline på samme
+  6 t-tikk som auto-briefen, og poster til Discord KUN ved funn. Markøren
+  lagres uansett i `DATA_DIR/check-state.json` (ren tropp re-sjekkes ikke,
+  redeploy dobbel-poster aldri); sen omstart sjekker fortsatt, men aldri
+  de siste 15 min før deadline (`sendDecision` fikk valgfri `maxLateMs`).
+  Ny env-variabel i `.env.example` og README. Fire nye tester.
 
 ## [1.8.3] - 2026-09-02
 
