@@ -289,6 +289,39 @@ test('news.ejs blokkerer lenker som ikke er http(s)', async () => {
   assert.ok(html.includes('href="#"'), 'forventet at usikker lenke ble byttet til #');
 });
 
+test('dashboard.ejs og brief.ejs viser kalenderlenken med webcal-adresse', async () => {
+  for (const [name, locals] of [['dashboard', fx.dashboard], ['brief', fx.brief]]) {
+    const html = await renderView(name, locals);
+    assert.ok(html.includes('href="webcal://fpl.marsk.no/kalender.ics"'), `${name}: webcal-lenken mangler`);
+    assert.ok(html.includes('Abonner på kalender'), `${name}: lenketeksten mangler`);
+    assert.ok(html.includes('webcal://fpl.marsk.no/kalender.ics</code>'), `${name}: adressen til å lime inn mangler`);
+  }
+  const none = await renderView('dashboard', fx.dashboardEmpty ?? { ...fx.dashboard, deadlineEvent: null, calendarUrl: null });
+  assert.ok(!none.includes('Abonner på kalender'), 'kalenderlenken vises uten calendarUrl');
+});
+
+test('brief.ejs viser Lagsjekk med funn, grunnlag og gratisbytter', async () => {
+  const html = await renderView('brief', fx.brief);
+  assert.ok(html.includes('id="lagsjekk"'), 'Lagsjekk-kortet mangler');
+  assert.ok(html.includes('Kaptein'), 'kapteinsfunnet mangler etiketten');
+  assert.ok(html.includes('Saka'), 'kapteinsfunnet mangler spilleren');
+  assert.ok(html.includes('Skadet — Kneskade'), 'detaljen mangler');
+  assert.ok(html.includes('Uten kamp'), 'blank-funnet mangler etiketten');
+  assert.ok(html.includes('har ingen kamp i runden'), 'blank-detaljen mangler');
+  assert.ok(html.includes('Gratisbytter igjen: 1'), 'footer mangler gratisbytter');
+  assert.ok(html.includes('laget fra runde 1 + byttene dine for runde 2'), 'grunnlaget mangler');
+  assert.ok(!html.includes('Alt klart'), 'viste «Alt klart» tross funn');
+});
+
+test('brief.ejs viser «Alt klart» uten funn og skjuler kortet uten sjekk', async () => {
+  const clean = await renderView('brief', { ...fx.brief, deadlineCheck: fx.deadlineCheckClean });
+  assert.ok(clean.includes('Alt klart'), '«Alt klart» mangler');
+  assert.ok(clean.includes('Wildcard'), 'aktiv chip mangler i footer');
+  assert.ok(!clean.includes('lagsjekk-liste'), 'funnliste rendret uten funn');
+  const none = await renderView('brief', fx.briefEmpty);
+  assert.ok(!none.includes('id="lagsjekk"'), 'kortet vises uten deadlineCheck');
+});
+
 test('brief.ejs escaper AI-tekst men beholder **fet**', async () => {
   const html = await renderView('brief', {
     ...fx.brief,
@@ -721,6 +754,33 @@ test('innsikt.ejs rendrer trendlinjen bare når den finnes', async () => {
   assert.ok(med.includes('Dine i rundens XI per runde'), 'trenden mangler');
   assert.ok(!uten.includes('Dine i rundens XI per runde'), 'trenden vises uten data');
   assert.ok(uten.includes('Rundens XI'), 'resten av seksjonen skal stå');
+});
+
+// ---- v1.9.0: chip-planlegger på /lag ----------------------------------------------
+
+test('team.ejs viser chip-planleggeren med brukt/tilgjengelig', async () => {
+  const html = await renderView('team', fx.team);
+  assert.ok(html.includes('id="chip-planlegger"'), 'kortet mangler');
+  assert.ok(html.includes('Chip-planlegger'), 'overskriften mangler');
+  for (const label of ['Bench Boost', 'Triple Captain', 'Free Hit', 'Wildcard']) {
+    assert.ok(html.includes(label), `${label} mangler`);
+  }
+  assert.ok(html.includes('Brukt i runde 1'), 'brukt chip skal vises som pille');
+  assert.ok(html.includes('Runde 5'), 'anbefalt runde mangler');
+  assert.ok(html.includes('Ingen blankrunde rammer troppen bredt nok'), 'begrunnelse uten anbefaling mangler');
+  assert.ok(html.includes('Runde 5 (ARS, CHE)'), 'dobbelrunden mangler');
+  assert.ok(html.includes('Runde 6 (LIV, EVE)'), 'blankrunden mangler');
+  assert.ok(html.includes('runde 20–38'), 'andre halvdel mangler');
+
+  const tom = await renderView('team', fx.teamEmpty);
+  assert.ok(!tom.includes('Chip-planlegger'), 'uten plan skal kortet ikke rendres');
+});
+
+test('team.ejs forklarer når ingen spesialrunder er kjent', async () => {
+  const html = await renderView('team', fx.teamNoSpecial);
+  assert.ok(html.includes('Ingen dobbel- eller blankrunder er kjent ennå'), 'forklaringen mangler');
+  assert.ok(html.includes('Bench Boost'), 'anbefalingene skal stå likevel');
+  assert.ok(!html.includes('Dobbelrunder:'), 'tom liste skal ikke rendres');
 });
 
 // ---- v1.8.3: CSP -------------------------------------------------------------

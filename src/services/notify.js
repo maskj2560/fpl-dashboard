@@ -7,6 +7,7 @@ import config from '../config.js';
 import { getBootstrap } from './fplClient.js';
 import { nextEvent } from './analysis.js';
 import { assembleBrief, generateAiBrief } from './brief.js';
+import { assembleDeadlineCheck, deadlineCheckText } from './deadline.js';
 import * as ai from './ai.js';
 import { buildLeagueReportPrompt } from './prompts.js';
 import { assembleLeagueReportData } from './league-insights.js';
@@ -28,6 +29,13 @@ let sending = false;
 // overlever redeploy og rapporten aldri dobbel-postes.
 let reportState = null;
 let reporting = false;
+
+// «Lagsjekk» (v1.9.0): X timer før deadline, Discord kun ved funn. Markøren
+// (DATA_DIR/check-state.json) settes uansett funn, så en ren tropp ikke
+// sjekkes på nytt hver 6. time.
+let lastCheckedEvent = null;
+let checkTimer = null;
+let checking = false;
 
 // Markøren overlever redeploy: uten den re-poster en deploy innenfor
 // 15-min-vinduet briefen til Discord (P1-5b). Fila ligger i DATA_DIR (volum
@@ -54,6 +62,30 @@ function persistState(eventId) {
     (hooks.saveState ?? saveState)(eventId);
   } catch (err) {
     console.error('Klarte ikke å lagre brief-markøren:', err.message);
+  }
+}
+
+const checkFile = () => path.join(config.dataDir, 'check-state.json');
+
+function loadCheckState() {
+  try {
+    const raw = JSON.parse(fs.readFileSync(checkFile(), 'utf8'));
+    return Number.isInteger(raw.lastCheckedEvent) ? raw.lastCheckedEvent : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveCheckState(eventId) {
+  fs.mkdirSync(config.dataDir, { recursive: true });
+  fs.writeFileSync(checkFile(), JSON.stringify({ lastCheckedEvent: eventId }));
+}
+
+function persistCheckState(eventId) {
+  try {
+    (hooks.saveCheck ?? saveCheckState)(eventId);
+  } catch (err) {
+    console.error('Klarte ikke å lagre lagsjekk-markøren:', err.message);
   }
 }
 
@@ -97,18 +129,22 @@ export function _initState() {
   if (reportState != null) {
     console.log(`Rapport-markør lastet: runde ${reportState.lastReportedEvent} er alt rapportert`);
   }
+  lastCheckedEvent = (hooks.loadCheck ?? loadCheckState)();
+  if (lastCheckedEvent != null) {
+    console.log(`Lagsjekk-markør lastet: runde ${lastCheckedEvent} er alt sjekket`);
+  }
 }
 
 /**
  * Ren beslutning om auto-brief: vent, planlegg timer, eller hopp over.
  * `lateMs` er hvor lenge siden sendetidspunktet passerte (0 om det er i framtiden).
  */
-export function sendDecision({ deadlineTime, hoursBefore, nowMs, checkIntervalMs }) {
+export function sendDecision({ deadlineTime, hoursBefore, nowMs, checkIntervalMs, maxLateMs = MAX_LATE_MS }) {
   const sendAt = new Date(deadlineTime).getTime() - hoursBefore * 60 * 60_000;
   const delayMs = sendAt - nowMs;
   const lateMs = Math.max(-delayMs, 0);
   if (delayMs > checkIntervalMs) return { action: 'wait', delayMs, lateMs };
-  if (delayMs < -MAX_LATE_MS) return { action: 'skip', delayMs, lateMs };
+  if (delayMs < -maxLateMs) return { action: 'skip', delayMs, lateMs };
   return { action: 'schedule', delayMs: Math.max(delayMs, 0), lateMs };
 }
 
@@ -121,6 +157,7 @@ export function startScheduler() {
   _initState();
   const tick = () => {
     if (briefActive) check();
+    if (briefActive) checkDeadline();
     checkReport();
   };
   tick();
@@ -128,6 +165,7 @@ export function startScheduler() {
   interval.unref?.();
   if (briefActive) {
     console.log(`Auto-brief aktiv: sender ${config.briefHoursBeforeDeadline} t før deadline`);
+    console.log(`Lagsjekk aktiv: sjekker ${config.deadlineCheckHoursBefore} t før deadline, poster kun ved funn`);
   }
   console.log(`Rundens rapport aktiv: ${briefActive ? 'Discord + web' : 'kun web'}`);
 }
@@ -186,6 +224,65 @@ async function send(event) {
     sending = false;
   }
 }
+
+// ---- Lagsjekk (v1.9.0) ----------------------------------------------------
+
+async function checkDeadline() {
+  try {
+    if (checking) return;
+    const { events } = await getBootstrap();
+    const upcoming = nextEvent(events);
+    if (!upcoming || upcoming.id === lastCheckedEvent) return;
+    const hoursBefore = config.deadlineCheckHoursBefore;
+    const d = sendDecision({
+      deadlineTime: upcoming.deadline_time,
+      hoursBefore,
+      nowMs: (hooks.now ?? Date.now)(),
+      checkIntervalMs: CHECK_INTERVAL,
+      // En sen omstart skal fortsatt sjekke — men aldri de siste 15 min før deadline.
+      maxLateMs: Math.max(hoursBefore * 60 - 15, 0) * 60_000,
+    });
+    if (d.action === 'wait') return;
+    if (d.action === 'skip') {
+      lastCheckedEvent = upcoming.id;
+      persistCheckState(upcoming.id);
+      console.log(`Lagsjekk hoppet over for ${upcoming.name}: for nær deadline`);
+      return;
+    }
+    if (d.delayMs === 0) {
+      await sendCheck(upcoming);
+      return;
+    }
+    clearTimeout(checkTimer);
+    checkTimer = setTimeout(() => sendCheck(upcoming), d.delayMs);
+    checkTimer.unref?.();
+  } catch (err) {
+    console.error('Lagsjekk feilet:', err.message);
+  }
+}
+
+async function sendCheck(event) {
+  if (checking || event.id === lastCheckedEvent) return;
+  checking = true;
+  try {
+    const result = await (hooks.checkCompose ?? assembleDeadlineCheck)();
+    if (result && !result.ok) {
+      await (hooks.post ?? postToDiscord)(deadlineCheckText(result, config.deadlineCheckHoursBefore));
+      console.log(`Lagsjekk sendt for ${event.name}: ${result.findings.length} funn`);
+    } else {
+      console.log(`Lagsjekk: alt klart for ${event.name}${result ? '' : ' (intet grunnlag)'}`);
+    }
+    // Markøren settes uansett funn — feiler Discord, prøver neste tikk igjen.
+    lastCheckedEvent = event.id;
+    persistCheckState(event.id);
+  } catch (err) {
+    console.error('Lagsjekk-sending feilet:', err.message);
+  } finally {
+    checking = false;
+  }
+}
+
+export const _checkDeadline = checkDeadline;
 
 // ---- Rundens rapport (v1.6.0) --------------------------------------------
 
@@ -291,6 +388,10 @@ async function composeMessage() {
 // Test-hooks (samme mønster som _setNow i cache.js): lar send-stien kjøres
 // uten nettverk. Aldri satt i produksjon.
 const hooks = {
+  now: null,
+  loadCheck: null,
+  saveCheck: null,
+  checkCompose: null,
   compose: null,
   post: null,
   loadState: null,
@@ -317,6 +418,10 @@ export function _reset() {
   sending = false;
   reportState = null;
   reporting = false;
+  clearTimeout(checkTimer);
+  checkTimer = null;
+  lastCheckedEvent = null;
+  checking = false;
   for (const key of Object.keys(hooks)) hooks[key] = null;
 }
 

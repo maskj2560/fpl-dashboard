@@ -3,6 +3,7 @@
 import { formatDateTime, formatNumber, formatSigned } from '../../src/services/format.js';
 import { formatPrice, POSITIONS, POSITIONS_SHORT, translateFplNews } from '../../src/services/analysis.js';
 import { clubAssetsFrom } from '../../src/services/clubAssets.js';
+import { CHIPS, CHIP_LABELS, describeRec } from '../../src/services/chips.js';
 
 // STATUS_LABELS er definert lokalt i rutene (index.js/players.js), ikke eksportert.
 const STATUS_LABELS = {
@@ -36,6 +37,7 @@ const shared = {
 export const dashboard = {
   ...shared,
   deadlineEvent: { name: 'Runde 1', deadline_time: '2026-08-21T17:30:00Z' },
+  calendarUrl: 'webcal://fpl.marsk.no/kalender.ics',
   flagged: [player(1, 'Saka', { status: 'i', news: 'Knee injury - 25% chance of playing', chance_of_playing_next_round: 25 })],
   inForm: [player(2, 'Salah', { team: 2 })],
   boughtMost: [player(3, 'Haaland')],
@@ -85,6 +87,31 @@ export const team = {
   },
   graph: { points: '0,0 600,140', area: '0,0 600,140 600,140 0,140', min: 400000, max: 500000, last: 500000, gwFirst: 1, gwLast: 2 },
   chips: [],
+  CHIPS, CHIP_LABELS, describeRec,
+  chipPlan: {
+    fromGw: 2,
+    halves: [
+      {
+        half: 1, from: 1, to: 19,
+        chips: {
+          bboost: { used: null, rec: { gw: 5, squadFixtures: 24, avgFdr: 62 / 24, dgwClubs: ['ARS', 'CHE'] }, reason: null },
+          '3xc': {
+            used: null, reason: null,
+            rec: { gw: 5, teamId: 1, teamShort: 'ARS', fixtures: [{ opponent: 'CHE', home: true, difficulty: 2 }, { opponent: 'LIV', home: false, difficulty: 2 }] },
+          },
+          freehit: { used: null, rec: null, reason: 'Ingen blankrunde rammer troppen bredt nok til Free Hit' },
+          wildcard: { used: { event: 1 }, rec: null, reason: 'Brukt i runde 1' },
+        },
+      },
+      {
+        half: 2, from: 20, to: 38,
+        chips: Object.fromEntries(CHIPS.map((n) => [n, { used: null, rec: null, reason: 'Kampprogrammet for halvdelen er ikke kjent ennå' }])),
+      },
+    ],
+    dgw: [{ gw: 5, teams: ['ARS', 'CHE'] }],
+    bgw: [{ gw: 6, teams: ['LIV', 'EVE'] }],
+    noSpecial: false,
+  },
   recommendations: {
     captains: [{ player: player(3, 'Saka'), criterion: 'form', reasons: ['Form 5.5', 'Lett kamp'] }],
     transfers: [{
@@ -101,6 +128,13 @@ export const teamEmpty = {
   squadView: null,
   graph: null,
   recommendations: null,
+  chipPlan: null,
+};
+
+// Kampprogrammet har ingen dobbel-/blankrunder ennå.
+export const teamNoSpecial = {
+  ...team,
+  chipPlan: { ...team.chipPlan, dgw: [], bgw: [], noSpecial: true },
 };
 
 const diffRow = (id, navn, over = {}) => ({
@@ -281,10 +315,35 @@ const briefData = {
   },
 };
 
+// Lagsjekk (v1.9.0): samme form som buildDeadlineCheck gir.
+export const deadlineCheck = {
+  gw: 2,
+  gwName: 'Runde 2',
+  deadline: '2026-08-28T17:30:00Z',
+  basis: 'laget fra runde 1 + byttene dine for runde 2',
+  findings: [
+    { type: 'kaptein', player: { id: 3, name: 'Saka', teamShort: 'ARS', teamCode: 3 }, detail: 'Skadet — Kneskade, ventes tilbake 1. nov.' },
+    { type: 'tvilsom', player: { id: 6, name: 'Isak', teamShort: 'LIV', teamCode: 14 }, detail: 'Usikker — 50 % sjanse for spilletid' },
+    { type: 'blank', player: { id: 9, name: 'Haaland', teamShort: 'MCI', teamCode: 43 }, detail: 'har ingen kamp i runden' },
+  ],
+  footer: { freeTransfers: 1, transfersMade: 1, activeChip: null },
+  ok: false,
+};
+
+export const deadlineCheckClean = {
+  ...deadlineCheck,
+  findings: [],
+  footer: { freeTransfers: 2, transfersMade: 0, activeChip: 'wildcard' },
+  ok: true,
+};
+
 export const brief = {
   clubAssets,
   brief: briefData,
   aiBrief: { text: '### Kort oppsummert\n- **Salah** er kapteinsvalget\n', generatedAt: Date.parse('2026-08-19T10:00:00Z') },
+  deadlineCheck,
+  CHIP_LABELS,
+  calendarUrl: 'webcal://fpl.marsk.no/kalender.ics',
 };
 
 // Uten nøkkel og uten FPL_TEAM_ID: ingen AI-brief, ingen personlige anbefalinger.

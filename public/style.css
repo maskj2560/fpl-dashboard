@@ -235,6 +235,31 @@ a:hover {
   transform: none;
 }
 
+/* ---------- Chip-planlegger (/lag, v1.9.0) ---------- */
+.chip-liste {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.chip-rad {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--border);
+}
+
+.chip-navn {
+  flex: 0 0 8.5rem;
+  font-weight: 600;
+}
+
+.chip-grunn {
+  flex: 1 1 14rem;
+}
+
 /* ---------- Toppmeny ---------- */
 
 /* Topbaren er én linje overalt. På smale skjermer scroller nav-en vannrett
@@ -449,6 +474,26 @@ footer {
 .hero-date {
   margin: 0 0 var(--space-5);
   color: var(--hero-dim);
+}
+
+/* Kalenderabonnement (v1.9.0): lenke under nedtellingen på / og i sidehodet på /brief */
+.hero-links {
+  margin: var(--space-4) 0 0;
+  font-size: var(--fs-sm);
+}
+
+.hero-links-hint {
+  color: var(--text-dim);
+}
+
+.hero .hero-links-hint {
+  color: var(--hero-dim);
+}
+
+.hero-links code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: var(--fs-xs);
+  word-break: break-all;
 }
 
 .sr-only {

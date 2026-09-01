@@ -134,12 +134,34 @@ export function fdrMatrix(teams, fixtures, fromGw, count = 5) {
     gameweeks.push(gw);
   }
 
+  const perTeam = fixtureGrid(teams, fixtures, gameweeks[0], gameweeks[gameweeks.length - 1]);
+
+  const rows = teams.map((team) => {
+    const cells = gameweeks.map((gw) => perTeam.get(team.id).get(gw) ?? []);
+    const difficulties = cells.flat().map((c) => c.difficulty);
+    const avgDifficulty = difficulties.length
+      ? difficulties.reduce((sum, d) => sum + d, 0) / difficulties.length
+      : null;
+    return { team, cells, avgDifficulty };
+  });
+
+  // Lag uten kamper (avg null) nederst; ellers lettest først.
+  rows.sort((a, b) => (a.avgDifficulty ?? 99) - (b.avgDifficulty ?? 99));
+
+  return { gameweeks, rows };
+}
+
+/**
+ * Kampene per lag per runde i [fromGw, toGw]: Map<teamId, Map<gw, [{
+ * opponent, home, difficulty }]>>. Delt av fdrMatrix og chip-planleggeren
+ * (chips.js) — 0 oppslag = blank runde, 2 = dobbel.
+ */
+export function fixtureGrid(teams, fixtures, fromGw, toGw) {
   const teamsById = new Map(teams.map((t) => [t.id, t]));
-  // team-id -> gw -> [kamper]
   const perTeam = new Map(teams.map((t) => [t.id, new Map()]));
 
   for (const f of fixtures) {
-    if (f.event == null || !gameweeks.includes(f.event)) continue;
+    if (f.event == null || f.event < fromGw || f.event > toGw) continue;
     const home = teamsById.get(f.team_h);
     const away = teamsById.get(f.team_a);
     if (!home || !away) continue;
@@ -155,20 +177,7 @@ export function fdrMatrix(teams, fixtures, fromGw, count = 5) {
       difficulty: f.team_a_difficulty,
     });
   }
-
-  const rows = teams.map((team) => {
-    const cells = gameweeks.map((gw) => perTeam.get(team.id).get(gw) ?? []);
-    const difficulties = cells.flat().map((c) => c.difficulty);
-    const avgDifficulty = difficulties.length
-      ? difficulties.reduce((sum, d) => sum + d, 0) / difficulties.length
-      : null;
-    return { team, cells, avgDifficulty };
-  });
-
-  // Lag uten kamper (avg null) nederst; ellers lettest først.
-  rows.sort((a, b) => (a.avgDifficulty ?? 99) - (b.avgDifficulty ?? 99));
-
-  return { gameweeks, rows };
+  return perTeam;
 }
 
 function addFixture(perTeam, teamId, gw, entry) {

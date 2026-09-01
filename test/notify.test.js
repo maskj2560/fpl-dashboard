@@ -8,6 +8,7 @@ import {
   getLeagueReport,
   _send,
   _checkReport,
+  _checkDeadline,
   _setHooks,
   _reset,
   _initState,
@@ -261,6 +262,87 @@ function mockBootstrapFetch(events) {
     globalThis.fetch = originalFetch;
   };
 }
+
+// ---- v1.9.0: deadline-sjekken («Lagsjekk») ------------------------------------
+
+test('sendDecision godtar egen maxLateMs', () => {
+  const sendAt3 = Date.parse(deadline) - 3 * H;
+  const late = sendDecision({ deadlineTime: deadline, hoursBefore: 3, nowMs: sendAt3 + 60 * 60_000, checkIntervalMs: CHECK });
+  assert.equal(late.action, 'skip', 'standard: 15 min er grensen');
+  const tolerant = sendDecision({
+    deadlineTime: deadline, hoursBefore: 3, nowMs: sendAt3 + 60 * 60_000, checkIntervalMs: CHECK, maxLateMs: 2 * H,
+  });
+  assert.equal(tolerant.action, 'schedule');
+  assert.equal(tolerant.delayMs, 0);
+});
+
+const checkEvents = () => [
+  { id: 2, name: 'Gameweek 2', is_current: true, is_next: false, deadline_time: '2026-08-14T17:30:00Z' },
+  { id: 3, name: 'Gameweek 3', is_current: false, is_next: true, deadline_time: deadline },
+];
+const checkAt = Date.parse(deadline) - 3 * H;
+
+async function runCheck({ nowMs, compose, loadCheck = () => null }) {
+  const restoreFetch = mockBootstrapFetch(checkEvents());
+  const posts = [];
+  const saved = [];
+  let composed = 0;
+  _reset();
+  clear();
+  _setHooks({
+    webhook: true,
+    now: () => nowMs,
+    loadCheck,
+    saveCheck: (id) => saved.push(id),
+    checkCompose: async () => { composed += 1; return compose(); },
+    post: async (t) => posts.push(t),
+  });
+  try {
+    _initState();
+    await _checkDeadline();
+    return { posts, saved, composed: () => composed };
+  } finally {
+    _reset();
+    restoreFetch();
+  }
+}
+
+const funn = () => ({
+  gw: 3, gwName: 'Runde 3', deadline, basis: 'laget fra runde 2 + byttene dine for runde 3', ok: false,
+  findings: [{ type: 'ute', player: { id: 1, name: 'Saka', teamShort: 'ARS', teamCode: 3 }, detail: 'Skadet' }],
+  footer: { freeTransfers: 1, transfersMade: 0, activeChip: null },
+});
+const rent = () => ({ ...funn(), ok: true, findings: [] });
+
+test('checkDeadline poster kun ved funn og lagrer markøren uansett', async () => {
+  const med = await runCheck({ nowMs: checkAt + 60_000, compose: funn });
+  assert.equal(med.posts.length, 1);
+  assert.ok(med.posts[0].includes('**Lagsjekk — Runde 3**'), med.posts[0]);
+  assert.ok(med.posts[0].includes('- Saka (ARS) er Skadet'));
+  assert.deepEqual(med.saved, [3]);
+
+  const uten = await runCheck({ nowMs: checkAt + 60_000, compose: rent });
+  assert.equal(uten.posts.length, 0, 'ren tropp skal ikke poste');
+  assert.deepEqual(uten.saved, [3], 'markøren lagres likevel');
+});
+
+test('checkDeadline hopper over runde som alt er sjekket', async () => {
+  const r = await runCheck({ nowMs: checkAt + 60_000, compose: funn, loadCheck: () => 3 });
+  assert.equal(r.composed(), 0, 'grunnlaget skal ikke hentes');
+  assert.equal(r.posts.length, 0);
+  assert.deepEqual(r.saved, []);
+});
+
+test('checkDeadline kjører sent etter omstart men aldri etter deadline − 15 min', async () => {
+  // 2 t etter planlagt tid (1 t før deadline): fortsatt nyttig — kjør.
+  const sen = await runCheck({ nowMs: checkAt + 2 * H, compose: funn });
+  assert.equal(sen.posts.length, 1);
+  // 10 min før deadline: for sent — hopp over, men marker runden.
+  const forSent = await runCheck({ nowMs: Date.parse(deadline) - 10 * 60_000, compose: funn });
+  assert.equal(forSent.composed(), 0);
+  assert.equal(forSent.posts.length, 0);
+  assert.deepEqual(forSent.saved, [3]);
+});
 
 test('checkReport poster en gang og lagrer markor + tekst', async () => {
   const restoreFetch = mockBootstrapFetch(reportEvents());

@@ -76,6 +76,43 @@
   </section>
 <% } %>
 
+<% if (chipPlan) { %>
+  <section class="card card-wide" id="chip-planlegger">
+    <h2>Chip-planlegger</h2>
+    <p class="hint">Regelbasert fra kampprogrammet til klubbene i troppen din — FDR, dobbel- og blankrunder. Ingen AI. Gjelder fra runde <%= chipPlan.fromGw %>; FPL flytter kamper utover sesongen, så vinduene endrer seg.</p>
+    <% if (chipPlan.noSpecial) { %>
+      <p class="dim">Ingen dobbel- eller blankrunder er kjent ennå — FPL flytter kamper utover sesongen.</p>
+    <% } else { %>
+      <p class="dim">
+        <% if (chipPlan.dgw.length) { %>Dobbelrunder: <%= chipPlan.dgw.map((d) => `Runde ${d.gw} (${d.teams.join(', ')})`).join(' · ') %>.<% } %>
+        <% if (chipPlan.bgw.length) { %>Blankrunder: <%= chipPlan.bgw.map((b) => `Runde ${b.gw} (${b.teams.join(', ')})`).join(' · ') %>.<% } %>
+      </p>
+    <% } %>
+    <div class="grid">
+      <% for (const h of chipPlan.halves) { %>
+        <section class="chip-halvdel">
+          <h3 class="sub-head">Halvdel <%= h.half %> <span class="dim">runde <%= h.from %>–<%= h.to %></span></h3>
+          <ul class="chip-liste">
+            <% for (const name of CHIPS) { const c = h.chips[name]; %>
+              <li class="chip-rad">
+                <span class="chip-navn"><%= CHIP_LABELS[name] %></span>
+                <% if (c.used) { %>
+                  <span class="status">Brukt i runde <%= c.used.event %></span>
+                <% } else if (c.rec) { %>
+                  <span class="status status-best">Runde <%= c.rec.gw %><% if (c.rec.until) { %>–<%= c.rec.until %><% } %></span>
+                  <span class="dim chip-grunn"><%= describeRec(name, c.rec) %></span>
+                <% } else { %>
+                  <span class="dim chip-grunn"><%= c.reason %></span>
+                <% } %>
+              </li>
+            <% } %>
+          </ul>
+        </section>
+      <% } %>
+    </div>
+  </section>
+<% } %>
+
 <% if (recommendations) { %>
   <h2 class="sub-head">Anbefalinger for Runde <%= fromGw %></h2>
   <div class="grid grid--start">

@@ -21,13 +21,14 @@ Mobil (390 px): [dashbord](docs/img/dashbord-mobil.png) ·
 |---|---|---|
 | `/` | Deadline-nedtelling, ukens flagg, toppform, mest kjøpt/solgt, FDR-matrise | ✅ |
 | `/spillere` | Full spillertabell med sortering, filtrering og søk | ✅ |
-| `/lag` | Mitt lag, kaptein- og transferanbefalinger | ✅ |
+| `/lag` | Mitt lag, kaptein- og transferanbefalinger, chip-planlegger | ✅ |
 | `/liga` | Miniliga-tabeller og differensial-analyse | ✅ |
 | `/live` | Live-poeng under pågående gameweek | ✅ |
-| `/brief` | Gameweek-brief (data + valgfri AI) | ✅ |
+| `/brief` | Gameweek-brief (data + valgfri AI) + «Lagsjekk» før deadline | ✅ |
 | `/nyheter` | FPL-nyheter fra RSS + valgfri AI-oppsummering | ✅ |
 | `/api/brief.json` | Briefen som JSON | ✅ |
 | `/api/live.json` | Live-data som JSON (polles kun under kamper) | ✅ |
+| `/kalender.ics` | Kalenderabonnement (webcal): alle deadlines med varsel + troppens kamper | ✅ |
 | `POST /api/ai-rad` | AI-råd for laget ditt (krever `ANTHROPIC_API_KEY`) | ✅ |
 | `/health` | `{"status":"ok"}` for helsesjekk | ✅ |
 
@@ -58,6 +59,7 @@ npm run lint           # ESLint
 | `AI_MODEL` | nei (`claude-sonnet-5`) | Claude-modell. Billig-alternativ: `claude-haiku-4-5` |
 | `DISCORD_WEBHOOK_URL` | nei | Aktiverer auto-brief før deadline |
 | `BRIEF_HOURS_BEFORE_DEADLINE` | nei (24) | Timer før deadline auto-briefen sendes |
+| `DEADLINE_CHECK_HOURS_BEFORE` | nei (3) | Timer før deadline «Lagsjekk» kjøres — Discord-melding kun ved funn (skadet/suspendert starter, flagget kaptein, spiller uten kamp) |
 | `TZ` | nei (`Europe/Oslo`) | Tidssone for visning |
 
 Appen starter og viser `/` uten noen av disse satt.

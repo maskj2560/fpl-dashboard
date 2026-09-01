@@ -16,6 +16,7 @@ import {
 } from '../services/analysis.js';
 import { formatDateTime, formatEventName, formatNumber } from '../services/format.js';
 import { getNews } from '../services/news.js';
+import { calendarUrlFor } from './calendar.js';
 
 const router = Router();
 
@@ -38,6 +39,7 @@ router.get('/', async (req, res, next) => {
     res.renderPage('dashboard', {
       title: 'Dashbord',
       deadlineEvent,
+      calendarUrl: calendarUrlFor(req),
       flagged: flaggedPlayers(elements),
       inForm: topForm(elements),
       boughtMost: mostTransferredIn(elements),

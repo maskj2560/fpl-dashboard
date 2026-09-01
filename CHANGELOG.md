@@ -7,6 +7,55 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.9.0] - 2026-09-02
+
+### Added
+
+- Chip-planlegger (grunnlag): `chips.js` med chip-halvdelene fra bootstrap
+  (`start_event`/`stop_event`, fallback 1–19/20–38) og dobbel-/blankrunde-
+  deteksjon; `fixtureGrid` trukket ut av `fdrMatrix` i `analysis.js` og
+  delt. 0 AI-kall.
+- Chip-planlegger (regler): `buildChipPlan` gir per halvdel og chip enten
+  «brukt i runde N» eller en anbefaling med begrunnelse — Bench Boost i
+  runden der troppen har flest og lettest kamper, Triple Captain for
+  klubb × runde med mest samlet «ease» (dobbelrunder teller dobbelt,
+  keeperklubber hoppes over), Free Hit i blankrunden som rammer minst fire
+  i troppen, Wildcard rett etter troppens tyngste tre runder (snitt-FDR
+  ≥ 3,3) med 4–6 lette runder for de beste klubbene. Kun kjente runder
+  vurderes.
+- «Lag» har fått kortet «Chip-planlegger» under rankgrafen: to halvdeler ×
+  fire chips med brukt-pille eller anbefalt runde + begrunnelse
+  (`describeRec`), pluss lista over kjente dobbel- og blankrunder. Bygget
+  av data siden alt hentet — 0 nye FPL-kall, 0 AI-kall.
+- Lagsjekk (grunnlag): `deadline.js` med `applyTransfers` (picks fra
+  forrige runde + byttene for kommende — FPL gir ikke ut nye picks før
+  deadline), `buildDeadlineCheck` (funn: skadet/suspendert/utlånt starter,
+  tvilsom ≤ 50 %, flagget kaptein/vise, starter uten kamp; footer med
+  gratisbytter fra FT-regnskapet og aktiv chip) og `deadlineCheckText`
+  (Discord-teksten). Åtte nye tester.
+- Lagsjekk (timer): `notify.js` kjører `assembleDeadlineCheck`
+  `DEADLINE_CHECK_HOURS_BEFORE` timer (default 3) før deadline på samme
+  6 t-tikk som auto-briefen, og poster til Discord KUN ved funn. Markøren
+  lagres uansett i `DATA_DIR/check-state.json` (ren tropp re-sjekkes ikke,
+  redeploy dobbel-poster aldri); sen omstart sjekker fortsatt, men aldri
+  de siste 15 min før deadline (`sendDecision` fikk valgfri `maxLateMs`).
+  Ny env-variabel i `.env.example` og README. Fire nye tester.
+- Lagsjekk (kort): `/brief` viser kortet «Lagsjekk» under sidehodet — alltid
+  synlig når det finnes en kommende runde og picks: funnliste med etikett
+  (Kaptein/Visekaptein/Ute/Tvilsom/Uten kamp), klubbmerke og detalj, eller
+  «Alt klart»; footer med gratisbytter, aktiv chip og grunnlaget. Ruta
+  henter sjekken mykt (feil → kortet skjules, briefen vises). To nye tester.
+- Kalender (grunnlag): `calendar.js` bygger en RFC 5545-kalender — én
+  hendelse per deadline (alle 38, VALARM 3 t før, stabil UID per sesong)
+  og troppens klubbers kamper fra og med neste runde (2 t, FDR i
+  beskrivelsen). CRLF, folding på 75 oktetter (æøå er to byte), UTC med Z,
+  ingen VTIMEZONE. Seks nye tester.
+- Kalender (rute og lenker): `GET /kalender.ics` (`text/calendar`, no-store,
+  inline filnavn; feil går til feilhandleren) og «Abonner på kalender» med
+  webcal-adressen under nedtellingen på `/` og i sidehodet på `/brief`.
+  Kildelås: `calendar.js`, `chips.js` og `deadline.js` importerer aldri
+  `ai.js`. Tre nye tester.
+
 ## [1.8.3] - 2026-09-02
 
 ### Security

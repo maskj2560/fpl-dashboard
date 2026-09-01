@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { buildChipPlan, describeRec, CHIPS, CHIP_LABELS } from '../services/chips.js';
 import config from '../config.js';
 import { getBootstrap, getFixtures, getEntry, getEntryHistory, getPicks, FplError } from '../services/fplClient.js';
 import {
@@ -49,6 +50,7 @@ router.get('/', async (req, res, next) => {
 
     let squadView = null;
     let recommendations = null;
+    let chipPlan = null;
     if (picks) {
       const squad = resolvePicks(picks.picks, elementsById);
       const starters = squad.filter((s) => s.pick.position <= 11);
@@ -78,6 +80,16 @@ router.get('/', async (req, res, next) => {
           inn: transferInCandidates(o.player, elements, squadIds, bank, fixtures, fromGw),
         })),
       };
+      // Chip-planleggeren (v1.9.0): ren funksjon over data som alt er hentet.
+      chipPlan = buildChipPlan({
+        events,
+        fixtures,
+        teams,
+        squad: squadPlayers,
+        chipsUsed: history.chips ?? [],
+        fromGw,
+        bootstrapChips: bootstrap.chips,
+      });
     }
 
     res.renderPage('team', {
@@ -87,6 +99,10 @@ router.get('/', async (req, res, next) => {
       fromGw,
       squadView,
       recommendations,
+      chipPlan,
+      CHIPS,
+      CHIP_LABELS,
+      describeRec,
       graph: rankGraph(history.current),
       chips: history.chips,
       teamsById,
