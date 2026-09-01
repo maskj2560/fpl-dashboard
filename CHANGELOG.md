@@ -41,6 +41,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   fortsatt klikkbare.
 - «Spillere»: duellen får et hode per spiller med klubbdrakt, navn og klubb,
   så det er tydelig hvem som er hvem i sammenligningen.
+- «Spillere»: spillerkortet har fått ryddigere hierarki — navnet står kun i
+  modaltittelen, drakta er stor (110 px), Form/Poeng/P/K vises som store
+  primærtall over de mindre (Eid %, xG, xA, Minutter), og kamptabellen er
+  strammet inn.
 
 ### Planlagt
 

@@ -40,12 +40,13 @@ const DODBALL_ETIKETTER = [
 
 function playerCardHtml(d, shirtHtml) {
   const e = escapeHtml;
-  const stat = (navn, verdi) =>
-    '<div class="kort-stat"><span class="kort-stat-navn">' + e(navn) +
+  const stat = (navn, verdi, stor) =>
+    '<div class="kort-stat' + (stor ? ' kort-stat--stor' : '') + '"><span class="kort-stat-navn">' + e(navn) +
     '</span><span class="kort-stat-val">' + e(verdi) + '</span></div>';
 
+  // Navnet står i modaltittelen (Modul 9 setter den) — det gjentas ikke her.
   let html = '<div class="kort-topp">' + (shirtHtml || '') +
-    '<div><p class="kort-navn">' + e(d.fulltNavn) + '</p>' +
+    '<div>' +
     '<p class="dim">' + e((d.lag && d.lag.navn) || '–') + ' · ' + e(d.posisjon) +
     ' · £' + e(d.pris) + 'm</p>' +
     '<p><span class="status status-' + e(d.status) + '">' + e(d.statusTekst) + '</span>' +
@@ -53,8 +54,10 @@ function playerCardHtml(d, shirtHtml) {
     '</p>' + (d.nytt ? '<p class="dim">' + e(d.nytt) + '</p>' : '') +
     '</div></div>';
 
-  html += '<div class="kort-stats">' +
-    stat('Form', d.form) + stat('Poeng', d.totalPoeng) + stat('P/K', d.poengPerKamp) +
+  html += '<div class="kort-stats kort-stats--primar">' +
+    stat('Form', d.form, true) + stat('Poeng', d.totalPoeng, true) +
+    stat('P/K', d.poengPerKamp, true) + '</div>' +
+    '<div class="kort-stats">' +
     stat('Eid %', d.eid) + stat('xG', d.xg) + stat('xA', d.xa) +
     stat('Minutter', d.minutter) + '</div>';
 

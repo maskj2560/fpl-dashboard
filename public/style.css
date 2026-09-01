@@ -2176,3 +2176,30 @@ body.modal-apen {
   font-weight: 400;
   color: var(--text-dim);
 }
+
+/* Spillerkortet (v1.8.1): stor drakt, venstrestilt tekstblokk, delt statvekt. */
+.kort-topp > div {
+  flex: 1;
+  min-width: 12rem;
+}
+
+/* Vinner over 480px-krympingen av .shirt (to klasser mot én). */
+.modal .shirt {
+  width: 110px;
+  height: 145px;
+  margin: 0;
+  flex: none;
+}
+
+.kort-stats--primar {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.kort-stat--stor .kort-stat-val {
+  font-size: var(--fs-xl);
+  line-height: 1.2;
+}
+
+.modal table.data td {
+  padding: 0.3rem 0.5rem;
+}

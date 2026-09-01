@@ -251,7 +251,8 @@ test('playerCardHtml escaper navn og nyhetstekst', () => {
   assert.ok(!html.includes('<script>'), 'uescapet script-tag i modalen');
   assert.ok(!html.includes('<b>Ankelskade</b>'), 'uescapet nyhetstekst');
   assert.ok(!html.includes('"><img>'), 'uescapet motstandernavn');
-  assert.ok(html.includes('&lt;script&gt;'));
+  // Navnet eies av modaltittelen (v1.8.1) — nyhetsteksten er escapet her.
+  assert.match(html, /&lt;b&gt;Ankelskade&lt;\/b&gt;/);
   // Drakta kommer fra en server-rendret template og settes inn rå.
   assert.ok(html.includes('<span class="shirt"></span>'));
 });
@@ -290,6 +291,22 @@ test('playerCardHtml lister bare dødballroller som faktisk er satt', () => {
 test('playerCardHtml utelater dødball-seksjonen helt uten roller', () => {
   const html = app.playerCardHtml(kort(), '');
   assert.ok(!html.includes('Dødball'), 'ingen roller → ingen seksjon');
+});
+
+test('playerCardHtml lar modaltittelen eie navnet — ingen dublett i brødteksten', () => {
+  const html = app.playerCardHtml(kort(), '');
+
+  assert.ok(!html.includes('Erling Haaland'), 'navnet står allerede i modaltittelen');
+  assert.doesNotMatch(html, /kort-navn/);
+  assert.match(html, /Man City · Angrep · £14\.1m/, 'linja under drakta består');
+});
+
+test('playerCardHtml vekter Form, Poeng og P/K over de sekundære tallene', () => {
+  const html = app.playerCardHtml(kort(), '');
+
+  assert.equal((html.match(/kort-stat--stor/g) ?? []).length, 3, 'tre primærtall');
+  assert.match(html, /class="kort-stat kort-stat--stor"><span class="kort-stat-navn">Form</);
+  assert.match(html, /class="kort-stat"><span class="kort-stat-navn">Eid %</);
 });
 
 // ---- v1.8.0: spillerduellen ----------------------------------------------
