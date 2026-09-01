@@ -367,3 +367,19 @@ test('duelHtml escaper navn og markerer vinnercellene', () => {
   assert.match(html, /<strong class="accent">5\.5<\/strong>/, 'billigste pris skal markeres');
   assert.ok(!html.includes('<strong class="accent">12.5</strong>'), 'taperen skal ikke markeres');
 });
+
+// ---- v1.8.1: terskelvelgeren paa /spillere --------------------------------
+
+test('terskelSynlighet viser bare den valgte terskelen', () => {
+  assert.deepEqual({ ...app.terskelSynlighet('10') }, { 5: true, 10: false, 15: true });
+  assert.deepEqual({ ...app.terskelSynlighet('5') }, { 5: false, 10: true, 15: true });
+  assert.deepEqual({ ...app.terskelSynlighet('15') }, { 5: true, 10: true, 15: false });
+});
+
+test('terskelSynlighet sammenligner verdi, ikke type — radioverdier er strenger', () => {
+  assert.deepEqual({ ...app.terskelSynlighet(10) }, { 5: true, 10: false, 15: true });
+});
+
+test('terskelSynlighet tar tersklene som finnes i markupen', () => {
+  assert.deepEqual({ ...app.terskelSynlighet('15', [5, 15]) }, { 5: true, 15: false });
+});

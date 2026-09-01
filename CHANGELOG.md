@@ -25,6 +25,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - «Spillere»: FDR 3 og score i differensialtabellen har alltid én desimal
   («3.0», ikke «3»), så kolonnene står rett under hverandre. Sorteringen
   skjer fortsatt på tallet, og FPLs egne tall (form, eid, xG, xA) er urørt.
+- «Spillere»: terskelvelgeren 5/10/15 % under Differensialer virker igjen.
+  I v1.8.0 fantes ingen kode som lyttet på valget, så bare 10 %-tabellen
+  kunne vises. Regelen er nå en ren funksjon og låst med test.
 
 ### Planlagt
 

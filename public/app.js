@@ -1152,3 +1152,30 @@ function rivalNavAction({ search, stored, validIds }) {
 
   oppdater();
 })();
+
+// Terskelvelgeren paa /spillere: hvilke differensialtabeller som skal ligge
+// skjult. Ren funksjon, saa regelen kan testes uten DOM.
+function terskelSynlighet(valgt, terskler = [5, 10, 15]) {
+  const ut = {};
+  for (const t of terskler) ut[t] = String(t) !== String(valgt);
+  return ut;
+}
+
+// Modul 11: terskelvelgeren (/spillere). Tabellene er pre-rendret av serveren
+// og byttes bare ut med hidden — ingen henting, ingen omregning.
+(function () {
+  'use strict';
+
+  const velger = document.querySelector('.terskel-velger');
+  const bokser = Array.from(document.querySelectorAll('[data-terskel]'));
+  if (!velger || bokser.length === 0) return;
+
+  const terskler = bokser.map((b) => Number(b.dataset.terskel));
+
+  velger.addEventListener('change', (e) => {
+    const input = e.target;
+    if (!input || input.name !== 'diff-terskel') return;
+    const skjult = terskelSynlighet(input.value, terskler);
+    for (const boks of bokser) boks.hidden = skjult[Number(boks.dataset.terskel)];
+  });
+})();
