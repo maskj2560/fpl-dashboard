@@ -39,13 +39,30 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.8.0**~~ | ~~«Spiller-pakka»: spillerkort, duell, differensialer, straffer~~ | **utført 1. sep — ute i prod, 602/602** | — |
 | ~~**v1.8.1**~~ | ~~Redesign av /spillere: faner, lavmælte lenker, klubbkort~~ | **utført 1. sep — ute i prod, 613/613** | — |
 | ~~**v1.8.2**~~ | ~~QA-fikser fra prod-gjennomgang + rikere «Rundens rapport»~~ | **utført 1. sep — 626/626** | — |
-| **v1.9.0** | «Planleggingspakka»: chip-planlegger, deadline-sjekk, kalender-feed | 5 | — |
+| **v1.8.3** | «Herding + tilgjengelighet»: CSP m/ nonce, sikkerhetshoder, JSON-tak, takstbegrensning, a11y-pass, branch-rydding | 0 | **i gang (økt 53)** |
+| **v1.9.0** | «Planleggingspakka»: chip-planlegger (/lag), «Lagsjekk» (/brief + Discord), `/kalender.ics` + P3 | 0 | v1.8.3 |
+| **v1.10.0** | «Prisvarsler»: timesnapshot, Discord maks 1/natt, kort på /overganger | 0 | v1.9.0 |
+| **v1.11.0** | «Karriere-pakka»: FPL-karrieren + merkedager (/innsikt), bonuskamp (/live) | 0 | v1.10.0 |
+| **v1.12.0** | «PWA»: manifest, ikoner, service worker, /offline | 0 | v1.11.0 |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
 Kalenderlogikk: utviklingssporet (v1.3.0 → v1.3.1+) går uavbrutt;
 portene fyres når dato/Marius tillater, uten å blokkere sporet.
 
 ## Kø — hva gjøres videre, i rekkefølge
+
+### 0. «Sluttpakka» v1.8.3 → v1.12.0 (besluttet 1. sep, økt 53)
+
+- **Hva:** fem releaser i rekkefølge — herding + tilgjengelighet (v1.8.3),
+  planleggingspakka (v1.9.0), prisvarsler (v1.10.0), karriere-pakka
+  (v1.11.0), PWA (v1.12.0) — pluss repo-rydding, P3 mot en rivals ekte
+  transfers, og til slutt `docs/qa-chrome-prompt.md` for full prod-QA i
+  Claude for Chrome. 0 nye AI-kall, ingen nye avhengigheter.
+- **Eier detaljene:** `docs/plan-sluttpakka-v183-v1120.md` (T-tasks,
+  testnavn, beslutningsfasit med 9 punkter — ikke re-spør).
+- **Blokkert av:** ingenting. AI-økten merger `--no-ff`, tagger og pusher
+  selv per versjon etter deploy-vindu-sjekk (Marius' beslutning).
+- **Størrelse:** stor (fem releaser).
 
 ### 1. (P4) Løpende kostnadskontroll
 
@@ -155,6 +172,7 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 | `docs/sjekkpunkt-d-kostnad.md` | metode + skript for P4-målingen |
 | `docs/arkiv/plan-sluttspurt.md` | utført plan: robusthetsreleasene, portene og docs-ryddingen |
 | `docs/plan-idepakken-v16-v19.md` | beslutningsfasit for idépakken v1.7.0–v1.9.0 |
+| `docs/plan-sluttpakka-v183-v1120.md` | godkjent plan for v1.8.3–v1.12.0 (T-tasks, testnavn, 9-punkts fasit) — arkiveres når alt er ute |
 | `docs/arkiv/plan-spillere-redesign-v181.md` | utført detaljplan for v1.8.1 (redesign av /spillere, T1–T12) |
 | `docs/arkiv/plan-innsikt-v170.md` | utført detaljplan for v1.7.0 «/innsikt» (T1–T10) |
 | `docs/arkiv/plan-v134-ai-swr.md` | utført plan for v1.3.4 (SWR + oppfrisker) |
@@ -162,14 +180,15 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 
 ## Senere / idéer (ikke planlagt)
 
-- Prisendrings-varsler (daglig prissnapshot, Discord ved endring i troppen)
-- E-postvarsling som alternativ til Discord
+- ~~Prisendrings-varsler~~ — planlagt som v1.10.0 (køpunkt 0)
+- E-postvarsling som alternativ til Discord — **droppet 1. sep** (krever
+  SMTP-avhengighet; Discord dekker behovet)
 - Spillerbilder (FPLs `p{code}.png`, 609 × ~10 KB) — bevisst utelatt fra
-  v1.3-overhalingen (beslutning F-g i planen)
-- BPS-race live: topp 3 bonuskandidater per kamp mens kampene går
-- FPL-karrieren: tidligere sesonger (beste rank, rekorder) som egen side
-- Badges/merkedager: «beste runde noensinne», «3 grønne piler på rad»
-- PWA: installer appen på mobilen som egen app med ikon
+  v1.3-overhalingen (beslutning F-g), bekreftet droppet 1. sep
+- ~~BPS-race live~~ — planlagt som del av v1.11.0 (køpunkt 0)
+- ~~FPL-karrieren~~ — planlagt som del av v1.11.0 (køpunkt 0)
+- ~~Badges/merkedager~~ — planlagt som del av v1.11.0 (køpunkt 0)
+- ~~PWA~~ — planlagt som v1.12.0 (køpunkt 0)
 - ~~AI-kommentar til overgangsanalysen~~ — bygget i v1.5.0
 
 ---

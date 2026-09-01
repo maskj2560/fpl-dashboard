@@ -21,6 +21,12 @@ src/server.js      oppstart og montering (starter lytteren ved import)
 src/middleware.js  rene middleware-byggere: cacheControlFor, createErrorHandler,
                    createShutdown, noStore (v1.7.1: no-store på hele /api)
                    (ligger utenfor server.js så de kan testes)
+                   (v1.8.3) createSecurityHeaders/buildCsp: CSP med
+                   per-forespørsel-nonce (res.locals.cspNonce → tema-scriptet
+                   i layout.ejs — ENESTE inline-script; script-src har aldri
+                   unsafe-inline), nosniff, DENY, Referrer-/Permissions-Policy.
+                   createRateLimiter/clientIp/rateLimitWrites: 30 POST/DELETE
+                   per IP per 5 min på /api (CF-Connecting-IP bak Cloudflare)
 src/config.js      env-variabler: PORT, FPL_TEAM_ID, LEAGUE_IDS, TZ,
                    NEWS_FEEDS, ANTHROPIC_API_KEY (valgfri), AI_MODEL,
                    DISCORD_WEBHOOK_URL (valgfri), BRIEF_HOURS_BEFORE_DEADLINE
@@ -236,6 +242,13 @@ Prompts holdes korte. Uten nøkkel vises rå data
   viewene skriver aldri `<img>` for en fil som ikke finnes (clubAssets).
   Systemfonter + lokal Archivo, ingen eksterne CDN-er ved kjøretid,
   responsivt (390 px er referansen).
+- **CSP og tilgjengelighet** (fra v1.8.3): ingen inline `<script>` uten
+  nonce og ingen `on*`-attributter i views eller klient-markup (CSP-en
+  blokkerer dem stille); `style="…"` er tillatt. Hver `<table>` følges av
+  `<caption>`, hvert skjemafelt har etikett, hver ikon-knapp har
+  `aria-label`, all bevegelse ligger bak `prefers-reduced-motion`, og
+  `<main id="innhold">` er hopp-lenkens mål. Låst av `test/views.test.js`,
+  `test/middleware.test.js`, `test/app-client.test.js` og `test/a11y.test.js`.
 
 ## Handover (VIKTIG — les først i ny økt)
 
