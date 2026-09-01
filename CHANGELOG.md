@@ -35,6 +35,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   i stedet for ett langt scroll-dokument. Faneraden kan styres med piltaster,
   og `/spillere#differensialer` åpner riktig fane direkte. Duellen og
   filtrene hører til Tabell-fanen.
+- «Spillere»: dødballtakerne vises som klubbkort i et rutenett — ett kort per
+  klubb med merke og de tre rollene under hverandre («Straffer: 1. Saka ·
+  2. Ødegaard») — i stedet for en bred tabell med fire kolonner. Navnene er
+  fortsatt klikkbare.
 
 ### Planlagt
 

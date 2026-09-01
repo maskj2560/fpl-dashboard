@@ -181,31 +181,18 @@
   <h2>Dødballtakere</h2>
   <p class="dim">De to første i køen per klubb, hentet fra FPLs egne ordenstall.
   «–» betyr at FPL ikke har oppgitt noen taker for rollen.</p>
-  <div class="table-scroll">
-    <table class="data">
-      <thead>
-        <tr>
-          <th>Klubb</th>
-          <th>Straffer</th>
-          <th>Hjørner/indirekte</th>
-          <th>Direkte frispark</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% for (const rad of setPieces) { %>
-          <tr>
-            <td><%- include('partials/club-badge', { team: { code: rad.lag.kode, short_name: rad.lag.kort, name: rad.lag.navn } }) %></td>
-            <% for (const rolle of ['straffer', 'hjorner', 'frispark']) { %>
-              <td>
-                <% if (rad[rolle].length === 0) { %>–<% } else { %>
-                  <% rad[rolle].forEach((t, i) => { %><% if (i > 0) { %> · <% } %><button type="button" class="navn-lenke js-spillerkort" data-id="<%= t.id %>"><%= t.navn %></button><% }) %>
-                <% } %>
-              </td>
-            <% } %>
-          </tr>
-        <% } %>
-      </tbody>
-    </table>
+  <div class="dodball-grid">
+    <% for (const rad of setPieces) { %>
+      <article class="dodball-kort">
+        <div class="dodball-klubb"><%- include('partials/club-badge', { team: { code: rad.lag.kode, short_name: rad.lag.kort, name: rad.lag.navn } }) %></div>
+        <dl class="dodball-roller">
+          <% for (const [rolle, etikett] of [['straffer', 'Straffer'], ['hjorner', 'Hjørner/indirekte'], ['frispark', 'Direkte frispark']]) { %>
+            <dt class="dodball-rolle"><%= etikett %></dt>
+            <dd class="dodball-takere"><% if (rad[rolle].length === 0) { %>–<% } else { %><% rad[rolle].forEach((t, i) => { %><% if (i > 0) { %> · <% } %><%= i + 1 %>. <button type="button" class="navn-lenke js-spillerkort" data-id="<%= t.id %>"><%= t.navn %></button><% }) %><% } %></dd>
+          <% } %>
+        </dl>
+      </article>
+    <% } %>
   </div>
 </section>
 

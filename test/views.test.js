@@ -435,12 +435,16 @@ test('players.ejs sier fra når differensiallista ikke finnes ennå', async () =
   assert.doesNotMatch(html, /data-terskel=/);
 });
 
-test('players.ejs lister dødballtakere per klubb med – for tomme roller', async () => {
+test('players.ejs lister dødballtakere som klubbkort med – for tomme roller', async () => {
   const html = await renderView('players', fx.players);
-  const rad = html.slice(html.indexOf('id="dodballtakere"'));
-  assert.match(rad, /class="navn-lenke js-spillerkort" data-id="1"[^>]*>Saka</);
-  assert.match(rad, /club-name">LIV</, 'klubber uten takere skal ha rad likevel');
-  assert.match(rad, /–/, 'tomme roller skal vises som tankestrek');
+  const seksjon = html.slice(html.indexOf('id="dodballtakere"'));
+  assert.match(seksjon, /class="dodball-grid"/, 'kortene skal ligge i et rutenett');
+  assert.equal((seksjon.match(/class="dodball-kort"/g) ?? []).length, 2, 'ett kort per klubb');
+  assert.doesNotMatch(seksjon, /<table/, 'tabellen erstattes av kort');
+  assert.match(seksjon, /class="dodball-rolle">Straffer</);
+  assert.match(seksjon, /1\. <button type="button" class="navn-lenke js-spillerkort" data-id="1">Saka<\/button>/);
+  assert.match(seksjon, /club-name">LIV</, 'klubber uten takere skal ha kort likevel');
+  assert.match(seksjon, /–/, 'tomme roller skal vises som tankestrek');
 });
 
 test('players.ejs har modal-skallet og server-rendrede drakt-templates', async () => {

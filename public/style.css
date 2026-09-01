@@ -2106,3 +2106,42 @@ body.modal-apen {
   padding-top: var(--space-4);
   border-top: 1px solid var(--border);
 }
+
+/* Doedballtakerne: ett kort per klubb i et rutenett, én kolonne paa mobil. */
+.dodball-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.dodball-kort {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 0.9rem;
+}
+
+.dodball-klubb {
+  margin-bottom: 0.5rem;
+}
+
+.dodball-roller {
+  margin: 0;
+}
+
+.dodball-rolle {
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--dim-strong);
+}
+
+.dodball-takere {
+  margin: 0 0 0.45rem;
+  font-size: var(--fs-base);
+}
+
+.dodball-takere:last-child {
+  margin-bottom: 0;
+}
