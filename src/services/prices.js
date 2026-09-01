@@ -8,7 +8,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import config from '../config.js';
 import { formatDay, formatSigned } from './format.js';
-import { formatPrice } from './analysis.js';
+import { formatPrice, byId, currentEvent } from './analysis.js';
+import { getBootstrap, getPicks, FplError } from './fplClient.js';
+import { postToDiscord } from './notify.js';
 
 export const TICK_MS = 60 * 60_000;
 export const FILE_VERSION = 1;
@@ -134,6 +136,7 @@ export function parsePriceFile(text) {
       version: FILE_VERSION,
       date: raw.date ?? null,
       prices: raw.prices,
+      dayDiffs: Array.isArray(raw.dayDiffs) ? raw.dayDiffs : [],
       lastDiff: raw.lastDiff ?? null,
       lastPostedDate: raw.lastPostedDate ?? null,
     };
@@ -150,4 +153,144 @@ export function readPriceState() {
   } catch {
     return null;
   }
+}
+
+function writePriceState(next) {
+  fs.mkdirSync(config.dataDir, { recursive: true });
+  fs.writeFileSync(priceFile(), JSON.stringify(next));
+}
+
+/** Slår sammen dagens diff med nye: første `from`, siste `to`; netto null faller bort. */
+export function mergeDiffs(prev, fresh) {
+  const map = new Map(prev.map((d) => [d.id, { ...d }]));
+  for (const d of fresh) {
+    const old = map.get(d.id);
+    if (old) old.to = d.to;
+    else map.set(d.id, { ...d });
+  }
+  return [...map.values()].filter((d) => d.from !== d.to).sort((a, b) => a.id - b.id);
+}
+
+// ---- Timeren ----------------------------------------------------------------
+
+const hooks = { now: null, load: null, save: null, post: null, webhook: null, squad: null };
+let state = null;
+let loaded = false;
+let timer = null;
+let ticking = false;
+
+function ensureLoaded() {
+  if (loaded) return;
+  state = (hooks.load ?? readPriceState)();
+  loaded = true;
+}
+
+function persist(next) {
+  state = next;
+  try {
+    (hooks.save ?? writePriceState)(next);
+  } catch (err) {
+    console.error('Prisovervåking: klarte ikke å lagre snapshotet:', err.message);
+  }
+}
+
+/** Troppens spiller-id-er (inneværende runde). Tom uten team-id/picks — troppen er et tillegg. */
+async function loadSquadIds(bootstrap) {
+  if (!config.fplTeamId) return [];
+  const current = currentEvent(bootstrap.events);
+  if (!current) return [];
+  try {
+    const picks = await getPicks(config.fplTeamId, current.id);
+    return picks.picks.map((p) => p.element);
+  } catch (err) {
+    if (!(err instanceof FplError && err.status === 404)) {
+      console.error('Prisovervåking: fikk ikke troppen:', err.message);
+    }
+    return [];
+  }
+}
+
+/** Siste rapport til kortet på /overganger — lazy fra disk, null før første endring. */
+export function getLastPriceChanges() {
+  ensureLoaded();
+  return state?.lastDiff ?? null;
+}
+
+/** Én runde. Kaster aldri — en feil skal ikke velte timeren. */
+export async function _tick() {
+  if (ticking) return;
+  ticking = true;
+  try {
+    ensureLoaded();
+    const bootstrap = await getBootstrap();
+    const { elements, teams } = bootstrap;
+    const today = dateKey((hooks.now ?? Date.now)());
+    const diffs = diffPrices(state?.prices ?? null, elements);
+    const webhook = hooks.webhook ?? Boolean(config.discordWebhookUrl);
+    const decision = priceDecision({
+      hasSnapshot: Boolean(state),
+      changed: diffs.length > 0,
+      lastPostedDate: state?.lastPostedDate ?? null,
+      today,
+      webhook,
+    });
+    if (!decision.snapshot) return;
+
+    let dayDiffs = state?.dayDiffs ?? [];
+    let lastDiff = state?.lastDiff ?? null;
+    if (diffs.length) {
+      const squadIds = await (hooks.squad ?? loadSquadIds)(bootstrap);
+      dayDiffs = state?.date === today ? mergeDiffs(dayDiffs, diffs) : diffs;
+      lastDiff = buildPriceChanges({ diffs: dayDiffs, elements, squadIds, teamsById: byId(teams), date: today });
+    }
+    // Snapshotet lagres FØR posten: feiler Discord, dukker ikke samme endring
+    // opp som «ny» neste time — og en redeploy dobbel-poster aldri.
+    persist({
+      version: FILE_VERSION,
+      date: today,
+      prices: snapshotOf(elements),
+      dayDiffs,
+      lastDiff,
+      lastPostedDate: state?.lastPostedDate ?? null,
+    });
+    console.log(
+      diffs.length
+        ? `Prisovervåking: ${diffs.length} prisendringer (${today})`
+        : 'Prisovervåking: første snapshot lagret',
+    );
+    if (decision.post) {
+      await (hooks.post ?? postToDiscord)(priceChangesText(lastDiff));
+      persist({ ...state, lastPostedDate: today });
+      console.log('Prisovervåking: Discord-melding sendt');
+    }
+  } catch (err) {
+    console.error('Prisovervåking feilet:', err.message);
+  } finally {
+    ticking = false;
+  }
+}
+
+/** Alltid aktiv: uten webhook tas snapshot og kortet fylles, ingenting postes. */
+export function startPriceWatcher() {
+  _tick();
+  timer = setInterval(_tick, TICK_MS);
+  timer.unref?.();
+  console.log(
+    `Prisovervåking aktiv: sjekker hver time${config.discordWebhookUrl ? ', Discord maks én melding per natt' : ' (ingen webhook — kun kortet på /overganger)'}`,
+  );
+}
+
+// Test-hooks (samme mønster som notify.js). Aldri satt i produksjon.
+
+export function _setHooks(overrides) {
+  Object.assign(hooks, overrides);
+}
+
+export function _reset() {
+  clearInterval(timer);
+  timer = null;
+  state = null;
+  loaded = false;
+  ticking = false;
+  for (const key of Object.keys(hooks)) hooks[key] = null;
 }

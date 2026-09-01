@@ -19,6 +19,13 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   kjøpt/solgt; spillere borte fra bootstrap hoppes over) og
   `priceChangesText` (Discord-teksten: «£14.0m → £14.1m (+0,1)» med norsk
   komma, «Ingen endringer i troppen din.» når tom). Fire nye tester.
+- Prisvarsler (timer): `startPriceWatcher` i `server.js` — alltid aktiv,
+  ett tikk ved oppstart og så hver time (≤ 1 cachet bootstrap-kall/time).
+  Snapshot og dagens rapport i `DATA_DIR/price-state.json` (versjon 1),
+  snapshotet lagres FØR Discord-posten, en andre endring samme natt slås
+  sammen (første `from`, siste `to`, netto null faller bort) uten ny
+  melding. Uten webhook: snapshot + kort, aldri post. `postToDiscord`
+  eksporteres fra `notify.js` (Discord blir der). Fem nye tester.
 
 ## [1.9.0] - 2026-09-02
 

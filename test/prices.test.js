@@ -8,7 +8,12 @@ import {
   parsePriceFile,
   buildPriceChanges,
   priceChangesText,
+  getLastPriceChanges,
+  _tick,
+  _setHooks,
+  _reset,
 } from '../src/services/prices.js';
+import { clear as cacheClear } from '../src/services/cache.js';
 
 const elements = [
   { id: 1, now_cost: 140, web_name: 'Haaland', team: 1 },
@@ -161,6 +166,107 @@ test('priceChangesText nevner troppen først og «Ingen endringer i troppen din�
   assert.ok(!none.includes('**Troppen din**'));
 });
 
+// --- Timeren (_tick) ---------------------------------------------------------
+
+function mockBootstrap(elements) {
+  const original = globalThis.fetch;
+  globalThis.fetch = async (url) => {
+    assert.match(String(url), /bootstrap-static\/$/, `uventet URL: ${url}`);
+    return { ok: true, status: 200, json: async () => ({ events: [], elements, teams: [...teamsById.values()] }) };
+  };
+  return () => {
+    globalThis.fetch = original;
+  };
+}
+
+async function runTick({ state, elements, nowMs, webhook = true, squad = [] }) {
+  cacheClear();
+  _reset();
+  const saved = [];
+  const posts = [];
+  _setHooks({
+    now: () => nowMs,
+    load: () => state,
+    save: (s) => saved.push(structuredClone(s)),
+    post: async (text) => posts.push(text),
+    webhook,
+    squad: async () => squad,
+  });
+  const restore = mockBootstrap(elements);
+  try {
+    await _tick();
+  } finally {
+    restore();
+  }
+  return { saved, posts };
+}
+
+// Natt til 3. sep kl. 03:00 i Oslo.
+const NIGHT = Date.UTC(2026, 8, 3, 1, 0);
+const prevPrices = { ...snapshotOf(pool), 1: 140, 2: 102, 3: 104 };
+
+test('_tick tar første snapshot uten å poste', async () => {
+  const { saved, posts } = await runTick({ state: null, elements: pool, nowMs: NIGHT, squad: [1, 2] });
+  assert.equal(posts.length, 0, 'første snapshot skal aldri poste');
+  assert.equal(saved.length, 1);
+  assert.deepEqual(saved[0].prices, snapshotOf(pool));
+  assert.equal(saved[0].lastDiff, null);
+  assert.equal(saved[0].date, '2026-09-03');
+  assert.equal(getLastPriceChanges(), null);
+});
+
+test('_tick poster ved endring og lagrer snapshotet FØR meldingen', async () => {
+  const state = { version: 1, date: '2026-09-02', prices: prevPrices, dayDiffs: [], lastDiff: null, lastPostedDate: null };
+  const { saved, posts } = await runTick({ state, elements: pool, nowMs: NIGHT, squad: [1, 2] });
+  assert.equal(posts.length, 1);
+  assert.ok(posts[0].includes('- Haaland (MCI) £14.0m → £14.1m (+0,1)'), posts[0]);
+  assert.ok(posts[0].startsWith('**Prisendringer natt til torsdag 3. september**'), posts[0]);
+  assert.equal(saved.length, 2, 'snapshot lagres før posten, markøren etter');
+  assert.equal(saved[0].lastPostedDate, null);
+  assert.equal(saved[0].prices[1], 141);
+  assert.equal(saved[1].lastPostedDate, '2026-09-03');
+  const last = getLastPriceChanges();
+  assert.deepEqual(last.mine.map((r) => r.name), ['Haaland', 'Saka']);
+  assert.equal(last.countUp, 2);
+  assert.equal(last.countDown, 1);
+});
+
+test('_tick slår sammen en andre endring samme dag uten ny post', async () => {
+  const first = await runTick({
+    state: { version: 1, date: '2026-09-02', prices: prevPrices, dayDiffs: [], lastDiff: null, lastPostedDate: null },
+    elements: pool,
+    nowMs: NIGHT,
+    squad: [1, 2],
+  });
+  // En time senere: Saka tilbake til 10.2 (netto null), Palmer videre til 10.7.
+  const later = pool.map((e) => (e.id === 2 ? { ...e, now_cost: 102 } : e.id === 3 ? { ...e, now_cost: 107 } : e));
+  const { saved, posts } = await runTick({ state: first.saved.at(-1), elements: later, nowMs: NIGHT + 60 * 60_000, squad: [1, 2] });
+  assert.equal(posts.length, 0, 'samme dato: ingen ny melding');
+  assert.equal(saved.length, 1);
+  assert.equal(saved[0].lastPostedDate, '2026-09-03');
+  assert.equal(saved[0].prices[2], 102);
+  const last = getLastPriceChanges();
+  assert.deepEqual(last.mine.map((r) => r.name), ['Haaland'], 'Saka gikk opp og ned igjen — netto null');
+  const palmer = last.risers.find((r) => r.name === 'Palmer');
+  assert.deepEqual([palmer.from, palmer.to, palmer.delta], [104, 107, 3], 'første from, siste to');
+});
+
+test('_tick uten webhook tar snapshot men poster aldri', async () => {
+  const state = { version: 1, date: '2026-09-02', prices: prevPrices, dayDiffs: [], lastDiff: null, lastPostedDate: null };
+  const { saved, posts } = await runTick({ state, elements: pool, nowMs: NIGHT, webhook: false, squad: [1] });
+  assert.equal(posts.length, 0);
+  assert.equal(saved.length, 1);
+  assert.equal(saved[0].lastPostedDate, null);
+  assert.equal(getLastPriceChanges().mine.length, 1, 'kortet fylles også uten webhook');
+});
+
+test('_tick uten endringer rører verken fil eller Discord', async () => {
+  const state = { version: 1, date: '2026-09-02', prices: snapshotOf(pool), dayDiffs: [], lastDiff: null, lastPostedDate: null };
+  const { saved, posts } = await runTick({ state, elements: pool, nowMs: NIGHT });
+  assert.equal(saved.length, 0);
+  assert.equal(posts.length, 0);
+});
+
 // --- Dato og fil -------------------------------------------------------------
 
 test('dateKey gir Oslo-dato rundt midnatt', () => {
@@ -174,7 +280,7 @@ test('dateKey gir Oslo-dato rundt midnatt', () => {
 
 test('parsePriceFile gir null ved ukjent versjon eller ugyldig JSON', () => {
   const ok = parsePriceFile(JSON.stringify({ version: 1, date: '2026-09-03', prices: { 1: 140 }, lastDiff: null, lastPostedDate: null }));
-  assert.deepEqual(ok, { version: 1, date: '2026-09-03', prices: { 1: 140 }, lastDiff: null, lastPostedDate: null });
+  assert.deepEqual(ok, { version: 1, date: '2026-09-03', prices: { 1: 140 }, dayDiffs: [], lastDiff: null, lastPostedDate: null });
   assert.equal(parsePriceFile(JSON.stringify({ version: 2, prices: {} })), null, 'ukjent versjon');
   assert.equal(parsePriceFile(JSON.stringify({ version: 1 })), null, 'prices mangler');
   assert.equal(parsePriceFile('{ikke json'), null, 'ugyldig JSON');

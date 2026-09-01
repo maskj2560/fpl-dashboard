@@ -470,7 +470,8 @@ export function chunkDiscordText(text, max = 1900) {
   return chunks;
 }
 
-async function postToDiscord(text) {
+/** Eneste Discord-sender i appen — prices.js (v1.10.0) låner den herfra. */
+export async function postToDiscord(text) {
   for (const content of chunkDiscordText(text)) {
     const res = await fetch(config.discordWebhookUrl, {
       method: 'POST',
