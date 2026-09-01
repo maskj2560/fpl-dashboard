@@ -52,8 +52,8 @@ ligger uutgitt på main under `[Unreleased]`)
 
 ## Neste steg (start her)
 
-Køen i `ROADMAP.md` er den langsiktige prioriteringen. Punkt 0–3 kan bare
-Marius gjøre.
+Køen i `ROADMAP.md` er prioriteringen; punkt 0–3 kan bare Marius gjøre —
+sjekkliste og ferdige kjøreprompter: `docs/oppgaveliste.md` (økt 51).
 
 0. `[Marius]` **Visuell QA av v1.8.1 i prod** (den gikk ut uten lokal
    test): begge temaer × 390 px og desktop × alle tre faner. Sjekk zebra
