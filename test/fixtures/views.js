@@ -105,7 +105,7 @@ export const teamEmpty = {
 
 const diffRow = (id, navn, over = {}) => ({
   id, navn, lag: { kort: 'ARS', kode: 3, navn: 'Arsenal' }, posKort: 'M',
-  pris: '5.5', form: '5.5', eid: '4.2', fdr3: 2.7, score: 18.2, ...over,
+  pris: '5.5', form: '5.5', eid: '4.2', fdr3: '2.7', score: '18.2', andel: 100, ...over,
 });
 
 export const players = {
@@ -118,7 +118,7 @@ export const players = {
         prosent: 10,
         rows: [
           diffRow(1, 'Saka'),
-          diffRow(2, 'Salah', { lag: { kort: 'LIV', kode: 14, navn: 'Liverpool' }, score: 12.5 }),
+          diffRow(2, 'Salah', { lag: { kort: 'LIV', kode: 14, navn: 'Liverpool' }, score: '12.5', andel: 69 }),
         ],
       },
       { prosent: 15, rows: [diffRow(1, 'Saka')] },

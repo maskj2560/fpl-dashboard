@@ -130,9 +130,11 @@
   <% } else { %>
     <fieldset class="terskel-velger">
       <legend>Maks global eierandel</legend>
-      <% for (const t of differentials.terskler) { %>
-        <label><input type="radio" name="diff-terskel" value="<%= t.prosent %>"<%= t.prosent === 10 ? ' checked' : '' %>> under <%= t.prosent %>&nbsp;%</label>
-      <% } %>
+      <div class="terskel-segmenter">
+        <% for (const t of differentials.terskler) { %>
+          <label><input type="radio" name="diff-terskel" value="<%= t.prosent %>"<%= t.prosent === 10 ? ' checked' : '' %>><span>under <%= t.prosent %>&nbsp;%</span></label>
+        <% } %>
+      </div>
     </fieldset>
     <% for (const t of differentials.terskler) { %>
       <div class="table-scroll" data-terskel="<%= t.prosent %>"<%= t.prosent === 10 ? '' : ' hidden' %>>
@@ -162,7 +164,7 @@
                   <td class="num"><%= r.form %></td>
                   <td class="num"><%= r.eid %></td>
                   <td class="num"><%= r.fdr3 %></td>
-                  <td class="num"><strong><%= r.score %></strong></td>
+                  <td class="num score-celle" style="--andel: <%= r.andel %>%"><strong><%= r.score %></strong></td>
                 </tr>
               <% } %>
             </tbody>

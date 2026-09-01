@@ -410,6 +410,16 @@ test('players.ejs viser tre terskler, men bare 10 % synlig fra start', async () 
   assert.match(html, /value="10" checked/, '10 % skal være forhåndsvalgt');
 });
 
+test('players.ejs tegner terskelvelgeren som segmenter og scoren med søylestripe', async () => {
+  const html = await renderView('players', fx.players);
+  // Radioene beholdes (tastatur + JS), men teksten pakkes i et span som styles.
+  assert.match(html, /name="diff-terskel" value="10" checked><span>under 10&nbsp;%<\/span>/);
+  assert.match(html, /class="terskel-segmenter"/, 'labelene skal ligge i en segmentbryter');
+  // Bredden på stripa kommer fra servicen som andel av toppscoren.
+  assert.match(html, /class="num score-celle" style="--andel: 100%"/);
+  assert.match(html, /class="num score-celle" style="--andel: 69%"/);
+});
+
 test('players.ejs sier fra når differensiallista ikke finnes ennå', async () => {
   const html = await renderView('players', fx.playersNoDiff);
   assert.match(html, /Differensialer kommer når formtallene finnes — etter første runde/);

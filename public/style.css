@@ -1839,32 +1839,65 @@ footer .version {
   height: 1.1rem;
 }
 
-/* Terskelvelgeren over differensialtabellene. */
+/* Terskelvelgeren over differensialtabellene: segmentert pillebryter.
+   Radioene er visuelt skjult, men fokuserbare — piltaster og skjermlesere
+   fungerer som på en vanlig radiogruppe. */
 .terskel-velger {
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 0.5rem 0.8rem 0.7rem;
+  border: 0;
+  padding: 0;
   margin: 0 0 0.9rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem 1.1rem;
+  min-width: 0;
 }
 
 .terskel-velger legend {
-  padding: 0 0.3rem;
+  padding: 0;
+  margin-bottom: 0.4rem;
   font-size: var(--fs-sm);
   color: var(--text-dim);
 }
 
-.terskel-velger label {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: var(--fs-sm);
+.terskel-segmenter {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 2px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
 }
 
-.terskel-velger input {
-  accent-color: var(--accent);
+.terskel-segmenter label {
+  position: relative;
+  margin: 0;
+}
+
+.terskel-segmenter input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+}
+
+.terskel-segmenter span {
+  display: block;
+  padding: 0.3rem 0.85rem;
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-sm);
+  color: var(--text-dim);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.terskel-segmenter input:checked + span {
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+.terskel-segmenter input:focus-visible + span {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
 }
 
 /* Spillerkort-modalen. Bakteppet bruker --overlay, som finnes i begge temaer. */
@@ -2027,4 +2060,10 @@ body.modal-apen {
    duell-knappen venter ikke, den mangler to valgte spillere. */
 .duell-bar .btn-accent:disabled {
   cursor: not-allowed;
+}
+
+/* Score-cellen i differensialtabellen: diskret søylestripe bak tallet.
+   --andel settes inline av viewet (andel av toppscoren i den tabellen). */
+.score-celle {
+  background: linear-gradient(90deg, var(--accent-soft) var(--andel, 0%), transparent var(--andel, 0%)) no-repeat;
 }

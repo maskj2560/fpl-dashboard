@@ -28,6 +28,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - «Spillere»: terskelvelgeren 5/10/15 % under Differensialer virker igjen.
   I v1.8.0 fantes ingen kode som lyttet på valget, så bare 10 %-tabellen
   kunne vises. Regelen er nå en ren funksjon og låst med test.
+- «Spillere»: terskelvelgeren er en segmentert pillebryter i stedet for tre
+  løse radioknapper, og score-kolonnen har fått en diskret søylestripe som
+  viser hvor sterk scoren er i forhold til den beste i tabellen.
 
 ### Planlagt
 
