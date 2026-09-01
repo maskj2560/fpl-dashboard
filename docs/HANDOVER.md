@@ -184,8 +184,8 @@ Marius gjøre.
   skjermbilde» (STEG 0) — skjermbildet beviste at modalen virker i prod.
   Fire AskUserQuestion-runder — Marius valgte anbefalingen i alle 11
   spørsmål; versjon v1.8.1. Funn: terskelvelger-JS mangler helt (død i
-  prod, fikses i T6). Plan skrevet og godkjent, ROADMAP/CHANGELOG/
-  HANDOVER ajour, loggpost økt 47 rotert til historikkfila.
+  prod, fikses i T6). Plan skrevet og godkjent, docs ajour, økt 47-loggen
+  rotert. Så: «kjøreprompt til opus» → levert i chatten (stopp før merge).
 - 2026-09-01 (økt 48, Opus, utførelse): mandat = bygg v1.8.0 etter planen,
   TDD strengt, stopp etter T9 uten merge/tag/push. Handling: verifiserte
   baseline 556/556 + lint 0 på main, branch `feat/spillere-v180`, T1–T9
