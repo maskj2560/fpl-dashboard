@@ -33,7 +33,6 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   tabellen — et søk viste «Viser 1 av 629 spillere» over en ufiltrert
   differensialtabell. `hidden` taper mot enhver `display`-regel med klasse;
   nå slår `hidden` gjennom overalt.
-
 - Tabellhoder over tallkolonner sto til venstre mens tallene sto til høyre,
   så verdien så ut til å høre til nabokolonnen (tydeligst i benkesløsingen
   på «Innsikt», der «6» havnet under «Unngåelig tap» og «−1» under «Chip»).
