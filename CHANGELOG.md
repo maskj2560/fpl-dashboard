@@ -7,6 +7,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.8.1] - 2026-09-01
+
 ### Fixed
 
 - «Spillere»: spillernavn vises som lavmælte tekstlenker i stedet for fylte
@@ -47,15 +49,6 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   strammet inn.
 - «Spillere»: kortere ingress, mer luft rundt faneraden og tydeligere
   seksjonstitler.
-
-### Planlagt
-
-- Detaljplan for v1.8.1 — visuell redesign av «Spillere» — skrevet og
-  godkjent (`docs/plan-spillere-redesign-v181.md`): faner, lavmælte
-  navnelenker, status kun ved avvik, zebra-rytme, faste desimaler,
-  segmentert terskelbryter, dødball-klubbkort, duell-hoder og strammere
-  spillerkort. Funn fra planøkten: terskelvelgeren 5/10/15 % mangler JS og
-  er uten funksjon i v1.8.0 — fikses i v1.8.1.
 
 ## [1.8.0] - 2026-09-01
 

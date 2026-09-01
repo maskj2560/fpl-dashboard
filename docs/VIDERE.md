@@ -5,7 +5,33 @@
 
 **Sist oppdatert:** 1. september 2026
 
-## Nytt: v1.8.0 «Spiller-pakka» — i drift siden 1. september
+## Nytt: v1.8.1 — Spillere-siden er ryddet opp (1. september)
+
+Ingen nye funksjoner, men siden ser ferdig ut nå. Det viktigste:
+
+- **Tre faner** øverst — Tabell · Differensialer · Dødballtakere — i stedet
+  for ett langt dokument du måtte scrolle gjennom. Piltastene bytter fane,
+  og `/spillere#differensialer` åpner riktig fane direkte.
+- **Spillernavnene er lenker, ikke grønne knapper.** Veggen av 772 fylte
+  knapper er borte; grønt er igjen reservert for ekte handlinger.
+- **«Klar» vises ikke lenger.** Statusmerket dukker bare opp når det
+  faktisk er noe å vite (skadet, tvilsom, suspendert, utlånt). Filteret
+  virker som før.
+- **Tabellen har fått striper** og strammere rader, og avkryssings-
+  kolonnen heter nå «Duell» synlig. Stripene teller bare rader du ser, så
+  rytmen holder når du filtrerer.
+- **Terskelvelgeren 5/10/15 % virker igjen.** Den var død i v1.8.0 — koden
+  som lyttet på valget manglet rett og slett. Nå er den en segmentert
+  bryter, og scoren har en tynn søyle bak tallet som viser hvor sterk den
+  er sammenlignet med toppen av lista.
+- **Dødballtakerne er klubbkort** i et rutenett i stedet for en bred
+  tabell — ett kort per klubb med merke og de tre rollene under hverandre.
+- **Duellen** viser drakt, navn og klubb per spiller, og «Sammenlign» er nå
+  den grønne knappen (den var «Tøm valg» før — feil vei).
+- **Spillerkortet** har større drakt, navnet står bare i tittelen, og
+  Form/Poeng/P/K er store tall over de mindre.
+
+## Før det: v1.8.0 «Spiller-pakka» — i drift siden 1. september
 
 Fire nye ting på **Spillere**-siden, som nå er delt i tre seksjoner med
 snarveier øverst (Tabell · Differensialer · Dødballtakere):
@@ -32,7 +58,7 @@ gikk ut uten at du testet lokalt først, så gi den en runde i nettleseren:
 spillerkortet (åpne, lukke med Esc), duellen (kryss av to) og
 terskelbyttet. Finner du noe rart, fikser vi det som en liten oppdatering.
 
-## Før det: v1.7.0 «Innsikt» — i drift siden 31. august
+## Og før det: v1.7.0 «Innsikt» — i drift siden 31. august
 
 En helt ny side i menyen, rett etter «Liga»: **Innsikt** — fasiten på din
 egen sesong. Fire ting, alle regnet på ferdigspilte runder:
