@@ -25,6 +25,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   fire chips med brukt-pille eller anbefalt runde + begrunnelse
   (`describeRec`), pluss lista over kjente dobbel- og blankrunder. Bygget
   av data siden alt hentet — 0 nye FPL-kall, 0 AI-kall.
+- Lagsjekk (grunnlag): `deadline.js` med `applyTransfers` (picks fra
+  forrige runde + byttene for kommende — FPL gir ikke ut nye picks før
+  deadline), `buildDeadlineCheck` (funn: skadet/suspendert/utlånt starter,
+  tvilsom ≤ 50 %, flagget kaptein/vise, starter uten kamp; footer med
+  gratisbytter fra FT-regnskapet og aktiv chip) og `deadlineCheckText`
+  (Discord-teksten). Åtte nye tester.
 
 ## [1.8.3] - 2026-09-02
 
