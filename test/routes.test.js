@@ -45,6 +45,41 @@ test('rådgiverklikket blokkerer aldri på en utgått tekst (swr)', () => {
   );
 });
 
+// v1.8.0: spiller-pakka skal koste 0 AI-kall i ALLE tilstander, og
+// element-summary skal bare hentes lazy ved et klikk (api.js) — aldri i bulk
+// fra sidevisningen på /spillere. Begge reglene er billige å bryte og dyre å
+// oppdage i drift, derfor låses de på kilden.
+const servicesDir = new URL('../src/services/', import.meta.url);
+const readService = (file) => fs.readFileSync(new URL(file, servicesDir), 'utf8');
+
+test('spiller-pakka importerer aldri ai.js', () => {
+  for (const code of [read('players.js'), readService('players.js')]) {
+    assert.ok(
+      !/from '\.\.?\/(services\/)?ai\.js'/.test(code),
+      'spiller-pakka skal ikke importere ai.js — den koster 0 AI-kall',
+    );
+    assert.ok(!/\bai\.generate\(/.test(code), 'spiller-pakka skal aldri generere AI-tekst');
+  }
+});
+
+test('kun api.js når element-summary — aldri /spillere-sidevisningen', () => {
+  for (const file of routeFiles) {
+    if (file === 'api.js') continue;
+    const code = read(file);
+    assert.ok(
+      !/\bgetElementSummary\b/.test(code),
+      `${file}: element-summary hentes kun lazy per klikk i api.js, aldri i bulk`,
+    );
+    assert.ok(
+      !/\bassemblePlayerCard\b/.test(code),
+      `${file}: spillerkortet hentes kun av klikkruta i api.js`,
+    );
+  }
+  assert.match(read('api.js'), /\bassemblePlayerCard\b/, 'api.js mangler det lazy kortkallet');
+  // Selve nettverkskallet bor i servicen, ikke i ruta.
+  assert.match(readService('players.js'), /\bgetElementSummary\b/);
+});
+
 // v1.7.1: nettleseren skal aldri cache API-JSON — serverens cache styrer
 // TTL, og et cachet /live.json ville vist gamle poeng under polling.
 test('hele API-routeren svarer med no-store', () => {

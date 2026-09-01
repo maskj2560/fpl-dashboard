@@ -213,3 +213,157 @@ test('queryParam leser og dekoder verdien fra søkestrengen', () => {
   assert.equal(app.queryParam('?sok=Luis+D%C3%ADaz', 'sok'), 'Luis Díaz');
   assert.equal(app.queryParam('', 'sok'), null);
 });
+
+// ---- v1.8.0: spillerkort-modalen ------------------------------------------
+
+// Navnene kommer fra FPL og rendres klientside — samme trussel som lagnavnene
+// i live.ejs. Alt som skrives inn i modalen skal escapes.
+const kort = (over = {}) => ({
+  id: 411,
+  navn: 'Haaland',
+  fulltNavn: 'Erling Haaland',
+  lag: { navn: 'Man City', kort: 'MCI', kode: 43, id: 13 },
+  posisjon: 'Angrep', posKort: 'A', erKeeper: false,
+  pris: '14.1', eid: '69.8', form: '6.0',
+  totalPoeng: 32, poengPerKamp: '6.0',
+  xg: '2.40', xa: '0.60', minutter: 180,
+  status: 'a', statusTekst: 'Klar', nytt: null, spillesjanse: null,
+  dodball: { straffer: null, hjorner: null, frispark: null },
+  sisteKamper: [
+    { runde: 2, motstander: 'ARS', hjemme: true, poeng: 12, minutter: 90, mal: 2, assists: 0, xg: '1.47', xa: '0.20', bonus: 3 },
+  ],
+  kommende: [{ runde: 3, motstander: 'LIV', hjemme: false, fdr: 4 }],
+  dataAlder: 12,
+  ...over,
+});
+
+test('playerCardHtml escaper navn og nyhetstekst', () => {
+  const html = app.playerCardHtml(
+    kort({
+      navn: '<script>x</script>',
+      fulltNavn: '<script>x</script>',
+      nytt: '<b>Ankelskade</b>',
+      sisteKamper: [{ runde: 2, motstander: '"><img>', hjemme: true, poeng: 1, minutter: 5, mal: 0, assists: 0, xg: '0.00', xa: '0.00', bonus: 0 }],
+    }),
+    '<span class="shirt"></span>',
+  );
+
+  assert.ok(!html.includes('<script>'), 'uescapet script-tag i modalen');
+  assert.ok(!html.includes('<b>Ankelskade</b>'), 'uescapet nyhetstekst');
+  assert.ok(!html.includes('"><img>'), 'uescapet motstandernavn');
+  assert.ok(html.includes('&lt;script&gt;'));
+  // Drakta kommer fra en server-rendret template og settes inn rå.
+  assert.ok(html.includes('<span class="shirt"></span>'));
+});
+
+test('playerCardHtml gir kommende kamper FDR-klassen fra fdr-verdien', () => {
+  const html = app.playerCardHtml(
+    kort({ kommende: [
+      { runde: 3, motstander: 'LIV', hjemme: false, fdr: 5 },
+      { runde: 4, motstander: 'ARS', hjemme: true, fdr: 2 },
+    ] }),
+    '',
+  );
+
+  assert.match(html, /fdr-5/);
+  assert.match(html, /fdr-2/);
+});
+
+test('playerCardHtml viser tomtilstand når spilleren ikke har spilt', () => {
+  const html = app.playerCardHtml(kort({ sisteKamper: [] }), '');
+
+  assert.match(html, /Ingen spilte kamper ennå/);
+  assert.match(html, /6\.0/, 'nøkkeltallene skal vises uansett');
+});
+
+test('playerCardHtml lister bare dødballroller som faktisk er satt', () => {
+  const html = app.playerCardHtml(
+    kort({ dodball: { straffer: 1, hjorner: null, frispark: 3 } }),
+    '',
+  );
+
+  assert.match(html, /Straffer: 1\. valg/);
+  assert.match(html, /Direkte frispark: 3\. valg/);
+  assert.ok(!html.includes('Hjørner'), 'tom rolle skal ikke vises');
+});
+
+test('playerCardHtml utelater dødball-seksjonen helt uten roller', () => {
+  const html = app.playerCardHtml(kort(), '');
+  assert.ok(!html.includes('Dødball'), 'ingen roller → ingen seksjon');
+});
+
+// ---- v1.8.0: spillerduellen ----------------------------------------------
+
+// Radenes dataset — tallene er strenger fra FPL, tomme dødballattributter
+// betyr «ingen rolle».
+const ds = (over = {}) => ({
+  id: '1', navn: 'Saka', lag: 'ARS', pos: '3', price: '5.5',
+  form: '5.5', poeng: '42', pk: '4.2', eid: '12.3',
+  xg: '3.40', xa: '2.10', min: '900', bonus: '7',
+  straffer: '', hjorner: '', frispark: '',
+  ...over,
+});
+
+test('duelStatus åpner Sammenlign først ved nøyaktig to valgte', () => {
+  // Objektet kommer fra vm-realmet, så feltene sammenlignes hver for seg.
+  for (const [n, enabled] of [[0, false], [1, false], [2, true], [3, false]]) {
+    const s = app.duelStatus(n);
+    assert.equal(s.enabled, enabled, `${n} valgte`);
+    assert.equal(s.tekst, `${n} av 2 valgt`);
+  }
+});
+
+test('duelData beholder FPL-strengene og gjør tomme dødballfelt til null', () => {
+  const d = app.duelData(ds({ straffer: '2' }));
+
+  assert.equal(d.navn, 'Saka');
+  assert.equal(d.pris, '5.5', 'prisen vises som streng, ikke som tall');
+  assert.equal(d.form, '5.5');
+  assert.equal(d.straffer, 2);
+  assert.equal(d.hjorner, null);
+  assert.equal(d.frispark, null);
+});
+
+test('duelWinners lar laveste pris vinne og resten høyeste', () => {
+  const a = app.duelData(ds({ price: '5.5', form: '6.0', poeng: '42' }));
+  const b = app.duelData(ds({ navn: 'Salah', price: '12.5', form: '4.0', poeng: '55' }));
+
+  const w = app.duelWinners(a, b);
+
+  assert.equal(w.pris, 'a', 'billigst vinner på pris');
+  assert.equal(w.form, 'a');
+  assert.equal(w.poeng, 'b');
+});
+
+test('duelWinners markerer ingen ved likhet', () => {
+  const w = app.duelWinners(app.duelData(ds()), app.duelData(ds({ navn: 'Salah' })));
+
+  for (const key of ['pris', 'form', 'poeng', 'pk', 'eid', 'xg', 'xa', 'min', 'bonus']) {
+    assert.equal(w[key], null, `${key} skulle vært uavgjort`);
+  }
+});
+
+test('duelWinners lar satt dødballrolle slå null, og lavest ordenstall vinne', () => {
+  const a = app.duelData(ds({ straffer: '1', hjorner: '' }));
+  const b = app.duelData(ds({ navn: 'Salah', straffer: '2', hjorner: '1' }));
+
+  const w = app.duelWinners(a, b);
+
+  assert.equal(w.straffer, 'a', 'lavest ordenstall vinner');
+  assert.equal(w.hjorner, 'b', 'satt rolle slår null');
+
+  const ingen = app.duelWinners(app.duelData(ds()), app.duelData(ds({ navn: 'Salah' })));
+  assert.equal(ingen.straffer, null, 'ingen av dem har rollen');
+});
+
+test('duelHtml escaper navn og markerer vinnercellene', () => {
+  const a = app.duelData(ds({ navn: '<script>x</script>', price: '5.5' }));
+  const b = app.duelData(ds({ navn: 'Salah', price: '12.5' }));
+
+  const html = app.duelHtml(a, b, app.duelWinners(a, b));
+
+  assert.ok(!html.includes('<script>'), 'uescapet spillernavn i duellen');
+  assert.match(html, /&lt;script&gt;/);
+  assert.match(html, /<strong class="accent">5\.5<\/strong>/, 'billigste pris skal markeres');
+  assert.ok(!html.includes('<strong class="accent">12.5</strong>'), 'taperen skal ikke markeres');
+});

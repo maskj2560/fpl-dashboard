@@ -29,6 +29,161 @@ function rowMatchesFilters(ds, f) {
   );
 }
 
+// Spillerkortet (v1.8.0): ren strengbygger, testet uten DOM. ALT som kommer
+// fra FPL escapes — navn, nyhetstekst og motstandere. shirtHtml er derimot
+// server-rendret av clubAssets-vokteren (en klonet <template>) og settes inn rå.
+const DODBALL_ETIKETTER = [
+  ['straffer', 'Straffer'],
+  ['hjorner', 'Hjørner/indirekte'],
+  ['frispark', 'Direkte frispark'],
+];
+
+function playerCardHtml(d, shirtHtml) {
+  const e = escapeHtml;
+  const stat = (navn, verdi) =>
+    '<div class="kort-stat"><span class="kort-stat-navn">' + e(navn) +
+    '</span><span class="kort-stat-val">' + e(verdi) + '</span></div>';
+
+  let html = '<div class="kort-topp">' + (shirtHtml || '') +
+    '<div><p class="kort-navn">' + e(d.fulltNavn) + '</p>' +
+    '<p class="dim">' + e((d.lag && d.lag.navn) || '–') + ' · ' + e(d.posisjon) +
+    ' · £' + e(d.pris) + 'm</p>' +
+    '<p><span class="status status-' + e(d.status) + '">' + e(d.statusTekst) + '</span>' +
+    (d.spillesjanse == null ? '' : ' <span class="dim">' + e(d.spillesjanse) + ' % sjanse</span>') +
+    '</p>' + (d.nytt ? '<p class="dim">' + e(d.nytt) + '</p>' : '') +
+    '</div></div>';
+
+  html += '<div class="kort-stats">' +
+    stat('Form', d.form) + stat('Poeng', d.totalPoeng) + stat('P/K', d.poengPerKamp) +
+    stat('Eid %', d.eid) + stat('xG', d.xg) + stat('xA', d.xa) +
+    stat('Minutter', d.minutter) + '</div>';
+
+  const roller = DODBALL_ETIKETTER.filter(([key]) => d.dodball && d.dodball[key] != null);
+  if (roller.length > 0) {
+    html += '<h3>Dødball</h3><ul class="kort-dodball">' +
+      roller.map(([key, label]) =>
+        '<li>' + e(label) + ': ' + e(d.dodball[key]) + '. valg</li>').join('') +
+      '</ul>';
+  }
+
+  html += '<h3>Siste kamper</h3>';
+  if (d.sisteKamper.length === 0) {
+    html += '<p class="empty">Ingen spilte kamper ennå.</p>';
+  } else {
+    html += '<div class="table-scroll"><table class="data"><thead><tr>' +
+      '<th>Runde</th><th>Mot</th><th class="num">P</th><th class="num">Min</th>' +
+      '<th class="num">Mål</th><th class="num">A</th><th class="num">xG</th>' +
+      '<th class="num">xA</th><th class="num">Bonus</th></tr></thead><tbody>' +
+      d.sisteKamper.map((k) =>
+        '<tr><td>' + e(k.runde) + '</td><td>' + e(k.motstander || '–') +
+        (k.hjemme == null ? '' : ' <span class="dim">' + (k.hjemme ? 'H' : 'B') + '</span>') +
+        '</td><td class="num"><strong>' + e(k.poeng) + '</strong></td>' +
+        '<td class="num">' + e(k.minutter) + '</td><td class="num">' + e(k.mal) + '</td>' +
+        '<td class="num">' + e(k.assists) + '</td><td class="num">' + e(k.xg) + '</td>' +
+        '<td class="num">' + e(k.xa) + '</td><td class="num">' + e(k.bonus) + '</td></tr>').join('') +
+      '</tbody></table></div>';
+  }
+
+  html += '<h3>Neste kamper</h3>';
+  if (d.kommende.length === 0) {
+    html += '<p class="empty">Ingen kamper er satt opp ennå.</p>';
+  } else {
+    html += '<ul class="kort-kommende">' + d.kommende.map((k) =>
+      '<li><span class="dim">R' + e(k.runde) + '</span> ' +
+      '<span class="fdr fdr-' + e(k.fdr) + '">' + e(k.motstander || '–') + ' ' +
+      (k.hjemme ? 'H' : 'B') + '</span></li>').join('') + '</ul>';
+  }
+
+  return html;
+}
+
+// Spillerduellen (v1.8.0). Alt bygges av radenes data-attributter — ingen
+// nettverkskall. Tallene er FPL-strenger: parseFloat brukes KUN til å
+// sammenligne, cellene viser strengen slik FPL skrev den.
+const DUELL_RADER = [
+  ['pris', 'Pris', 'lav'],
+  ['form', 'Form', 'hoy'],
+  ['poeng', 'Poeng', 'hoy'],
+  ['pk', 'Poeng per kamp', 'hoy'],
+  ['eid', 'Eid %', 'hoy'],
+  ['xg', 'xG', 'hoy'],
+  ['xa', 'xA', 'hoy'],
+  ['min', 'Minutter', 'hoy'],
+  ['bonus', 'Bonus', 'hoy'],
+  ['straffer', 'Straffer', 'rolle'],
+  ['hjorner', 'Hjørner/indirekte', 'rolle'],
+  ['frispark', 'Direkte frispark', 'rolle'],
+];
+
+function duelStatus(count) {
+  return { enabled: count === 2, tekst: count + ' av 2 valgt' };
+}
+
+function duelData(ds) {
+  const rolle = (v) => (v === '' || v == null ? null : parseInt(v, 10));
+  return {
+    id: ds.id,
+    navn: ds.navn,
+    lag: ds.lag,
+    pris: ds.price,
+    form: ds.form,
+    poeng: ds.poeng,
+    pk: ds.pk,
+    eid: ds.eid,
+    xg: ds.xg,
+    xa: ds.xa,
+    min: ds.min,
+    bonus: ds.bonus,
+    straffer: rolle(ds.straffer),
+    hjorner: rolle(ds.hjorner),
+    frispark: rolle(ds.frispark),
+  };
+}
+
+/**
+ * Hvem vinner hver rad: 'a', 'b' eller null (uavgjort / ingen av dem).
+ * Pris: lavest vinner. Dødballroller: satt slår null, ellers lavest ordenstall.
+ * Alt annet: høyest vinner.
+ */
+function duelWinners(a, b) {
+  const winners = {};
+  for (const [key, , regel] of DUELL_RADER) {
+    const av = a[key];
+    const bv = b[key];
+    if (regel === 'rolle') {
+      if (av == null && bv == null) winners[key] = null;
+      else if (av == null) winners[key] = 'b';
+      else if (bv == null) winners[key] = 'a';
+      else winners[key] = av === bv ? null : (av < bv ? 'a' : 'b');
+      continue;
+    }
+    const an = parseFloat(av) || 0;
+    const bn = parseFloat(bv) || 0;
+    if (an === bn) winners[key] = null;
+    else if (regel === 'lav') winners[key] = an < bn ? 'a' : 'b';
+    else winners[key] = an > bn ? 'a' : 'b';
+  }
+  return winners;
+}
+
+function duelHtml(a, b, winners) {
+  const e = escapeHtml;
+  const celle = (verdi, vant) => {
+    const tekst = e(verdi == null ? '–' : verdi);
+    return '<td class="num">' + (vant ? '<strong class="accent">' + tekst + '</strong>' : tekst) + '</td>';
+  };
+
+  return '<h2>Duell</h2><div class="table-scroll"><table class="data"><thead><tr>' +
+    '<th></th><th class="num">' + e(a.navn) + ' <span class="dim">' + e(a.lag) + '</span></th>' +
+    '<th class="num">' + e(b.navn) + ' <span class="dim">' + e(b.lag) + '</span></th>' +
+    '</tr></thead><tbody>' +
+    DUELL_RADER.map(([key, label]) =>
+      '<tr><th scope="row">' + e(label) + '</th>' +
+      celle(a[key], winners[key] === 'a') +
+      celle(b[key], winners[key] === 'b') + '</tr>').join('') +
+    '</tbody></table></div>';
+}
+
 // Leser én query-parameter uten URLSearchParams (testbar i ren V8-kontekst).
 function queryParam(qs, name) {
   for (const part of String(qs).replace(/^\?/, '').split('&')) {
@@ -207,6 +362,8 @@ function initEdgeFades(el, prefix) {
 
   tables.forEach((table) => {
     [...table.tHead.rows[0].cells].forEach((th, index) => {
+      // Duell-kolonnen på /spillere holder avkrysningsbokser, ikke data.
+      if (th.hasAttribute('data-nosort')) return;
       th.tabIndex = 0;
       th.addEventListener('click', () => sortBy(table, th, index));
       th.addEventListener('keydown', (e) => {
@@ -266,6 +423,8 @@ function initEdgeFades(el, prefix) {
     }
     count.textContent = 'Viser ' + shown + ' av ' + total + ' spillere';
     if (empty) empty.hidden = shown !== 0;
+    // En rad som filtreres bort skal ikke bli stående som duell-valg (Modul 10).
+    if (window.duellRyddSkjulte) window.duellRyddSkjulte();
   }
 
   search.addEventListener('input', applyFilters);
@@ -826,4 +985,170 @@ function rivalNavAction({ search, stored, validIds }) {
     return;
   }
   if (action.type === 'redirect') location.replace(action.to);
+})();
+
+// Modul 9: Spillerkort-modalen (/spillere). Henter lazy fra /api/spiller/:id
+// ved klikk — én gang per spiller per sidevisning (serveren cacher 30 min).
+(function () {
+  'use strict';
+
+  const root = document.getElementById('spillerkort');
+  if (!root) return;
+
+  const body = document.getElementById('spillerkort-body');
+  const tittel = document.getElementById('spillerkort-tittel');
+  const lukkKnapp = document.getElementById('spillerkort-lukk');
+  const dialog = root.querySelector('[role="dialog"]');
+  const cache = new Map();
+  let utloser = null;
+
+  function shirtFor(data) {
+    const lagId = data.lag && data.lag.id;
+    if (lagId == null) return '';
+    const attr = data.erKeeper ? 'data-shirt-keeper' : 'data-shirt';
+    const tpl = document.querySelector('template[' + attr + '="' + lagId + '"]');
+    return tpl ? tpl.innerHTML : '';
+  }
+
+  function fokuserbare() {
+    return [...dialog.querySelectorAll('button, [href], input, select, textarea, [tabindex]')]
+      .filter((el) => !el.disabled && el.tabIndex !== -1);
+  }
+
+  function apne(knapp) {
+    utloser = knapp;
+    root.hidden = false;
+    document.body.classList.add('modal-apen');
+    lukkKnapp.focus();
+  }
+
+  function lukk() {
+    root.hidden = true;
+    document.body.classList.remove('modal-apen');
+    if (utloser) utloser.focus();
+    utloser = null;
+  }
+
+  async function vis(id, navn) {
+    tittel.textContent = navn || 'Spillerkort';
+    if (cache.has(id)) {
+      const data = cache.get(id);
+      tittel.textContent = data.fulltNavn;
+      body.innerHTML = playerCardHtml(data, shirtFor(data));
+      return;
+    }
+
+    body.innerHTML = '<p class="loading">Henter spillerkort <span class="dots"><i></i><i></i><i></i></span></p>';
+    try {
+      const res = await fetch('/api/spiller/' + encodeURIComponent(id));
+      const data = await res.json();
+      if (!res.ok) {
+        body.innerHTML = '<p class="empty">' + escapeHtml(data.error || 'Fikk ikke hentet spillerkortet — prøv igjen.') + '</p>';
+        return;
+      }
+      cache.set(id, data);
+      tittel.textContent = data.fulltNavn;
+      body.innerHTML = playerCardHtml(data, shirtFor(data));
+    } catch {
+      body.innerHTML = '<p class="empty">Fikk ikke hentet spillerkortet — prøv igjen.</p>';
+    }
+  }
+
+  document.addEventListener('click', (e) => {
+    const knapp = e.target.closest && e.target.closest('.js-spillerkort');
+    if (knapp) {
+      e.preventDefault();
+      apne(knapp);
+      vis(knapp.dataset.id, knapp.textContent.trim());
+      return;
+    }
+    if (!root.hidden && e.target.hasAttribute && e.target.hasAttribute('data-modal-close')) lukk();
+  });
+
+  lukkKnapp.addEventListener('click', lukk);
+
+  // Esc lukker, Tab holdes inne i dialogen så lang tid den er åpen.
+  document.addEventListener('keydown', (e) => {
+    if (root.hidden) return;
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      lukk();
+      return;
+    }
+    if (e.key !== 'Tab') return;
+    const felt = fokuserbare();
+    if (felt.length === 0) return;
+    const forste = felt[0];
+    const siste = felt[felt.length - 1];
+    if (e.shiftKey && document.activeElement === forste) {
+      e.preventDefault();
+      siste.focus();
+    } else if (!e.shiftKey && document.activeElement === siste) {
+      e.preventDefault();
+      forste.focus();
+    }
+  });
+})();
+
+// Modul 10: Spillerduellen (/spillere). Tilstanden bor i selve checkbox-noden,
+// som flyttes MED raden når tabellen sorteres — aldri en radindeks.
+(function () {
+  'use strict';
+
+  const table = document.getElementById('players-table');
+  const seksjon = document.getElementById('duell');
+  if (!table || !seksjon) return;
+
+  const teller = document.getElementById('duell-teller');
+  const start = document.getElementById('duell-start');
+  const tom = document.getElementById('duell-tom');
+
+  function valgte() {
+    return [...table.tBodies[0].querySelectorAll('.duell-velg:checked')];
+  }
+
+  function oppdater() {
+    const s = duelStatus(valgte().length);
+    teller.textContent = s.tekst;
+    start.disabled = !s.enabled;
+  }
+
+  table.addEventListener('change', (e) => {
+    const boks = e.target.closest && e.target.closest('.duell-velg');
+    if (!boks) return;
+    // Tredje hake avvises — duellen er alltid to spillere.
+    if (boks.checked && valgte().length > 2) boks.checked = false;
+    oppdater();
+  });
+
+  start.addEventListener('click', () => {
+    const rader = valgte().map((b) => b.closest('tr'));
+    if (rader.length !== 2) return;
+    // Dataene kopieres ut nå, så duellen består om radene filtreres bort etterpå.
+    const a = duelData(rader[0].dataset);
+    const b = duelData(rader[1].dataset);
+    seksjon.innerHTML = duelHtml(a, b, duelWinners(a, b));
+    seksjon.hidden = false;
+    seksjon.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  tom.addEventListener('click', () => {
+    valgte().forEach((b) => { b.checked = false; });
+    seksjon.hidden = true;
+    seksjon.innerHTML = '';
+    oppdater();
+  });
+
+  // Filtreres en valgt rad bort, skal haken forsvinne med den (Modul 2b
+  // varsler etter hver kjøring).
+  window.duellRyddSkjulte = function () {
+    let endret = false;
+    for (const boks of valgte()) {
+      const rad = boks.closest('tr');
+      if (rad && rad.hidden) { boks.checked = false; endret = true; }
+    }
+    if (endret) oppdater();
+  };
+
+  oppdater();
 })();

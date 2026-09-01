@@ -19,6 +19,9 @@ const cases = [
   ['team', fx.team, 'Marius XI'],
   ['team', fx.teamEmpty, 'Fant ingen lagoppstilling'],
   ['players', fx.players, 'players-table'],
+  ['players', fx.players, 'Differensialer'],
+  ['players', fx.players, 'Dødballtakere'],
+  ['players', fx.playersNoDiff, 'Dødballtakere'],
   ['league', fx.league, 'Differensialer'],
   ['league', fx.leagueEmpty, 'Fant ingen private miniligaer'],
   ['league', fx.leagueNoRows, 'Ligatabellen er tom fram til første runde'],
@@ -333,13 +336,84 @@ test('feilsidene (404, error, no-team) bruker empty-state og lenker tilbake til 
 
 test('players.ejs: alle kolonneoverskrifter beholder data-type og aria-sort (sorteringskontrakten)', async () => {
   const html = await renderView('players', fx.players);
-  const ths = html.match(/<th [^>]*>/g) ?? [];
-  assert.equal(ths.length, 11, 'antall kolonner endret — app.js Modul 2 sorterer på indeks');
-  for (const th of ths) {
+  // Kun spillertabellens egen thead — differensial- og dødballtabellene under
+  // har sine egne overskrifter og sorteres ikke.
+  const head = html.slice(html.indexOf('id="players-table"'), html.indexOf('</thead>'));
+  const ths = head.match(/<th[ >][^>]*>/g) ?? [];
+  assert.equal(ths.length, 12, 'antall kolonner endret — app.js Modul 2 sorterer på indeks');
+  const [duell, ...sorterbare] = ths;
+  assert.match(duell, /data-nosort/, 'duell-kolonnen skal unntas sorteringen');
+  for (const th of sorterbare) {
     assert.match(th, /data-type="(text|num)"/, th);
     assert.match(th, /aria-sort="(none|ascending|descending)"/, th);
   }
-  assert.equal((html.match(/aria-sort="descending"/g) ?? []).length, 1, 'nøyaktig én startsortering');
+  assert.equal((head.match(/aria-sort="descending"/g) ?? []).length, 1, 'nøyaktig én startsortering');
+});
+
+// ---- v1.8.0: spiller-pakka ------------------------------------------------
+
+test('players.ejs har hopplenker til alle tre seksjonene', async () => {
+  const html = await renderView('players', fx.players);
+  for (const id of ['tabell', 'differensialer', 'dodballtakere']) {
+    assert.match(html, new RegExp(`href="#${id}"`), `mangler hopplenke til #${id}`);
+    assert.match(html, new RegExp(`id="${id}"`), `mangler seksjonen #${id}`);
+  }
+});
+
+test('players.ejs gjør spillernavn klikkbare og gir radene duell-data', async () => {
+  const html = await renderView('players', fx.players);
+  assert.match(html, /class="btn-link js-spillerkort" data-id="1"[^>]*>Saka</);
+  assert.match(html, /data-navn="Saka"/);
+  assert.match(html, /data-lag="ARS"/);
+  assert.match(html, /data-bonus="7"/);
+  assert.match(html, /data-min="900"/);
+  assert.match(html, /data-straffer="1"/);
+  assert.match(html, /class="duell-velg"[^>]*aria-label="Velg Saka til duell"/);
+});
+
+test('players.ejs har duell-skallet og en tom duell-seksjon', async () => {
+  const html = await renderView('players', fx.players);
+  assert.match(html, /id="duell-teller"[^>]*>0 av 2 valgt</);
+  assert.match(html, /id="duell-start"[^>]*disabled/);
+  assert.match(html, /id="duell-tom"/);
+  assert.match(html, /<section class="card" id="duell" hidden>/);
+});
+
+test('players.ejs viser tre terskler, men bare 10 % synlig fra start', async () => {
+  const html = await renderView('players', fx.players);
+  for (const p of [5, 10, 15]) {
+    assert.match(html, new RegExp(`data-terskel="${p}"`), `mangler terskel ${p}`);
+  }
+  assert.match(html, /data-terskel="10"(?![^>]*hidden)/, '10 % skal være synlig');
+  assert.match(html, /data-terskel="5"[^>]*hidden/, '5 % skal være skjult');
+  assert.match(html, /value="10" checked/, '10 % skal være forhåndsvalgt');
+});
+
+test('players.ejs sier fra når differensiallista ikke finnes ennå', async () => {
+  const html = await renderView('players', fx.playersNoDiff);
+  assert.match(html, /Differensialer kommer når formtallene finnes — etter første runde/);
+  assert.doesNotMatch(html, /data-terskel=/);
+});
+
+test('players.ejs lister dødballtakere per klubb med – for tomme roller', async () => {
+  const html = await renderView('players', fx.players);
+  const rad = html.slice(html.indexOf('id="dodballtakere"'));
+  assert.match(rad, /js-spillerkort" data-id="1"[^>]*>Saka</);
+  assert.match(rad, /club-name">LIV</, 'klubber uten takere skal ha rad likevel');
+  assert.match(rad, /–/, 'tomme roller skal vises som tankestrek');
+});
+
+test('players.ejs har modal-skallet og server-rendrede drakt-templates', async () => {
+  const html = await renderView('players', fx.players);
+  assert.match(html, /<div id="spillerkort"[^>]*hidden>/);
+  assert.match(html, /role="dialog"[^>]*aria-modal="true"/);
+  assert.match(html, /id="spillerkort-lukk"/);
+  assert.match(html, /id="spillerkort-body"/);
+  assert.match(html, /<template data-shirt="1">/);
+  assert.match(html, /<template data-shirt-keeper="1">/);
+  // Arsenal har grafikk, Liverpool ikke — vokteren skal ha valgt riktig gren.
+  assert.match(html, /<template data-shirt="1">[\s\S]*?shirt_3\.png/);
+  assert.match(html, /<template data-shirt="2">\s*<span class="shirt shirt--shirt"><span class="club-fallback/);
 });
 
 test('league.ejs viser retningsmarkører med skjermlesertekst', async () => {

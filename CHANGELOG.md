@@ -7,6 +7,46 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-09-01
+
+### Added
+
+- Grunnlaget for spillerkortet: `buildPlayerCard` samler nøkkeltall, siste
+  fem runder (dobbeltrunder gir to rader) og de tre neste kampene med FDR
+  til ett norsk datasett. Skadenyheter oversettes, og dødballrollene
+  (straffer, hjørner, frispark) følger med.
+- Differensial-finner: rangerer spillere med lav global eierandel etter
+  form og kampprogram (score = form × (6 − snitt-FDR neste tre runder)).
+  Terskelen kan settes til 5, 10 eller 15 %, og topp 10 vises per terskel.
+  Før noen har fått form — helt i sesongstart — sier siden fra i stedet
+  for å liste vilkårlige navn.
+- «Dødballtakere»: én tabellrad per klubb med de to første i køen for
+  straffer, hjørner/indirekte frispark og direkte frispark. Klubber uten
+  kjente takere står oppført med «–», så hele serien er med.
+- Nytt endepunkt `GET /api/spiller/:id` som spillerkortet hentes fra.
+  Detaljdataene lastes først når du klikker på et navn — aldri for alle
+  626 spillerne — og en ukjent id svares med 404 uten å koste et kall mot
+  FPL. Svaret oppgir også hvor gamle dataene er (`dataAlder`).
+- «Spillere» er nå tre seksjoner med hopplenker øverst: Tabell,
+  Differensialer og Dødballtakere. Spillernavn er blitt knapper som åpner
+  spillerkortet, og hver rad har en avkrysningsboks for spillerduellen.
+  Terskelbytte (5/10/15 %) skjer i nettleseren — ingen sidelasting, ingen
+  nye kall mot FPL.
+- Spillerkort: klikk på et spillernavn åpner et kort med nøkkeltall,
+  dødballroller, de fem siste rundene og de tre neste kampene med
+  FDR-farge. Kortet lukkes med ×, Esc eller klikk utenfor, tastaturfokus
+  holdes inne i dialogen, og fokus går tilbake til navnet du klikket på.
+- Spillerduell: kryss av to spillere i tabellen og trykk «Sammenlign» for å
+  se nøkkeltallene side ved side, med den beste verdien uthevet på hver
+  rad. Billigst vinner på pris, satt dødballrolle slår ingen rolle, og lik
+  verdi markeres ikke. Alt regnes i nettleseren — ingen kall mot FPL.
+
+### Fixed
+
+- Kontrakten for `getElementSummary` er låst med tester: egen cache-nøkkel
+  per spiller og 30 minutters levetid. Funksjonen fantes fra før, men var
+  ubrukt og utestet — nå er den grunnmuren spillerkortet hviler på.
+
 ## [1.7.1] - 2026-09-01
 
 ### Added
