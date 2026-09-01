@@ -89,6 +89,24 @@ test('layout.ejs gir tema-scriptet CSP-noncen', async () => {
   assert.ok(html.includes('<script nonce="testnonce">'), 'tema-scriptet mangler nonce');
 });
 
+// ---- v1.8.3: tilgjengelighet ----------------------------------------------------
+
+test('layout.ejs har hopp-lenken «Hopp til innhold» som første fokuserbare element og main#innhold', async () => {
+  const html = await renderView('layout', layoutLocals('/'));
+  const body = html.slice(html.indexOf('<body>'));
+  const firstFocusable = body.match(/<(a|button|input|select|textarea)\b[^>]*>/);
+  assert.ok(firstFocusable, 'fant ingen fokuserbare elementer');
+  assert.match(firstFocusable[0], /class="skip-link"/, `første fokuserbare er ${firstFocusable[0]}`);
+  assert.match(firstFocusable[0], /href="#innhold"/);
+  assert.ok(body.includes('Hopp til innhold'), 'lenketeksten mangler');
+  assert.ok(body.includes('<main id="innhold">'), 'main mangler id="innhold"');
+});
+
+test('dashboard.ejs merker nedtellingen som timer (aldri opplest hvert sekund)', async () => {
+  const html = await renderView('dashboard', fx.dashboard);
+  assert.match(html, /<div class="countdown" role="timer"/);
+});
+
 test('layout.ejs har nøyaktig ett inline-script, og det bærer nonce', async () => {
   const html = await renderView('layout', layoutLocals('/'));
   const inline = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>/g)].map((m) => m[0]);

@@ -25,6 +25,7 @@
   <link rel="stylesheet" href="/style.css?v=<%= assetVersion %>">
 </head>
 <body>
+  <a class="skip-link" href="#innhold">Hopp til innhold</a>
   <header class="topbar">
     <a class="wordmark" href="/">FPL<span>dashboard</span></a>
     <!-- aria-current skrives uescapet: escaping gjør anførselstegnene til
@@ -55,7 +56,7 @@
     </div>
   <% } %>
 
-  <main>
+  <main id="innhold">
     <%- body %>
   </main>
 

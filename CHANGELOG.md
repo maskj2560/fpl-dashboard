@@ -20,6 +20,13 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   leses fra `CF-Connecting-IP` bak Cloudflare (så `X-Forwarded-For`, så
   socketen). GET er uberørt — de leser serverens cache.
 
+### Changed
+
+- Tilgjengelighet: hopp-lenken «Hopp til innhold» er første Tab på alle
+  sider (synlig kun ved fokus) og peker på `<main id="innhold">`;
+  nedtellingen på dashbordet er merket `role="timer"` så sekundene aldri
+  leses opp.
+
 ### Fixed
 
 - «Spillere»: filterskjemaet brukte et inline `onsubmit` for å hindre at

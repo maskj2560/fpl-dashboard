@@ -3,7 +3,8 @@
     <h1 class="sr-only">Neste deadline — <%= deadlineEvent.name %></h1>
     <p class="eyebrow"><span class="gw-badge"><%= deadlineEvent.name %></span> Neste deadline</p>
     <p class="hero-date"><%= formatDateTime(deadlineEvent.deadline_time) %></p>
-    <div class="countdown" data-deadline="<%= deadlineEvent.deadline_time %>">
+    <%# role=timer: aria-live er implisitt off, så sekundene leses aldri opp. %>
+    <div class="countdown" role="timer" data-deadline="<%= deadlineEvent.deadline_time %>">
       <div class="unit"><span class="val" data-unit="d">–</span><span class="lbl">dager</span></div>
       <div class="unit"><span class="val" data-unit="h">–</span><span class="lbl">timer</span></div>
       <div class="unit"><span class="val" data-unit="m">–</span><span class="lbl">min</span></div>
