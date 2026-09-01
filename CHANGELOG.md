@@ -7,6 +7,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.8.3] - 2026-09-02
+
 ### Security
 
 - Sikkerhetshoder på alle svar: `Content-Security-Policy` med
@@ -39,6 +41,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Fixed
 
+- Feilhandleren svarte 500 «Noe gikk galt» med stacktrace i loggen på
+  klientfeil fra body-parseren (for stor kropp, ugyldig JSON). Nå gis
+  riktig status (413/400) som JSON på `/api`, uten logging. Funnet i
+  røyktesten av 32 kB-taket.
 - «Spillere»: filterskjemaet brukte et inline `onsubmit` for å hindre at
   Enter sendte skjemaet. Flyttet til app.js — CSP-en som kommer i samme
   versjon ville blokkert inline-handlere stille. Testlåst: ingen view har

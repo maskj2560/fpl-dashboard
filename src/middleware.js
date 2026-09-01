@@ -152,10 +152,20 @@ export function createErrorHandler({ version, assetVersion, startedAt }) {
     // FPLs oppdateringsvindu er en normal driftstilstand, ikke en feil hos
     // oss — den skal verken logge stacktrace eller vise den generiske siden.
     const updating = err?.status === 503;
-    if (!updating) console.error('Uventet feil:', err);
+    // body-parser (413 for stor kropp, 400 ugyldig JSON) og lignende setter
+    // err.status i 4xx: klientens feil, ikke vår — riktig status, ingen stacktrace.
+    const status = Number(err?.status ?? err?.statusCode);
+    const clientError = Number.isInteger(status) && status >= 400 && status < 500;
+    if (!updating && !clientError) console.error('Uventet feil:', err);
     if (res.headersSent) return;
 
     if (wantsJson(req)) {
+      if (clientError) {
+        res.status(status).json({
+          error: status === 413 ? 'Forespørselen er for stor.' : 'Ugyldig forespørsel.',
+        });
+        return;
+      }
       res.status(updating ? 503 : 500).json({
         error: updating
           ? 'FPL-API-et oppdateres — prøv igjen om noen minutter.'
@@ -164,14 +174,16 @@ export function createErrorHandler({ version, assetVersion, startedAt }) {
       return;
     }
 
-    res.status(updating ? 503 : 500);
+    res.status(updating ? 503 : clientError ? status : 500);
     const locals = updating
       ? {
           code: 503,
           heading: 'FPL oppdaterer spillet',
           message: 'Dataene er ikke tilgjengelige riktig ennå — prøv igjen om noen minutter.',
         }
-      : { code: 500, heading: 'Noe gikk galt', message: null };
+      : clientError
+        ? { code: status, heading: 'Ugyldig forespørsel', message: null }
+        : { code: 500, heading: 'Noe gikk galt', message: null };
     res.render('error', locals, (renderErr, body) => {
       if (renderErr) return res.type('text/plain').send('Noe gikk galt.');
       res.render(

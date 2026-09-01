@@ -316,6 +316,38 @@ function updatingError() {
   return err;
 }
 
+// v1.8.3 (røyktestfunn): body-parser kaster 413/400 med err.status. De er
+// klientfeil, ikke krasj — riktig status, JSON-feil og ingen stacktrace.
+test('for stor kropp (413 fra body-parser) svares med 413 JSON uten stacktrace', () => {
+  const res = fakeRes();
+  const err = Object.assign(new Error('request entity too large'), { status: 413, type: 'entity.too.large' });
+  let logged = 0;
+  const originalError = console.error;
+  console.error = () => { logged += 1; };
+  try {
+    handler(err, { path: '/scenarier', originalUrl: '/api/scenarier' }, res, () => {});
+  } finally {
+    console.error = originalError;
+  }
+  assert.equal(res.statusCode, 413);
+  assert.deepEqual(res.body, { error: 'Forespørselen er for stor.' });
+  assert.equal(logged, 0, 'klientfeil skal ikke logges som krasj');
+});
+
+test('ugyldig JSON (400 fra body-parser) svares med 400 JSON', () => {
+  const res = fakeRes();
+  const err = Object.assign(new Error('Unexpected token'), { status: 400, type: 'entity.parse.failed' });
+  const originalError = console.error;
+  console.error = quiet;
+  try {
+    handler(err, { path: '/scenarier', originalUrl: '/api/scenarier' }, res, () => {});
+  } finally {
+    console.error = originalError;
+  }
+  assert.equal(res.statusCode, 400);
+  assert.deepEqual(res.body, { error: 'Ugyldig forespørsel.' });
+});
+
 test('503 fra FPL gir 503 og egen feilmelding på /api-sti', () => {
   const res = fakeRes();
   handler(updatingError(), { path: '/', originalUrl: '/api/brief.json' }, res, () => {});
