@@ -179,6 +179,28 @@ function recommendWildcard({ gws, grid, teams, squadTeams, counts }) {
   };
 }
 
+const fdr1 = (n) => n.toFixed(1).replace('.', ',');
+
+/** Én norsk setning som forklarer anbefalingen med tallene i rec. Tom uten rec. */
+export function describeRec(name, rec) {
+  if (!rec) return '';
+  switch (name) {
+    case 'bboost': {
+      const dobbel = rec.dgwClubs?.length ? ` · dobbel: ${rec.dgwClubs.join(', ')}` : '';
+      return `${rec.squadFixtures} kamper i troppen, snitt-FDR ${fdr1(rec.avgFdr)}${dobbel}`;
+    }
+    case '3xc':
+      return `${rec.teamShort}: ${rec.fixtures.map((f) => `${f.opponent} (${f.home ? 'h' : 'b'})`).join(', ')}`;
+    case 'freehit':
+      return `${rec.blankPlayers} i troppen er blanke (${rec.blankClubs.join(', ')})`;
+    case 'wildcard':
+      return `etter tung periode runde ${rec.badRun.from}–${rec.badRun.to} (FDR ${fdr1(rec.badRun.avgFdr)})` +
+        ` · beste program: ${rec.bestClubs.map((c) => c.short).join(', ')}`;
+    default:
+      return '';
+  }
+}
+
 /**
  * Hele planen: per chip-halvdel, per chip — brukt (med runde) eller en
  * regelbasert anbefaling med begrunnelse. Kun kjente runder (der minst ett

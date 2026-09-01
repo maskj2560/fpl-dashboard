@@ -723,6 +723,33 @@ test('innsikt.ejs rendrer trendlinjen bare når den finnes', async () => {
   assert.ok(uten.includes('Rundens XI'), 'resten av seksjonen skal stå');
 });
 
+// ---- v1.9.0: chip-planlegger på /lag ----------------------------------------------
+
+test('team.ejs viser chip-planleggeren med brukt/tilgjengelig', async () => {
+  const html = await renderView('team', fx.team);
+  assert.ok(html.includes('id="chip-planlegger"'), 'kortet mangler');
+  assert.ok(html.includes('Chip-planlegger'), 'overskriften mangler');
+  for (const label of ['Bench Boost', 'Triple Captain', 'Free Hit', 'Wildcard']) {
+    assert.ok(html.includes(label), `${label} mangler`);
+  }
+  assert.ok(html.includes('Brukt i runde 1'), 'brukt chip skal vises som pille');
+  assert.ok(html.includes('Runde 5'), 'anbefalt runde mangler');
+  assert.ok(html.includes('Ingen blankrunde rammer troppen bredt nok'), 'begrunnelse uten anbefaling mangler');
+  assert.ok(html.includes('Runde 5 (ARS, CHE)'), 'dobbelrunden mangler');
+  assert.ok(html.includes('Runde 6 (LIV, EVE)'), 'blankrunden mangler');
+  assert.ok(html.includes('runde 20–38'), 'andre halvdel mangler');
+
+  const tom = await renderView('team', fx.teamEmpty);
+  assert.ok(!tom.includes('Chip-planlegger'), 'uten plan skal kortet ikke rendres');
+});
+
+test('team.ejs forklarer når ingen spesialrunder er kjent', async () => {
+  const html = await renderView('team', fx.teamNoSpecial);
+  assert.ok(html.includes('Ingen dobbel- eller blankrunder er kjent ennå'), 'forklaringen mangler');
+  assert.ok(html.includes('Bench Boost'), 'anbefalingene skal stå likevel');
+  assert.ok(!html.includes('Dobbelrunder:'), 'tom liste skal ikke rendres');
+});
+
 // ---- v1.8.3: CSP -------------------------------------------------------------
 
 // CSP-en (script-src 'self' + nonce) blokkerer inline-hendelsesattributter

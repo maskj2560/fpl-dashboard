@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { chipHalves, specialGws, buildChipPlan, CHIPS } from '../src/services/chips.js';
+import { chipHalves, specialGws, buildChipPlan, describeRec, CHIPS } from '../src/services/chips.js';
 import { fixtureGrid } from '../src/services/analysis.js';
 
 // Syntetisk liga: fire klubber, GW 4–8. Alt regnes fra denne lista.
@@ -154,6 +154,19 @@ test('buildChipPlan markerer brukte chips per halvdel og gir dem ingen anbefalin
   // Andre halvdel har ikke kjent kampprogram ennå → ingen anbefaling, men grunn.
   assert.equal(p.halves[1].chips.bboost.rec, null);
   assert.match(p.halves[1].chips.bboost.reason, /kampprogram/i);
+});
+
+test('describeRec forklarer anbefalingen på norsk med tall fra rec', () => {
+  const p = plan();
+  const c = p.halves[0].chips;
+  assert.equal(describeRec('bboost', c.bboost.rec), '24 kamper i troppen, snitt-FDR 2,6 · dobbel: ARS, CHE');
+  assert.equal(describeRec('3xc', c['3xc'].rec), 'ARS: CHE (h), LIV (b)');
+  assert.equal(describeRec('freehit', c.freehit.rec), '6 i troppen er blanke (LIV, EVE)');
+  assert.equal(
+    describeRec('wildcard', { gw: 14, until: 17, badRun: { from: 11, to: 13, avgFdr: 14 / 3 }, bestClubs: [{ short: 'ARS', avgFdr: 2 }, { short: 'CHE', avgFdr: 2.2 }] }),
+    'etter tung periode runde 11–13 (FDR 4,7) · beste program: ARS, CHE',
+  );
+  assert.equal(describeRec('bboost', null), '');
 });
 
 test('buildChipPlan uten spesialrunder gir noSpecial og fortsatt BB/TC/WC', () => {

@@ -21,6 +21,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   i troppen, Wildcard rett etter troppens tyngste tre runder (snitt-FDR
   ≥ 3,3) med 4–6 lette runder for de beste klubbene. Kun kjente runder
   vurderes.
+- «Lag» har fått kortet «Chip-planlegger» under rankgrafen: to halvdeler ×
+  fire chips med brukt-pille eller anbefalt runde + begrunnelse
+  (`describeRec`), pluss lista over kjente dobbel- og blankrunder. Bygget
+  av data siden alt hentet — 0 nye FPL-kall, 0 AI-kall.
 
 ## [1.8.3] - 2026-09-02
 
