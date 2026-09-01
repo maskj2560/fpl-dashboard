@@ -16,7 +16,7 @@ går ut i drift for seg:
    «Lagsjekk» tre timer før deadline (Discord kun når noe er galt: skadet
    starter, flagget kaptein, spiller uten kamp) og en kalender du kan
    abonnere på med alle deadlines og kampene til spillerne dine.
-3. **v1.10.0 — prisvarsler.** Én Discord-melding om natten når prisene i
+3. ~~**v1.10.0 — prisvarsler.**~~ Ute 2. september, se under. Én Discord-melding om natten når prisene i
    troppen din endrer seg, pluss nattens største bevegelser globalt.
 4. **v1.11.0 — karriere-pakka.** Tidligere sesonger og merkedager på
    Innsikt-siden, og «bonuskamp» på Live: hvem leder BPS-kampen i hver
@@ -27,7 +27,21 @@ går ut i drift for seg:
 Ingen av delene bruker AI, så kostnaden er uendret. Til slutt får du én
 ferdig prompt til Claude for Chrome som tester alt i drift.
 
-## Nytt: v1.9.0 — planleggingspakka (2. september)
+## Nytt: v1.10.0 — prisvarsler (2. september)
+
+Appen sjekker FPL-prisene hver time og husker dem. Når prisene endrer seg
+om natten, får du **én** Discord-melding: først spillerne i troppen din
+(«Haaland (MCI) £14.0m → £14.1m (+0,1)»), så nattens fem største stigere
+og fallere. Endrer prisene seg igjen samme natt, slås det sammen i samme
+rapport — aldri to meldinger. Samme innhold ligger som kortet
+«Prisendringer natt til …» øverst på Overganger-siden.
+
+Verdt å vite: **første natt etter en oppdatering kommer det ingen
+melding** — appen må først ta et snapshot å sammenligne med. Fra natten
+etter er den i gang. Ingen AI, ingen ekstra kall mot FPL av betydning
+(én cachet henting i timen).
+
+## Før det: v1.9.0 — planleggingspakka (2. september)
 
 Tre ting som hjelper deg å planlegge, ingen av dem bruker AI:
 

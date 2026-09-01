@@ -128,7 +128,11 @@ og appen oppfører seg som før v1.3.7 — den krasjer aldri.
 Samme volum rommer i dag også `report-state.json` (rundens rapport, v1.6.0),
 `scenarios.json` (hva hvis-planleggeren, v1.5.0) og `check-state.json`
 (Lagsjekk-markøren, v1.9.0 — settes uansett funn, så en redeploy rett etter
-sjekken aldri dobbel-poster).
+sjekken aldri dobbel-poster) og `price-state.json` (prisvarslene, v1.10.0:
+timesnapshot av alle priser + nattens rapport + «postet»-dato). Uten volum
+tar appen nytt snapshot etter hver deploy og **første natt etter en deploy
+gir ingen prismelding** — bare snapshot; kortet på /overganger fylles fra
+neste prisendring.
 
 Oppsett i Coolify (én gang): **Storages → Add → destination path**
 `/app/data`. Satt opp 26. aug 2026 — navngitt volum

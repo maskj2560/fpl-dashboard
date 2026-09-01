@@ -7,6 +7,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.10.0] - 2026-09-02
+
 ### Added
 
 - Prisvarsler (grunnlag): `prices.js` med `dateKey` (Oslo-dato — natten

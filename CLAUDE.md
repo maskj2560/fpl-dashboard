@@ -112,6 +112,15 @@ src/services/
                    (75 oktetter, æøå-sikker), buildCalendar (38 deadlines
                    m/ VALARM -PT3H + troppens kamper fra neste runde; CRLF,
                    UTC Z, ingen VTIMEZONE). Rent. ALDRI ai.js
+  prices.js        (v1.10.0) prisvarsler: rene dateKey/snapshotOf/diffPrices/
+                   priceDecision/mergeDiffs/buildPriceChanges/priceChangesText
+                   + timer (startPriceWatcher: ett tikk ved oppstart, så hver
+                   time — ALLTID aktiv, ≤ 1 cachet bootstrap-kall/time).
+                   Snapshot + dagens rapport i DATA_DIR/price-state.json
+                   (versjon 1; snapshot lagres FØR posten, samme natt slås
+                   sammen, maks én Discord-melding per Oslo-dato). Discord
+                   via postToDiscord lånt fra notify.js. Ruta på /overganger
+                   leser kun getLastPriceChanges(). ALDRI ai.js
   clubAssets.js    hvilke klubbbilder som finnes i public/img/clubs/. Leses én
                    gang ved oppstart til app.locals.clubAssets; partialene spør
                    hasBadge/hasShirt/hasKeeper og skriver aldri <img> i blinde.
@@ -235,8 +244,9 @@ overgangskommentaren 1x/døgn (fra v1.5.0), ligarapporten 1x per
 ferdigspilt runde (fra v1.6.0), pluss ett tikk ved
 oppstart (AI-cachen bor i minnet og er tom etter hver deploy) — til sammen
 ~49–53 kall/uke. `/innsikt` (v1.7.0) og spiller-pakka på `/spillere`
-(v1.8.0, inkludert `/api/spiller/:id`) og planleggingspakka (v1.9.0:
-`chips.js`, `deadline.js`, `calendar.js`) er utenfor dette regnskapet: de
+(v1.8.0, inkludert `/api/spiller/:id`), planleggingspakka (v1.9.0:
+`chips.js`, `deadline.js`, `calendar.js`) og prisvarslene (v1.10.0:
+`prices.js`) er utenfor dette regnskapet: de
 importerer aldri `ai.js` og koster **0 AI-kall** i alle tilstander — låst
 på kilden i `test/routes.test.js`.
 Prompts holdes korte. Uten nøkkel vises rå data
