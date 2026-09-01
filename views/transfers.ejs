@@ -49,7 +49,7 @@
       <p class="dim"><%= analysis.totals.skipped %> overganger kunne ikke tolkes fra FPL-dataene og er utelatt.</p>
     <% } %>
     <div class="table-scroll">
-      <table class="data">
+      <table class="data"><caption class="sr-only">Bytte for bytte</caption>
         <thead>
           <tr><th></th><th>Runde</th><th>Inn</th><th>Ut</th><th class="num">Poengdiff</th><th class="num">Straff</th><th class="num">Netto</th><th>Periode</th></tr>
         </thead>
@@ -79,7 +79,7 @@
                       } else { %>Hittil (<%= r.after5.gws %> av 5 runder): <%= formatSigned(r.after5.diff) %><% } %></p>
                   <% } %>
                   <div class="table-scroll">
-                    <table class="data">
+                    <table class="data"><caption class="sr-only">Rundene for byttet <%= r.ut.name %> mot <%= r.inn.name %></caption>
                       <thead>
                         <tr><th>Runde</th><th class="num"><%= r.inn.name %></th><th class="num"><%= r.ut.name %></th><th class="num">Diff</th><th class="num">Sum</th></tr>
                       </thead>
@@ -179,7 +179,7 @@
     <details>
       <summary>Runde for runde</summary>
       <div class="table-scroll">
-        <table class="data">
+        <table class="data"><caption class="sr-only">Laget uten bytter per runde</caption>
           <thead><tr><th>Runde</th><th class="num">Poeng</th><th>Kaptein</th><th class="num">Autosubs</th></tr></thead>
           <tbody>
             <% for (const g of baseline.perGw) { %>
@@ -209,7 +209,7 @@
     <%= priceReport.value !== null ? formatPrice(priceReport.value) : '–' %>
     · bank <%= priceReport.bank !== null ? formatPrice(priceReport.bank) : '–' %> (£m).</p>
     <div class="table-scroll">
-      <table class="data">
+      <table class="data"><caption class="sr-only">Prisgevinst per spiller</caption>
         <thead>
           <tr><th>Spiller</th><th class="num">Kjøpt</th><th class="num">Nå</th><th class="num">Salg</th><th class="num">Gevinst</th></tr>
         </thead>

@@ -136,6 +136,16 @@ test('style.css: hidden slår gjennom mot display-reglene', () => {
   assert.match(css, /\[hidden\]\s*\{\s*display: none !important;/);
 });
 
+// v1.8.3: hopp-lenken ligger utenfor skjermen til den får tastaturfokus, og
+// bruker handlingsfargen med mørk tekst (kontrastparet er alt låst).
+test('style.css: hopp-lenken er skjult til den får fokus', () => {
+  assert.match(block('.skip-link'), /position: absolute/);
+  assert.match(block('.skip-link'), /translateY\(-\d+%\)/);
+  assert.match(block('.skip-link'), /background: var\(--accent\)/);
+  assert.match(block('.skip-link'), /color: var\(--accent-ink\)/);
+  assert.match(block('.skip-link:focus'), /transform: none/);
+});
+
 // QA-funn (økt 51): fylte hele cellehøyden og leste som et fargefelt.
 test('style.css: score-søyla er en tynn stripe, ikke et fylt felt', () => {
   const b = block('.score-celle');

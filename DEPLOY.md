@@ -165,6 +165,33 @@ edge-cachen fra tiden før versjoneringen. De forsvinner ikke av seg selv.
 
 Etterpå er purge ikke nødvendig ved deploy: nye assets får ny URL.
 
+## CSP og Cloudflare (fra v1.8.3)
+
+Appen sender `Content-Security-Policy` med `script-src 'self' 'nonce-…'`.
+Det betyr at **alt Cloudflare måtte injisere av inline-script blokkeres**
+og siden kan miste tema-scriptet eller app.js. Sjekk i Cloudflare-panelet
+at disse er AV for sonen:
+
+- **Speed → Optimization → Rocket Loader** (pakker om alle script-tagger)
+- **Analytics → Web Analytics** (injiserer `beacon.min.js` fra
+  `static.cloudflareinsights.com`)
+- **Scrape Shield → Email Address Obfuscation** (injiserer inline-script)
+
+Verifiser utenfra etter deploy:
+
+```
+curl -sI https://fpl.marsk.no/ | grep -i content-security-policy   # hodet finnes
+curl -s  https://fpl.marsk.no/ | grep -c '<script'                  # NØYAKTIG 2 (tema + app.js)
+```
+
+Flere enn 2 `<script` betyr at noe injiseres — slå av funksjonen i
+Cloudflare, ikke svekk CSP-en. I nettleseren: DevTools-konsollen skal ikke
+ha «Refused to execute inline script».
+
+Takstbegrensningen på `/api` (POST/DELETE, 30 per 5 min) leser klientens
+IP fra `CF-Connecting-IP`, som Cloudflare setter og som ikke kan forfalskes
+gjennom proxyen. Uten Cloudflare brukes `X-Forwarded-For`, så socketen.
+
 ## Verifisering etter deploy
 
 ```bash

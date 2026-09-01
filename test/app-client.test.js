@@ -437,3 +437,23 @@ test('terskelSynlighet sammenligner verdi, ikke type — radioverdier er strenge
 test('terskelSynlighet tar tersklene som finnes i markupen', () => {
   assert.deepEqual({ ...app.terskelSynlighet('15', [5, 15]) }, { 5: true, 15: false });
 });
+
+// ---- v1.8.3: tilgjengelighet i klientrendret markup -------------------------
+
+test('klientrendrede tabeller har caption rett etter <table>', () => {
+  const src = fs.readFileSync(new URL('../public/app.js', import.meta.url), 'utf8');
+  const tables = [...src.matchAll(/<table[^>]*>([\s\S]{0,80})/g)];
+  assert.ok(tables.length >= 4, `fant bare ${tables.length} tabeller i app.js`);
+  for (const m of tables) {
+    assert.match(m[1], /^\s*'?\s*\+?\s*'?<caption|^<caption/, `tabell uten caption: <table${m[0].slice(6, 70)}`);
+  }
+});
+
+// ---- v1.8.3: sortering (Modul 2) -------------------------------------------
+
+test('nextSortDir veksler descending → ascending og alt annet → descending', () => {
+  assert.equal(app.nextSortDir('descending'), 'ascending');
+  assert.equal(app.nextSortDir('ascending'), 'descending');
+  assert.equal(app.nextSortDir('none'), 'descending');
+  assert.equal(app.nextSortDir(null), 'descending');
+});

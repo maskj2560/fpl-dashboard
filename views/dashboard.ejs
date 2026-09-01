@@ -3,7 +3,8 @@
     <h1 class="sr-only">Neste deadline — <%= deadlineEvent.name %></h1>
     <p class="eyebrow"><span class="gw-badge"><%= deadlineEvent.name %></span> Neste deadline</p>
     <p class="hero-date"><%= formatDateTime(deadlineEvent.deadline_time) %></p>
-    <div class="countdown" data-deadline="<%= deadlineEvent.deadline_time %>">
+    <%# role=timer: aria-live er implisitt off, så sekundene leses aldri opp. %>
+    <div class="countdown" role="timer" data-deadline="<%= deadlineEvent.deadline_time %>">
       <div class="unit"><span class="val" data-unit="d">–</span><span class="lbl">dager</span></div>
       <div class="unit"><span class="val" data-unit="h">–</span><span class="lbl">timer</span></div>
       <div class="unit"><span class="val" data-unit="m">–</span><span class="lbl">min</span></div>
@@ -24,7 +25,7 @@
       <p class="empty">Ingen spillere er flagget nå. Status endrer seg ofte etter pressekonferansene — sjekk igjen nærmere deadline.</p>
     <% } else { %>
       <div class="table-scroll">
-        <table class="data">
+        <table class="data"><caption class="sr-only">Ukens flagg</caption>
           <thead>
             <tr><th>Spiller</th><th>Lag</th><th class="num">Eid</th><th>Status</th></tr>
           </thead>
@@ -58,7 +59,7 @@
       <p class="empty">Formtallene nullstilles mellom sesongene. Toppformlisten fylles så snart den første runden er spilt.</p>
     <% } else { %>
       <div class="table-scroll">
-        <table class="data">
+        <table class="data"><caption class="sr-only">Toppform</caption>
           <thead>
             <tr><th>Spiller</th><th>Lag</th><th>Pos</th><th class="num">Form</th><th class="num">Poeng</th></tr>
           </thead>
@@ -84,7 +85,7 @@
       <p class="empty">Ingen overganger er registrert i denne runden ennå. Listen fylles etter hvert som managerne begynner å bytte.</p>
     <% } else { %>
       <div class="table-scroll">
-        <table class="data">
+        <table class="data"><caption class="sr-only">Mest kjøpt denne runden</caption>
           <thead>
             <tr><th>Spiller</th><th class="num">Pris</th><th class="num">Inn</th></tr>
           </thead>
@@ -108,7 +109,7 @@
       <p class="empty">Ingen overganger er registrert i denne runden ennå. Listen fylles etter hvert som managerne begynner å bytte.</p>
     <% } else { %>
       <div class="table-scroll">
-        <table class="data">
+        <table class="data"><caption class="sr-only">Mest solgt denne runden</caption>
           <thead>
             <tr><th>Spiller</th><th class="num">Pris</th><th class="num">Ut</th></tr>
           </thead>
@@ -137,7 +138,7 @@
     <span class="fdr fdr-5">5 vanskelig</span>
   </p>
   <div class="table-scroll">
-    <table class="data fdr-table">
+    <table class="data fdr-table"><caption class="sr-only">Fixture-vanskelighet per lag og runde</caption>
       <thead>
         <tr>
           <th>Lag</th>

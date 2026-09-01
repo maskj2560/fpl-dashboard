@@ -73,7 +73,7 @@ function playerCardHtml(d, shirtHtml) {
   if (d.sisteKamper.length === 0) {
     html += '<p class="empty">Ingen spilte kamper ennå.</p>';
   } else {
-    html += '<div class="table-scroll"><table class="data"><thead><tr>' +
+    html += '<div class="table-scroll"><table class="data"><caption class="sr-only">Siste kamper</caption><thead><tr>' +
       '<th>Runde</th><th>Mot</th><th class="num">P</th><th class="num">Min</th>' +
       '<th class="num">Mål</th><th class="num">A</th><th class="num">xG</th>' +
       '<th class="num">xA</th><th class="num">Bonus</th></tr></thead><tbody>' +
@@ -210,7 +210,7 @@ function duelHtml(a, b, winners, shirtA, shirtB) {
     '<span><span class="duell-hode-navn">' + e(d.navn) + '</span>' +
     '<span class="duell-hode-lag">' + e(d.lag) + '</span></span></div></th>';
 
-  return '<h2>Duell</h2><div class="table-scroll"><table class="data"><thead><tr>' +
+  return '<h2>Duell</h2><div class="table-scroll"><table class="data"><caption class="sr-only">Duell</caption><thead><tr>' +
     '<th></th>' + hode(a, shirtA) + hode(b, shirtB) +
     '</tr></thead><tbody>' +
     DUELL_RADER.map(([key, label]) =>
@@ -390,7 +390,7 @@ function initEdgeFades(el, prefix) {
   }
 
   function sortBy(table, th, index) {
-    const dir = th.getAttribute('aria-sort') === 'descending' ? 'ascending' : 'descending';
+    const dir = nextSortDir(th.getAttribute('aria-sort'));
     [...table.tHead.rows[0].cells].forEach((h) => h.setAttribute('aria-sort', 'none'));
     th.setAttribute('aria-sort', dir);
     applySort(table, index, dir);
@@ -462,6 +462,11 @@ function initEdgeFades(el, prefix) {
     // En rad som filtreres bort skal ikke bli stående som duell-valg (Modul 10).
     if (window.duellRyddSkjulte) window.duellRyddSkjulte();
   }
+
+  // Enter i søkefeltet skal ikke sende skjemaet. Lå før som inline
+  // onsubmit i viewet — CSP-en (v1.8.3) blokkerer inline-handlere stille.
+  const form = document.getElementById('player-filters');
+  if (form) form.addEventListener('submit', (e) => e.preventDefault());
 
   search.addEventListener('input', applyFilters);
   position.addEventListener('change', applyFilters);
@@ -566,7 +571,7 @@ function initEdgeFades(el, prefix) {
     leaguesRoot.innerHTML = live.leagues
       .map(function (l) {
         return (
-          '<section class="card"><h2><span class="h2-title">' + escapeHtml(l.name) + '</span><span class="dim">' + l.top.length + '</span></h2><div class="table-scroll"><table class="data"><thead><tr><th class="num">#</th><th>Lag</th><th class="num">GW</th><th class="num">Totalt</th></tr></thead><tbody>' +
+          '<section class="card"><h2><span class="h2-title">' + escapeHtml(l.name) + '</span><span class="dim">' + l.top.length + '</span></h2><div class="table-scroll"><table class="data"><caption class="sr-only">Ligatabell ' + escapeHtml(l.name) + '</caption><thead><tr><th class="num">#</th><th>Lag</th><th class="num">GW</th><th class="num">Totalt</th></tr></thead><tbody>' +
           l.top
             .map(function (r) {
               return '<tr' + (r.me ? ' class="row-me"' : '') + '><td class="num">' + r.rank + '</td><td>' + escapeHtml(r.name) + '</td><td class="num">' + r.gw + '</td><td class="num">' + r.total + '</td></tr>';
@@ -862,7 +867,7 @@ function plannerRules({ out, inn, bank, squad }) {
     const rad = (label, a, b) => `<tr><th>${label}</th><td class="num">${a}</td><td class="num">${b}</td></tr>`;
     const regler = plannerRules({ out: ut, inn, bank: data.bank, squad: data.squad });
     box.innerHTML = [
-      '<div class="table-scroll"><table class="data compare">',
+      '<div class="table-scroll"><table class="data compare"><caption class="sr-only">Sammenligning ut mot inn</caption>',
       `<thead><tr><th></th><th class="num">Ut: ${escapeHtml(ut.navn)}</th><th class="num">Inn: ${escapeHtml(inn.navn)}</th></tr></thead>`,
       '<tbody>',
       rad('Pris (£m)', pris(utSpiller.pris), pris(inn.pris)),
@@ -1193,6 +1198,12 @@ function rivalNavAction({ search, stored, validIds }) {
 
 // Terskelvelgeren paa /spillere: hvilke differensialtabeller som skal ligge
 // skjult. Ren funksjon, saa regelen kan testes uten DOM.
+// Modul 2: neste sorteringsretning fra dagens aria-sort. Første klikk på en
+// kolonne gir synkende (høyest først), klikk på den synkende gir stigende.
+function nextSortDir(current) {
+  return current === 'descending' ? 'ascending' : 'descending';
+}
+
 function terskelSynlighet(valgt, terskler = [5, 10, 15]) {
   const ut = {};
   for (const t of terskler) ut[t] = String(t) !== String(valgt);

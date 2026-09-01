@@ -7,6 +7,49 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.8.3] - 2026-09-02
+
+### Security
+
+- Sikkerhetshoder på alle svar: `Content-Security-Policy` med
+  per-forespørsel-nonce for tema-scriptet (ingen `unsafe-inline` for script),
+  `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`,
+  `Referrer-Policy` og `Permissions-Policy`. JSON-kropper begrenses til
+  32 kB. Ny `createSecurityHeaders`/`buildCsp` i `middleware.js`, låst av
+  tester på hodene, noncen og monteringsrekkefølgen.
+- Takstbegrensning på skrivende API-kall: POST/DELETE under `/api` tåler
+  30 kall per IP per 5 minutter, deretter 429 med `Retry-After`. IP-en
+  leses fra `CF-Connecting-IP` bak Cloudflare (så `X-Forwarded-For`, så
+  socketen). GET er uberørt — de leser serverens cache.
+
+### Changed
+
+- Tilgjengelighet: hopp-lenken «Hopp til innhold» er første Tab på alle
+  sider (synlig kun ved fokus) og peker på `<main id="innhold">`;
+  nedtellingen på dashbordet er merket `role="timer"` så sekundene aldri
+  leses opp.
+- Tilgjengelighet: kolonnehodene i de sorterbare tabellene («Spillere»,
+  «Live») har `scope="col"`; `aria-sort`-vekslingen er trukket ut som ren
+  `nextSortDir` og testlåst.
+- Tilgjengelighet: alle datatabeller (26, også de klientrendrede) har en
+  skjermleser-caption; «Live» annonserer kampstatus (`role="status"`) og
+  totalsummen (`aria-live="polite"`). Testlåst: hver `<table>` følges av
+  `<caption>`, og hver ikon-knapp har `aria-label`.
+- Tilgjengelighet: ny `test/a11y.test.js` låser at alle skjemafelt (views
+  og klientrendret markup) har etikett, at all bevegelse ligger bak
+  `prefers-reduced-motion`, og at den globale fokusringen består.
+
+### Fixed
+
+- Feilhandleren svarte 500 «Noe gikk galt» med stacktrace i loggen på
+  klientfeil fra body-parseren (for stor kropp, ugyldig JSON). Nå gis
+  riktig status (413/400) som JSON på `/api`, uten logging. Funnet i
+  røyktesten av 32 kB-taket.
+- «Spillere»: filterskjemaet brukte et inline `onsubmit` for å hindre at
+  Enter sendte skjemaet. Flyttet til app.js — CSP-en som kommer i samme
+  versjon ville blokkert inline-handlere stille. Testlåst: ingen view har
+  `on*`-attributter.
+
 ## [1.8.2] - 2026-09-01
 
 ### Changed

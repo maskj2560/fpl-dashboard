@@ -10,7 +10,7 @@
   </div>
 </section>
 
-<form class="filters" id="player-filters" onsubmit="return false">
+<form class="filters" id="player-filters">
   <label>
     Søk
     <input type="search" id="filter-search" placeholder="Spillernavn …" autocomplete="off">
@@ -57,21 +57,21 @@
     <button type="button" class="btn-quiet" id="duell-tom">Tøm valg</button>
   </div>
   <div class="table-scroll table-scroll--pinned">
-    <table class="data sortable" id="players-table" data-sortable>
+    <table class="data sortable" id="players-table" data-sortable><caption class="sr-only">Alle spillere</caption>
       <thead>
         <tr>
-          <th data-nosort>Duell</th>
-          <th data-type="text" aria-sort="none">Spiller</th>
-          <th data-type="text" aria-sort="none">Lag</th>
-          <th data-type="text" aria-sort="none">Pos</th>
-          <th data-type="num" class="num" aria-sort="none">Pris</th>
-          <th data-type="num" class="num" aria-sort="none">Form</th>
-          <th data-type="num" class="num" aria-sort="descending">Poeng</th>
-          <th data-type="num" class="num" aria-sort="none" title="Poeng per kamp">P/K</th>
-          <th data-type="num" class="num" aria-sort="none">Eid&nbsp;%</th>
-          <th data-type="num" class="num" aria-sort="none">xG</th>
-          <th data-type="num" class="num" aria-sort="none">xA</th>
-          <th data-type="text" aria-sort="none">Status</th>
+          <th scope="col" data-nosort>Duell</th>
+          <th scope="col" data-type="text" aria-sort="none">Spiller</th>
+          <th scope="col" data-type="text" aria-sort="none">Lag</th>
+          <th scope="col" data-type="text" aria-sort="none">Pos</th>
+          <th scope="col" data-type="num" class="num" aria-sort="none">Pris</th>
+          <th scope="col" data-type="num" class="num" aria-sort="none">Form</th>
+          <th scope="col" data-type="num" class="num" aria-sort="descending">Poeng</th>
+          <th scope="col" data-type="num" class="num" aria-sort="none" title="Poeng per kamp">P/K</th>
+          <th scope="col" data-type="num" class="num" aria-sort="none">Eid&nbsp;%</th>
+          <th scope="col" data-type="num" class="num" aria-sort="none">xG</th>
+          <th scope="col" data-type="num" class="num" aria-sort="none">xA</th>
+          <th scope="col" data-type="text" aria-sort="none">Status</th>
         </tr>
       </thead>
       <tbody>
@@ -143,7 +143,7 @@
         <% if (t.rows.length === 0) { %>
           <p class="empty">Ingen spillere under <%= t.prosent %>&nbsp;% har form akkurat nå.</p>
         <% } else { %>
-          <table class="data">
+          <table class="data"><caption class="sr-only">Differensialer under <%= t.prosent %> % eierandel</caption>
             <thead>
               <tr>
                 <th>Spiller</th>

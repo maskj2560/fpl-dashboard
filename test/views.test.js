@@ -81,7 +81,72 @@ for (const [name, locals, marker] of cases) {
 const layoutLocals = (path) => ({
   body: '<p>innhold</p>', title: 'Test', path,
   gameUpdating: false, staleSince: null, version: '1.0.1', assetVersion: 'a1b2c3d4',
-  startedAt: '19.08.2026, 21:00',
+  startedAt: '19.08.2026, 21:00', cspNonce: 'testnonce',
+});
+
+test('layout.ejs gir tema-scriptet CSP-noncen', async () => {
+  const html = await renderView('layout', layoutLocals('/'));
+  assert.ok(html.includes('<script nonce="testnonce">'), 'tema-scriptet mangler nonce');
+});
+
+// ---- v1.8.3: tilgjengelighet ----------------------------------------------------
+
+test('layout.ejs har hopp-lenken «Hopp til innhold» som første fokuserbare element og main#innhold', async () => {
+  const html = await renderView('layout', layoutLocals('/'));
+  const body = html.slice(html.indexOf('<body>'));
+  const firstFocusable = body.match(/<(a|button|input|select|textarea)\b[^>]*>/);
+  assert.ok(firstFocusable, 'fant ingen fokuserbare elementer');
+  assert.match(firstFocusable[0], /class="skip-link"/, `første fokuserbare er ${firstFocusable[0]}`);
+  assert.match(firstFocusable[0], /href="#innhold"/);
+  assert.ok(body.includes('Hopp til innhold'), 'lenketeksten mangler');
+  assert.ok(body.includes('<main id="innhold">'), 'main mangler id="innhold"');
+});
+
+// Skjermlesere leser tabellens caption før de går inn i cellene. Alle
+// datatabeller får en (sr-only der overskriften alt står synlig over).
+test('hver datatabell har caption rett etter <table>', async () => {
+  const rendered = new Map();
+  for (const [name, locals] of cases) rendered.set(`${name}:${JSON.stringify(locals).length}`, [name, await renderView(name, locals)]);
+  let tables = 0;
+  for (const [name, html] of rendered.values()) {
+    for (const m of html.matchAll(/<table[^>]*>([\s\S]{0,120})/g)) {
+      tables += 1;
+      assert.match(m[1], /^\s*<caption/, `${name}.ejs: tabell uten caption: <table${m[0].slice(6, 60)}`);
+    }
+  }
+  assert.ok(tables >= 20, `fant bare ${tables} tabeller — mønsteret matcher ikke lenger`);
+});
+
+// Knapper uten lesbar tekst (×, ikon-SVG) må ha aria-label, ellers leses de
+// som «knapp».
+test('alle ikon-knapper har aria-label', async () => {
+  const pages = [...cases.map(([name, locals]) => [name, locals]), ['layout', layoutLocals('/')]];
+  for (const [name, locals] of pages) {
+    const html = await renderView(name, locals);
+    for (const m of html.matchAll(/<button\b([^>]*)>([\s\S]*?)<\/button>/g)) {
+      const text = m[2].replace(/<[^>]+>/g, '').trim();
+      if (/\p{L}/u.test(text)) continue;
+      assert.match(m[1], /aria-label="[^"]+"/, `${name}.ejs: ikon-knapp uten aria-label: <button${m[1]}>${m[2].slice(0, 40)}`);
+    }
+  }
+});
+
+test('live.ejs annonserer status og totalsum med aria-live', async () => {
+  const html = await renderView('live', fx.live);
+  assert.match(html, /<span id="live-status" role="status"/);
+  assert.match(html, /<span class="stat-val" id="live-total" aria-live="polite"/);
+});
+
+test('dashboard.ejs merker nedtellingen som timer (aldri opplest hvert sekund)', async () => {
+  const html = await renderView('dashboard', fx.dashboard);
+  assert.match(html, /<div class="countdown" role="timer"/);
+});
+
+test('layout.ejs har nøyaktig ett inline-script, og det bærer nonce', async () => {
+  const html = await renderView('layout', layoutLocals('/'));
+  const inline = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>/g)].map((m) => m[0]);
+  assert.equal(inline.length, 1, `fant ${inline.length} inline-script: ${inline.join(' ')}`);
+  assert.match(inline[0], /nonce="testnonce"/);
 });
 
 const NAV = [
@@ -350,6 +415,23 @@ test('players.ejs: alle kolonneoverskrifter beholder data-type og aria-sort (sor
   assert.equal((head.match(/aria-sort="descending"/g) ?? []).length, 1, 'nøyaktig én startsortering');
 });
 
+// v1.8.3: kolonnehoder i sorterbare tabeller har scope=col, så skjermlesere
+// kobler cellen til riktig overskrift også etter at radene er sortert om.
+test('sorterbare kolonnehoder har scope=col og aria-sort', async () => {
+  const spillere = await renderView('players', fx.players);
+  const live = await renderView('live', fx.live);
+  for (const [navn, html, id] of [['players', spillere, 'players-table'], ['live', live, 'live-players']]) {
+    const start = html.indexOf(`id="${id}"`);
+    const head = html.slice(start, html.indexOf('</thead>', start));
+    const ths = head.match(/<th[ >][^>]*>/g) ?? [];
+    assert.ok(ths.length >= 5, `${navn}: fant for få kolonnehoder`);
+    for (const th of ths) {
+      assert.match(th, /scope="col"/, `${navn}: ${th}`);
+      if (!th.includes('data-nosort')) assert.match(th, /aria-sort="/, `${navn}: ${th}`);
+    }
+  }
+});
+
 // ---- v1.8.0: spiller-pakka ------------------------------------------------
 
 test('players.ejs har kort ingress — forklaringene ligger i tittelattributter', async () => {
@@ -388,8 +470,10 @@ test('players.ejs gjør spillernavn klikkbare og gir radene duell-data', async (
 test('players.ejs gir duell-kolonnen en synlig overskrift', async () => {
   const html = await renderView('players', fx.players);
   const head = html.slice(html.indexOf('id="players-table"'), html.indexOf('</thead>'));
-  assert.match(head, /<th data-nosort>Duell<\/th>/, 'checkbox-kolonnen skal ha synlig etikett');
-  assert.doesNotMatch(head, /sr-only/, 'etiketten skal være synlig, ikke bare for skjermlesere');
+  const duellTh = head.match(/<th[^>]*data-nosort[^>]*>[\s\S]*?<\/th>/);
+  assert.ok(duellTh, 'checkbox-kolonnen mangler');
+  assert.match(duellTh[0], />Duell<\/th>/, 'checkbox-kolonnen skal ha synlig etikett');
+  assert.doesNotMatch(duellTh[0], /sr-only/, 'etiketten skal være synlig, ikke bare for skjermlesere');
 });
 
 test('players.ejs viser statusbadge kun ved avvik — «Klar» er stille', async () => {
@@ -637,4 +721,21 @@ test('innsikt.ejs rendrer trendlinjen bare når den finnes', async () => {
   assert.ok(med.includes('Dine i rundens XI per runde'), 'trenden mangler');
   assert.ok(!uten.includes('Dine i rundens XI per runde'), 'trenden vises uten data');
   assert.ok(uten.includes('Rundens XI'), 'resten av seksjonen skal stå');
+});
+
+// ---- v1.8.3: CSP -------------------------------------------------------------
+
+// CSP-en (script-src 'self' + nonce) blokkerer inline-hendelsesattributter
+// stille — et onsubmit/onclick i et view ville bare slutte å virke i prod.
+test('ingen view har inline on*-hendelsesattributter (CSP)', async () => {
+  const inlineHandler = /\son[a-z]+=["']/i;
+  for (const [name, locals] of cases) {
+    const html = await renderView(name, locals);
+    assert.ok(!inlineHandler.test(html), `${name}.ejs rendrer et inline on*-attributt`);
+  }
+  const files = (await fsp.readdir(VIEWS, { recursive: true })).filter((f) => f.endsWith('.ejs'));
+  for (const file of files) {
+    const src = await fsp.readFile(path.join(VIEWS, file), 'utf8');
+    assert.ok(!inlineHandler.test(src), `${file} har et inline on*-attributt i kilden`);
+  }
 });

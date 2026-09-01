@@ -1,7 +1,111 @@
 // Små, rene middleware-byggere. Ligger utenfor server.js fordi den starter
 // lytteren ved import og derfor ikke kan lastes i tester.
 
+import crypto from 'node:crypto';
+
 const IMMUTABLE = 'public, max-age=31536000, immutable';
+
+// ---- Sikkerhetshoder (v1.8.3) ---------------------------------------------
+
+/**
+ * Content-Security-Policy. script-src er streng: kun egne filer + tema-
+ * scriptet i layout.ejs via en nonce per forespørsel (ingen 'unsafe-inline').
+ * style-src tillater inline fordi players.ejs (--andel) og league.ejs
+ * (seriefarge) setter style-attributter; img-src data: er SVG-favicon-en.
+ * worker-src/manifest-src arver default-src, så PWA-en trenger ingen unntak.
+ */
+export function buildCsp(nonce) {
+  return [
+    "default-src 'self'",
+    `script-src 'self' 'nonce-${nonce}'`,
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data:",
+    "font-src 'self'",
+    "connect-src 'self'",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "object-src 'none'",
+  ].join('; ');
+}
+
+function randomNonce() {
+  return crypto.randomBytes(16).toString('base64');
+}
+
+/**
+ * Setter sikkerhetshodene på alle svar og legger noncen i res.locals, som
+ * Express fletter inn i alle res.render-kall (renderPage, 404, feilsiden).
+ * Monteres før static og rutene, så også assets får hodene.
+ */
+export function createSecurityHeaders({ nonce = randomNonce } = {}) {
+  return (req, res, next) => {
+    const n = nonce();
+    res.locals.cspNonce = n;
+    res.setHeader('Content-Security-Policy', buildCsp(n));
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=()');
+    next();
+  };
+}
+
+// ---- Takstbegrensning (v1.8.3) --------------------------------------------
+
+/**
+ * Klientens IP bak Cloudflare + Traefik. CF-Connecting-IP settes av
+ * Cloudflare og kan ikke forfalskes gjennom den; X-Forwarded-For er
+ * reserven, socketen det siste.
+ */
+export function clientIp(req) {
+  const headers = req.headers ?? {};
+  const cf = headers['cf-connecting-ip'];
+  if (cf) return String(cf).trim();
+  const xff = headers['x-forwarded-for'];
+  if (xff) return String(xff).split(',')[0].trim();
+  return req.socket?.remoteAddress ?? 'ukjent';
+}
+
+/**
+ * Enkel teller per IP i et fast vindu, kun for de oppgitte metodene. GET
+ * slipper alltid gjennom — de leser serverens cache og koster ingenting.
+ * 429 svares som JSON fordi den kun monteres på /api.
+ */
+export function createRateLimiter({
+  windowMs = 5 * 60_000,
+  max = 30,
+  methods = ['POST', 'DELETE'],
+  now = Date.now,
+  keyOf = clientIp,
+} = {}) {
+  const buckets = new Map();
+  const limiter = (req, res, next) => {
+    if (!methods.includes(req.method)) return next();
+    const t = now();
+    const key = keyOf(req);
+    let bucket = buckets.get(key);
+    if (!bucket || bucket.resetAt <= t) {
+      bucket = { count: 0, resetAt: t + windowMs };
+      buckets.set(key, bucket);
+    }
+    bucket.count += 1;
+    if (bucket.count > max) {
+      res.setHeader('Retry-After', String(Math.ceil((bucket.resetAt - t) / 1000)));
+      return res.status(429).json({ error: 'For mange forespørsler — prøv igjen om litt.' });
+    }
+    // Hold mappa liten: rydd utgåtte bøtter når den vokser.
+    if (buckets.size > 1000) {
+      for (const [k, b] of buckets) if (b.resetAt <= t) buckets.delete(k);
+    }
+    next();
+  };
+  limiter.reset = () => buckets.clear();
+  return limiter;
+}
+
+/** Delt instans for /api — 30 skrivende kall per IP per 5 min. */
+export const rateLimitWrites = createRateLimiter();
 
 // Fonten er uendret innhold og versjoneres for hånd i layout.ejs og style.css
 // (`?v=1`). Bumpes den, bumpes denne — se DEPLOY.md.
@@ -48,10 +152,20 @@ export function createErrorHandler({ version, assetVersion, startedAt }) {
     // FPLs oppdateringsvindu er en normal driftstilstand, ikke en feil hos
     // oss — den skal verken logge stacktrace eller vise den generiske siden.
     const updating = err?.status === 503;
-    if (!updating) console.error('Uventet feil:', err);
+    // body-parser (413 for stor kropp, 400 ugyldig JSON) og lignende setter
+    // err.status i 4xx: klientens feil, ikke vår — riktig status, ingen stacktrace.
+    const status = Number(err?.status ?? err?.statusCode);
+    const clientError = Number.isInteger(status) && status >= 400 && status < 500;
+    if (!updating && !clientError) console.error('Uventet feil:', err);
     if (res.headersSent) return;
 
     if (wantsJson(req)) {
+      if (clientError) {
+        res.status(status).json({
+          error: status === 413 ? 'Forespørselen er for stor.' : 'Ugyldig forespørsel.',
+        });
+        return;
+      }
       res.status(updating ? 503 : 500).json({
         error: updating
           ? 'FPL-API-et oppdateres — prøv igjen om noen minutter.'
@@ -60,14 +174,16 @@ export function createErrorHandler({ version, assetVersion, startedAt }) {
       return;
     }
 
-    res.status(updating ? 503 : 500);
+    res.status(updating ? 503 : clientError ? status : 500);
     const locals = updating
       ? {
           code: 503,
           heading: 'FPL oppdaterer spillet',
           message: 'Dataene er ikke tilgjengelige riktig ennå — prøv igjen om noen minutter.',
         }
-      : { code: 500, heading: 'Noe gikk galt', message: null };
+      : clientError
+        ? { code: status, heading: 'Ugyldig forespørsel', message: null }
+        : { code: 500, heading: 'Noe gikk galt', message: null };
     res.render('error', locals, (renderErr, body) => {
       if (renderErr) return res.type('text/plain').send('Noe gikk galt.');
       res.render(

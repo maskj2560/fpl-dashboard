@@ -216,6 +216,25 @@ a:hover {
   border-radius: 4px;
 }
 
+/* Hopp-lenke: første Tab på siden. Ligger over toppmenyen til den får
+   fokus, så tastatur- og skjermleserbrukere slipper ni menypunkter. */
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  padding: var(--space-2) var(--space-4);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 700;
+  text-decoration: none;
+  transform: translateY(-120%);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
 /* ---------- Toppmeny ---------- */
 
 /* Topbaren er én linje overalt. På smale skjermer scroller nav-en vannrett
