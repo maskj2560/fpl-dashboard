@@ -3,9 +3,45 @@
 > Enkel oversikt for Marius — oppdateres når noe blir ferdig eller planlagt.
 > (Tekniske detaljer bor i ROADMAP.md; dette er kortversjonen.)
 
-**Sist oppdatert:** 1. september 2026
+**Sist oppdatert:** 2. september 2026
 
-## Nytt: v1.8.2 — QA-fikser og fyldigere runderapport (1. september)
+## Planen videre: fem oppdateringer på rad («Sluttpakka», 1. september)
+
+Alt som sto igjen på idélista bygges nå ferdig, i denne rekkefølgen — hver
+går ut i drift for seg:
+
+1. ~~**v1.8.3 — herding og tilgjengelighet.**~~ Se under.
+2. **v1.9.0 — planleggingspakka.** Chip-planlegger på Lag-siden (beste
+   vindu for Bench Boost, Triple Captain, Free Hit og Wildcard), en
+   «Lagsjekk» tre timer før deadline (Discord kun når noe er galt: skadet
+   starter, flagget kaptein, spiller uten kamp) og en kalender du kan
+   abonnere på med alle deadlines og kampene til spillerne dine.
+3. **v1.10.0 — prisvarsler.** Én Discord-melding om natten når prisene i
+   troppen din endrer seg, pluss nattens største bevegelser globalt.
+4. **v1.11.0 — karriere-pakka.** Tidligere sesonger og merkedager på
+   Innsikt-siden, og «bonuskamp» på Live: hvem leder BPS-kampen i hver
+   kamp mens den spilles.
+5. **v1.12.0 — app på mobilen (PWA).** «Legg til på hjemskjerm» med eget
+   ikon, og en enkel frakoblet-side uten nett.
+
+Ingen av delene bruker AI, så kostnaden er uendret. Til slutt får du én
+ferdig prompt til Claude for Chrome som tester alt i drift.
+
+## Nytt: v1.8.3 — herding og tilgjengelighet (2. september)
+
+Ingen nye funksjoner, men appen er strammere under panseret:
+
+- **Sikkerhetshoder.** Nettleseren får nå beskjed om nøyaktig hvilke
+  script som får kjøre (bare våre egne), at siden ikke kan legges inn i
+  andres rammer, og hva som ikke skal lekke i lenker. Skrivende API-kall
+  er begrenset til 30 per fem minutter per IP.
+- **Tilgjengelighet.** «Hopp til innhold» som første Tab-trykk, tabeller
+  med usynlige titler for skjermlesere, kolonnehoder som leses riktig
+  etter sortering, og Live-siden sier fra når poengene dine endrer seg.
+  Alt er låst med tester, så det ikke forsvinner ved neste endring.
+- **Rydding.** 13 gamle arbeidsgrener er slettet lokalt.
+
+## Før det: v1.8.2 — QA-fikser og fyldigere runderapport (1. september)
 
 Fem feil funnet i en prod-gjennomgang med Claude for Chrome er fikset, og
 «Rundens rapport» i Discord/på Liga-siden er blitt mye fyldigere:

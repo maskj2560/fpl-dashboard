@@ -6,17 +6,29 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-09-01 (økt 53, Fable: «Sluttpakka»-planen godkjent,
-bygging av v1.8.3 → v1.12.0 i gang — se «Neste steg»)
+**Sist oppdatert:** 2026-09-02 (økt 53, Fable: v1.8.3 bygget og merget,
+sluttpakka fortsetter med v1.9.0 — se «Neste steg»)
 
 ## Status akkurat nå
-- **v1.8.2 ute i prod 1. sep** (merget `--no-ff` `2038466`, tagget
-  `v1.8.2`, **626/626 + lint 0** på merget main). Innhold: QA-fikser fra
-  prod-gjennomgangen (fem funn) + rikere «Rundens rapport» (lagdetaljer,
-  differensialer/flopper, 250–320 ord, `max_tokens` 3000).
-- **Asset-hashen i prod skal være `257cfce2`** (regnet fra git-blobbene på
-  `main`-toppen, aldri fra arbeidstreet). Endres ved neste push som rører
-  style.css/app.js — v1.8.3 gjør det.
+- **v1.8.3 «Herding + tilgjengelighet» merget til main 2. sep (økt 53).**
+  Bygget på `fix/herding-a11y-v183`: T1–T7 + røyktestfunn, TDD med rød
+  før grønn i hver task (a11y-låsene bevist med mutasjoner), CHANGELOG-
+  linje i hver commit. **655/655 + lint 0** (baseline 626). Innhold: CSP
+  med nonce (script-src uten unsafe-inline), nosniff/DENY/Referrer/
+  Permissions, JSON-tak 32 kB, takstbegrensning 30 POST/DELETE per IP per
+  5 min på /api, hopp-lenke + `main#innhold`, `role=timer`, `scope=col`,
+  26 tabellcaptions, aria-live på /live, `test/a11y.test.js`. Røyktest
+  med tomme nøkler: 11 ruter 200 + 404, hoder på plass, nonce header =
+  body, nøyaktig 2 `<script`, 413 JSON på 40 kB, 429 + Retry-After på
+  kall 31, **0 AI-kall**. Røyktestfunn fikset: body-parserens 413/400
+  ble 500 — feilhandleren leser nå `err.status`.
+  **Prod-sjekk etter deploy (gjør dette først i neste økt hvis ikke gjort):**
+  `curl -sI https://fpl.marsk.no/ | grep -i content-security` og
+  `curl -s https://fpl.marsk.no/ | grep -c '<script'` = 2. Flere → en
+  Cloudflare-funksjon injiserer script (DEPLOY.md «CSP og Cloudflare»).
+- **Asset-hashen i prod skal være `6a3b2714` etter v1.8.3** (før: v1.8.2
+  `257cfce2` — metoden kontrollert mot v1.8.2-blobbene). Regnet fra
+  git-blobbene, aldri fra arbeidstreet.
 - **Ekte SIGTERM-bevis mangler.** Beviset er `kill 1` i containerterminalen —
   de to avslutningslinjene skal stå der. Lokalt bevist med
   `process.emit('SIGINT')`, exit 0.
@@ -24,9 +36,9 @@ bygging av v1.8.3 → v1.12.0 i gang — se «Neste steg»)
 - **Kostnad: måleuka DROPPET** (28. aug) — følges i `console.anthropic.com`,
   terskler i `docs/sjekkpunkt-d-kostnad.md`. Takt **~49–53 AI-kall/uke**;
   alt i sluttpakka legger til **0**.
-- **Git:** `main` = `origin/main` (`a21e09e`) + lokale docs-commits fra økt 53;
-  tagger t.o.m. `v1.8.2` pushet. 13 gamle lokale brancher ryddes i v1.8.3 T8
-  (10 mergede med `-d`, 3 umergede med `-D` — Marius' beslutning).
+- **Git:** de 13 gamle lokale branchene er slettet (10 med `-d`, 3 med `-D`
+  etter Marius' beslutning) — kun `main` + arbeidsbranchen finnes. Tagger
+  t.o.m. `v1.8.3`.
 - Eldre status og alle detaljer: `docs/arkiv/HANDOVER-historikk.md`.
 
 ## Neste steg (start her)
@@ -39,8 +51,8 @@ planen — ikke re-spør.
 
 | Versjon | Innhold | Branch | Status |
 | --- | --- | --- | --- |
-| v1.8.3 | Herding (CSP m/ nonce, sikkerhetshoder, JSON-tak, takstbegrensning) + tilgjengelighetspass + branch-rydding | `fix/herding-a11y-v183` | **i gang** |
-| v1.9.0 | Planleggingspakka: chip-planlegger (/lag), deadline-sjekk «Lagsjekk» (/brief + Discord ved funn), `/kalender.ics` + P3-verifisering mot en rivals transfers | `feat/planleggingspakka-v190` | venter |
+| v1.8.3 | Herding (CSP m/ nonce, sikkerhetshoder, JSON-tak, takstbegrensning) + tilgjengelighetspass + branch-rydding | `fix/herding-a11y-v183` | **ute 2. sep, 655/655** |
+| v1.9.0 | Planleggingspakka: chip-planlegger (/lag), deadline-sjekk «Lagsjekk» (/brief + Discord ved funn), `/kalender.ics` + P3-verifisering mot en rivals transfers | `feat/planleggingspakka-v190` | **neste** |
 | v1.10.0 | Prisvarsler: timesnapshot i `DATA_DIR/price-state.json`, Discord maks 1/natt, kort på /overganger | `feat/prisvarsler-v1100` | venter |
 | v1.11.0 | Karriere-pakka: FPL-karrieren + merkedager (/innsikt), bonuskamp (BPS-race) på /live | `feat/karriere-v1110` | venter |
 | v1.12.0 | PWA: manifest, ikoner (eget PNG-skript, kun node:zlib), `/sw.js` nett-først, `/offline` | `feat/pwa-v1120` | venter |
@@ -165,4 +177,6 @@ Etter v1.12.0: sluttrydding (docs, HANDOVER ≤ 200, `docs/oppgaveliste.md`
   AI-budsjett, egne tillegg, plassering, Lagsjekk-funn, rekkefølge,
   prisformat, brancher, Lagsjekk-grunnlag) → plan godkjent →
   `docs/plan-sluttpakka-v183-v1120.md` + denne fila rotert (økt 50/51 →
-  historikkfila). Baseline verifisert: 626/626 + lint 0 på main.
+  historikkfila). Baseline verifisert: 626/626 + lint 0 på main. Så
+  bygget v1.8.3 (T1–T7, røyktestfunn, 655/655), deploy-vindu sjekket
+  (natt til onsdag, `anyLive:false`), merget `--no-ff`, tagget, pushet.
