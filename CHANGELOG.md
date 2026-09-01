@@ -45,6 +45,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   modaltittelen, drakta er stor (110 px), Form/Poeng/P/K vises som store
   primærtall over de mindre (Eid %, xG, xA, Minutter), og kamptabellen er
   strammet inn.
+- «Spillere»: kortere ingress, mer luft rundt faneraden og tydeligere
+  seksjonstitler.
 
 ### Planlagt
 

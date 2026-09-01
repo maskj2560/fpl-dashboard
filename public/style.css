@@ -2203,3 +2203,24 @@ body.modal-apen {
 .modal table.data td {
   padding: 0.3rem 0.5rem;
 }
+
+/* Litt mer luft rundt fanene og tydeligere seksjonstitler paa /spillere. */
+.page-head .fane-rad {
+  margin-top: var(--space-4);
+}
+
+#tabell,
+#differensialer,
+#dodballtakere {
+  margin-top: var(--space-2);
+}
+
+#differensialer > h2,
+#dodballtakere > h2 {
+  margin: 0 0 0.35rem;
+  font-size: var(--fs-xl);
+}
+
+#tabell .duell-bar {
+  margin-bottom: var(--space-4);
+}

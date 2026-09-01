@@ -352,6 +352,13 @@ test('players.ejs: alle kolonneoverskrifter beholder data-type og aria-sort (sor
 
 // ---- v1.8.0: spiller-pakka ------------------------------------------------
 
+test('players.ejs har kort ingress — forklaringene ligger i tittelattributter', async () => {
+  const html = await renderView('players', fx.players);
+  const hode = html.slice(0, html.indexOf('id="player-filters"'));
+  assert.match(hode, /Klikk på et spillernavn for spillerkortet\./);
+  assert.doesNotMatch(hode, /Klikk på en kolonne for å sortere/, 'ingressen skal være kortet ned');
+});
+
 test('players.ejs deler siden i tre faner og viser bare tabellen fra serveren', async () => {
   const html = await renderView('players', fx.players);
   assert.match(html, /class="fane-rad" role="tablist"/, 'fanene erstatter hopplenkene');
