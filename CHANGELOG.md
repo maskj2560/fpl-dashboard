@@ -7,6 +7,13 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+
+- Chip-planlegger (grunnlag): `chips.js` med chip-halvdelene fra bootstrap
+  (`start_event`/`stop_event`, fallback 1–19/20–38) og dobbel-/blankrunde-
+  deteksjon; `fixtureGrid` trukket ut av `fdrMatrix` i `analysis.js` og
+  delt. 0 AI-kall.
+
 ## [1.8.3] - 2026-09-02
 
 ### Security
