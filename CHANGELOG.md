@@ -13,6 +13,14 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   (`start_event`/`stop_event`, fallback 1–19/20–38) og dobbel-/blankrunde-
   deteksjon; `fixtureGrid` trukket ut av `fdrMatrix` i `analysis.js` og
   delt. 0 AI-kall.
+- Chip-planlegger (regler): `buildChipPlan` gir per halvdel og chip enten
+  «brukt i runde N» eller en anbefaling med begrunnelse — Bench Boost i
+  runden der troppen har flest og lettest kamper, Triple Captain for
+  klubb × runde med mest samlet «ease» (dobbelrunder teller dobbelt,
+  keeperklubber hoppes over), Free Hit i blankrunden som rammer minst fire
+  i troppen, Wildcard rett etter troppens tyngste tre runder (snitt-FDR
+  ≥ 3,3) med 4–6 lette runder for de beste klubbene. Kun kjente runder
+  vurderes.
 
 ## [1.8.3] - 2026-09-02
 
