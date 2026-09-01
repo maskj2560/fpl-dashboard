@@ -9,6 +9,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Fixed
 
+- «Spillere»: søylestripa bak score-tallet i differensialtabellen fylte hele
+  cellehøyden og leste som et fargefelt. Nå er den en tynn søyle langs
+  bunnen av cellen.
 - «Spillere»: filterraden ble stående på alle tre fanene og filtrerte bare
   tabellen — et søk viste «Viser 1 av 629 spillere» over en ufiltrert
   differensialtabell. `hidden` taper mot enhver `display`-regel med klasse;

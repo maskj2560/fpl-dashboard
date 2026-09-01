@@ -136,6 +136,13 @@ test('style.css: hidden slår gjennom mot display-reglene', () => {
   assert.match(css, /\[hidden\]\s*\{\s*display: none !important;/);
 });
 
+// QA-funn (økt 51): fylte hele cellehøyden og leste som et fargefelt.
+test('style.css: score-søyla er en tynn stripe, ikke et fylt felt', () => {
+  const b = block('.score-celle');
+  assert.match(b, /background-size: 100% 0\.3rem/);
+  assert.match(b, /background-position: left bottom/);
+});
+
 test('style.css: smale tabeller krymper til innholdet', () => {
   assert.match(block('table.data.data--fit'), /width: auto/);
   assert.match(block('table.data.data--fit'), /min-width: min\(100%, 30rem\)/);
