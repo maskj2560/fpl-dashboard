@@ -38,9 +38,8 @@ ligger uutgitt på main under `[Unreleased]`)
   Lokalt bevist med `process.emit('SIGINT')`, exit 0.
 - **Asset-hashen i prod skal være `3eef00bb` etter tabellfiksen i økt 51**
   (v1.8.1 hadde `51d1bbb4`, v1.8.0 `7a3c28b8`; kun style.css endret nå).
-  Regnet fra git-blobbene på `main`-toppen, aldri fra arbeidstreet —
-  metoden er kontrollert ved at v1.8.0-blobbene fortsatt gir `7a3c28b8`.
-  Se lærdommene.
+  Regnet fra git-blobbene på `main`-toppen, aldri fra arbeidstreet — metoden
+  er kontrollert ved at v1.8.0-blobbene fortsatt gir `7a3c28b8` (lærdommene).
 - **Helsesjekken:** alt. a aktiv (Coolifys sjekk AV, Dockerfilens gjelder).
   Se lærdommene under for hva den IKKE fanger.
 - **Kostnad: måleuka DROPPET** (28. aug) — følges i `console.anthropic.com`,
