@@ -7,6 +7,19 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+
+- Prisvarsler (grunnlag): `prices.js` med `dateKey` (Oslo-dato — natten
+  tilhører dagen den ender på), `snapshotOf`/`diffPrices` (kun endrede
+  priser, ingen uten snapshot), `priceDecision` (første snapshot poster
+  aldri, maks én Discord-melding per dato, uten webhook kun snapshot) og
+  `parsePriceFile` (versjon 1, ellers null). Sju nye tester. 0 AI-kall.
+- Prisvarsler (rapport): `buildPriceChanges` (troppen først — stigere, så
+  fallere — pluss topp 5 opp/ned globalt; likhet brytes på mest
+  kjøpt/solgt; spillere borte fra bootstrap hoppes over) og
+  `priceChangesText` (Discord-teksten: «£14.0m → £14.1m (+0,1)» med norsk
+  komma, «Ingen endringer i troppen din.» når tom). Fire nye tester.
+
 ## [1.9.0] - 2026-09-02
 
 ### Added
