@@ -1,8 +1,8 @@
 # Oppgaveliste — QA i Claude for Chrome + kjøreprompter til Claude Code
 
 > Full oversikt per **1. september 2026**, etter tabellfiksen i økt 51.
-> **Del A** er prod-QA som Claude for Chrome gjør i nettleseren — én prompt
-> per oppgave, kopier hele blokka.
+> **Del A** er én samlet prompt til Claude for Chrome som QA-er hele prod
+> og rapporterer tilbake.
 > **Del B** er kjøreprompter til Claude Code (koden).
 > **Del C** er rekkefølgen, **Del D** det som ikke kan delegeres.
 > Langsiktig prioritering bor i `ROADMAP.md`, nåtilstand i `docs/HANDOVER.md`.
@@ -13,155 +13,121 @@
   `[Unreleased]` i CHANGELOG).
 - Ny asset-hash på `main`-toppen: **`3eef00bb`** (v1.8.1 hadde `51d1bbb4`).
 - `main` er grønn: **615/615 tester, lint 0**.
-- To uutgitte lokale docs-commits (`7393c6c`, `bb72471`). Blir med neste push.
+- Tre uutgitte lokale docs-commits. Blir med neste push.
 - Aldri push torsdag 19:00–21:00 (auto-briefen ~19:30), aldri mens kamper
   pågår.
 
 ---
 
-## Del A — QA i nettleseren (Claude for Chrome)
+## Del A — full prod-QA i én prompt (Claude for Chrome)
 
-**Før du starter:** åpne https://fpl.marsk.no i en fane og gi Claude tilgang
-til den. Alle A-promptene er **kun lesing** — Claude skal ikke endre
-innstillinger, ikke logge inn noe sted, og ikke røre Coolify.
-
-Temabryteren ligger i topbaren (sol/måne). Valget lagres i
-`localStorage['fpl-theme']`, så be alltid om at begge temaer sjekkes.
-
-### A1. Er ny CSS faktisk ute? `[gjør denne først]`
+Åpne https://fpl.marsk.no i en fane, gi Claude tilgang til den, og lim inn
+hele blokka under. Den dekker alle seks sjekkene og ber om én samlet
+rapport til slutt. Blir økta for lang, kan du kjøre steg 1–3 i én runde og
+steg 4–6 i neste.
 
 ```text
-Åpne https://fpl.marsk.no/style.css og søk i teksten etter «th.num».
+Du skal gjøre en visuell QA av et Fantasy Premier League-dashbord som
+kjører i prod på https://fpl.marsk.no. Det er mitt eget selvhostede
+dashbord.
 
-Rapporter:
-1. Finnes regelen «table.data th.num { text-align: right; }» i filen? Ja/nei.
-2. Finnes «table.data.data--fit»? Ja/nei.
-3. Åpne så https://fpl.marsk.no/innsikt og fortell meg hele URL-en som
-   stilarket lastes fra (den står i <link>-taggen i sidens HTML, med en
-   ?v=-parameter bakerst).
+Regler for hele oppdraget:
+- Alt er lesing. Ikke endre innstillinger, ikke logg inn noe sted, ikke
+  fyll ut skjemaer, ikke prøv å fikse noe.
+- Du SKAL bruke temabryteren (sol/måne-ikonet i toppmenyen) for å bytte
+  mellom mørkt og lyst tema, og du kan klikke, sortere, filtrere og
+  scrolle — det er slik UI-et testes.
+- Ta skjermbilde av alt som ser galt ut.
+- Rapporter samlet TIL SLUTT i formatet nederst, ikke underveis.
+- Får du ikke testet noe (siden laster ikke, elementet finnes ikke), si
+  det eksplisitt i stedet for å gjette.
 
-Forventet: ja på 1 og 2, og ?v=3eef00bb i punkt 3. Får du «nei» eller en
-annen hash, si det rett ut — da serverer Cloudflare gammel CSS. Prøv én
-hard refresh (Ctrl+Shift+R) og rapporter på nytt.
+STEG 1 — Er ny CSS ute?
+a) Åpne https://fpl.marsk.no/style.css og søk i teksten etter «th.num».
+   Finnes regelen «table.data th.num { text-align: right; }»? Ja/nei.
+b) Finnes «table.data.data--fit» i samme fil? Ja/nei.
+c) Åpne https://fpl.marsk.no/innsikt og fortell meg hele URL-en stilarket
+   lastes fra — den står i <link>-taggen i sidens HTML og har en
+   ?v=-parameter bakerst.
+Forventet: ja på a og b, og ?v=3eef00bb i c. Er hashen en annen, prøv én
+hard refresh (Ctrl+Shift+R) og sjekk på nytt. Er den fortsatt feil,
+noter det som BLOKKERER og fortsett likevel med resten.
 
-Ikke endre noe på siden. Bare rapporter.
-```
+STEG 2 — Tabellhoder på alle sider (begge temaer)
+Jeg fikset nettopp at kolonneoverskrifter over tallkolonner sto til
+venstre mens tallene sto til høyre, slik at tallet så ut til å høre til
+nabokolonnen. Fiksen gjelder alle sider.
+Gå gjennom /innsikt, /liga, /live, /overganger og /spillere. For hver
+tabell med tallkolonner: står overskriften rett over tallene sine, eller
+er den forskjøvet mot en annen kolonne?
+På /innsikt, kortet «Benkesløsing», sjekk i tillegg:
+- tallet under «På benken» står rett under den overskriften
+- tabellen strekker seg IKKE over hele kortbredden
+- chip-kolonnen viser «–» i runder uten chip, ikke tom celle
+- raden «Sum sesongen» er BORTE så lenge bare én runde er ferdigspilt
+- den grå forklaringsteksten bryter etter ca. 78 tegn i stedet for å gå i
+  én lang linje tvers over skjermen, og det er luft mellom teksten og
+  tabellhodet
+Gjør hele runden i mørkt tema og deretter i lyst.
 
-### A2. Tabellhodene på alle sider
-
-```text
-Kontekst: jeg fikset nettopp at tabellhoder over tallkolonner sto til
-venstre mens tallene sto til høyre, så tallet så ut til å høre til
-nabokolonnen. Fiksen gjelder alle sider. Nå vil jeg vite om den holder.
-
-Gå gjennom disse sidene på https://fpl.marsk.no:
-/innsikt, /liga, /live, /overganger, /spillere
-
-For hver side, for HVER tabell med tallkolonner:
-- Står kolonneoverskriften rett over tallene sine, eller er den forskjøvet
-  mot en annen kolonne?
-- Er det tall som ser ut til å ligge under feil overskrift?
-
-Sjekk spesielt på /innsikt, kortet «Benkesløsing»:
-- Tallet under «På benken» skal stå rett under den overskriften.
-- Tabellen skal IKKE strekke seg over hele kortbredden.
-- Chip-kolonnen skal vise «–» i runder uten chip, ikke stå tom.
-- Raden «Sum sesongen» skal være borte så lenge bare én runde er
-  ferdigspilt.
-- Den grå forklaringsteksten over tabellen skal bryte etter ca. 78 tegn,
-  ikke gå i én lang linje tvers over skjermen, og det skal være luft mellom
-  teksten og tabellhodet.
-
-Gjør hele runden to ganger: én gang i mørkt tema og én gang i lyst
-(temabryteren er sol/måne-knappen i toppmenyen).
-
-Rapporter som en liste: side | tema | hva som er galt | hvor på siden.
-Finner du ingenting galt på en side, skriv «OK». Ikke endre noe.
-```
-
-### A3. `/spillere` etter redesignen (v1.8.1)
-
-```text
-Gå til https://fpl.marsk.no/spillere. Denne siden ble redesignet uten at
-jeg fikk sett den, så jeg vil ha en grundig gjennomgang. Kun lesing og
-klikking — ikke endre innstillinger.
-
-Sjekk:
-1. Fanene øverst (Tabell · Differensialer · Dødballtakere): bytter de
-   innhold når du klikker? Bytter piltast venstre/høyre fane når en fane
-   har fokus? Åpner /spillere#differensialer riktig fane direkte?
-2. Tabellen: er annenhver rad stripet? Bruk et filter (f.eks. velg en
-   posisjon eller skriv i søkefeltet) og sjekk at stripene fortsatt går
-   annenhver SYNLIGE rad — ikke hopper i mønsteret.
-3. Fanen Differensialer: bytter velgeren 5 % / 10 % / 15 % faktisk
-   innholdet i tabellen? (Den var i stykker i forrige versjon.) Er det en
-   tynn søyle bak score-tallet, og er den lengst på øverste rad?
-4. Fanen Dødballtakere: vises klubbene som kort i et rutenett, med
-   klubbmerke og rollene under hverandre?
-5. Duell-linja: er «Sammenlign» den grønne knappen, og er den deaktivert
+STEG 3 — /spillere etter redesignen
+Siden ble redesignet uten at jeg fikk sett den. Sjekk:
+a) Fanene Tabell · Differensialer · Dødballtakere: bytter de innhold ved
+   klikk? Bytter piltast venstre/høyre fane når en fane har fokus? Åpner
+   /spillere#differensialer riktig fane direkte?
+b) Tabellen: er annenhver rad stripet? Bruk et filter (posisjon eller
+   søkefelt) og sjekk at stripene fortsatt går annenhver SYNLIGE rad.
+c) Differensialer: bytter velgeren 5 % / 10 % / 15 % faktisk innholdet i
+   tabellen? Er det en tynn søyle bak score-tallet, og er den lengst på
+   øverste rad?
+d) Dødballtakere: vises klubbene som kort i et rutenett, med klubbmerke og
+   rollene under hverandre?
+e) Duell-linja: er «Sammenlign» den grønne knappen, og er den deaktivert
    til to spillere er krysset av?
+Begge temaer.
 
-Gjenta i begge temaer. Rapporter: hva som virker, og hva som ikke virker,
-med hvilken fane og hvilket tema. Skjermbilde av alt som ser galt ut.
-```
-
-### A4. Spillerkortet og duellen (v1.8.0)
-
-```text
-På https://fpl.marsk.no/spillere, test disse interaksjonene og rapporter
-hva som faktisk skjer:
-
-Spillerkortet:
-1. Klikk på et spillernavn i tabellen — åpnes det et kort med drakt,
-   nøkkeltall, dødballroller, siste fem runder og neste tre kamper?
-2. Lukk med ×-knappen. Åpne igjen, lukk med Esc. Åpne igjen, lukk ved å
-   klikke utenfor kortet.
-3. Etter lukking: står tastaturfokus tilbake på spillernavnet du klikket?
-   (Trykk Tab én gang og se hvor fokusrammen havner.)
-
-Duellen:
-4. Kryss av to spillere. Prøv å krysse av en tredje — den skal avvises.
-5. Med to valgte: filtrer bort den ene (søk etter noe annet). Forsvinner
-   haken?
-6. Velg to på nytt og sorter tabellen på en kolonne. Beholdes valget?
-7. Trykk «Sammenlign» — kommer nøkkeltallene side ved side, med beste
+STEG 4 — Spillerkortet og duellen
+På /spillere, test og rapporter hva som faktisk skjer:
+a) Klikk et spillernavn — åpnes et kort med drakt, nøkkeltall,
+   dødballroller, siste fem runder og neste tre kamper?
+b) Lukk med ×. Åpne igjen, lukk med Esc. Åpne igjen, lukk ved klikk
+   utenfor kortet.
+c) Etter lukking: står tastaturfokus tilbake på navnet du klikket? (Trykk
+   Tab én gang og se hvor fokusrammen havner.)
+d) Kryss av to spillere. Prøv en tredje — den skal avvises.
+e) Med to valgte: filtrer bort den ene. Forsvinner haken?
+f) Velg to på nytt, sorter tabellen på en kolonne. Beholdes valget?
+g) Trykk «Sammenlign» — kommer nøkkeltallene side ved side med beste
    verdi uthevet?
 
-Rapporter punkt for punkt: forventet vs. hva som skjedde. Skjermbilde der
-noe avviker.
-```
-
-### A5. Mobilvisning, 390 px
-
-```text
-Sett vindusbredden til ca. 390 px (eller bruk Chromes mobilvisning,
-iPhone-format) og gå gjennom disse sidene på https://fpl.marsk.no:
-/overganger, /liga, /innsikt, /spillere
-
-For hver side:
-1. Er det vannrett scroll på SELVE SIDEN? (Det skal det ikke være — bare
-   tabellene skal kunne dras sidelengs.)
-2. Toppmenyen har 9 punkter: kan den dras sidelengs, og ser du en
-   fade-kant som antyder at det er mer å scrolle til?
-3. Er det tekst eller tall som klippes, overlapper eller går utenfor
-   kortet?
-4. På /spillere: fungerer avkryssingskolonnen, spillerkortet og duellen
+STEG 5 — Mobilvisning, 390 px
+Sett vindusbredden til ca. 390 px (eller Chromes mobilvisning,
+iPhone-format) og gå gjennom /overganger, /liga, /innsikt og /spillere:
+a) Har SELVE SIDEN vannrett scroll? Det skal den ikke ha — bare tabellene
+   skal kunne dras sidelengs.
+b) Toppmenyen har 9 punkter: kan den dras sidelengs, og ser du en
+   fade-kant som viser at det er mer?
+c) Klippes, overlapper eller flyter tekst og tall utenfor kortene?
+d) På /spillere: fungerer avkryssingskolonnen, spillerkortet og duellen
    like bra som på desktop?
+Begge temaer.
 
-Begge temaer. Rapporter: side | tema | problem | skjermbilde.
-```
-
-### A6. Rask helsesjekk av API-et
-
-```text
-Åpne disse og rapporter hva de svarer:
-1. https://fpl.marsk.no/health — hvilke funksjoner står som true/false?
-2. https://fpl.marsk.no/api/brief.json — finnes feltet «dataAlder», og hva
+STEG 6 — Rask API-sjekk
+a) https://fpl.marsk.no/health — hvilke funksjoner står som true/false?
+b) https://fpl.marsk.no/api/brief.json — finnes feltet «dataAlder», og hva
    er verdien i sekunder?
-3. https://fpl.marsk.no/finnesikke — kommer det en 404-side på norsk, ikke
-   en stygg standardfeil?
+c) https://fpl.marsk.no/finnesikke — kommer det en 404-side på norsk?
 
-Bare rapporter det du ser. Ikke endre noe.
+RAPPORT (avslutt med denne, i denne rekkefølgen)
+1. Statuslinje per steg: «STEG n — OK» / «STEG n — AVVIK» / «STEG n — IKKE
+   TESTET (grunn)».
+2. Funnliste, ett funn per linje, nummerert, i dette formatet:
+   [ALVORLIGHET] side | tema | bredde | forventet | faktisk
+   ALVORLIGHET er BLOKKERER, VIKTIG eller KOSMETISK.
+3. Skjermbildene, merket med funnnummer.
+4. Til slutt: hva som så bra ut, kort.
+Ikke foreslå kodefiks og ikke gjett på årsak — jeg tar rapporten videre
+til utvikleren.
 ```
 
 ---
@@ -173,16 +139,17 @@ Kopier **hele** blokka inn i en **ny** Claude Code-økt (`/clear` først).
 
 ### B1. QA-funn → fikser
 
-Bruk denne når Del A har gitt funn. Lim inn rapporten fra Claude for Chrome.
+Bruk denne når rapporten fra Del A er klar. Lim inn funnlista.
 
 ```text
 Les docs/HANDOVER.md og CLAUDE.md først.
 
 Jeg har QA-et prod med Claude for Chrome. Rapporten:
 
-<lim inn rapporten her>
+<lim inn funnlista her>
 
-Oppgave: fiks funnene, ett og ett, i den rekkefølgen de står.
+Oppgave: fiks funnene, ett og ett, i den rekkefølgen de står — BLOKKERER
+først, så VIKTIG, så KOSMETISK.
 
 Krav:
 - Jobb på en egen branch, ikke på main.
@@ -278,13 +245,10 @@ Krav:
 
 ## Del C — rekkefølge
 
-1. **A1** i Claude for Chrome — uten den vet du ikke om du QA-er ny eller
-   gammel CSS.
-2. **A2 → A3 → A4** i samme Chrome-økt. Ta vare på rapporten.
-3. **A5** (mobilbredde) og **A6** (API-sjekk) når du vil.
-4. Har Del A gitt funn: **B1** i Claude Code.
-5. **B2** (planøkt v1.9.0) → godkjenn planen → **B3** (bygg).
-6. **B4** når du orker, **B5** etter ditt første ekte bytte.
+1. **Del A** i Claude for Chrome — én prompt, hele QA-en, samlet rapport.
+2. Ga rapporten funn: **B1** i Claude Code.
+3. **B2** (planøkt v1.9.0) → godkjenn planen → **B3** (bygg).
+4. **B4** når du orker, **B5** etter ditt første ekte bytte.
 
 ## Del D — det som ikke kan delegeres
 
