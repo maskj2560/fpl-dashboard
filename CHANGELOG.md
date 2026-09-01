@@ -7,6 +7,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.8.2] - 2026-09-01
+
 ### Changed
 
 - «Rundens rapport»: rikere grunnlag og lengre tekst. Rapporten får nå

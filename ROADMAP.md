@@ -38,6 +38,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.7.1**~~ | ~~UX-polering: 12 småfiks fra funksjonsgjennomgang~~ | **utført 1. sep — ute i prod, 556/556** | — |
 | ~~**v1.8.0**~~ | ~~«Spiller-pakka»: spillerkort, duell, differensialer, straffer~~ | **utført 1. sep — ute i prod, 602/602** | — |
 | ~~**v1.8.1**~~ | ~~Redesign av /spillere: faner, lavmælte lenker, klubbkort~~ | **utført 1. sep — ute i prod, 613/613** | — |
+| ~~**v1.8.2**~~ | ~~QA-fikser fra prod-gjennomgang + rikere «Rundens rapport»~~ | **utført 1. sep — 626/626** | — |
 | **v1.9.0** | «Planleggingspakka»: chip-planlegger, deadline-sjekk, kalender-feed | 5 | — |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
