@@ -413,12 +413,89 @@ export async function assembleLeagueInsights({ leagueId, teamId = config.fplTeam
 
 // ---- rundens rapport -----------------------------------------------------
 
+/** FPLs chip-navn → kort merke i UI. Ukjent verdi gir ingen merke. */
+const CHIP_LABELS = { bboost: 'BB', '3xc': 'TC', wildcard: 'WC', freehit: 'FH' };
+
+export const chipLabel = (name) => CHIP_LABELS[name] ?? null;
+
+/** Differensial i rapporten: aleneeid spiller med minst så mange råpoeng. */
+const DIFFERENTIAL_MIN_POINTS = 8;
+
+/** Flopp i rapporten: maks så mange råpoeng tross bred eierskap i ligaen. */
+const FLOP_MAX_POINTS = 2;
+
+/**
+ * Lagdetaljer + differensialer/flopper for rapporten. Eierskap telles kun
+ * i start-XI (multiplier > 0 — FPL re-sorterer picks etter autosub), og
+ * alle poeng er rå 1×. Managere uten picks utelates fra lagdetaljene.
+ */
+function buildReportDetails({ results, picksByEntry, live, elements, eventId }) {
+  const empty = { teams: [], differentials: [], flops: [] };
+  if (!picksByEntry || !live || !elements?.length) return empty;
+
+  const pointsOf = new Map();
+  for (const e of live.elements ?? []) pointsOf.set(e.id, e.stats?.total_points ?? 0);
+  const nameOf = new Map(elements.map((e) => [e.id, e.web_name]));
+
+  const teams = [];
+  const owners = new Map(); // element-id → [entryName, ...] i start-XI
+  for (const r of results) {
+    const picks = picksByEntry.get(r.entry)?.get(eventId);
+    if (!picks?.picks?.length) continue;
+
+    const xi = picks.picks.filter((p) => p.multiplier > 0);
+    const benched = picks.picks.filter((p) => p.multiplier === 0);
+    const reported = picks.entry_history?.points_on_bench;
+    const bench = Number.isInteger(reported)
+      ? reported
+      : benched.reduce((sum, p) => sum + (pointsOf.get(p.element) ?? 0), 0);
+
+    let top = null;
+    for (const p of xi) {
+      const points = pointsOf.get(p.element) ?? 0;
+      if (!top || points > top.points) top = { name: nameOf.get(p.element) ?? '?', points };
+      const list = owners.get(p.element) ?? [];
+      list.push(r.entry_name ?? '');
+      owners.set(p.element, list);
+    }
+
+    teams.push({
+      entryName: r.entry_name ?? '',
+      playerName: r.player_name ?? '',
+      bench,
+      chip: chipLabel(picks.active_chip),
+      transfers: picks.entry_history?.event_transfers ?? 0,
+      hit: picks.entry_history?.event_transfers_cost ?? 0,
+      topScorer: top,
+    });
+  }
+  if (!teams.length) return empty;
+
+  const differentials = [];
+  const flops = [];
+  const broadOwnership = Math.ceil(teams.length / 2);
+  for (const [id, list] of owners) {
+    const points = pointsOf.get(id) ?? 0;
+    if (list.length === 1 && points >= DIFFERENTIAL_MIN_POINTS) {
+      differentials.push({ entryName: list[0], name: nameOf.get(id) ?? '?', points });
+    } else if (list.length >= broadOwnership && points <= FLOP_MAX_POINTS) {
+      flops.push({ name: nameOf.get(id) ?? '?', points, owners: list.length });
+    }
+  }
+  differentials.sort((a, b) => b.points - a.points);
+  flops.sort((a, b) => b.owners - a.owners || a.points - b.points);
+
+  return { teams, differentials: differentials.slice(0, 3), flops: flops.slice(0, 3) };
+}
+
 /**
  * Grunnlaget for «Rundens rapport»: vinner/taper på rundepoeng,
  * bevegelser (rank ≠ last_rank), tabellen, min runde med kapteinsfasit
- * og alle kapteinsvalg. Rene data — prompten bygges i prompts.js.
+ * og alle kapteinsvalg — pluss lagdetaljer (benk, chip, bytter/hit,
+ * toppscorer) og differensialer/flopper når picks + live + elements
+ * sendes med. Rene data — prompten bygges i prompts.js.
  */
-export function buildReportData({ event, leagueName, results, captainRound, myEntry }) {
+export function buildReportData({ event, leagueName, results, captainRound, myEntry, picksByEntry, live, elements }) {
   const byEvent = [...results].sort((a, b) => (b.event_total ?? 0) - (a.event_total ?? 0));
   const capByEntry = new Map((captainRound?.rows ?? []).map((r) => [r.entry, r.last]));
 
@@ -467,6 +544,7 @@ export function buildReportData({ event, leagueName, results, captainRound, myEn
         lost: r.last.lost,
         tc: r.last.tc,
       })),
+    ...buildReportDetails({ results, picksByEntry, live, elements, eventId: event.id }),
   };
 }
 
@@ -507,5 +585,8 @@ export async function assembleLeagueReportData({ leagueId, teamId = config.fplTe
     results,
     captainRound,
     myEntry: teamId,
+    picksByEntry,
+    live,
+    elements: bootstrap.elements ?? [],
   });
 }

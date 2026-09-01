@@ -10,7 +10,7 @@
 
 import config from '../config.js';
 import { resolvedGw } from './analysis.js';
-import { effectiveCaptain, _mapLimit } from './league-insights.js';
+import { effectiveCaptain, _mapLimit, chipLabel } from './league-insights.js';
 import { getBootstrap, getPicksHistoric, getLiveHistoric, getDreamTeam } from './fplClient.js';
 
 /**
@@ -28,11 +28,6 @@ export const FORMATIONS = [
   [5, 3, 2],
   [5, 4, 1],
 ];
-
-/** FPLs chip-navn → kort merke i UI. Ukjent verdi gir ingen merke. */
-const CHIP_LABELS = { bboost: 'BB', '3xc': 'TC', wildcard: 'WC', freehit: 'FH' };
-
-const chipLabel = (name) => CHIP_LABELS[name] ?? null;
 
 /**
  * Beste lovlige start-XI av de femten: topp keeper pluss den formasjonen

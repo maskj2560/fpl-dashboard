@@ -535,6 +535,12 @@ const reportData = {
     { entryName: 'Marius XI', captain: 'Haaland', points: 12, lost: 0, tc: false },
     { entryName: 'Rival FC', captain: 'Salah', points: 4, lost: 5, tc: true },
   ],
+  teams: [
+    { entryName: 'Marius XI', playerName: 'Marius S.', bench: 7, chip: null, transfers: 2, hit: 8, topScorer: { name: 'Haaland', points: 18 } },
+    { entryName: 'Rival FC', playerName: 'Rival R.', bench: 3, chip: 'TC', transfers: 0, hit: 0, topScorer: { name: 'Salah', points: 4 } },
+  ],
+  differentials: [{ entryName: 'Nykommer FC', name: 'Isak', points: 10 }],
+  flops: [{ name: 'Botman', points: 1, owners: 3 }],
 };
 
 test('buildLeagueReportPrompt inneholder REGLER-blokken, tonen og manager-navnene', () => {
@@ -554,7 +560,32 @@ test('buildLeagueReportPrompt krever runde-spraak og ordtaket', () => {
   const p = buildLeagueReportPrompt(reportData);
 
   assert.ok(p.includes('aldri «gameweek»'), 'runde-regelen mangler');
-  assert.ok(p.includes('180'), 'ordtaket ~180 mangler');
+  assert.ok(p.includes('250–320 ord'), 'ordtaket 250–320 mangler');
+  assert.ok(!p.includes('180'), 'gammelt ordtak ~180 skal vaere borte');
   assert.ok(p.includes('Finn aldri'), 'aldri-dikte-regelen mangler');
   assert.ok(p.includes('**fet**'), 'fet-regelen mangler');
+});
+
+test('buildLeagueReportPrompt tar med lagdetaljer, differensialer og flopper', () => {
+  const p = buildLeagueReportPrompt(reportData);
+
+  assert.ok(p.includes('Lagdetaljer'), 'lagdetalj-seksjonen mangler');
+  assert.ok(p.includes('chip TC'), 'chipen mangler');
+  assert.ok(p.includes('hit -8'), 'hiten mangler');
+  assert.ok(p.includes('7 p på benken'), 'benkepoengene mangler');
+  assert.ok(p.includes('Haaland 18 p'), 'toppscoreren mangler');
+  assert.ok(p.includes('Differensialer'), 'differensial-seksjonen mangler');
+  assert.ok(p.includes('Isak'), 'differensialen mangler');
+  assert.ok(p.includes('Flopper'), 'flopp-seksjonen mangler');
+  assert.ok(p.includes('Botman'), 'floppen mangler');
+  assert.ok(p.includes('hvert lag'), 'dekningsregelen mangler');
+});
+
+test('buildLeagueReportPrompt utelater tomme detaljseksjoner', () => {
+  const p = buildLeagueReportPrompt({ ...reportData, teams: [], differentials: [], flops: [] });
+
+  assert.ok(!p.includes('Lagdetaljer'), 'tom lagdetalj-seksjon skal utelates');
+  assert.ok(!p.includes('Differensialer'), 'tom differensial-seksjon skal utelates');
+  assert.ok(!p.includes('Flopper'), 'tom flopp-seksjon skal utelates');
+  assert.ok(p.includes('REGLER'), 'REGLER-blokken skal alltid med');
 });

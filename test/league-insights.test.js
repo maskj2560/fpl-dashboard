@@ -656,6 +656,67 @@ function reportFixture() {
   return { reportResults, captainRound };
 }
 
+/** Picks + live + elements for lagdetaljene i rapporten (samme runde 2). */
+function reportDetailsFixture() {
+  const elements = [
+    { id: 101, web_name: 'Haaland' },
+    { id: 102, web_name: 'Salah' },
+    { id: 103, web_name: 'Isak' },
+    { id: 104, web_name: 'Botman' },
+    { id: 105, web_name: 'Raya' },
+    { id: 106, web_name: 'Mbeumo' },
+    { id: 107, web_name: 'Wood' },
+  ];
+  const live = {
+    elements: [
+      { id: 101, stats: { total_points: 18 } },
+      { id: 102, stats: { total_points: 4 } },
+      { id: 103, stats: { total_points: 10 } },
+      { id: 104, stats: { total_points: 1 } },
+      { id: 105, stats: { total_points: 5 } },
+      { id: 106, stats: { total_points: 7 } },
+      { id: 107, stats: { total_points: 3 } },
+    ],
+  };
+  const picks = {
+    // Marius XI: rapportert benk, hit, ingen chip.
+    123: {
+      active_chip: null,
+      entry_history: { points_on_bench: 7, event_transfers: 2, event_transfers_cost: 8 },
+      picks: [
+        { element: 101, multiplier: 2 },
+        { element: 104, multiplier: 1 },
+        { element: 105, multiplier: 1 },
+        { element: 106, multiplier: 0 },
+      ],
+    },
+    // Rival FC: mangler points_on_bench (fallback fra benkepicks), TC-chip.
+    456: {
+      active_chip: '3xc',
+      entry_history: { event_transfers: 0, event_transfers_cost: 0 },
+      picks: [
+        { element: 101, multiplier: 1 },
+        { element: 102, multiplier: 3 },
+        { element: 104, multiplier: 1 },
+        { element: 107, multiplier: 0 },
+      ],
+    },
+    // Nykommer FC: eneste eier av Isak (differensial).
+    789: {
+      active_chip: null,
+      entry_history: { points_on_bench: 0, event_transfers: 1, event_transfers_cost: 0 },
+      picks: [
+        { element: 103, multiplier: 2 },
+        { element: 104, multiplier: 1 },
+      ],
+    },
+  };
+  const picksByEntry = new Map(
+    Object.entries(picks).map(([entry, p]) => [Number(entry), new Map([[2, p]])]),
+  );
+  return { elements, live, picksByEntry };
+}
+
 test('buildReportData kaarer rundevinner og -taper paa rundepoeng', () => {
   const { reportResults, captainRound } = reportFixture();
   const data = buildReportData({
@@ -697,6 +758,90 @@ test('buildReportData tar med bevegelser og min runde med kapteinsfasit', () => 
   // Kapteinslista tar kun managere med picks den runden.
   assert.deepEqual(data.captains.map((c) => c.entryName), ['Marius XI', 'Rival FC']);
   assert.equal(data.captains[1].tc, true);
+});
+
+test('buildReportData bygger lagdetaljer med benk, chip, hits og toppscorer', () => {
+  const { reportResults, captainRound } = reportFixture();
+  const { elements, live, picksByEntry } = reportDetailsFixture();
+  const data = buildReportData({
+    event: { id: 2, name: 'Runde 2' },
+    leagueName: 'Testligaen',
+    results: reportResults,
+    captainRound,
+    myEntry: 123,
+    picksByEntry,
+    live,
+    elements,
+  });
+
+  // Sortert som tabellen (results-rekkefølgen).
+  assert.deepEqual(data.teams.map((t) => t.entryName), ['Marius XI', 'Rival FC', 'Nykommer FC']);
+
+  const [mine, rival, ny] = data.teams;
+  assert.equal(mine.bench, 7); // rapportert points_on_bench
+  assert.equal(mine.chip, null);
+  assert.equal(mine.transfers, 2);
+  assert.equal(mine.hit, 8);
+  assert.deepEqual(mine.topScorer, { name: 'Haaland', points: 18 }); // rå 1×, ikke kapteinsdoblet
+
+  assert.equal(rival.bench, 3); // fallback: benkepicks (multiplier 0) mot live
+  assert.equal(rival.chip, 'TC');
+  assert.deepEqual(rival.topScorer, { name: 'Haaland', points: 18 });
+
+  assert.deepEqual(ny.topScorer, { name: 'Isak', points: 10 });
+});
+
+test('buildReportData finner differensialer og flopper i ligaen', () => {
+  const { reportResults, captainRound } = reportFixture();
+  const { elements, live, picksByEntry } = reportDetailsFixture();
+  const data = buildReportData({
+    event: { id: 2, name: 'Runde 2' },
+    leagueName: 'Testligaen',
+    results: reportResults,
+    captainRound,
+    myEntry: 123,
+    picksByEntry,
+    live,
+    elements,
+  });
+
+  // Isak: eid kun av Nykommer FC, 10 p (>= 8). Salah (4 p) og Raya (5 p) er
+  // også aleneeid, men under terskelen. Benkespillere teller ikke som eierskap.
+  assert.deepEqual(data.differentials, [{ entryName: 'Nykommer FC', name: 'Isak', points: 10 }]);
+  // Botman: i start-XI hos alle tre, 1 p (<= 2).
+  assert.deepEqual(data.flops, [{ name: 'Botman', points: 1, owners: 3 }]);
+});
+
+test('buildReportData tåler manglende picks og utelatte nye arg', () => {
+  const { reportResults, captainRound } = reportFixture();
+  const { elements, live, picksByEntry } = reportDetailsFixture();
+  picksByEntry.set(456, new Map([[2, null]])); // henting feilet for én manager
+
+  const data = buildReportData({
+    event: { id: 2, name: 'Runde 2' },
+    leagueName: 'Testligaen',
+    results: reportResults,
+    captainRound,
+    myEntry: 123,
+    picksByEntry,
+    live,
+    elements,
+  });
+  // Manager uten picks utelates fra lagdetaljene — tabellen dekker laget uansett.
+  assert.deepEqual(data.teams.map((t) => t.entryName), ['Marius XI', 'Nykommer FC']);
+
+  // Helt uten de nye argene (gamle kallere): tomme lister, resten uendret.
+  const bare = buildReportData({
+    event: { id: 2, name: 'Runde 2' },
+    leagueName: 'Testligaen',
+    results: reportResults,
+    captainRound,
+    myEntry: 123,
+  });
+  assert.deepEqual(bare.teams, []);
+  assert.deepEqual(bare.differentials, []);
+  assert.deepEqual(bare.flops, []);
+  assert.equal(bare.winner.entryName, 'Nykommer FC');
 });
 
 describe('assembleLeagueReportData', () => {

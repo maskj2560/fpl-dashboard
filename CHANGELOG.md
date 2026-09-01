@@ -7,6 +7,15 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Changed
+
+- «Rundens rapport»: rikere grunnlag og lengre tekst. Rapporten får nå
+  lagdetaljer per manager (benkepoeng, chip, bytter/hit, rundens beste
+  spiller), differensialer (aleneeid spiller ≥ 8 p) og flopper (bredt eid,
+  ≤ 2 p) — alt fra picks + live som allerede hentes, 0 nye FPL-kall.
+  Prompten ber om 250–320 ord (før ~180) og at hvert lag nevnes med et
+  konkret eksempel; `max_tokens` 2000 → 3000. Samme tone som før.
+
 ### Fixed
 
 - «Spillere»: en tredje avkryssing i duellen ble avvist uten et eneste
