@@ -36,10 +36,11 @@ ligger uutgitt på main under `[Unreleased]`)
 - **Ekte SIGTERM-bevis mangler.** Deploy-loggen er feil sted; beviset er
   `kill 1` i containerterminalen — de to avslutningslinjene skal stå der.
   Lokalt bevist med `process.emit('SIGINT')`, exit 0.
-- **Asset-hashen i prod skal være `51d1bbb4` etter v1.8.1** (byttet fra
-  `7a3c28b8`; både style.css og app.js endret). Regnet fra git-blobbene på
-  `main`-toppen, aldri fra arbeidstreet — metoden er kontrollert ved at
-  v1.8.0-blobbene fortsatt gir `7a3c28b8`. Se lærdommene.
+- **Asset-hashen i prod skal være `3eef00bb` etter tabellfiksen i økt 51**
+  (v1.8.1 hadde `51d1bbb4`, v1.8.0 `7a3c28b8`; kun style.css endret nå).
+  Regnet fra git-blobbene på `main`-toppen, aldri fra arbeidstreet —
+  metoden er kontrollert ved at v1.8.0-blobbene fortsatt gir `7a3c28b8`.
+  Se lærdommene.
 - **Helsesjekken:** alt. a aktiv (Coolifys sjekk AV, Dockerfilens gjelder).
   Se lærdommene under for hva den IKKE fanger.
 - **Kostnad: måleuka DROPPET** (28. aug) — følges i `console.anthropic.com`,
@@ -192,5 +193,9 @@ Marius gjøre.
   skillestrek, «–» i tom chip-celle, luft mellom `.hint` og tabell/stripe,
   78ch tak på ingress og hint, kortere benke-forklaring. To nye
   style-tester. **615/615 + lint 0.** CHANGELOG under `[Unreleased]`.
+  Så: «Push til main» — deploy-vinduet sjekket FØRST (tirsdag 16:08, GW2,
+  0 pågående kamper, ikke torsdag 19–21), commit `2080cb7` + docs-commit
+  pushet til main. Ingen versjonsbump: fiksen ligger uutgitt under
+  `[Unreleased]`. Ny asset-hash `3eef00bb`.
 - Loggposter fra økt 22–49: rotert til
   `docs/arkiv/HANDOVER-historikk.md` (200-linjerstaket, sist 2026-09-01).
