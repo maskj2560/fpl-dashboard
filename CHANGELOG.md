@@ -7,6 +7,34 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.10.0] - 2026-09-02
+
+### Added
+
+- Prisvarsler (grunnlag): `prices.js` med `dateKey` (Oslo-dato — natten
+  tilhører dagen den ender på), `snapshotOf`/`diffPrices` (kun endrede
+  priser, ingen uten snapshot), `priceDecision` (første snapshot poster
+  aldri, maks én Discord-melding per dato, uten webhook kun snapshot) og
+  `parsePriceFile` (versjon 1, ellers null). Sju nye tester. 0 AI-kall.
+- Prisvarsler (rapport): `buildPriceChanges` (troppen først — stigere, så
+  fallere — pluss topp 5 opp/ned globalt; likhet brytes på mest
+  kjøpt/solgt; spillere borte fra bootstrap hoppes over) og
+  `priceChangesText` (Discord-teksten: «£14.0m → £14.1m (+0,1)» med norsk
+  komma, «Ingen endringer i troppen din.» når tom). Fire nye tester.
+- Prisvarsler (timer): `startPriceWatcher` i `server.js` — alltid aktiv,
+  ett tikk ved oppstart og så hver time (≤ 1 cachet bootstrap-kall/time).
+  Snapshot og dagens rapport i `DATA_DIR/price-state.json` (versjon 1),
+  snapshotet lagres FØR Discord-posten, en andre endring samme natt slås
+  sammen (første `from`, siste `to`, netto null faller bort) uten ny
+  melding. Uten webhook: snapshot + kort, aldri post. `postToDiscord`
+  eksporteres fra `notify.js` (Discord blir der). Fem nye tester.
+- Prisvarsler (kort): «Prisendringer natt til …» øverst på `/overganger`
+  når det finnes en rapport — troppen din (eller «Ingen endringer i troppen
+  din.»), så topp 5 opp og ned med klubbmerke, pris før/etter og delta.
+  Ruta leser kun `getLastPriceChanges()` (0 FPL-kall, 0 AI-kall).
+  Kildelås: `prices.js` importerer aldri `ai.js` og låner Discord-sendingen
+  fra `notify.js`. Tre nye tester.
+
 ## [1.9.0] - 2026-09-02
 
 ### Added

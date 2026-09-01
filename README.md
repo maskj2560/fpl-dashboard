@@ -22,7 +22,9 @@ Mobil (390 px): [dashbord](docs/img/dashbord-mobil.png) ·
 | `/` | Deadline-nedtelling, ukens flagg, toppform, mest kjøpt/solgt, FDR-matrise | ✅ |
 | `/spillere` | Full spillertabell med sortering, filtrering og søk | ✅ |
 | `/lag` | Mitt lag, kaptein- og transferanbefalinger, chip-planlegger | ✅ |
-| `/liga` | Miniliga-tabeller og differensial-analyse | ✅ |
+| `/liga` | Miniliga-tabeller, differensial-analyse, liga-innsikt og «Rundens rapport» | ✅ |
+| `/overganger` | Regnskap for byttene, prisgevinst, «laget uten bytter», hva hvis-planlegger, prisendringer i natt | ✅ |
+| `/innsikt` | Sesonginnsikt: benkesløsing, kapteinsfasit, flaks, rundens XI | ✅ |
 | `/live` | Live-poeng under pågående gameweek | ✅ |
 | `/brief` | Gameweek-brief (data + valgfri AI) + «Lagsjekk» før deadline | ✅ |
 | `/nyheter` | FPL-nyheter fra RSS + valgfri AI-oppsummering | ✅ |
@@ -57,7 +59,7 @@ npm run lint           # ESLint
 | `NEWS_FEEDS` | nei | Kommaseparerte RSS-URL-er. Tomt = BBC/Sky-defaults |
 | `ANTHROPIC_API_KEY` | nei | Aktiverer AI-funksjoner (nyheter, brief, rådgiver) |
 | `AI_MODEL` | nei (`claude-sonnet-5`) | Claude-modell. Billig-alternativ: `claude-haiku-4-5` |
-| `DISCORD_WEBHOOK_URL` | nei | Aktiverer auto-brief før deadline |
+| `DISCORD_WEBHOOK_URL` | nei | Aktiverer Discord: auto-brief, Lagsjekk (kun ved funn), rundens rapport og prisvarsler (maks én per natt) |
 | `BRIEF_HOURS_BEFORE_DEADLINE` | nei (24) | Timer før deadline auto-briefen sendes |
 | `DEADLINE_CHECK_HOURS_BEFORE` | nei (3) | Timer før deadline «Lagsjekk» kjøres — Discord-melding kun ved funn (skadet/suspendert starter, flagget kaptein, spiller uten kamp) |
 | `TZ` | nei (`Europe/Oslo`) | Tidssone for visning |

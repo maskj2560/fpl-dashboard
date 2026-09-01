@@ -405,11 +405,29 @@ export const newsUnsafeLink = {
 };
 
 // «Overganger»-siden: data, tomtilstand og transfer som venter på runden sin.
+// Prisvarsler (v1.10.0): samme form som buildPriceChanges gir.
+export const priceChanges = {
+  date: '2026-09-03',
+  mine: [
+    { id: 1, name: 'Haaland', teamShort: 'MCI', teamCode: 43, from: 140, to: 141, delta: 1 },
+    { id: 2, name: 'Saka', teamShort: 'ARS', teamCode: 3, from: 102, to: 101, delta: -1 },
+  ],
+  risers: [
+    { id: 3, name: 'Palmer', teamShort: 'CHE', teamCode: 8, from: 104, to: 106, delta: 2 },
+    { id: 1, name: 'Haaland', teamShort: 'MCI', teamCode: 43, from: 140, to: 141, delta: 1 },
+  ],
+  fallers: [{ id: 2, name: 'Saka', teamShort: 'ARS', teamCode: 3, from: 102, to: 101, delta: -1 }],
+  countUp: 7,
+  countDown: 5,
+};
+
 export const transfers = {
   title: 'Overganger',
   clubAssets,
   formatSigned: (n) => String(n),
   formatPrice: (n) => (n / 10).toFixed(1),
+  formatDay: () => 'torsdag 3. september',
+  priceChanges,
   aiComment: { text: "Byttene treffer — **Haaland** inn var rett.", generatedAt: 1 },
   scenarios: [
     {

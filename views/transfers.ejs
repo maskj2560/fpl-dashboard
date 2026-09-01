@@ -6,6 +6,65 @@
   poengstraff. Hvert bytte måles for seg.</p>
 </section>
 
+<% if (typeof priceChanges !== 'undefined' && priceChanges) { %>
+  <%# Prisvarsler (v1.10.0): samme innhold som Discord-meldingen (priceChangesText). %>
+  <section class="card card-wide" id="prisendringer">
+    <h2>
+      <span class="h2-title">Prisendringer natt til <%= formatDay(priceChanges.date + 'T12:00:00') %></span>
+      <span class="dim"><%= priceChanges.countUp %> opp · <%= priceChanges.countDown %> ned</span>
+    </h2>
+    <p class="hint">Sjekkes hver time; FPL endrer priser om natten. Troppen din først, så nattens største bevegelser.</p>
+    <div class="grid">
+      <div>
+        <% if (priceChanges.mine.length === 0) { %>
+          <p class="empty">Ingen endringer i troppen din.</p>
+        <% } else { %>
+          <h3 class="sub-head">Troppen din</h3>
+          <div class="table-scroll">
+            <table class="data data--fit">
+              <caption class="sr-only">Prisendringer i troppen din</caption>
+              <thead><tr><th scope="col">Spiller</th><th scope="col" class="num">Pris</th><th scope="col" class="num">Endring</th></tr></thead>
+              <tbody>
+                <% for (const r of priceChanges.mine) { %>
+                  <tr>
+                    <td><strong><%= r.name %></strong> <%- include('partials/club-badge', { team: { short_name: r.teamShort, code: r.teamCode } }) %></td>
+                    <td class="num">£<%= formatPrice(r.from) %>m → £<%= formatPrice(r.to) %>m</td>
+                    <td class="num <%= r.delta > 0 ? 'accent' : 'negative' %>"><%= formatSigned(r.delta / 10) %></td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        <% } %>
+      </div>
+      <% for (const [label, rows, total] of [['Opp', priceChanges.risers, priceChanges.countUp], ['Ned', priceChanges.fallers, priceChanges.countDown]]) { %>
+        <div>
+          <h3 class="sub-head"><%= label %> (<%= rows.length %> av <%= total %>)</h3>
+          <% if (rows.length === 0) { %>
+            <p class="empty">Ingen.</p>
+          <% } else { %>
+            <div class="table-scroll">
+              <table class="data data--fit">
+                <caption class="sr-only">Nattens største prisbevegelser <%= label.toLowerCase() %></caption>
+                <thead><tr><th scope="col">Spiller</th><th scope="col" class="num">Pris</th><th scope="col" class="num">Endring</th></tr></thead>
+                <tbody>
+                  <% for (const r of rows) { %>
+                    <tr>
+                      <td><a href="/spillere?sok=<%= encodeURIComponent(r.name) %>"><%= r.name %></a> <%- include('partials/club-badge', { team: { short_name: r.teamShort, code: r.teamCode } }) %></td>
+                      <td class="num">£<%= formatPrice(r.from) %>m → £<%= formatPrice(r.to) %>m</td>
+                      <td class="num <%= r.delta > 0 ? 'accent' : 'negative' %>"><%= formatSigned(r.delta / 10) %></td>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          <% } %>
+        </div>
+      <% } %>
+    </div>
+  </section>
+<% } %>
+
 <% if (analysis.totals.count === 0) { %>
   <section class="card">
     <p class="empty">

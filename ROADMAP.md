@@ -41,8 +41,8 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.8.2**~~ | ~~QA-fikser fra prod-gjennomgang + rikere «Rundens rapport»~~ | **utført 1. sep — 626/626** | — |
 | ~~**v1.8.3**~~ | ~~«Herding + tilgjengelighet»: CSP m/ nonce, sikkerhetshoder, JSON-tak, takstbegrensning, a11y-pass, branch-rydding~~ | **utført 2. sep — 655/655** | — |
 | ~~**v1.9.0**~~ | ~~«Planleggingspakka»: chip-planlegger (/lag), «Lagsjekk» (/brief + Discord), `/kalender.ics` + P3~~ | **utført 2. sep — 691/691** | — |
-| **v1.10.0** | «Prisvarsler»: timesnapshot, Discord maks 1/natt, kort på /overganger | 0 | **neste** |
-| **v1.11.0** | «Karriere-pakka»: FPL-karrieren + merkedager (/innsikt), bonuskamp (/live) | 0 | v1.10.0 |
+| ~~**v1.10.0**~~ | ~~«Prisvarsler»: timesnapshot, Discord maks 1/natt, kort på /overganger~~ | **utført 2. sep — 710/710** | — |
+| **v1.11.0** | «Karriere-pakka»: FPL-karrieren + merkedager (/innsikt), bonuskamp (/live) | 0 | **neste** |
 | **v1.12.0** | «PWA»: manifest, ikoner, service worker, /offline | 0 | v1.11.0 |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
@@ -62,8 +62,8 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
   testnavn, beslutningsfasit med 9 punkter — ikke re-spør).
 - **Blokkert av:** ingenting. AI-økten merger `--no-ff`, tagger og pusher
   selv per versjon etter deploy-vindu-sjekk (Marius' beslutning).
-- **Status:** v1.8.3 ute 2. sep (655/655), v1.9.0 ute 2. sep (691/691).
-  Neste: v1.10.0 prisvarsler.
+- **Status:** v1.8.3 ute 2. sep (655/655), v1.9.0 ute 2. sep (691/691),
+  v1.10.0 ute 2. sep (710/710). Neste: v1.11.0 karriere-pakka.
 - **Størrelse:** stor (fem releaser).
 
 ### 1. (P4) Løpende kostnadskontroll
@@ -180,7 +180,7 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 
 ## Senere / idéer (ikke planlagt)
 
-- ~~Prisendrings-varsler~~ — planlagt som v1.10.0 (køpunkt 0)
+- ~~Prisendrings-varsler~~ — **utført 2. sep som v1.10.0** (`prices.js`)
 - E-postvarsling som alternativ til Discord — **droppet 1. sep** (krever
   SMTP-avhengighet; Discord dekker behovet)
 - Spillerbilder (FPLs `p{code}.png`, 609 × ~10 KB) — bevisst utelatt fra

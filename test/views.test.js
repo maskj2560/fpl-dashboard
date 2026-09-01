@@ -289,6 +289,28 @@ test('news.ejs blokkerer lenker som ikke er http(s)', async () => {
   assert.ok(html.includes('href="#"'), 'forventet at usikker lenke ble byttet til #');
 });
 
+test('transfers.ejs viser prisendringene i natt med troppen først', async () => {
+  const html = await renderView('transfers', fx.transfers);
+  assert.ok(html.includes('id="prisendringer"'), 'priskortet mangler');
+  assert.ok(html.includes('Prisendringer natt til torsdag 3. september'), 'tittelen mangler datoen');
+  assert.ok(html.includes('Troppen din'), 'troppseksjonen mangler');
+  const mine = html.indexOf('Troppen din');
+  const up = html.indexOf('Opp (2 av 7)');
+  const down = html.indexOf('Ned (1 av 5)');
+  assert.ok(mine > 0 && up > mine && down > up, 'rekkefølgen skal være troppen, opp, ned');
+  assert.ok(html.includes('Haaland'), 'Haaland mangler');
+  assert.ok(html.includes('14.0') && html.includes('14.1'), 'prisene mangler');
+  assert.ok(html.includes('Sjekkes hver time'), 'hintet mangler');
+});
+
+test('transfers.ejs skjuler priskortet uten snapshot og sier fra om tom tropp', async () => {
+  const none = await renderView('transfers', { ...fx.transfers, priceChanges: null });
+  assert.ok(!none.includes('id="prisendringer"'), 'priskortet vises uten data');
+  const empty = await renderView('transfers', { ...fx.transfers, priceChanges: { ...fx.priceChanges, mine: [] } });
+  assert.ok(empty.includes('Ingen endringer i troppen din'), 'tom tropp skal sies eksplisitt');
+  assert.ok(!empty.includes('Troppen din</'), 'troppstabellen rendret uten rader');
+});
+
 test('dashboard.ejs og brief.ejs viser kalenderlenken med webcal-adresse', async () => {
   for (const [name, locals] of [['dashboard', fx.dashboard], ['brief', fx.brief]]) {
     const html = await renderView(name, locals);

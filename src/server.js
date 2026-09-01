@@ -28,6 +28,7 @@ import newsRouter from './routes/news.js';
 import { createCalendarHandler } from './routes/calendar.js';
 import { startScheduler } from './services/notify.js';
 import { startAiRefresher } from './services/refresh.js';
+import { startPriceWatcher } from './services/prices.js';
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const app = express();
@@ -135,5 +136,7 @@ startScheduler();
 // Inaktiv uten ANTHROPIC_API_KEY. Holder AI-tekstene varme på timer, slik at
 // ingen sidevisning venter på en Claude-rundtur.
 startAiRefresher();
+// Prisvarsler (v1.10.0): alltid aktiv — snapshot hver time, Discord kun med webhook.
+startPriceWatcher();
 
 export default app;
