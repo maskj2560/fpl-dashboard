@@ -10,11 +10,14 @@
 bygget, se «Neste steg»)
 
 ## Status akkurat nå
-- **v1.12.2 «Vedlikehold» bygget 2. sep (økt 56)** på
+- **v1.12.2 «Vedlikehold» i prod 2. sep 20:52 (økt 56)** på
   `fix/hygiene-cache-keys-v1122`: `npm audit fix` (qs 6.16.0, audit ren),
   fast-xml-parser 5.11.1, `node:24-alpine`, egne `:hist`-nøkler (rotårsak
   QA-funn 6) + `finished` i `/api/live.json`. **758/758 + lint 0** (baseline
-  756). Røyktest på Node 24: alle sider 200, 0 DEP0169. Prod-sjekk: under.
+  756). Røyktest på Node 24: alle sider 200, 0 DEP0169. Prod-sjekk 20:55:
+  footer v1.12.2, `<script` 2, /health 200, `dataAlder` 0 (ikke null), sw.js
+  no-store, 6 sider 200, hash `ba91839a` (uendret). Merk: `git merge -F -`
+  leser IKKE stdin — bruk `-m` (feiltaggen ble slettet og satt på nytt).
 - **v1.12.1 «QA-fikser» i prod 2. sep (økt 54).** Chrome-QA-en ga 6 VIKTIG
   + 5 KOSMETISK; alle 11 fikset med rød test først på `fix/qa-viktig-v1121`
   (funn 1–6) og `fix/qa-kosmetisk-v1121` (7–11), merget `--no-ff`.
