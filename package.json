@@ -1,6 +1,6 @@
 {
   "name": "fpl-dashboard",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "description": "Selvhostet Fantasy Premier League-dashboard — Express 5 + EJS, server-rendret, norsk UI",
   "private": true,
   "type": "module",

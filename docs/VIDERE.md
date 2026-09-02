@@ -18,7 +18,7 @@ går ut i drift for seg:
    abonnere på med alle deadlines og kampene til spillerne dine.
 3. ~~**v1.10.0 — prisvarsler.**~~ Ute 2. september, se under. Én Discord-melding om natten når prisene i
    troppen din endrer seg, pluss nattens største bevegelser globalt.
-4. **v1.11.0 — karriere-pakka.** Tidligere sesonger og merkedager på
+4. ~~**v1.11.0 — karriere-pakka.**~~ Ute 2. september, se under. Tidligere sesonger og merkedager på
    Innsikt-siden, og «bonuskamp» på Live: hvem leder BPS-kampen i hver
    kamp mens den spilles.
 5. **v1.12.0 — app på mobilen (PWA).** «Legg til på hjemskjerm» med eget
@@ -27,7 +27,23 @@ går ut i drift for seg:
 Ingen av delene bruker AI, så kostnaden er uendret. Til slutt får du én
 ferdig prompt til Claude for Chrome som tester alt i drift.
 
-## Nytt: v1.10.0 — prisvarsler (2. september)
+## Nytt: v1.11.0 — karriere-pakka (2. september)
+
+Tre ting til, fortsatt uten AI:
+
+- **FPL-karrieren på Innsikt-siden.** Tabell over de tidligere sesongene
+  dine (poeng og sluttrank, beste sesong markert) og «Denne sesongen så
+  langt». Vises fra dag én — også før første runde er ferdigspilt.
+- **Merkedager.** Åtte merker du kan låse opp gjennom sesongen:
+  Sesongbeste, Tre grønne piler, Hundreklubben, Topp 100 000, Bedre enn
+  noen gang, Tom benk, Kapteinsteft og Alle femten spilte. Låste merker
+  vises grået, opptjente sier hvilken runde det skjedde.
+- **Bonuskamp på Live-siden.** Under hver kamp som pågår ser du hvem som
+  leder BPS-kampen (topp fem) og hvor mange bonuspoeng de ligger an til.
+  Merket «(estimat)» betyr at det er vår beregning; «(FPL)» betyr at FPL
+  har publisert bonusen. Dine egne spillere står i fet.
+
+## Før det: v1.10.0 — prisvarsler (2. september)
 
 Appen sjekker FPL-prisene hver time og husker dem. Når prisene endrer seg
 om natten, får du **én** Discord-melding: først spillerne i troppen din

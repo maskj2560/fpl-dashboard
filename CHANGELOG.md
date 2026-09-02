@@ -7,6 +7,8 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.11.0] - 2026-09-02
+
 ### Added
 
 - FPL-karrieren (grunnlag): `buildCareer` i `insights.js` — tidligere
