@@ -7,6 +7,18 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Fixed
+
+- Live-siden viste «Viser data fra HH:MM — får ikke kontakt med FPL» i
+  timevis mellom runder (QA-funn 6): en ferdig runde deler cache-nøkkel
+  `live:N` med 6 t-lageret (`getLiveHistoric`, skrevet av /innsikt,
+  /overganger og /liga), så `getLive` fikk verdien tilbake som «fersk» uten
+  revalidering — mens alderstaket på 10 min slo til. Ferdige runder leses nå
+  bevisst fra 6 t-lageret (`event.finished ? getLiveHistoric : getLive`, som
+  baseline.js/transfers.js alt gjorde), `buildLive` bærer `finished`, og
+  `staleInfo(gw, { finished: true })` utløser aldri banneret — poengene er
+  immutable. `dataAlder` rapporteres som før. Fire nye tester.
+
 ## [1.12.0] - 2026-09-02
 
 ### Added

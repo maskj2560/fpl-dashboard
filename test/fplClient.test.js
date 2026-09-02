@@ -375,3 +375,25 @@ test('staleInfo(gw): 11 min gamle live-data er for gamle', async () => {
     _setFplNow(null);
   }
 });
+
+// QA-funn 6 (v1.12.1): en FERDIG runde ligger i 6 t-lageret (delt nøkkel
+// med getLive) og revalideres ikke — poengene er immutable, så alderen sier
+// ingenting om kontakten med FPL. Uten flagget gjelder 10-min-taket som før.
+test('staleInfo(gw, { finished: true }): 5 t gamle live-data for ferdig runde er ikke for gamle', async () => {
+  let t = 1_000_000;
+  _setNow(() => t);
+  _setFplNow(() => t);
+  try {
+    mockFetch(() => jsonResponse({ elements: [] }));
+    await getLiveHistoric(2);
+    t += 5 * 60 * 60_000;
+
+    const info = staleInfo(2, { finished: true });
+    assert.equal(info.tooOld, false);
+    assert.equal(info.ageSec, 18000, 'alderen rapporteres fortsatt (dataAlder)');
+    assert.equal(staleInfo(2).tooOld, true, 'uten flagget gjelder live-taket på 10 min');
+  } finally {
+    _setNow(null);
+    _setFplNow(null);
+  }
+});
