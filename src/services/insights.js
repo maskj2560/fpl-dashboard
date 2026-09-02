@@ -12,7 +12,7 @@ import config from '../config.js';
 import { resolvedGw } from './analysis.js';
 import { formatNumber } from './format.js';
 import { effectiveCaptain, _mapLimit, chipLabel } from './league-insights.js';
-import { getBootstrap, getPicksHistoric, getLiveHistoric, getDreamTeam } from './fplClient.js';
+import { getBootstrap, getPicksHistoric, getLiveHistoric, getDreamTeam, getEntryHistory } from './fplClient.js';
 
 /**
  * Lovlige formasjoner som [forsvar, midtbane, spiss]. Utledet av FPLs
@@ -527,6 +527,14 @@ export async function assembleInsights({ teamId = config.fplTeamId } = {}) {
     .map((e) => e.id)
     .sort((a, b) => a - b);
 
+  // v1.11.0: karrieren og merkedagene bygges av entry history (egen id →
+  // ALLTID 5-min-nøkkelen) og finnes før første runde er spilt. Myk feil:
+  // uten history blir begge null, resten leveres som før.
+  const history = await softNull(() => getEntryHistory(teamId));
+  const badgeInput = history
+    ? { current: history.current ?? [], past: history.past ?? [], chips: history.chips ?? [] }
+    : null;
+
   const base = {
     gw: resolvedGw(events),
     finishedCount: gws.length,
@@ -534,6 +542,8 @@ export async function assembleInsights({ teamId = config.fplTeamId } = {}) {
     captains: null,
     luck: null,
     dreamTeam: null,
+    career: badgeInput ? buildCareer({ ...badgeInput, seasonLabel: seasonLabelFrom(events) }) : null,
+    badges: badgeInput ? buildBadges(badgeInput) : null,
   };
   if (gws.length === 0) return base;
 
@@ -566,6 +576,19 @@ export async function assembleInsights({ teamId = config.fplTeamId } = {}) {
       gws,
     }),
   );
+
+  // Kapteinsteft og «Alle femten spilte» trenger picks + live — som alt er hentet.
+  if (badgeInput) {
+    base.badges = await softNull(() =>
+      buildBadges({
+        ...badgeInput,
+        extras: {
+          captainRows: base.captains?.rows ?? [],
+          allPlayedGws: gwsAllPlayed({ picksByGw, liveByGw, gws }),
+        },
+      }),
+    );
+  }
 
   return base;
 }

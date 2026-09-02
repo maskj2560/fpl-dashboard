@@ -289,6 +289,32 @@ test('news.ejs blokkerer lenker som ikke er http(s)', async () => {
   assert.ok(html.includes('href="#"'), 'forventet at usikker lenke ble byttet til #');
 });
 
+test('innsikt.ejs viser FPL-karrieren også før første runde', async () => {
+  const html = await renderView('innsikt', fx.insightsEmpty);
+  assert.ok(html.includes('Innsikt kommer når første runde er ferdigspilt'), 'tomtilstanden forsvant');
+  assert.ok(html.includes('id="karriere"'), 'karrierekortet mangler før første runde');
+  assert.ok(html.includes('2024/25') && html.includes('2025/26'), 'sesongene mangler');
+  assert.ok(/<tr[^>]*class="[^"]*row-best[^"]*"[^>]*>[\s\S]*?2024\/25/.test(html), 'beste sesong er ikke markert');
+  assert.ok(!html.includes('Denne sesongen så langt'), 'sesongen så langt vises uten ferdige runder');
+  assert.ok(html.includes('id="merkedager"'), 'merkedagene mangler før første runde');
+  const withCurrent = await renderView('innsikt', { ...fx.insightsEmpty, insights: { ...fx.insightsEmpty.insights, career: fx.career } });
+  assert.ok(withCurrent.includes('Denne sesongen så langt') && withCurrent.includes('2026/27'), 'sesongen så langt mangler');
+  const none = await renderView('innsikt', { ...fx.insightsEmpty, insights: { ...fx.insightsEmpty.insights, career: null, badges: null } });
+  assert.ok(!none.includes('id="karriere"') && !none.includes('id="merkedager"'), 'kortene vises uten data');
+});
+
+test('innsikt.ejs viser låste merkedager grået', async () => {
+  const html = await renderView('innsikt', { ...fx.insights, insights: { ...fx.insights.insights, career: fx.career, badges: fx.badges } });
+  const tiles = html.match(/<li class="merke[^"]*"[^>]*>/g) ?? [];
+  assert.equal(tiles.length, 4, 'fire fliser');
+  assert.equal(tiles.filter((t) => t.includes('merke--laast')).length, 2, 'to låste');
+  assert.equal(tiles.filter((t) => t.includes('aria-disabled="true"')).length, 2, 'låste er aria-disabled');
+  assert.ok(html.includes('Sesongbeste') && html.includes('Runde 2 · 78 p'), 'opptjent merke mangler detaljen');
+  assert.ok(html.includes('Hundreklubben'), 'låst merke skal fortsatt vises');
+  const opened = html.slice(html.indexOf('Sesongbeste') - 400, html.indexOf('Sesongbeste'));
+  assert.ok(!opened.includes('merke--laast'), 'opptjent merke er grået');
+});
+
 test('transfers.ejs viser prisendringene i natt med troppen først', async () => {
   const html = await renderView('transfers', fx.transfers);
   assert.ok(html.includes('id="prisendringer"'), 'priskortet mangler');

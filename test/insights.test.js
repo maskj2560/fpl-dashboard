@@ -731,8 +731,11 @@ describe('assembleInsights', () => {
     assert.ok(insights.luck);
   });
 
-  test('ingen ferdige runder gir tomme seksjoner uten ekstra kall', async () => {
-    serve([[/bootstrap-static\/$/, { ...bootstrap, events: [{ id: 1, finished: false, is_next: true }] }]]);
+  test('ingen ferdige runder gir tomme seksjoner — kun bootstrap og entry history', async () => {
+    serve([
+      [/bootstrap-static\/$/, { ...bootstrap, events: [{ id: 1, finished: false, is_next: true, deadline_time: '2026-08-14T17:30:00Z' }] }],
+      [/entry\/42\/history\/$/, { current: [], past: [{ season_name: '2024/25', total_points: 2410, rank: 120000 }], chips: [] }],
+    ]);
     const insights = await assembleInsights({ teamId: 42 });
 
     assert.equal(insights.finishedCount, 0);
@@ -740,7 +743,40 @@ describe('assembleInsights', () => {
       [insights.bench, insights.captains, insights.luck, insights.dreamTeam],
       [null, null, null, null],
     );
-    assert.equal(calls.length, 1, 'kun bootstrap');
+    assert.equal(calls.length, 2, 'kun bootstrap + entry history (v1.11.0)');
+    assert.deepEqual(insights.career.best, { season: '2024/25', rank: 120000 }, 'karrieren finnes før første runde');
+    assert.equal(insights.career.current, null);
+    assert.ok(Array.isArray(insights.badges) && insights.badges.every((b) => b.earned === false), 'alle merker låst');
+  });
+
+  test('assembleInsights bygger karriere og merkedager fra entry history + kapteinsfasit', async () => {
+    const history = {
+      current: [
+        { event: 1, points: 60, total_points: 60, overall_rank: 900000, points_on_bench: 0 },
+        { event: 2, points: 112, total_points: 172, overall_rank: 90000, points_on_bench: 4 },
+      ],
+      past: [{ season_name: '2024/25', total_points: 2410, rank: 120000 }],
+      chips: [],
+    };
+    serve([...routes(), [/entry\/42\/history\/$/, history]]);
+    const insights = await assembleInsights({ teamId: 42 });
+
+    assert.equal(insights.career.current.gws, 2);
+    assert.equal(insights.career.current.points, 172);
+    const byId = Object.fromEntries(insights.badges.map((b) => [b.id, b]));
+    assert.equal(byId.hundre.gw, 2);
+    assert.equal(byId['topp-100k'].gw, 2);
+    assert.equal(byId['null-benk'].gw, 1);
+    assert.equal(byId.rekordrank.gw, 2, '90 000 er bedre enn 120 000');
+    assert.equal(calls.filter((u) => /entry\/42\/history\/$/.test(u)).length, 1, 'history hentes én gang');
+  });
+
+  test('assembleInsights uten entry history gir career og badges null, resten som før', async () => {
+    serve(routes());
+    const insights = await assembleInsights({ teamId: 42 });
+    assert.equal(insights.career, null);
+    assert.equal(insights.badges, null);
+    assert.ok(insights.bench, 'resten leveres fortsatt');
   });
 
   test('assembleInsights henter aldri element-summary', async () => {

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import config from '../config.js';
-import { formatSigned } from '../services/format.js';
+import { formatSigned, formatNumber } from '../services/format.js';
 import { assembleInsights } from '../services/insights.js';
 
 const router = Router();
@@ -11,7 +11,7 @@ router.get('/', async (req, res, next) => {
   if (!config.hasTeamId) return res.renderPage('no-team', { title: 'Innsikt' });
   try {
     const insights = await assembleInsights({});
-    res.renderPage('innsikt', { title: 'Innsikt', insights, formatSigned });
+    res.renderPage('innsikt', { title: 'Innsikt', insights, formatSigned, formatNumber });
   } catch (err) {
     next(err);
   }

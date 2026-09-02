@@ -20,6 +20,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   `earned`/`gw`/`detail`; låste merker har null. Tom benk teller ikke i
   Bench Boost-runder, Kapteinsteft bygger på kapteinsfasiten, «Alle femten
   spilte» på `gwsAllPlayed` (minutter > 0 for alle 15). Seks nye tester.
+- FPL-karrieren og Merkedager på `/innsikt`: to nye kort øverst — tabell
+  over tidligere sesonger (beste sluttrank markert) med «Denne sesongen så
+  langt», og åtte merke-fliser der låste er grået (`aria-disabled`). Begge
+  vises også før første runde er ferdigspilt. `assembleInsights` henter
+  entry history (egen id → 5 min-nøkkel, myk feil → kortene skjules) —
+  ett ekstra cachet kall, 0 AI-kall. Fem nye tester.
 
 ## [1.10.0] - 2026-09-02
 

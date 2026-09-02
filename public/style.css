@@ -496,6 +496,54 @@ footer {
   word-break: break-all;
 }
 
+/* FPL-karrieren + merkedager på /innsikt (v1.11.0) */
+.row-best td {
+  background: var(--accent-soft);
+}
+
+.merke-liste {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-3);
+}
+
+.merke {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+
+.merke--laast {
+  opacity: 0.55;
+  filter: grayscale(1);
+}
+
+.merke-tittel {
+  font-weight: 700;
+}
+
+.merke-tekst {
+  font-size: var(--fs-sm);
+  color: var(--text-dim);
+}
+
+.merke-detalj {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--accent-text);
+}
+
+.merke--laast .merke-detalj {
+  color: var(--text-dim);
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
