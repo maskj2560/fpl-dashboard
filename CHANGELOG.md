@@ -31,6 +31,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   eller publisert, ellers estimatet der likhet arves: 3,3,1), mine spillere
   markert; `buildLive` legger `bpsTop` + `bpsSource` («fpl»/«estimat») på
   hver kamp i `/api/live.json`. Tom før avspark. Fem nye tester.
+- Bonuskamp på `/live`: hver kamp i gang viser «Bonus (estimat)»/«(FPL)»
+  med topp fem på BPS, bonusen de ligger an til og mine spillere i fet —
+  rendres klientside av `bpsRaceHtml` (ren, testet i vm). Én ny test.
 
 ## [1.10.0] - 2026-09-02
 

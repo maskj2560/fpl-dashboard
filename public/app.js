@@ -562,6 +562,7 @@ function initEdgeFades(el, prefix) {
           '<span class="match-score">' + (m.homeScore == null ? '–' : m.homeScore + '–' + m.awayScore) + '</span>' +
           '<span class="match-team">' + clubBadgeHtml(m.away, m.awayCode, imgVersion, 'md') + '</span>' +
           '<span class="match-status">' + status + '</span>' +
+          bpsRaceHtml(m) +
           '</div>'
         );
       })
@@ -1200,6 +1201,28 @@ function rivalNavAction({ search, stored, validIds }) {
 // skjult. Ren funksjon, saa regelen kan testes uten DOM.
 // Modul 2: neste sorteringsretning fra dagens aria-sort. Første klikk på en
 // kolonne gir synkende (høyest først), klikk på den synkende gir stigende.
+// Bonuskampen (v1.11.0): topp fem på BPS i én kamp. Ren — testes i vm.
+function bpsRaceHtml(match) {
+  const rows = (match && match.bpsTop) || [];
+  if (rows.length === 0) return '';
+  const source = match.bpsSource === 'fpl' ? 'FPL' : 'estimat';
+  return (
+    '<div class="bps-race"><span class="bps-label">Bonus <span class="bps-src">(' + source + ')</span></span><ol class="bps-list">' +
+    rows
+      .map(function (r) {
+        return (
+          '<li class="bps-row' + (r.mine ? ' bps-mine' : '') + '">' +
+          '<span class="bps-name">' + escapeHtml(r.name) + ' <span class="bps-team">' + escapeHtml(r.teamShort) + '</span></span>' +
+          '<span class="bps-bps">' + Number(r.bps) + '</span>' +
+          '<span class="bps-bonus' + (r.bonus > 0 ? ' accent' : '') + '">' + (r.bonus > 0 ? '+' + r.bonus : '–') + '</span>' +
+          '</li>'
+        );
+      })
+      .join('') +
+    '</ol></div>'
+  );
+}
+
 function nextSortDir(current) {
   return current === 'descending' ? 'ascending' : 'descending';
 }
