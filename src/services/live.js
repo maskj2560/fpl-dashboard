@@ -167,8 +167,8 @@ export async function assembleLive() {
   const gw = event?.id;
   if (!gw) return emptyLive();
 
-  // Ferdig runde leses fra 6 t-lageret (samme nøkkel som getLive — se
-  // getLiveHistoric); pågående runde fornyes etter 1 min som før.
+  // Ferdig runde leses fra 6 t-lageret (egen nøkkel `live:N:hist` fra
+  // v1.12.2 — se getLiveHistoric); pågående runde fornyes etter 1 min som før.
   const [fixtures, live] = await Promise.all([
     getFixtures(gw),
     event.finished ? getLiveHistoric(gw) : getLive(gw),

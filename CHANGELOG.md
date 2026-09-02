@@ -7,6 +7,40 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.12.2] - 2026-09-02
+
+Vedlikeholdspakke, del 1 (`docs/prompt-vedlikehold-v1122-v1130.md`, T1) på
+`fix/hygiene-cache-keys-v1122`. Rød test før fiksen. 758/758, lint 0,
+`npm audit --omit=dev` ren.
+
+### Security
+
+- `npm audit fix`: `qs` 6.15.3 → 6.16.0 (Express sin query-parser;
+  GHSA-x5fp-wj9c-mxmx og GHSA-4mjr-xmp4-gh2g, moderat). Kun
+  `package-lock.json` endret — ingen nye toppnivå-avhengigheter.
+
+### Changed
+
+- `fast-xml-parser` 5.11.0 → 5.11.1 (patch innenfor range).
+- Dockerfile: `node:22-alpine` → `node:24-alpine` (Node 24 er Active LTS,
+  22 i vedlikehold; appen utvikles og testes på 24). `engines` er fortsatt
+  `>=22`, `HEALTHCHECK` uendret. Lokal røyktest på Node 24.11.1: alle sider
+  200, ingen `DeprecationWarning` i loggen.
+
+### Fixed
+
+- Rotårsaken bak QA-funn 6 (falskt stale-banner på /live): tre funksjonspar
+  i `fplClient.js` delte cache-nøkkel med ulik TTL (`getLive`/
+  `getLiveHistoric` 1 min vs 6 t, `getPicks`/`getPicksHistoric` og
+  `getEntryHistory`/`getEntryHistoryHistoric` 5 min vs 6 t), og «første
+  skriver satte TTL-en» — hver kaller måtte velge riktig funksjon, og
+  fellen sto åpen for neste. Historic-variantene har nå egne nøkler med
+  suffiks `:hist`, `staleInfo(gw, { finished: true })` måler hist-nøkkelen,
+  og `/api/live.json` sender `finished` så `dataAlder` ikke blir null mellom
+  rundene. Pris: en ferdig runde kan hentes én gang ekstra per 6 t når både
+  live-siden og /innsikt ber om den. Tre «deler nøkkel»-tester skrevet om
+  til «egne nøkler» + to nye (staleInfo måler `:hist`, kildelås for api.js).
+
 ## [1.12.1] - 2026-09-02
 
 Elleve funn fra Chrome-QA-en mot prod (`docs/qa-chrome-prompt.md`, 2. sep):

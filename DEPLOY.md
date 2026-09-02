@@ -11,6 +11,13 @@ en deploy faktisk blir synlig for brukerne.
 3. Footeren viser `v<versjon> · sist oppdatert <starttid>` — starttiden er i
    praksis deploy-tidspunktet, siden hver deploy gir en ny container
 
+## Node-versjon i imaget
+
+Dockerfilen bygger på `node:24-alpine` (fra v1.12.2; Node 24 er Active LTS,
+22 er i vedlikehold, og appen utvikles og testes på Node 24). `engines` i
+package.json er fortsatt `>=22`. `HEALTHCHECK`-linja (`node -e` med global
+`fetch`) er uendret og verifisert på Node 24.11.1 lokalt.
+
 ## Helsesjekk i Coolify
 
 **Coolifys egen helsesjekk for appen skal stå AV.** Da er det Dockerfilens
@@ -21,7 +28,8 @@ for å ligge i et Coolify-felt.
 
 **Hvorfor (incident 24.–25. aug):** Coolifys egen HTTP-helsesjekk
 OVERSTYRER Dockerfilens `HEALTHCHECK`, og kommandoen den var satt opp med
-brukte `curl` — som ikke finnes i `node:22-alpine`. Deployloggen viste
+brukte `curl` — som ikke finnes i node-alpine-imagene (den gang
+`node:22-alpine`, fra v1.12.2 `node:24-alpine`). Deployloggen viste
 
 ```
 Healthcheck logs: /bin/sh: curl: not found | Return code: 0

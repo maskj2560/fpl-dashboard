@@ -6,10 +6,15 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-09-02 (økt 55, Fable: re-QA bestått 11/11; neste økt
-kjører `docs/prompt-vedlikehold-v1122-v1130.md` — se «Neste steg»)
+**Sist oppdatert:** 2026-09-02 (økt 56, Fable: vedlikeholdspakka — v1.12.2
+bygget, se «Neste steg»)
 
 ## Status akkurat nå
+- **v1.12.2 «Vedlikehold» bygget 2. sep (økt 56)** på
+  `fix/hygiene-cache-keys-v1122`: `npm audit fix` (qs 6.16.0, audit ren),
+  fast-xml-parser 5.11.1, `node:24-alpine`, egne `:hist`-nøkler (rotårsak
+  QA-funn 6) + `finished` i `/api/live.json`. **758/758 + lint 0** (baseline
+  756). Røyktest på Node 24: alle sider 200, 0 DEP0169. Prod-sjekk: under.
 - **v1.12.1 «QA-fikser» i prod 2. sep (økt 54).** Chrome-QA-en ga 6 VIKTIG
   + 5 KOSMETISK; alle 11 fikset med rød test først på `fix/qa-viktig-v1121`
   (funn 1–6) og `fix/qa-kosmetisk-v1121` (7–11), merget `--no-ff`.
@@ -27,15 +32,8 @@ kjører `docs/prompt-vedlikehold-v1122-v1130.md` — se «Neste steg»)
   registrering i app.js. **743/743 + lint 0** (baseline 729). Prod: hash
   `b6c8f095`, `/sw.js` no-store med `fpl-b6c8f095`, manifest immutable,
   /offline 200, nøyaktig 2 `<script`.
-- **v1.9.0–v1.11.0 i prod 2. sep** (691 → 710 → 729 tester; kalender,
-  Lagsjekk, chip-planlegger, prisvarsler, karriere, merkedager, bonuskamp):
-  detaljer rotert til historikkfila. Prisvarslene: **første natt etter en
-  deploy gir ingen melding** (bare snapshot) — ventes natt til 4. sep.
-- **Sluttrydding gjort 2. sep:** planen arkivert, `docs/oppgaveliste.md`
-  slettet, **`docs/qa-chrome-prompt.md`** skrevet (STEG 1–10 + fasit).
-- **v1.8.3 «Herding + tilgjengelighet» i prod 2. sep** (655/655; prod-sjekk
-  gjort: CSP-header live, nøyaktig 2 `<script`). Detaljer rotert til
-  historikkfila. Hver prod-sjekk videre: `<script`-tellingen skal være 2.
+- **v1.8.3–v1.11.0 i prod 2. sep** (655 → 729 tester): statusblokkene rotert
+  til historikkfila. Prisvarslene: første melding ventes natt til 4. sep.
 - **Asset-hashen i prod er `ba91839a` etter v1.12.1** (v1.12.0 `b6c8f095`,
   v1.11.0 `4718ea73`, v1.9/1.10 `82d7c7a2`, v1.8.3 `6a3b2714`). Regnes fra
   git-blobbene. Prod-sjekk v1.12.1 (2. sep 17:20): 12/12 OK, sw.js no-store.
@@ -56,16 +54,20 @@ kjører `docs/prompt-vedlikehold-v1122-v1130.md` — se «Neste steg»)
 **Sluttpakka (v1.8.3–v1.12.0) og QA-fiksene (v1.12.1) er i prod 2. sep.**
 Planen er arkivert i `docs/arkiv/plan-sluttpakka-v183-v1120.md`
 (beslutningsfasit med 9 punkter — ikke re-spør). ROADMAP § 0 er ferdig.
-**Re-QA bestått 2. sep (11/11 FIKSET, 0 nye funn).** § 0 ferdig. Neste økt:
-`docs/prompt-vedlikehold-v1122-v1130.md` (ROADMAP § 5, besluttet av Marius
-2. sep): v1.12.2 hygiene + `:hist`-nøkler, v1.13.0 AI-statistikk på /health,
-så docs-slanking. Start i plan-modus. Ingen kode før planen er godkjent.
+**Re-QA bestått 2. sep (11/11 FIKSET, 0 nye funn).** § 0 ferdig. Økt 56
+kjører `docs/prompt-vedlikehold-v1122-v1130.md` (ROADMAP § 5): plan godkjent
+av Marius, v1.12.2 bygget (758/758), så v1.13.0 AI-statistikk på /health og
+docs-slanking. Prompten slettes når alt er ute.
 
-Sluttpakka v1.8.3 → v1.12.0: alle fem ute 2. sep (655 → 743 tester), brancher
-merget `--no-ff` og slettet. Detaljer: `docs/arkiv/plan-sluttpakka-v183-v1120.md`.
-
-Sluttrydding utført 2. sep. Chrome-QA kjørt 2. sep → v1.12.1 ute samme
-dag → re-QA bestått samme kveld. Gjenstår: punkt 1–4 under (kun Marius).
+**Majors vurdert 2. sep (kun rapport — ikke oppgradert, Marius' fasit):**
+- `ejs` 3.1.10 → 6.0.1: v4 fjernet `client`-flagget + Jake, v6 er dual
+  ESM/CJS; appen bruker kun `view engine` + `include()` → lav risiko, men
+  tomme releasenotes — bevis med `npm i ejs@6 && npm test` når det passer.
+- `eslint`/`@eslint/js` 9.39 → 10.x: Node-krav ok, flat config ok; tre nye
+  regler i recommended (`no-unassigned-vars`, `no-useless-assignment`,
+  `preserve-caught-error`) kan gi lint-feil — kjør lint etter bump.
+- `globals` 16.5 → 17.12: eneste brudd er `audioWorklet` skilt fra
+  `browser`; vi bruker `nodeBuiltin`/`browser`/`serviceworker` → trygg.
 
 **Kun Marius kan gjøre:**
 1. `kill 1` i containerterminalen → «SIGTERM mottatt — lukker serveren» +
@@ -80,13 +82,13 @@ dag → re-QA bestått samme kveld. Gjenstår: punkt 1–4 under (kun Marius).
 ## Driftslærdommer (ikke glem disse)
 
 - **Stale-banner på /live mellom runder = delt cache-nøkkel, ikke nett
-  (v1.12.1, QA-funn 6).** `live:N` deles av `getLive` (1 min) og
-  `getLiveHistoric` (6 t); første skriver setter TTL-en. Etter /innsikt fikk
-  /live 6 t-verdien som «fersk», ingen revalidering, og 10-min-taket ga
-  banner i timevis mens FPL svarte 200. Diagnose: to kall på
-  `/api/live.json` med mellomrom — stiger `dataAlder` mens `/api/brief.json`
-  er fersk, er det cachen. Fiks: `getLiveHistoric` + `staleInfo(gw,
-  { finished: true })` for ferdige runder.
+  (v1.12.1, QA-funn 6) — fellen LUKKET i v1.12.2.** `live:N` ble delt av
+  `getLive` (1 min) og `getLiveHistoric` (6 t); første skriver satte TTL-en.
+  Lukket slik: historic-variantene (live/picks/entry-history) har egne
+  nøkler med suffiks `:hist`, `staleInfo(gw, { finished: true })` måler
+  hist-nøkkelen, `/api/live.json` sender `finished` (ellers `dataAlder`
+  null); låst av fplClient.test.js + kildelås i routes.test.js. Diagnose: to
+  `/api/live.json`-kall — stiger `dataAlder` mens FPL svarer, er det cachen.
 - **FPL-bootstrap `chips[]`: wildcard og Free Hit har `start_event` 2** (kan
   ikke spilles i runde 1) — halvdeler grupperes på `stop_event`, aldri på
   (start, stopp)-paret.
@@ -184,9 +186,6 @@ dag → re-QA bestått samme kveld. Gjenstår: punkt 1–4 under (kun Marius).
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
-- 2026-09-02 (økt 54): «Kan den som står i handover [sjekkes] av Claude in
-  Chrome? Gi meg en prompt.» → `docs/qa-chrome-reqa-v1121.md` (alle 11 funn
-  + regresjon; STEG 7/9c/9e, telefon og `kill 1` kan den fortsatt ikke).
 - 2026-09-02 (økt 55, Fable): Marius limte inn re-QA-rapporten fra Claude
   for Chrome (17:45–18:20: STEG 1–3 OK, 11/11 FIKSET, 0 nye funn, begge
   temaer, 390 + 1440). Handling: plan-modus, plan godkjent → rapporten

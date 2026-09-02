@@ -33,11 +33,12 @@ export function _setNow(fn) {
 const STALE_BANNER_MS = 60 * 60_000;
 const STALE_BANNER_LIVE_MS = 10 * 60_000;
 
-// `finished: true` (v1.12.1): en ferdig runde ligger i 6 t-lageret (delt
-// nøkkel med getLive) og revalideres ikke — poengene er immutable, så alderen
-// sier ingenting om kontakten med FPL og skal aldri utløse banneret.
+// `finished: true` (v1.12.1): en ferdig runde ligger i 6 t-lageret og
+// revalideres ikke — poengene er immutable, så alderen sier ingenting om
+// kontakten med FPL og skal aldri utløse banneret. Fra v1.12.2 har lageret
+// egen nøkkel (`live:N:hist`), og det er den som måles med flagget.
 export function staleInfo(gw = null, { finished = false } = {}) {
-  const key = gw == null ? 'bootstrap' : `live:${gw}`;
+  const key = gw == null ? 'bootstrap' : finished ? `live:${gw}:hist` : `live:${gw}`;
   const cap = gw == null ? STALE_BANNER_MS : STALE_BANNER_LIVE_MS;
   const age = ageOf(key);
   if (age == null) return null;
@@ -138,14 +139,15 @@ export function getEntryHistory(teamId) {
 }
 
 /**
- * Samme endepunkt og cache-nøkkel som getEntryHistory(), men 6 t TTL.
- * Delt nøkkel betyr at første skriver setter TTL-en — derfor skal denne
- * KUN kalles for ANDRE manageres historikk (ligagrafen på /liga), aldri
- * for egen FPL_TEAM_ID: egen historikk (rank-grafen på /lag) må være
- * fersk og hentes alltid via getEntryHistory.
+ * Samme endepunkt som getEntryHistory(), men EGEN nøkkel (`…:hist`, v1.12.2)
+ * og 6 t TTL. Egen nøkkel betyr at TTL-en aldri smitter over på den ferske
+ * varianten (før delte de nøkkel, og «første skriver satte TTL-en»). Regelen
+ * står likevel: denne er for ANDRE manageres historikk (ligagrafen på
+ * /liga); egen FPL_TEAM_ID (rank-grafen på /lag) må være fersk og hentes
+ * alltid via getEntryHistory.
  */
 export function getEntryHistoryHistoric(teamId) {
-  return getOrFetch(`history:${teamId}`, () => fplFetch(`entry/${teamId}/history/`), {
+  return getOrFetch(`history:${teamId}:hist`, () => fplFetch(`entry/${teamId}/history/`), {
     ttl: 360 * MIN,
   });
 }
@@ -163,13 +165,14 @@ export function getPicks(teamId, gw) {
 }
 
 /**
- * Lagoppstillingen i en FERDIG runde. Samme endepunkt og cache-nøkkel som
- * getPicks(), men 6 t TTL: oppstillingen i en ferdigspilt runde endres
- * aldri. Delt nøkkel betyr at første skriver setter TTL-en — derfor skal
- * denne KUN kalles for runder bootstrap melder `finished`.
+ * Lagoppstillingen i en FERDIG runde. Samme endepunkt som getPicks(), men
+ * EGEN nøkkel (`…:hist`, v1.12.2) og 6 t TTL: oppstillingen i en
+ * ferdigspilt runde endres aldri. Egen nøkkel betyr at TTL-en aldri smitter
+ * over på getPicks. Kalles kun for runder bootstrap melder `finished` —
+ * en pågående runde herfra ville vært timegammel.
  */
 export function getPicksHistoric(teamId, gw) {
-  return getOrFetch(`picks:${teamId}:${gw}`, () => fplFetch(`entry/${teamId}/event/${gw}/picks/`), {
+  return getOrFetch(`picks:${teamId}:${gw}:hist`, () => fplFetch(`entry/${teamId}/event/${gw}/picks/`), {
     ttl: 360 * MIN,
   });
 }
@@ -179,17 +182,18 @@ export function getLive(gw) {
 }
 
 /**
- * Live-poeng for en FERDIG runde. Samme endepunkt og cache-nøkkel som
- * getLive(), men 6 t TTL: poengene i en ferdigspilt runde er i praksis
- * immutable. Delt nøkkel betyr at første skriver setter TTL-en — derfor
- * skal denne KUN kalles for runder bootstrap melder `finished`, ellers
- * kunne live-siden servert timegammel data for pågående runde. Motsatt
- * vei (v1.12.1): live-siden leser ferdige runder BEVISST herfra og måler
- * dem med staleInfo(gw, { finished: true }) — ellers får den 6 t-verdien
- * tilbake som «fersk» uten revalidering, mens 10-min-taket slår til.
+ * Live-poeng for en FERDIG runde. Samme endepunkt som getLive(), men EGEN
+ * nøkkel (`live:N:hist`, v1.12.2) og 6 t TTL: poengene i en ferdigspilt
+ * runde er i praksis immutable. Før v1.12.2 delte de nøkkel, og «første
+ * skriver satte TTL-en»: hadde /innsikt skrevet `live:N` med 6 t, fikk
+ * getLive verdien tilbake som «fersk» uten revalidering, og 10-min-taket
+ * ga stale-banner i timevis (QA-funn 6). Nå kan TTL-en ikke smitte. Pris:
+ * en ferdig runde kan hentes én gang ekstra per 6 t når både live-siden og
+ * /innsikt ber om den — akseptert. Kalles kun for runder bootstrap melder
+ * `finished`; live-siden måler den med staleInfo(gw, { finished: true }).
  */
 export function getLiveHistoric(gw) {
-  return getOrFetch(`live:${gw}`, () => fplFetch(`event/${gw}/live/`), { ttl: 360 * MIN });
+  return getOrFetch(`live:${gw}:hist`, () => fplFetch(`event/${gw}/live/`), { ttl: 360 * MIN });
 }
 
 /**

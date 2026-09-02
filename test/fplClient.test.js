@@ -157,18 +157,26 @@ test('getEntryTransfers henter entry/{id}/transfers/ og cacher', async () => {
   assert.match(fetchCalls[0].url, /entry\/42\/transfers\/$/);
 });
 
-test('getLiveHistoric deler nøkkel med getLive og lever lenger enn 1 min', async () => {
+// v1.12.2: historic-variantene har EGNE nøkler (`…:hist`). Før delte de nøkkel
+// med de ferske, og «første skriver setter TTL-en» ga /live 6 t-verdien som
+// «fersk» (QA-funn 6). Pris: én ekstra henting per 6 t når begge ber om samme
+// ferdige runde — akseptert.
+test('getLive etter getLiveHistoric på samme runde revaliderer etter 1 min (egne nøkler)', async () => {
   mockFetch(() => jsonResponse({ elements: [] }));
   let clock = 1_000_000;
   _setNow(() => clock);
   try {
-    await getLiveHistoric(2);
-    await getLive(2); // samme nøkkel: ingen ny henting
-    assert.equal(fetchCalls.length, 1);
+    await getLiveHistoric(2); // live:2:hist, 6 t
+    await getLive(2); // live:2 — egen nøkkel, egen henting
+    assert.equal(fetchCalls.length, 2, 'historic og live skal ikke dele nøkkel');
 
-    clock += 5 * 60_000; // 5 min: forbi getLives TTL, godt innenfor 6 t
+    clock += 2 * 60_000; // forbi getLives TTL på 1 min
+    await getLive(2);
+    await _flush();
+    assert.equal(fetchCalls.length, 3, 'getLive skal revalidere etter 1 min selv om 6 t-lageret er varmt');
+
     await getLiveHistoric(2);
-    assert.equal(fetchCalls.length, 1, 'ferdig runde skal ikke revalideres etter 5 min');
+    assert.equal(fetchCalls.length, 3, 'ferdig runde ligger fortsatt i 6 t-lageret');
   } finally {
     _setNow(null);
   }
@@ -176,28 +184,45 @@ test('getLiveHistoric deler nøkkel med getLive og lever lenger enn 1 min', asyn
 
 // ---- v1.3.6: gameUpdating-flagget er tidsstemplet ------------------------
 
-test('getPicksHistoric deler nøkkel med getPicks og cacher lenge', async () => {
+test('getPicks etter getPicksHistoric på samme runde revaliderer etter 5 min (egne nøkler)', async () => {
   mockFetch(() => jsonResponse({ picks: [{ element: 10 }] }));
+  let clock = 1_000_000;
+  _setNow(() => clock);
+  try {
+    await getPicksHistoric(42, 1); // picks:42:1:hist, 6 t
+    await getPicks(42, 1); // picks:42:1 — egen nøkkel, egen henting
+    assert.equal(fetchCalls.length, 2, 'historic og picks skal ikke dele nøkkel');
+    assert.match(fetchCalls[0].url, /entry\/42\/event\/1\/picks\/$/);
 
-  await getPicksHistoric(42, 1);
-  await getPicks(42, 1); // samme nøkkel → cache-treff, ikke nytt fetch
-  assert.equal(fetchCalls.length, 1);
-  assert.match(fetchCalls[0].url, /entry\/42\/event\/1\/picks\/$/);
+    clock += 6 * 60_000; // forbi getPicks' TTL på 5 min
+    await getPicks(42, 1);
+    await _flush();
+    assert.equal(fetchCalls.length, 3, 'getPicks skal revalidere etter 5 min');
+
+    await getPicksHistoric(42, 1);
+    assert.equal(fetchCalls.length, 3, 'ferdig runde ligger fortsatt i 6 t-lageret');
+  } finally {
+    _setNow(null);
+  }
 });
 
-test('getEntryHistoryHistoric deler nøkkel med getEntryHistory og cacher lenge', async () => {
+test('getEntryHistory etter getEntryHistoryHistoric revaliderer etter 5 min (egne nøkler)', async () => {
   mockFetch(() => jsonResponse({ current: [] }));
   let clock = 1_000_000;
   _setNow(() => clock);
   try {
-    await getEntryHistoryHistoric(42);
-    await getEntryHistory(42); // samme nøkkel → cache-treff, ikke nytt fetch
-    assert.equal(fetchCalls.length, 1);
-
-    clock += 10 * 60_000; // 10 min: forbi getEntryHistorys TTL, godt innenfor 6 t
-    await getEntryHistoryHistoric(42);
-    assert.equal(fetchCalls.length, 1, 'andres historikk skal ikke revalideres etter 10 min');
+    await getEntryHistoryHistoric(42); // history:42:hist, 6 t (andre managere)
+    await getEntryHistory(42); // history:42 — egen nøkkel, egen henting
+    assert.equal(fetchCalls.length, 2, 'historic og fersk historikk skal ikke dele nøkkel');
     assert.match(fetchCalls[0].url, /entry\/42\/history\/$/);
+
+    clock += 6 * 60_000; // forbi getEntryHistorys TTL på 5 min
+    await getEntryHistory(42);
+    await _flush();
+    assert.equal(fetchCalls.length, 3, 'egen historikk skal revalidere etter 5 min');
+
+    await getEntryHistoryHistoric(42);
+    assert.equal(fetchCalls.length, 3, 'andres historikk ligger fortsatt i 6 t-lageret');
   } finally {
     _setNow(null);
   }
@@ -376,8 +401,8 @@ test('staleInfo(gw): 11 min gamle live-data er for gamle', async () => {
   }
 });
 
-// QA-funn 6 (v1.12.1): en FERDIG runde ligger i 6 t-lageret (delt nøkkel
-// med getLive) og revalideres ikke — poengene er immutable, så alderen sier
+// QA-funn 6 (v1.12.1): en FERDIG runde ligger i 6 t-lageret (egen nøkkel
+// `live:N:hist` fra v1.12.2) og revalideres ikke — poengene er immutable, så alderen sier
 // ingenting om kontakten med FPL. Uten flagget gjelder 10-min-taket som før.
 test('staleInfo(gw, { finished: true }): 5 t gamle live-data for ferdig runde er ikke for gamle', async () => {
   let t = 1_000_000;
@@ -385,13 +410,34 @@ test('staleInfo(gw, { finished: true }): 5 t gamle live-data for ferdig runde er
   _setFplNow(() => t);
   try {
     mockFetch(() => jsonResponse({ elements: [] }));
-    await getLiveHistoric(2);
+    await getLiveHistoric(2); // live:2:hist
+    await getLive(2); // live:2 — egen nøkkel (v1.12.2), så begge kan måles
     t += 5 * 60 * 60_000;
 
     const info = staleInfo(2, { finished: true });
     assert.equal(info.tooOld, false);
     assert.equal(info.ageSec, 18000, 'alderen rapporteres fortsatt (dataAlder)');
     assert.equal(staleInfo(2).tooOld, true, 'uten flagget gjelder live-taket på 10 min');
+  } finally {
+    _setNow(null);
+    _setFplNow(null);
+  }
+});
+
+// v1.12.2: med finished-flagget måles hist-nøkkelen — den live-siden faktisk
+// leste for en ferdig runde — ikke den ferske.
+test('staleInfo(gw, { finished: true }) måler live:N:hist, ikke live:N', async () => {
+  let t = 1_000_000;
+  _setNow(() => t);
+  _setFplNow(() => t);
+  try {
+    mockFetch(() => jsonResponse({ elements: [] }));
+    await getLive(3);
+    assert.equal(staleInfo(3, { finished: true }), null, 'ingen ferdig-verdi i cachen ennå');
+    t += 60_000;
+    await getLiveHistoric(3);
+    assert.equal(staleInfo(3, { finished: true }).ageSec, 0);
+    assert.equal(staleInfo(3).ageSec, 60, 'live:N måles fortsatt uten flagget');
   } finally {
     _setNow(null);
     _setFplNow(null);
