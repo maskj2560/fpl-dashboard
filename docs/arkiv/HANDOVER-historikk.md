@@ -1758,3 +1758,13 @@ designvalg endret) — verbatim fra HANDOVER.md:
   `1ff9ed2`, tag `v1.12.0`, pushet; prod: hash `b6c8f095`, /sw.js,
   manifest, /offline verifisert. Sluttrydding: plan arkivert, oppgaveliste
   slettet, `docs/qa-chrome-prompt.md` skrevet, HANDOVER rotert.
+
+## Rotert 2026-09-02 (økt 55): loggpost økt 54 (verbatim fra HANDOVER.md)
+
+- 2026-09-02 (økt 54, Fable): Marius limte inn QA-rapporten fra Claude for
+  Chrome (v1.12.0: 6 VIKTIG + 5 KOSMETISK, STEG 7/9c/9e utestet). Handling:
+  plan-modus, rotårsak per funn bekreftet i kode + prod/FPL, ett
+  spørsmålssett (funn 2 → grå pille, funn 11 → `#e6003c`), plan godkjent.
+  «Fortsett» → to fix-brancher med rød test først, 756/756 + lint 0, docs
+  ajour, økt 53-loggen rotert, tag `v1.12.1`, push, prod-sjekk 12/12 +
+  11,5-min-bevis for funn 6 (`dataAlder` 711, 0 banner).

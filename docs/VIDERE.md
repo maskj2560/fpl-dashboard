@@ -42,8 +42,9 @@ nettleserens feilside. Alt annet er som før: dataene hentes live fra FPL
 og lagres ikke på telefonen, så poeng og priser er alltid ferske. Ingen AI,
 ingen ekstra kall.
 
-Dette var den siste av de fem oppdateringene i sluttpakka. Neste steg er
-QA-en i Claude for Chrome (prompten ligger i `docs/qa-chrome-prompt.md`).
+Dette var den siste av de fem oppdateringene i sluttpakka. QA-en i Claude
+for Chrome er kjørt (2. sep): 11 funn, alle fikset i v1.12.1 og bekreftet
+i en ny sjekk samme kveld — ingen nye funn.
 
 ## Før det: v1.11.0 — karriere-pakka (2. september)
 

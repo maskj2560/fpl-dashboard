@@ -68,9 +68,10 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
   v1.10.0 ute 2. sep (710/710), v1.11.0 ute 2. sep (729/729), v1.12.0 ute
   2. sep (743/743). **Alle fem releasene er ute.** Sluttrydding gjort
   2. sep. **Chrome-QA kjørt av Marius 2. sep: 11 funn (6 VIKTIG, 5
-  KOSMETISK) → alle fikset i v1.12.1 (756/756, ute 2. sep).** § 0 er
-  ferdig; gjenstår kun Marius' visuelle re-sjekk av layout-funnene (STEG
-  2, 3, 5 på 390 + 1440) og STEG 7 under en kamp / 9c + 9e.
+  KOSMETISK) → alle fikset i v1.12.1 (756/756, ute 2. sep). Re-QA i
+  Chrome 2. sep 18:20: 11/11 FIKSET, 0 nye funn — § 0 er ferdig.** Gjenstår
+  hos Marius: STEG 7 under en kamp (fre 4. sep fra 21:00), 9c, 9e og ekte
+  telefon. Rapporten: `docs/arkiv/qa-rapport-v1121.md`.
 - **Størrelse:** stor (fem releaser).
 
 ### 1. (P4) Løpende kostnadskontroll
@@ -181,10 +182,11 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 | `docs/arkiv/plan-idepakken-v16-v19.md` | beslutningsfasit for idépakken v1.7.0–v1.9.0 (utført, arkivert 2. sep) |
 | `docs/arkiv/plan-sluttpakka-v183-v1120.md` | utført plan for v1.8.3–v1.12.0 (T-tasks, testnavn, 9-punkts fasit) — alt ute 2. sep |
 | `docs/qa-chrome-prompt.md` | prompten til Claude for Chrome: full prod-QA etter sluttpakka (STEG 1–10, rapportformat, fasit) |
+| `docs/arkiv/qa-rapport-v1121.md` | re-QA-rapporten fra Claude for Chrome 2. sep (11/11 FIKSET, målte kontraster og `dataAlder`) |
 | `docs/arkiv/plan-spillere-redesign-v181.md` | utført detaljplan for v1.8.1 (redesign av /spillere, T1–T12) |
 | `docs/arkiv/plan-innsikt-v170.md` | utført detaljplan for v1.7.0 «/innsikt» (T1–T10) |
 | `docs/arkiv/plan-v134-ai-swr.md` | utført plan for v1.3.4 (SWR + oppfrisker) |
-| `docs/arkiv/` (20 filer) | utførte planer + historikk (kun sti-referanser rettes ved rydding) |
+| `docs/arkiv/` (26 filer) | utførte planer, QA-rapport + historikk (kun sti-referanser rettes ved rydding) |
 
 ## Senere / idéer (ikke planlagt)
 
