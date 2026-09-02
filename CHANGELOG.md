@@ -26,6 +26,11 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   vises også før første runde er ferdigspilt. `assembleInsights` henter
   entry history (egen id → 5 min-nøkkel, myk feil → kortene skjules) —
   ett ekstra cachet kall, 0 AI-kall. Fem nye tester.
+- Bonuskamp (grunnlag): `topBps` i `live.js` — topp fem på BPS per kamp
+  med bonusen de ligger an til (FPLs publiserte tall når kampen er ferdig
+  eller publisert, ellers estimatet der likhet arves: 3,3,1), mine spillere
+  markert; `buildLive` legger `bpsTop` + `bpsSource` («fpl»/«estimat») på
+  hver kamp i `/api/live.json`. Tom før avspark. Fem nye tester.
 
 ## [1.10.0] - 2026-09-02
 
