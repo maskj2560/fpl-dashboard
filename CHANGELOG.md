@@ -16,6 +16,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 ### Changed
 
 - `fast-xml-parser` 5.11.0 → 5.11.1 (patch innenfor range).
+- Dockerfile: `node:22-alpine` → `node:24-alpine` (Node 24 er Active LTS,
+  22 i vedlikehold; appen utvikles og testes på 24). `engines` er fortsatt
+  `>=22`, `HEALTHCHECK` uendret. Lokal røyktest på Node 24.11.1: alle sider
+  200, ingen `DeprecationWarning` i loggen.
 
 ## [1.12.1] - 2026-09-02
 
