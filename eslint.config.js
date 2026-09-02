@@ -18,6 +18,15 @@ export default [
     },
   },
   {
+    // Service workeren (v1.12.0) er et klassisk script i worker-scope.
+    files: ['src/pwa/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: 'script',
+      globals: globals.serviceworker,
+    },
+  },
+  {
     files: ['public/**/*.js'],
     languageOptions: {
       ecmaVersion: 2024,

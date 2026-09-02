@@ -34,6 +34,11 @@ Mobil (390 px): [dashbord](docs/img/dashbord-mobil.png) ·
 | `POST /api/ai-rad` | AI-råd for laget ditt (krever `ANTHROPIC_API_KEY`) | ✅ |
 | `/health` | `{"status":"ok"}` for helsesjekk | ✅ |
 
+Pluss `/kalender.ics` (kalenderabonnement), `/offline` (frakoblet-side) og
+`/sw.js` (service worker). Appen er en PWA fra v1.12.0: «Legg til på
+hjemskjerm» gir eget ikon og standalone-visning; dataene caches aldri
+(alltid ferske fra FPL), kun stil, script, font og ikoner.
+
 Se `ROADMAP.md` for full plan og fremdrift.
 
 ## Lokal kjøring

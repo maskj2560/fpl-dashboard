@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><%= title %> · FPL-dashboard</title>
   <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">⚽</text></svg>'>
+  <!-- PWA (v1.12.0): manifest + ikoner er versjonert med ICON_VERSION; asset-
+       versjonen leses av SW-registreringen i app.js (ny ?v per deploy). -->
+  <meta name="fpl-asset-version" content="<%= assetVersion %>">
+  <meta name="theme-color" content="#37003C">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="FPL">
+  <link rel="manifest" href="/manifest.webmanifest?v=<%= iconVersion %>">
+  <link rel="apple-touch-icon" href="/img/apple-touch-icon.png?v=<%= iconVersion %>">
   <script nonce="<%= cspNonce %>">
     // Tema før første paint: lagret valg vinner, ellers systemets. Må ligge
     // inline foran stilarket — et eksternt script gir et blaff i feil tema.

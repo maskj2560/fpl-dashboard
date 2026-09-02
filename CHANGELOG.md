@@ -7,6 +7,37 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.12.0] - 2026-09-02
+
+### Added
+
+- PWA (ikoner): `scripts/make-pwa-icons.mjs` (`npm run make-icons`) tegner
+  app-ikonet — FPL-lilla flate med avrundede hjørner og FPL-grønn sirkel —
+  som PNG med kun `node:zlib` (egen PNG-koder: signatur, IHDR, IDAT, IEND,
+  CRC via `zlib.crc32`, 4× supersampling). Genererte og committede filer:
+  `icon-192.png`, `icon-512.png`, `icon-512-maskable.png` (full flate),
+  `apple-touch-icon.png` (180, ugjennomsiktig) + håndskrevet `icon.svg`.
+  To nye tester.
+- PWA (manifest): `public/manifest.webmanifest` (navn «FPL-dashboard»,
+  kortnavn «FPL», `standalone`, FPL-lilla `theme_color`, mørkt `--bg` som
+  `background_color`, SVG + 192/512 + maskable-ikoner, alle `?v=1`).
+  `layout.ejs` lenker manifestet og apple-touch-ikonet med `ICON_VERSION`
+  (ny i `middleware.js`, får `immutable` som font- og bildeversjonene) og
+  bærer `theme-color`, `mobile-web-app-capable`, `apple-mobile-web-app-title`
+  og `<meta name="fpl-asset-version">` (leses av SW-registreringen). Tre
+  nye tester.
+- PWA (service worker): `src/pwa/sw.js` serveres på `GET /sw.js` med den
+  ekte asset-hashen byttet inn (`no-store`, cache-navn `fpl-<hash>` → ny SW
+  og opprydding av gamle cacher per deploy). Strategi: navigasjon nett-først
+  med `/offline` som fallback, `?v=`-assets cache-først, alt annet rett til
+  nett; `/api`, `/kalender.ics`, `/health` og `sw.js` selv går alltid utenom.
+  Ny side `GET /offline` («Du er frakoblet»). Seks nye tester.
+- PWA (registrering): `app.js` registrerer `/sw.js?v=<asset-hash>` ved
+  `load` med `updateViaCache: 'none'`, bak en `navigator`-guard; hashen
+  leses fra `<meta name="fpl-asset-version">`. Dermed kan appen legges til
+  på hjemskjermen («Legg til på hjemskjerm» / installer-prompt) med eget
+  ikon, og viser frakoblet-siden uten nett. To nye tester.
+
 ## [1.11.0] - 2026-09-02
 
 ### Added

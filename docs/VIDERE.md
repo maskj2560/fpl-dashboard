@@ -21,13 +21,31 @@ går ut i drift for seg:
 4. ~~**v1.11.0 — karriere-pakka.**~~ Ute 2. september, se under. Tidligere sesonger og merkedager på
    Innsikt-siden, og «bonuskamp» på Live: hvem leder BPS-kampen i hver
    kamp mens den spilles.
-5. **v1.12.0 — app på mobilen (PWA).** «Legg til på hjemskjerm» med eget
+5. ~~**v1.12.0 — app på mobilen (PWA).**~~ Ute 2. september, se under. «Legg til på hjemskjerm» med eget
    ikon, og en enkel frakoblet-side uten nett.
 
 Ingen av delene bruker AI, så kostnaden er uendret. Til slutt får du én
 ferdig prompt til Claude for Chrome som tester alt i drift.
 
-## Nytt: v1.11.0 — karriere-pakka (2. september)
+## Nytt: v1.12.0 — app på mobilen (2. september)
+
+Dashbordet kan nå legges til på hjemskjermen som en app, med eget ikon
+(lilla med grønn ball) og uten nettleserens adresselinje:
+
+- **Android/Chrome:** åpne fpl.marsk.no → meny (⋮) → «Legg til på
+  startskjermen» / «Installer app».
+- **iPhone/Safari:** åpne fpl.marsk.no → del-knappen → «Legg til på
+  Hjem-skjerm».
+
+Uten nett viser appen en enkel «Du er frakoblet»-side i stedet for
+nettleserens feilside. Alt annet er som før: dataene hentes live fra FPL
+og lagres ikke på telefonen, så poeng og priser er alltid ferske. Ingen AI,
+ingen ekstra kall.
+
+Dette var den siste av de fem oppdateringene i sluttpakka. Neste steg er
+QA-en i Claude for Chrome (prompten ligger i `docs/qa-chrome-prompt.md`).
+
+## Før det: v1.11.0 — karriere-pakka (2. september)
 
 Tre ting til, fortsatt uten AI:
 

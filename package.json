@@ -1,6 +1,6 @@
 {
   "name": "fpl-dashboard",
-  "version": "1.11.0",
+  "version": "1.12.0",
   "description": "Selvhostet Fantasy Premier League-dashboard — Express 5 + EJS, server-rendret, norsk UI",
   "private": true,
   "type": "module",
@@ -12,7 +12,8 @@
     "start": "node src/server.js",
     "test": "node --test",
     "lint": "eslint .",
-    "fetch-clubs": "node scripts/fetch-club-assets.mjs"
+    "fetch-clubs": "node scripts/fetch-club-assets.mjs",
+    "make-icons": "node scripts/make-pwa-icons.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.119.0",

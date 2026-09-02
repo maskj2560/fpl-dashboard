@@ -201,6 +201,33 @@ Takstbegrensningen på `/api` (POST/DELETE, 30 per 5 min) leser klientens
 IP fra `CF-Connecting-IP`, som Cloudflare setter og som ikke kan forfalskes
 gjennom proxyen. Uten Cloudflare brukes `X-Forwarded-For`, så socketen.
 
+## PWA (fra v1.12.0)
+
+Appen kan legges til på hjemskjermen: `public/manifest.webmanifest`,
+ikonene i `public/img/` og service workeren i `src/pwa/sw.js` (servert på
+`/sw.js` med den ekte asset-hashen byttet inn, `no-store`).
+
+- **Ikonene endres sjelden.** Endrer du geometri/farger i
+  `scripts/make-pwa-icons.mjs` (og `public/img/icon.svg`): kjør
+  `npm run make-icons`, bump `ICON_VERSION` i `src/middleware.js` **i samme
+  commit** (manifestet og `layout.ejs` refererer `?v=<ICON_VERSION>` — uten
+  bump serverer Cloudflare de gamle ikonene som `immutable`). Oppdater også
+  `?v=` i `manifest.webmanifest` for hånd (testen i `test/pwa.test.js`
+  krever at filene finnes).
+- **Service workeren trenger ingen manuell purge.** `app.js` registrerer
+  `/sw.js?v=<asset-hash>` med `updateViaCache: 'none'`; ny hash per deploy
+  gir ny registrering, ny cache `fpl-<hash>` og opprydding av de gamle.
+  Cloudflare kan cache `/sw.js` (origin sier `no-store` — respekteres),
+  men selv om den ikke gjorde det, endrer `?v=` seg per deploy.
+- **SW-en cacher aldri HTML** (utenom `/offline`), `/api/*`,
+  `/kalender.ics` eller `/health` — CSP-noncen per forespørsel og
+  live-pollingen er dermed upåvirket. Kun `?v=`-assets er cache-først.
+- **Sjekk etter deploy:** `curl -sI https://fpl.marsk.no/sw.js` →
+  `Cache-Control: no-store` og `application/javascript`;
+  `curl -s https://fpl.marsk.no/sw.js | grep -o "fpl-[a-f0-9]*"` skal gi
+  den nye asset-hashen; `curl -sI 'https://fpl.marsk.no/manifest.webmanifest?v=1'`
+  → `application/manifest+json` + `immutable`; `/offline` → 200.
+
 ## Verifisering etter deploy
 
 ```bash
