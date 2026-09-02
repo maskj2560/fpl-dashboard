@@ -7,6 +7,16 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Security
+
+- `npm audit fix`: `qs` 6.15.3 → 6.16.0 (Express sin query-parser;
+  GHSA-x5fp-wj9c-mxmx og GHSA-4mjr-xmp4-gh2g, moderat). Kun
+  `package-lock.json` endret — ingen nye toppnivå-avhengigheter.
+
+### Changed
+
+- `fast-xml-parser` 5.11.0 → 5.11.1 (patch innenfor range).
+
 ## [1.12.1] - 2026-09-02
 
 Elleve funn fra Chrome-QA-en mot prod (`docs/qa-chrome-prompt.md`, 2. sep):
