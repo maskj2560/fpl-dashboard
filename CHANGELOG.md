@@ -7,6 +7,36 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.11.0] - 2026-09-02
+
+### Added
+
+- FPL-karrieren (grunnlag): `buildCareer` i `insights.js` — tidligere
+  sesonger fra entry history (`past`) med beste sluttrank markert, pluss
+  sesongen så langt (`current`); `seasonLabelFrom` utleder «2026/27» fra
+  første deadline. Finnes før første runde er spilt. Tre nye tester.
+  0 AI-kall.
+- Merkedager (grunnlag): `buildBadges` — fast katalog på åtte merker i fast
+  rekkefølge (Sesongbeste, Tre grønne piler, Hundreklubben, Topp 100 000,
+  Bedre enn noen gang, Tom benk, Kapteinsteft, Alle femten spilte) med
+  `earned`/`gw`/`detail`; låste merker har null. Tom benk teller ikke i
+  Bench Boost-runder, Kapteinsteft bygger på kapteinsfasiten, «Alle femten
+  spilte» på `gwsAllPlayed` (minutter > 0 for alle 15). Seks nye tester.
+- FPL-karrieren og Merkedager på `/innsikt`: to nye kort øverst — tabell
+  over tidligere sesonger (beste sluttrank markert) med «Denne sesongen så
+  langt», og åtte merke-fliser der låste er grået (`aria-disabled`). Begge
+  vises også før første runde er ferdigspilt. `assembleInsights` henter
+  entry history (egen id → 5 min-nøkkel, myk feil → kortene skjules) —
+  ett ekstra cachet kall, 0 AI-kall. Fem nye tester.
+- Bonuskamp (grunnlag): `topBps` i `live.js` — topp fem på BPS per kamp
+  med bonusen de ligger an til (FPLs publiserte tall når kampen er ferdig
+  eller publisert, ellers estimatet der likhet arves: 3,3,1), mine spillere
+  markert; `buildLive` legger `bpsTop` + `bpsSource` («fpl»/«estimat») på
+  hver kamp i `/api/live.json`. Tom før avspark. Fem nye tester.
+- Bonuskamp på `/live`: hver kamp i gang viser «Bonus (estimat)»/«(FPL)»
+  med topp fem på BPS, bonusen de ligger an til og mine spillere i fet —
+  rendres klientside av `bpsRaceHtml` (ren, testet i vm). Én ny test.
+
 ## [1.10.0] - 2026-09-02
 
 ### Added

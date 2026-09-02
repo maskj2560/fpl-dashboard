@@ -6,6 +6,60 @@
   spillerpoeng uten kapteinsdobling, og bare på ferdigspilte runder.</p>
 </section>
 
+<%# v1.11.0: karrieren og merkedagene finnes før første runde — utenfor tomtilstanden. %>
+<% if (insights.career) { %>
+  <section class="card card-wide" id="karriere">
+    <h2>
+      <span class="h2-title">FPL-karrieren</span>
+      <% if (insights.career.best) { %><span class="dim">beste: <%= insights.career.best.season %> · rank <%= formatNumber(insights.career.best.rank) %></span><% } %>
+    </h2>
+    <% if (insights.career.seasons.length === 0) { %>
+      <p class="empty">Ingen tidligere sesonger registrert på laget.</p>
+    <% } else { %>
+      <div class="table-scroll">
+        <table class="data data--fit">
+          <caption class="sr-only">Tidligere sesonger</caption>
+          <thead><tr><th scope="col">Sesong</th><th scope="col" class="num">Poeng</th><th scope="col" class="num">Sluttrank</th></tr></thead>
+          <tbody>
+            <% for (const s of insights.career.seasons) { %>
+              <tr<%- s.best ? ' class="row-best"' : '' %>>
+                <td><%= s.season %><% if (s.best) { %> <span class="status status-best">Beste</span><% } %></td>
+                <td class="num"><%= formatNumber(s.points) %></td>
+                <td class="num"><%= s.rank == null ? '–' : formatNumber(s.rank) %></td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+    <% if (insights.career.current) { %>
+      <p class="hint">Denne sesongen så langt<% if (insights.career.current.label) { %> (<%= insights.career.current.label %>)<% } %>: <%= formatNumber(insights.career.current.points) %> p etter <%= insights.career.current.gws %> runder<% if (insights.career.current.rank != null) { %>, rank <%= formatNumber(insights.career.current.rank) %><% } %>.</p>
+    <% } %>
+  </section>
+<% } %>
+
+<% if (insights.badges) { %>
+  <section class="card card-wide" id="merkedager">
+    <h2>
+      <span class="h2-title">Merkedager</span>
+      <span class="dim"><%= insights.badges.filter((b) => b.earned).length %> av <%= insights.badges.length %></span>
+    </h2>
+    <ul class="merke-liste">
+      <% for (const b of insights.badges) { %>
+        <li class="merke<%= b.earned ? '' : ' merke--laast' %>"<%- b.earned ? '' : ' aria-disabled="true"' %>>
+          <span class="merke-tittel"><%= b.title %></span>
+          <span class="merke-tekst"><%= b.description %></span>
+          <% if (b.earned) { %>
+            <span class="merke-detalj"><%= b.detail ?? ('Runde ' + b.gw) %><% if (b.detail && !String(b.detail).startsWith('Runde') && b.gw != null) { %> · Runde <%= b.gw %><% } %></span>
+          <% } else { %>
+            <span class="merke-detalj">Ikke opptjent ennå</span>
+          <% } %>
+        </li>
+      <% } %>
+    </ul>
+  </section>
+<% } %>
+
 <% if (insights.finishedCount === 0) { %>
   <section class="card">
     <p class="empty">

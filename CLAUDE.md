@@ -47,6 +47,10 @@ src/services/
   prompts.js       rene promptbyggere (brief + rådgiver) og
                    sanitizeBriefText (etterkontroll av AI-briefen)
   live.js          live-visningen: buildLive (ren data), assembleLive (henter)
+                   (v1.11.0) topBps: bonuskamp per kamp — topp 5 på BPS m/
+                   bonus (publisert når ferdig/publisert, ellers estimat),
+                   bpsTop + bpsSource på hver kamp; rendres av bpsRaceHtml
+                   i app.js. ALDRI ai.js
   transfers.js     «Overganger»-siden: buildTransferAnalysis (ren analyse med
                    per-runde-detaljer, milepæl og alternativer),
                    assembleTransfersPage (hele siden, delseksjoner feiler
@@ -84,6 +88,12 @@ src/services/
                    cache-nøkler med baseline.js. actualXiIds er fasiten på
                    hvem som spilte: multiplier > 0 (FPL re-sorterer picks
                    etter autosub). All poengregning er rå 1×. ALDRI ai.js
+                   (v1.11.0) også buildCareer (tidligere sesonger + sesongen
+                   så langt, seasonLabelFrom) og buildBadges/gwsAllPlayed
+                   (åtte merkedager i fast rekkefølge, BADGE_IDS) fra
+                   getEntryHistory (egen id → 5 min, hentes mykt, også før
+                   første runde). Kortene ligger UTENFOR tomtilstanden i
+                   innsikt.ejs
   players.js       (v1.8.0) «spiller-pakka» på /spillere: buildPlayerCard
                    (payload for modal-spillerkortet), buildDifferentials
                    (global differensial-finner, terskler 5/10/15 %, null når
@@ -246,7 +256,8 @@ oppstart (AI-cachen bor i minnet og er tom etter hver deploy) — til sammen
 ~49–53 kall/uke. `/innsikt` (v1.7.0) og spiller-pakka på `/spillere`
 (v1.8.0, inkludert `/api/spiller/:id`), planleggingspakka (v1.9.0:
 `chips.js`, `deadline.js`, `calendar.js`) og prisvarslene (v1.10.0:
-`prices.js`) er utenfor dette regnskapet: de
+`prices.js`) og karriere-pakka (v1.11.0: buildCareer/buildBadges i
+`insights.js`, topBps i `live.js`) er utenfor dette regnskapet: de
 importerer aldri `ai.js` og koster **0 AI-kall** i alle tilstander — låst
 på kilden i `test/routes.test.js`.
 Prompts holdes korte. Uten nøkkel vises rå data

@@ -530,6 +530,7 @@ export const insights = {
   title: 'Innsikt',
   clubAssets,
   formatSigned,
+  formatNumber,
   insights: {
     gw: 3,
     finishedCount: 3,
@@ -628,9 +629,36 @@ export const insightsNoTrend = {
   },
 };
 
+// v1.11.0: FPL-karrieren + merkedager — finnes også før første runde.
+export const career = {
+  seasons: [
+    { season: '2024/25', points: 2410, rank: 120000, best: true },
+    { season: '2025/26', points: 2300, rank: 200000, best: false },
+  ],
+  best: { season: '2024/25', rank: 120000 },
+  current: { label: '2026/27', points: 130, rank: 400000, gws: 2 },
+};
+
+export const badges = [
+  { id: 'beste-runde', title: 'Sesongbeste', description: 'Runden med flest poeng så langt i sesongen.', earned: true, gw: 2, detail: 'Runde 2 · 78 p' },
+  { id: 'tre-gronne', title: 'Tre grønne piler', description: 'Bedre samlet rank tre runder på rad.', earned: false, gw: null, detail: null },
+  { id: 'hundre', title: 'Hundreklubben', description: 'Minst 100 poeng i én runde.', earned: false, gw: null, detail: null },
+  { id: 'alle-15', title: 'Alle femten spilte', description: 'Hele troppen fikk minutter i samme runde.', earned: true, gw: 1, detail: 'Runde 1' },
+];
+
 export const insightsEmpty = {
   title: 'Innsikt',
   clubAssets,
   formatSigned,
-  insights: { gw: 0, finishedCount: 0, bench: null, captains: null, luck: null, dreamTeam: null },
+  formatNumber,
+  insights: {
+    gw: 0,
+    finishedCount: 0,
+    bench: null,
+    captains: null,
+    luck: null,
+    dreamTeam: null,
+    career: { ...career, current: null },
+    badges: badges.map((b) => ({ ...b, earned: false, gw: null, detail: null })),
+  },
 };

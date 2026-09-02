@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildLive } from '../src/services/live.js';
+import { buildLive, topBps } from '../src/services/live.js';
 
 const bootstrap = {
   teams: [
@@ -24,6 +24,67 @@ function confirmedBonus(pairs) {
 
 const liveStats = (entries) => ({
   elements: entries.map(([id, stats]) => ({ id, stats })),
+});
+
+// ---- v1.11.0: bonuskamp (BPS-race) per kamp --------------------------------
+
+const elementsById = new Map(bootstrap.elements.map((e) => [e.id, e]));
+const teamsById = new Map(bootstrap.teams.map((t) => [t.id, t]));
+const raceFixture = (extra = {}) => ({
+  id: 1,
+  team_h: 1,
+  team_a: 2,
+  started: true,
+  finished: false,
+  minutes: 60,
+  stats: [bps([[10, 30], [11, 30], [12, 20]])],
+  ...extra,
+});
+
+test('topBps deler bonus ved likhet på topp: 3,3,1', () => {
+  const race = topBps(raceFixture(), elementsById, teamsById, new Set());
+  assert.deepEqual(
+    race.rows.map((r) => [r.name, r.bps, r.bonus, r.mine]),
+    [['Palmer', 30, 3, false], ['Saka', 30, 3, false], ['Raya', 20, 1, false]],
+    'likhet på topp gir 3,3,1 — sortert på bps, så navn',
+  );
+  assert.equal(race.source, 'estimat');
+  assert.ok(race.rows.every((r) => r.teamShort && r.id), 'radene har id og klubb');
+});
+
+test('topBps bruker publisert bonus når FPL har publisert', () => {
+  const fixture = raceFixture({ finished: true, stats: [bps([[10, 30], [11, 30], [12, 20]]), confirmedBonus([[12, 3], [10, 2]])] });
+  const race = topBps(fixture, elementsById, teamsById, new Set());
+  assert.equal(race.source, 'fpl');
+  assert.deepEqual(race.rows.map((r) => [r.name, r.bonus]), [['Palmer', 0], ['Saka', 2], ['Raya', 3]]);
+});
+
+test('topBps markerer mine spillere og gir tom liste før avspark', () => {
+  const race = topBps(raceFixture(), elementsById, teamsById, new Set([10]));
+  assert.deepEqual(race.rows.filter((r) => r.mine).map((r) => r.name), ['Saka']);
+  const notStarted = topBps(raceFixture({ started: false, minutes: 0, stats: [] }), elementsById, teamsById, new Set([10]));
+  assert.deepEqual(notStarted, { rows: [], source: null });
+  const noStats = topBps(raceFixture({ stats: [] }), elementsById, teamsById, new Set());
+  assert.deepEqual(noStats.rows, [], 'uten bps-statistikk finnes ingen kamp');
+});
+
+test('topBps tar med maks fem spillere', () => {
+  const many = bps([[10, 50], [11, 45], [12, 40], [13, 35], [14, 30], [15, 25]]);
+  const elements = new Map(elementsById);
+  for (const id of [13, 14, 15]) elements.set(id, { id, web_name: `S${id}`, team: 1, element_type: 3 });
+  const race = topBps(raceFixture({ stats: [many] }), elements, teamsById, new Set());
+  assert.equal(race.rows.length, 5);
+  assert.deepEqual(race.rows.map((r) => r.bonus), [3, 2, 1, 0, 0]);
+});
+
+test('buildLive legger bpsTop på hver kamp', () => {
+  const fixtures = [raceFixture(), raceFixture({ id: 2, started: false, minutes: 0, stats: [] })];
+  const live = buildLive({ bootstrap, gw: 3, fixtures, live: liveStats([]), picks: { picks: [{ element: 10, position: 1, multiplier: 1, is_captain: false }] } });
+  assert.equal(live.matches[0].bpsTop.length, 3);
+  assert.equal(live.matches[0].bpsSource, 'estimat');
+  assert.ok(live.matches[0].bpsTop.find((r) => r.name === 'Saka').mine, 'mine spillere markeres fra picks');
+  assert.deepEqual(live.matches[1].bpsTop, []);
+  assert.equal(live.matches[1].bpsSource, null);
 });
 
 test('buildLive gir tom visning uten aktiv runde', () => {
@@ -191,6 +252,8 @@ test('matches speiler stilling og status fra fixtures', () => {
       started: true,
       finished: false,
       minutes: 63,
+      bpsTop: [],
+      bpsSource: null,
     },
   ]);
 });

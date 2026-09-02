@@ -34,6 +34,28 @@ function loadAppScript() {
 
 const app = loadAppScript();
 
+// v1.11.0: bonuskampen rendres klientside per kamp (matches fylles av render()).
+test('bpsRaceHtml escaper navn, markerer mine og viser estimat-merket', () => {
+  const match = {
+    bpsTop: [
+      { id: 1, name: '<b>X</b>', teamShort: 'ARS', bps: 30, bonus: 3, mine: true },
+      { id: 2, name: 'Y', teamShort: 'CHE', bps: 20, bonus: 0, mine: false },
+    ],
+    bpsSource: 'estimat',
+  };
+  const html = app.bpsRaceHtml(match);
+  assert.ok(html.includes('&lt;b&gt;X&lt;/b&gt;'), 'navnet skal escapes');
+  assert.ok(!html.includes('<b>X</b>'), 'rå HTML slapp gjennom');
+  assert.ok(html.includes('class="bps-row bps-mine"'), 'mine spillere markeres');
+  assert.ok(html.includes('estimat'), 'estimat-merket mangler');
+  assert.ok(html.includes('+3'), 'bonusen vises med fortegn');
+  assert.ok(html.includes('class="bps-race"'), 'wrapperen mangler');
+  const fpl = app.bpsRaceHtml({ ...match, bpsSource: 'fpl' });
+  assert.ok(fpl.includes('FPL') && !fpl.includes('estimat'), 'publisert bonus merkes som FPL');
+  assert.equal(app.bpsRaceHtml({ bpsTop: [], bpsSource: null }), '', 'tom før avspark');
+  assert.equal(app.bpsRaceHtml({}), '', 'tåler kamp uten feltene');
+});
+
 test('escapeHtml escaper også anførselstegn', () => {
   assert.equal(app.escapeHtml('<script>'), '&lt;script&gt;');
   assert.equal(app.escapeHtml('Nott\'m & "Co"'), 'Nott&#39;m &amp; &quot;Co&quot;');

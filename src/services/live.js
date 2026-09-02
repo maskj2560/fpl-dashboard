@@ -37,6 +37,39 @@ function emptyLive() {
  */
 const matchDone = (f) => f.finished || f.finished_provisional;
 
+const RACE_SIZE = 5;
+
+/**
+ * Bonuskampen (v1.11.0): topp fem på BPS i én kamp, med bonusen de ligger
+ * an til. Bonus = FPLs publiserte tall når kampen er ferdig eller FPL har
+ * publisert, ellers estimatet (likhet arves: 3,3,1 / 3,2,2 / 3,2,1,1).
+ * Tom før avspark og uten bps-statistikk. Rent.
+ */
+export function topBps(fixture, elementsById, teamsById, myIds = new Set()) {
+  if (!fixture?.started) return { rows: [], source: null };
+  const bpsStat = fixture.stats?.find((s) => s.identifier === 'bps');
+  const all = [...(bpsStat?.h ?? []), ...(bpsStat?.a ?? [])].filter((e) => e.value > 0);
+  if (all.length === 0) return { rows: [], source: null };
+
+  const published = Boolean(matchDone(fixture) || hasConfirmedBonus(fixture));
+  const bonus = published ? publishedBonus(fixture) : estimateBonus(fixture);
+  const rows = all
+    .map((e) => {
+      const el = elementsById.get(e.element);
+      return {
+        id: e.element,
+        name: el?.web_name ?? '?',
+        teamShort: teamsById.get(el?.team)?.short_name ?? '?',
+        bps: e.value,
+        bonus: bonus.get(e.element) ?? 0,
+        mine: myIds.has(e.element),
+      };
+    })
+    .sort((a, b) => b.bps - a.bps || a.name.localeCompare(b.name, 'nb'))
+    .slice(0, RACE_SIZE);
+  return { rows, source: published ? 'fpl' : 'estimat' };
+}
+
 /**
  * Ren sammenstilling av live-payloaden — ingen nettverkskall.
  * `nextKickoff` lar klienten vekke seg selv ved avspark i stedet for å polle
@@ -102,17 +135,23 @@ export function buildLive({ bootstrap, gw, fixtures = [], live = null, picks = n
     totalLive = myPlayers.reduce((sum, p) => sum + p.effective, 0);
   }
 
-  const matches = fixtures.map((f) => ({
-    home: teamsById.get(f.team_h)?.short_name ?? '?',
-    away: teamsById.get(f.team_a)?.short_name ?? '?',
-    homeCode: teamsById.get(f.team_h)?.code ?? null,
-    awayCode: teamsById.get(f.team_a)?.code ?? null,
-    homeScore: f.team_h_score ?? null,
-    awayScore: f.team_a_score ?? null,
-    started: f.started,
-    finished: Boolean(matchDone(f)),
-    minutes: f.minutes,
-  }));
+  const myIds = new Set((picks?.picks ?? []).map((p) => p.element));
+  const matches = fixtures.map((f) => {
+    const race = topBps(f, elementsById, teamsById, myIds);
+    return {
+      home: teamsById.get(f.team_h)?.short_name ?? '?',
+      away: teamsById.get(f.team_a)?.short_name ?? '?',
+      homeCode: teamsById.get(f.team_h)?.code ?? null,
+      awayCode: teamsById.get(f.team_a)?.code ?? null,
+      homeScore: f.team_h_score ?? null,
+      awayScore: f.team_a_score ?? null,
+      started: f.started,
+      finished: Boolean(matchDone(f)),
+      minutes: f.minutes,
+      bpsTop: race.rows,
+      bpsSource: race.source,
+    };
+  });
 
   return { anyLive, gameweek: gw, nextKickoff, totalLive, myPlayers, matches, leagues };
 }

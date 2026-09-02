@@ -42,8 +42,8 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.8.3**~~ | ~~«Herding + tilgjengelighet»: CSP m/ nonce, sikkerhetshoder, JSON-tak, takstbegrensning, a11y-pass, branch-rydding~~ | **utført 2. sep — 655/655** | — |
 | ~~**v1.9.0**~~ | ~~«Planleggingspakka»: chip-planlegger (/lag), «Lagsjekk» (/brief + Discord), `/kalender.ics` + P3~~ | **utført 2. sep — 691/691** | — |
 | ~~**v1.10.0**~~ | ~~«Prisvarsler»: timesnapshot, Discord maks 1/natt, kort på /overganger~~ | **utført 2. sep — 710/710** | — |
-| **v1.11.0** | «Karriere-pakka»: FPL-karrieren + merkedager (/innsikt), bonuskamp (/live) | 0 | **neste** |
-| **v1.12.0** | «PWA»: manifest, ikoner, service worker, /offline | 0 | v1.11.0 |
+| ~~**v1.11.0**~~ | ~~«Karriere-pakka»: FPL-karrieren + merkedager (/innsikt), bonuskamp (/live)~~ | **utført 2. sep — 729/729** | — |
+| **v1.12.0** | «PWA»: manifest, ikoner, service worker, /offline | 0 | **neste** |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
 Kalenderlogikk: utviklingssporet (v1.3.0 → v1.3.1+) går uavbrutt;
@@ -63,7 +63,8 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
 - **Blokkert av:** ingenting. AI-økten merger `--no-ff`, tagger og pusher
   selv per versjon etter deploy-vindu-sjekk (Marius' beslutning).
 - **Status:** v1.8.3 ute 2. sep (655/655), v1.9.0 ute 2. sep (691/691),
-  v1.10.0 ute 2. sep (710/710). Neste: v1.11.0 karriere-pakka.
+  v1.10.0 ute 2. sep (710/710), v1.11.0 ute 2. sep (729/729). Neste:
+  v1.12.0 PWA.
 - **Størrelse:** stor (fem releaser).
 
 ### 1. (P4) Løpende kostnadskontroll
@@ -185,9 +186,9 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
   SMTP-avhengighet; Discord dekker behovet)
 - Spillerbilder (FPLs `p{code}.png`, 609 × ~10 KB) — bevisst utelatt fra
   v1.3-overhalingen (beslutning F-g), bekreftet droppet 1. sep
-- ~~BPS-race live~~ — planlagt som del av v1.11.0 (køpunkt 0)
-- ~~FPL-karrieren~~ — planlagt som del av v1.11.0 (køpunkt 0)
-- ~~Badges/merkedager~~ — planlagt som del av v1.11.0 (køpunkt 0)
+- ~~BPS-race live~~ — **utført 2. sep i v1.11.0** (`topBps` i live.js)
+- ~~FPL-karrieren~~ — **utført 2. sep i v1.11.0** (`buildCareer`)
+- ~~Badges/merkedager~~ — **utført 2. sep i v1.11.0** (`buildBadges`, åtte merker)
 - ~~PWA~~ — planlagt som v1.12.0 (køpunkt 0)
 - ~~AI-kommentar til overgangsanalysen~~ — bygget i v1.5.0
 

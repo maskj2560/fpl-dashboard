@@ -496,6 +496,54 @@ footer {
   word-break: break-all;
 }
 
+/* FPL-karrieren + merkedager på /innsikt (v1.11.0) */
+.row-best td {
+  background: var(--accent-soft);
+}
+
+.merke-liste {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-3);
+}
+
+.merke {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+
+.merke--laast {
+  opacity: 0.55;
+  filter: grayscale(1);
+}
+
+.merke-tittel {
+  font-weight: 700;
+}
+
+.merke-tekst {
+  font-size: var(--fs-sm);
+  color: var(--text-dim);
+}
+
+.merke-detalj {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--accent-text);
+}
+
+.merke--laast .merke-detalj {
+  color: var(--text-dim);
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -1588,6 +1636,60 @@ tr[data-href] {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--text-dim);
+}
+
+/* Bonuskampen (v1.11.0): topp fem på BPS under hver kamp i gang */
+.bps-race {
+  grid-column: 1 / -1;
+  margin-top: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border);
+  font-size: var(--fs-xs);
+}
+
+.bps-label {
+  display: block;
+  margin-bottom: var(--space-1);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+}
+
+.bps-src {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+
+.bps-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.bps-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: var(--space-2);
+  align-items: baseline;
+}
+
+.bps-mine .bps-name {
+  font-weight: 700;
+}
+
+.bps-team {
+  color: var(--text-dim);
+}
+
+.bps-bps,
+.bps-bonus {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  min-width: 2ch;
 }
 
 /* Magenta markerer at kampen faktisk ruller nå. */
