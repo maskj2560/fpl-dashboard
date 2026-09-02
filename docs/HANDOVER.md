@@ -10,11 +10,13 @@
 ute, v1.13.0 bygget, se «Neste steg»)
 
 ## Status akkurat nå
-- **v1.13.0 «AI-statistikk» bygget 2. sep (økt 56)** på `feat/ai-stats-v1130`:
+- **v1.13.0 «AI-statistikk» i prod 2. sep 20:59 (økt 56)** på `feat/ai-stats-v1130`:
   teller per cacheKey i `ai.js` (calls/tokens/failures/lastAt/model + since)
   → `DATA_DIR/ai-stats.json`, `aiStats` på /health via `healthPayload()`.
   **767/767 + lint 0** (baseline 758). Røyktest med tomme nøkler:
-  `aiStats: null`, ingen fil skrevet. Prod-sjekk: under.
+  `aiStats: null`, ingen fil. Prod-sjekk 21:03: footer v1.13.0, `<script` 2,
+  /health 200 med `aiStats` (since 18:59Z, calls 2 = brief + nyheter, 2711
+  inn / 1855 ut, 0 failures), hash `ba91839a` (uendret), 6 sider 200.
 - **v1.12.2 «Vedlikehold» i prod 2. sep 20:52 (økt 56)** på
   `fix/hygiene-cache-keys-v1122`: `npm audit fix` (qs 6.16.0, audit ren),
   fast-xml-parser 5.11.1, `node:24-alpine`, egne `:hist`-nøkler (rotårsak
@@ -48,10 +50,10 @@ ute, v1.13.0 bygget, se «Neste steg»)
 **Sluttpakka (v1.8.3–v1.12.0) og QA-fiksene (v1.12.1) er i prod 2. sep.**
 Planen er arkivert i `docs/arkiv/plan-sluttpakka-v183-v1120.md`
 (beslutningsfasit med 9 punkter — ikke re-spør). ROADMAP § 0 er ferdig.
-**Re-QA bestått 2. sep (11/11 FIKSET, 0 nye funn).** § 0 ferdig. Økt 56
-kjører `docs/prompt-vedlikehold-v1122-v1130.md` (ROADMAP § 5): plan godkjent
-av Marius, v1.12.2 ute 20:52 (758/758), v1.13.0 bygget (767/767), så
-docs-slanking. Prompten slettes når alt er ute.
+**§ 0 og § 5 er ferdige (2. sep).** Vedlikeholdspakka (v1.12.2 20:52,
+v1.13.0 20:59, docs-slanking) er ute; prompten er konsumert og slettet (git
+bevarer den: `git show d34e3c8:docs/prompt-vedlikehold-v1122-v1130.md`).
+Køen har ingen åpne kodepunkter — kun P4 (løpende) og Marius' punkter under.
 
 **Majors vurdert 2. sep (kun rapport — ikke oppgradert, Marius' fasit):**
 - `ejs` 3.1.10 → 6.0.1: v4 fjernet `client`-flagget + Jake, v6 er dual
@@ -68,10 +70,9 @@ docs-slanking. Prompten slettes når alt er ute.
    «Serveren lukket ryddig» (siste bevis for v1.3.5).
 2. Mobil-QA på ekte telefon (Chrome-QA-en emulerer 390 px, ikke ekte touch).
 3. Kostnad i `console.anthropic.com` (P4, løpende).
-4. ~~Re-sjekk av v1.12.1 i Chrome~~ — **utført 2. sep, 11/11 FIKSET.**
-   Gjenstår: STEG 7 (/live under kamp, fre 4. sep fra 21:00), 9c
-   (installer-tilbud), 9e (offline i DevTools); etter første bytte: stat-
-   fliser på /overganger (390 px) + «−0,3» i Prisgevinst (ikke sett 2. sep).
+4. Chrome-QA-rest (re-QA 11/11 bestått 2. sep): STEG 7 (/live under kamp,
+   fre 4. sep fra 21:00), 9c (installer-tilbud), 9e (offline i DevTools);
+   etter første bytte: stat-fliser på /overganger (390 px) + «−0,3» i Prisgevinst.
 
 ## Driftslærdommer (ikke glem disse)
 
@@ -191,4 +192,8 @@ docs-slanking. Prompten slettes når alt er ute.
 - 2026-09-02 (økt 55): «Er det noe du kunne anbefalt å gjøre som du kan
   gjøre? … skriv en planleggingsprompt til fable» → seks kandidater med bevis,
   Marius valgte 1–4 (ingen ekstra) → `docs/prompt-vedlikehold-v1122-v1130.md` + § 5.
+- 2026-09-02 (økt 56, Fable): Marius limte inn vedlikeholdsprompten; «Stopp
+  arbeid. Jeg oppdaterer drivers» midt i planleggingen, så «Du kan forsette».
+  Handling: plan godkjent i plan-modus → v1.12.2 og v1.13.0 bygget (TDD),
+  merget `--no-ff`, tagget, deployet og prod-sjekket; docs slanket; prompten slettet.
 
