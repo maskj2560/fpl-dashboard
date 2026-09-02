@@ -7,6 +7,14 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+
+- FPL-karrieren (grunnlag): `buildCareer` i `insights.js` — tidligere
+  sesonger fra entry history (`past`) med beste sluttrank markert, pluss
+  sesongen så langt (`current`); `seasonLabelFrom` utleder «2026/27» fra
+  første deadline. Finnes før første runde er spilt. Tre nye tester.
+  0 AI-kall.
+
 ## [1.10.0] - 2026-09-02
 
 ### Added

@@ -192,6 +192,38 @@ export function buildCaptainAudit({ picksByGw, liveByGw, eventsById, elementsByI
   };
 }
 
+// ---- v1.11.0: FPL-karrieren ------------------------------------------------
+
+/** «2026/27» fra første deadline i sesongen; null uten events. */
+export function seasonLabelFrom(events) {
+  const first = (events ?? []).find((e) => e?.deadline_time);
+  if (!first) return null;
+  const year = new Date(first.deadline_time).getUTCFullYear();
+  return `${year}/${String(year + 1).slice(-2)}`;
+}
+
+/**
+ * Tidligere sesonger (entry history `past`) + sesongen så langt (`current`).
+ * Beste sesong = lavest sluttrank. Finnes før første runde er spilt, så
+ * kortet kan vises utenfor tomtilstanden på /innsikt.
+ */
+export function buildCareer({ past = [], current = [], seasonLabel = null } = {}) {
+  const seasons = (past ?? [])
+    .filter((s) => s && s.season_name)
+    .map((s) => ({ season: s.season_name, points: s.total_points ?? 0, rank: s.rank ?? null, best: false }));
+  let best = null;
+  for (const s of seasons) {
+    if (s.rank != null && (best === null || s.rank < best.rank)) best = { season: s.season, rank: s.rank };
+  }
+  if (best) seasons.find((s) => s.season === best.season).best = true;
+
+  const last = (current ?? []).at(-1);
+  const now = last
+    ? { label: seasonLabel, points: last.total_points ?? 0, rank: last.overall_rank ?? null, gws: current.length }
+    : null;
+  return { seasons, best, current: now };
+}
+
 /** Poengverdien av et mål per posisjon: keeper/forsvar 6, midtbane 5, spiss 4. */
 const GOAL_VALUE = { 1: 6, 2: 6, 3: 5, 4: 4 };
 

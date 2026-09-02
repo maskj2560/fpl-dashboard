@@ -8,7 +8,42 @@ import {
   buildLuckMeter,
   buildDreamTeamSection,
   assembleInsights,
+  buildCareer,
+  seasonLabelFrom,
 } from '../src/services/insights.js';
+
+// ---- v1.11.0: FPL-karrieren ----------------------------------------------
+
+test('buildCareer finner beste sesong og sesongen så langt', () => {
+  const past = [
+    { season_name: '2023/24', total_points: 2200, rank: 350000 },
+    { season_name: '2024/25', total_points: 2410, rank: 120000 },
+    { season_name: '2025/26', total_points: 2300, rank: 200000 },
+  ];
+  const current = [
+    { event: 1, points: 60, total_points: 60, overall_rank: 900000 },
+    { event: 2, points: 70, total_points: 130, overall_rank: 400000 },
+  ];
+  const c = buildCareer({ past, current, seasonLabel: '2026/27' });
+  assert.deepEqual(
+    c.seasons.map((s) => [s.season, s.points, s.rank, s.best]),
+    [['2023/24', 2200, 350000, false], ['2024/25', 2410, 120000, true], ['2025/26', 2300, 200000, false]],
+  );
+  assert.deepEqual(c.best, { season: '2024/25', rank: 120000 });
+  assert.deepEqual(c.current, { label: '2026/27', points: 130, rank: 400000, gws: 2 });
+});
+
+test('buildCareer uten past gir tom liste og best null', () => {
+  const c = buildCareer({ past: [], current: [], seasonLabel: '2026/27' });
+  assert.deepEqual(c, { seasons: [], best: null, current: null });
+  const noHistory = buildCareer({ seasonLabel: '2026/27' });
+  assert.equal(noHistory.best, null, 'manglende felter skal ikke krasje');
+});
+
+test('seasonLabelFrom utleder «2026/27» fra første deadline', () => {
+  assert.equal(seasonLabelFrom([{ id: 1, deadline_time: '2026-08-14T17:30:00Z' }]), '2026/27');
+  assert.equal(seasonLabelFrom([]), null);
+});
 
 // ---- felles testdata ----------------------------------------------------
 // 15 spillere: 1–2 keeper, 3–7 forsvar, 8–12 midtbane, 13–15 spiss.
