@@ -67,7 +67,8 @@ const PAIRS = [
   // QA-funn 3 (v1.12.1): lenker på hero-gradienten fikk --accent-text (1,85:1 i lyst tema).
   ['hero-link', 'hero-from', 4.5], ['hero-link', 'hero-to', 4.5],
   ['fdr-ink-light', 'fdr-1', 3], ['fdr-ink-dark', 'fdr-2', 3], ['fdr-ink-dark', 'fdr-3', 3],
-  ['fdr-ink-light', 'fdr-4', 3], ['fdr-ink-light', 'fdr-5', 3],
+  // QA-funn 11 (v1.12.1): FDR-4 bærer 12 px-tekst («COV (h)»), ikke bare farge — 4,5.
+  ['fdr-ink-light', 'fdr-4', 4.5], ['fdr-ink-light', 'fdr-5', 3],
   ['focus', 'bg', 3], ['focus', 'surface', 3],
 ];
 
@@ -191,6 +192,24 @@ test('style.css: oppstillingen holder radene hele på mobil', () => {
 // «generert 12:42 · neste tidligst 18:42» på 390 px. Lang meta faller nå ned.
 test('style.css: korthodet bryter meta-teksten ned på egen linje ved plassmangel', () => {
   assert.match(block('.card h2'), /flex-wrap: wrap/);
+});
+
+// QA-funn 7 (v1.12.1): word-break: break-all delte webcal-adressen midt i
+// ordet («fpl.marsk.n / o/kalender.ics») innenfor 78ch-taket på /brief.
+// overflow-wrap: anywhere flytter hele adressen ned først.
+test('style.css: webcal-adressen flyttes hel til neste linje før den deles', () => {
+  const b = block('.hero-links code');
+  assert.match(b, /overflow-wrap: anywhere/);
+  assert.ok(!b.includes('break-all'), 'break-all deler midt i ordet selv når hele adressen får plass på neste linje');
+});
+
+// QA-funn 9 (v1.12.1): tre ~103 px-fliser på 390 px brakk «3 345 863» og
+// «TOTALRANGERING». To fliser i bredden, den femte tar hele raden.
+test('style.css: statflisene står to i bredden på mobil, og en odde siste tar raden', () => {
+  const mobile = css.slice(css.indexOf('@media (max-width: 480px)'));
+  assert.match(mobile, /\.stat-strip \{[^}]*minmax\(8\.5rem, 1fr\)/);
+  assert.match(css, /\.stat-strip > \.stat:last-child:nth-child\(odd\) \{[^}]*grid-column: 1 \/ -1;/);
+  assert.match(block('.stat-lbl'), /overflow-wrap: normal/);
 });
 
 test('style.css: smale tabeller krymper til innholdet', () => {

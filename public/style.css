@@ -55,7 +55,7 @@
   --fdr-1: #375523;
   --fdr-2: #01fc7a;
   --fdr-3: #e7e7e7;
-  --fdr-4: #ff1751;
+  --fdr-4: #e6003c; /* FPL: #ff1751 (3,8:1 mot hvit) — mørknet til 4,7:1 for 12 px-tekst (QA-funn 11) */
   --fdr-5: #80072d;
   --fdr-ink-light: #ffffff;
   --fdr-ink-dark: #37003C;
@@ -149,7 +149,7 @@
   --fdr-1: #375523;
   --fdr-2: #01fc7a;
   --fdr-3: #e7e7e7;
-  --fdr-4: #ff1751;
+  --fdr-4: #e6003c; /* FPL: #ff1751 (3,8:1 mot hvit) — mørknet til 4,7:1 for 12 px-tekst (QA-funn 11) */
   --fdr-5: #80072d;
   --fdr-ink-light: #ffffff;
   --fdr-ink-dark: #37003C;
@@ -502,7 +502,9 @@ footer {
 .hero-links code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: var(--fs-xs);
-  word-break: break-all;
+  /* QA-funn 7: hele adressen flyttes ned først; deles bare når den alene ikke får plass. */
+  word-break: normal;
+  overflow-wrap: anywhere;
 }
 
 /* FPL-karrieren + merkedager på /innsikt (v1.11.0) */
@@ -1141,7 +1143,9 @@ table.data tbody tr:hover {
   color: var(--fdr-ink-light);
 }
 
-/* FPLs egne FDR-farger: 1/4/5 bærer hvit tekst, 2/3 er lyse og bærer lilla. */
+/* FPLs egne FDR-farger: 1/4/5 bærer hvit tekst, 2/3 er lyse og bærer lilla.
+   Unntak: FDR-4 er mørknet fra FPLs #ff1751 til #e6003c (4,7:1) fordi cellene
+   bærer 12 px-tekst, ikke bare farge (QA-funn 11, v1.12.1). */
 .fdr-2,
 .fdr-3 {
   color: var(--fdr-ink-dark);
@@ -1355,6 +1359,7 @@ table.sortable th[aria-sort='ascending']::after {
   letter-spacing: 0.09em;
   color: var(--text-dim);
   hyphens: none;
+  overflow-wrap: normal; /* aldri «TOTALRANGE / RING» — brekk kun på mellomrom (QA-funn 9) */
 }
 
 /* Banen: klippestriper, midtsirkel-bue nederst og 16-meter øverst — diskret
@@ -1891,9 +1896,15 @@ footer .version {
     padding: var(--space-5) var(--space-3);
   }
 
+  /* QA-funn 9 (v1.12.1): tre ~103 px-fliser brakk «3 345 863» og
+     «TOTALRANGERING». To i bredden (136 px+), en odde siste tar hele raden. */
   .stat-strip {
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
     gap: var(--space-2);
+  }
+
+  .stat-strip > .stat:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
   }
 
   /* QA-funn 4 (v1.12.1): 4 × 7.5rem + gap = 509 px i en ~330 px bred bane,

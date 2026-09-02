@@ -135,7 +135,7 @@ Hver fargetoken finnes i begge blokker — låst av `test/style.test.js`.
 | `--warn-bg` | `#3d2f0f` | `#fff3cd` | 503-banner, «tvilsom» |
 | `--warn-border` | `#8a6d1f` | `#e0b84a` | |
 | `--warn-text` | `#ffd166` | `#6b4d00` | |
-| `--fdr-1` … `--fdr-5` | `#375523` `#01fc7a` `#e7e7e7` `#ff1751` `#80072d` | samme | FPL-eksakt |
+| `--fdr-1` … `--fdr-5` | `#375523` `#01fc7a` `#e7e7e7` `#ff1751` `#80072d` | samme | FPL-eksakt — **fra v1.12.1 er `--fdr-4` `#e6003c`** (QA-funn 11: 12 px-tekst krever 4,5:1) |
 | `--fdr-ink-light` | `#ffffff` | samme | tekst på fdr-1/4/5 |
 | `--fdr-ink-dark` | `#37003C` | samme | tekst på fdr-2/3 |
 | `--fdr-blank` | `#2d1846` | `#efeaf4` | tom celle |
@@ -194,7 +194,7 @@ kjørt; de blir varige asserts i `test/style.test.js`.
 | accent-ink / accent (aktiv nav) | — | 12,75 |
 | hero-text / hero-from, hero-to | 15,76 / — | 17,11 / 11,44 |
 | hero-dim / hero-to | — | 7,60 |
-| fdr-ink-light / fdr-1, fdr-4, fdr-5 | 8,45 / 3,82 / 10,57 (krav 3) | samme |
+| fdr-ink-light / fdr-1, fdr-4, fdr-5 | 8,45 / 3,82 / 10,57 (krav 3) — fdr-4 fra v1.12.1: 4,74 (krav 4,5) | samme |
 | fdr-ink-dark / fdr-2, fdr-3 | 12,39 / 13,83 | samme |
 | focus / bg | 14,24 (krav 3) | 17,11 |
 | Blandinger: accent-2-text på accent-2-soft over surface | 5,11 | 5,27 |
