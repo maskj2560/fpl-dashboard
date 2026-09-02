@@ -7,6 +7,76 @@ import { encodePng, paintIcon, PURPLE, GREEN, ICONS } from '../scripts/make-pwa-
 const publicDir = new URL('../public/', import.meta.url);
 const readPublic = (file) => fs.readFileSync(new URL(file, publicDir), 'utf8');
 
+// ---- v1.12.0 T3: service worker + ruter -------------------------------------
+
+const swSource = () => fs.readFileSync(new URL('../src/pwa/sw.js', import.meta.url), 'utf8');
+
+test('sw.js cacher aldri /api, /kalender.ics, /health eller seg selv', () => {
+  const sw = swSource();
+  const block = sw.slice(sw.indexOf('NEVER_CACHE'), sw.indexOf(']', sw.indexOf('NEVER_CACHE')));
+  for (const path of ['\\/api\\/', 'kalender\\.ics', '\\/health', 'sw\\.js']) {
+    assert.ok(block.includes(path), `NEVER_CACHE mangler ${path}`);
+  }
+  assert.ok(/request\.method !== 'GET'/.test(sw), 'kun GET går gjennom SW-en');
+  assert.ok(/url\.origin !== (self\.)?location\.origin/.test(sw), 'kun same-origin');
+});
+
+test('sw.js er nett-først for navigasjon og cache-først kun for ?v=', () => {
+  const sw = swSource();
+  const nav = sw.slice(sw.indexOf("mode === 'navigate'"));
+  assert.ok(nav.length > 0, 'ingen navigasjonsgren');
+  assert.ok(nav.indexOf('fetch(') < nav.indexOf('caches.match'), 'navigasjon skal prøve nettet før cachen');
+  assert.ok(nav.includes("'/offline'"), 'navigasjon uten nett faller tilbake på /offline');
+  const versioned = sw.slice(sw.indexOf("searchParams.has('v')"));
+  assert.ok(versioned.length > 0, 'ingen ?v=-gren');
+  assert.ok(versioned.indexOf('caches.match') < versioned.indexOf('fetch('), '?v= skal leses fra cachen først');
+  assert.ok(/cache\.put\(/.test(versioned), '?v=-svar legges i cachen');
+});
+
+test('sw.js bytter cache-navn med asset-versjonen og rydder gamle', () => {
+  const sw = swSource();
+  assert.ok(sw.includes("'fpl-__ASSET_VERSION__'"), 'cache-navnet skal bære plassholderen');
+  assert.ok(/skipWaiting\(\)/.test(sw) && /clients\.claim\(\)/.test(sw), 'skipWaiting + clients.claim');
+  const activate = sw.slice(sw.indexOf("'activate'"));
+  assert.ok(/caches\.keys\(\)/.test(activate) && /caches\.delete\(/.test(activate), 'gamle cacher slettes ved activate');
+  assert.ok(/startsWith\('fpl-'\)/.test(activate), 'kun våre egne fpl-*-cacher røres');
+  assert.ok(sw.includes("'/offline'"), 'offline-siden precaches ved install');
+});
+
+test('sw-ruta setter no-store, riktig type og bytter inn asset-versjonen', async () => {
+  const { createSwHandler, offlineHandler } = await import('../src/routes/pwa.js');
+  const handler = createSwHandler({ assetVersion: 'abc12345', source: "const CACHE = 'fpl-__ASSET_VERSION__';\n" });
+  const headers = {};
+  let body = null;
+  const res = { set(h) { Object.assign(headers, h); return this; }, send(b) { body = b; } };
+  handler({}, res);
+  assert.equal(headers['Content-Type'], 'application/javascript; charset=utf-8');
+  assert.equal(headers['Cache-Control'], 'no-store');
+  assert.ok(body.includes("'fpl-abc12345'"), 'asset-versjonen er ikke byttet inn');
+  assert.ok(!body.includes('__ASSET_VERSION__'), 'plassholderen står igjen');
+
+  const real = createSwHandler({ assetVersion: 'deadbeef' });
+  let realBody = null;
+  real({}, { set() { return this; }, send(b) { realBody = b; } });
+  assert.ok(realBody.includes("'fpl-deadbeef'"), 'standardkilden er src/pwa/sw.js');
+
+  const offlineHeaders = {};
+  let rendered = null;
+  offlineHandler({}, { set(h) { Object.assign(offlineHeaders, h); return this; }, renderPage(view, data) { rendered = [view, data]; } });
+  assert.equal(offlineHeaders['Cache-Control'], 'no-store');
+  assert.deepEqual(rendered, ['offline', { title: 'Frakoblet' }]);
+});
+
+test('server.js monterer /sw.js og /offline før 404', () => {
+  const server = fs.readFileSync(new URL('../src/server.js', import.meta.url), 'utf8');
+  const sw = server.indexOf("app.get('/sw.js'");
+  const offline = server.indexOf("app.get('/offline'");
+  const notFound = server.indexOf('res.status(404)');
+  assert.ok(sw > 0 && offline > 0, '/sw.js og /offline mangler i server.js');
+  assert.ok(sw < notFound && offline < notFound, 'rutene må ligge før 404-handleren');
+  assert.ok(server.includes('createSwHandler({ assetVersion })'), 'SW-ruta får den ekte asset-hashen');
+});
+
 // ---- v1.12.0 T2: manifest + ikoner på disk ---------------------------------
 
 test('manifest.webmanifest har navn, short_name, start_url, display standalone og FPL-farger', () => {

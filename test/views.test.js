@@ -63,6 +63,7 @@ const cases = [
   ['innsikt', fx.insightsEmpty, 'Innsikt kommer når første runde er ferdigspilt'],
   ['no-team', {}, 'FPL_TEAM_ID'],
   ['404', {}, '404'],
+  ['offline', {}, 'frakoblet'],
   ['error', { code: 500, heading: 'Noe gikk galt', message: null }, 'Noe gikk galt'],
   ['error', { code: 503, heading: 'FPL oppdaterer spillet', message: 'Prøv igjen om noen minutter.' }, 'FPL oppdaterer spillet'],
 ];

@@ -24,6 +24,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   bærer `theme-color`, `mobile-web-app-capable`, `apple-mobile-web-app-title`
   og `<meta name="fpl-asset-version">` (leses av SW-registreringen). Tre
   nye tester.
+- PWA (service worker): `src/pwa/sw.js` serveres på `GET /sw.js` med den
+  ekte asset-hashen byttet inn (`no-store`, cache-navn `fpl-<hash>` → ny SW
+  og opprydding av gamle cacher per deploy). Strategi: navigasjon nett-først
+  med `/offline` som fallback, `?v=`-assets cache-først, alt annet rett til
+  nett; `/api`, `/kalender.ics`, `/health` og `sw.js` selv går alltid utenom.
+  Ny side `GET /offline` («Du er frakoblet»). Seks nye tester.
 
 ## [1.11.0] - 2026-09-02
 

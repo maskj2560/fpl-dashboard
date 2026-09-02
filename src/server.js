@@ -27,6 +27,7 @@ import apiRouter from './routes/api.js';
 import liveRouter from './routes/live.js';
 import newsRouter from './routes/news.js';
 import { createCalendarHandler } from './routes/calendar.js';
+import { createSwHandler, offlineHandler } from './routes/pwa.js';
 import { startScheduler } from './services/notify.js';
 import { startAiRefresher } from './services/refresh.js';
 import { startPriceWatcher } from './services/prices.js';
@@ -116,6 +117,9 @@ app.use('/live', liveRouter);
 app.use('/nyheter', newsRouter);
 // Kalenderabonnement (v1.9.0): webcal://<host>/kalender.ics — ren tekst, aldri cachet.
 app.get('/kalender.ics', createCalendarHandler({ version }));
+// PWA (v1.12.0): service worker med ekte asset-hash (no-store) + frakoblet-side.
+app.get('/sw.js', createSwHandler({ assetVersion }));
+app.get('/offline', offlineHandler);
 
 app.use((req, res) => {
   res.status(404).renderPage('404', { title: 'Ikke funnet' });
