@@ -166,6 +166,22 @@ stedet for den AI-kostende promptendringen (droppet). Rekkefølge:
 - **Blokkert av:** —
 - **Størrelse:** stor (fire releaser) — **utført**.
 
+### 5. Vedlikeholdspakka: v1.12.2 + v1.13.0 + docs-slanking (besluttet 2. sep, økt 55)
+
+- **Hva:** fire funn fra en read-only gjennomgang etter re-QA-en, valgt av
+  Marius (rute-tester og CI ble utelatt): (1) `npm audit fix` for `qs`,
+  `fast-xml-parser`-patch og `node:24-alpine` i Dockerfile; (2) egne
+  `:hist`-nøkler for getLiveHistoric/getPicksHistoric/getEntryHistoryHistoric
+  så «første skriver setter TTL-en» (QA-funn 6) ikke kan skje igjen;
+  (3) AI-kall-statistikk per funksjon i `DATA_DIR/ai-stats.json` vist på
+  `/health` — gjør § 1 målbart uten Coolify-loggen; (4) CLAUDE.md 353 → ≤ 200
+  linjer og ROADMAP-seksjonen «Utført» (337 linjer) til arkiv.
+- **Eier detaljene:** `docs/prompt-vedlikehold-v1122-v1130.md` (fasit,
+  T1–T3, ferdigkriterier). Slettes av økten som utfører den.
+- **Blokkert av:** ingenting — men deploy-vinduet er trangt denne uka (GW3
+  fra fredag 21:00, helgen er kampvindu).
+- **Størrelse:** middels (to små releaser + én docs-commit). 0 AI-kall.
+
 ## Dokumentkart — hvor alt bor
 
 Én eier per fil; alt uten leserverdi for en ny økt ligger i `docs/arkiv/`
@@ -183,6 +199,7 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 | `docs/arkiv/plan-sluttpakka-v183-v1120.md` | utført plan for v1.8.3–v1.12.0 (T-tasks, testnavn, 9-punkts fasit) — alt ute 2. sep |
 | `docs/qa-chrome-prompt.md` | prompten til Claude for Chrome: full prod-QA etter sluttpakka (STEG 1–10, rapportformat, fasit) |
 | `docs/arkiv/qa-rapport-v1121.md` | re-QA-rapporten fra Claude for Chrome 2. sep (11/11 FIKSET, målte kontraster og `dataAlder`) |
+| `docs/prompt-vedlikehold-v1122-v1130.md` | økt-prompt for § 5 (fasit, T1–T3, ferdigkriterier) — slettes når utført |
 | `docs/arkiv/plan-spillere-redesign-v181.md` | utført detaljplan for v1.8.1 (redesign av /spillere, T1–T12) |
 | `docs/arkiv/plan-innsikt-v170.md` | utført detaljplan for v1.7.0 «/innsikt» (T1–T10) |
 | `docs/arkiv/plan-v134-ai-swr.md` | utført plan for v1.3.4 (SWR + oppfrisker) |

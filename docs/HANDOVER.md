@@ -6,8 +6,8 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-09-02 (økt 55, Fable: re-QA i Chrome bestått —
-11/11 FIKSET, 0 nye funn; neste: kun Marius' manuelle punkter + ROADMAP § 1)
+**Sist oppdatert:** 2026-09-02 (økt 55, Fable: re-QA bestått 11/11; neste økt
+kjører `docs/prompt-vedlikehold-v1122-v1130.md` — se «Neste steg»)
 
 ## Status akkurat nå
 - **v1.12.1 «QA-fikser» i prod 2. sep (økt 54).** Chrome-QA-en ga 6 VIKTIG
@@ -56,17 +56,13 @@
 **Sluttpakka (v1.8.3–v1.12.0) og QA-fiksene (v1.12.1) er i prod 2. sep.**
 Planen er arkivert i `docs/arkiv/plan-sluttpakka-v183-v1120.md`
 (beslutningsfasit med 9 punkter — ikke re-spør). ROADMAP § 0 er ferdig.
-**Re-QA bestått 2. sep (11/11 FIKSET, 0 nye funn).** Ingen åpne kø-punkter
-for AI-økten: § 0 ferdig, § 1 (P4) løpende hos Marius, «Senere / idéer» uten
-planlagte punkter. Nytt arbeid = brainstorming + ny plan. Rest: Marius under.
+**Re-QA bestått 2. sep (11/11 FIKSET, 0 nye funn).** § 0 ferdig. Neste økt:
+`docs/prompt-vedlikehold-v1122-v1130.md` (ROADMAP § 5, besluttet av Marius
+2. sep): v1.12.2 hygiene + `:hist`-nøkler, v1.13.0 AI-statistikk på /health,
+så docs-slanking. Start i plan-modus. Ingen kode før planen er godkjent.
 
-| Versjon | Innhold | Branch | Status |
-| --- | --- | --- | --- |
-| v1.8.3 | Herding (CSP m/ nonce, sikkerhetshoder, JSON-tak, takstbegrensning) + tilgjengelighetspass + branch-rydding | `fix/herding-a11y-v183` | **ute 2. sep, 655/655** |
-| v1.9.0 | Planleggingspakka: chip-planlegger (/lag), deadline-sjekk «Lagsjekk» (/brief + Discord ved funn), `/kalender.ics` + P3-verifisering mot en rivals transfers | `feat/planleggingspakka-v190` | **ute 2. sep, 691/691** |
-| v1.10.0 | Prisvarsler: timesnapshot i `DATA_DIR/price-state.json`, Discord maks 1/natt, kort på /overganger | `feat/prisvarsler-v1100` | **ute 2. sep, 710/710** |
-| v1.11.0 | Karriere-pakka: FPL-karrieren + merkedager (/innsikt), bonuskamp (BPS-race) på /live | `feat/karriere-v1110` | **ute 2. sep, 729/729** |
-| v1.12.0 | PWA: manifest, ikoner (eget PNG-skript, kun node:zlib), `/sw.js` nett-først, `/offline` | `feat/pwa-v1120` | **ute 2. sep, 743/743** |
+Sluttpakka v1.8.3 → v1.12.0: alle fem ute 2. sep (655 → 743 tester), brancher
+merget `--no-ff` og slettet. Detaljer: `docs/arkiv/plan-sluttpakka-v183-v1120.md`.
 
 Sluttrydding utført 2. sep. Chrome-QA kjørt 2. sep → v1.12.1 ute samme
 dag → re-QA bestått samme kveld. Gjenstår: punkt 1–4 under (kun Marius).
@@ -196,4 +192,7 @@ dag → re-QA bestått samme kveld. Gjenstår: punkt 1–4 under (kun Marius).
   temaer, 390 + 1440). Handling: plan-modus, plan godkjent → rapporten
   arkivert (`docs/arkiv/qa-rapport-v1121.md`), re-QA-prompten slettet,
   økt 54-posten rotert, HANDOVER/ROADMAP/VIDERE ajour, 0 kode, én commit.
+- 2026-09-02 (økt 55): «Er det noe du kunne anbefalt å gjøre som du kan
+  gjøre? … skriv en planleggingsprompt til fable» → seks kandidater med bevis,
+  Marius valgte 1–4 (ingen ekstra) → `docs/prompt-vedlikehold-v1122-v1130.md` + § 5.
 
