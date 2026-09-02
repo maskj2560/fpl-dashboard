@@ -44,6 +44,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.10.0**~~ | ~~«Prisvarsler»: timesnapshot, Discord maks 1/natt, kort på /overganger~~ | **utført 2. sep — 710/710** | — |
 | ~~**v1.11.0**~~ | ~~«Karriere-pakka»: FPL-karrieren + merkedager (/innsikt), bonuskamp (/live)~~ | **utført 2. sep — 729/729** | — |
 | ~~**v1.12.0**~~ | ~~«PWA»: manifest, ikoner, service worker, /offline~~ | **utført 2. sep — 743/743** | — |
+| ~~**v1.12.1**~~ | ~~QA-fikser: 11 funn fra Chrome-QA-en (falskt stale-banner på /live, tre chip-halvdeler, mobil-layout, kontrast)~~ | **utført 2. sep — 756/756** | — |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
 Kalenderlogikk: utviklingssporet (v1.3.0 → v1.3.1+) går uavbrutt;
@@ -65,8 +66,11 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
   selv per versjon etter deploy-vindu-sjekk (Marius' beslutning).
 - **Status:** v1.8.3 ute 2. sep (655/655), v1.9.0 ute 2. sep (691/691),
   v1.10.0 ute 2. sep (710/710), v1.11.0 ute 2. sep (729/729), v1.12.0 ute
-  2. sep (743/743). **Alle fem releasene er ute.** Gjenstår: sluttrydding
-  (docs, `docs/qa-chrome-prompt.md`) og Marius' Chrome-QA mot prod.
+  2. sep (743/743). **Alle fem releasene er ute.** Sluttrydding gjort
+  2. sep. **Chrome-QA kjørt av Marius 2. sep: 11 funn (6 VIKTIG, 5
+  KOSMETISK) → alle fikset i v1.12.1 (756/756, ute 2. sep).** § 0 er
+  ferdig; gjenstår kun Marius' visuelle re-sjekk av layout-funnene (STEG
+  2, 3, 5 på 390 + 1440) og STEG 7 under en kamp / 9c + 9e.
 - **Størrelse:** stor (fem releaser).
 
 ### 1. (P4) Løpende kostnadskontroll

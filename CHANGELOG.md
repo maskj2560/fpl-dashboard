@@ -7,6 +7,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.12.1] - 2026-09-02
+
+Elleve funn fra Chrome-QA-en mot prod (`docs/qa-chrome-prompt.md`, 2. sep):
+seks VIKTIG på `fix/qa-viktig-v1121`, fem KOSMETISK på
+`fix/qa-kosmetisk-v1121`. Rød test før hver fiks. 756/756, lint 0.
+
 ### Fixed
 
 - Live-siden viste «Viser data fra HH:MM — får ikke kontakt med FPL» i

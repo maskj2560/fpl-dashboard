@@ -6,10 +6,16 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-09-02 (økt 53, Fable: hele sluttpakka v1.8.3–v1.12.0
-bygget, merget og i prod; sluttrydding gjort — neste: Chrome-QA, se «Neste steg»)
+**Sist oppdatert:** 2026-09-02 (økt 54, Fable: Chrome-QA-ens 11 funn fikset
+og ute som v1.12.1 — neste: Marius' visuelle re-sjekk, se «Neste steg»)
 
 ## Status akkurat nå
+- **v1.12.1 «QA-fikser» i prod 2. sep (økt 54).** Chrome-QA-en ga 6 VIKTIG
+  + 5 KOSMETISK; alle 11 fikset med rød test først på `fix/qa-viktig-v1121`
+  (funn 1–6) og `fix/qa-kosmetisk-v1121` (7–11), merget `--no-ff`.
+  **756/756 + lint 0** (baseline 743), røyktest grønn (0 AI-kall).
+  /live-banneret var IKKE drift, men delt cache-nøkkel (se driftslærdom).
+  Marius' valg: FDR-4 → `#e6003c`, chip uten anbefaling → grå pille.
 - **v1.12.0 «PWA» i prod 2. sep (økt 53) — SISTE release i sluttpakka.**
   Bygget på `feat/pwa-v1120`, T1–T4 med rød før grønn: `make-pwa-icons.mjs`
   (PNG med kun node:zlib) + committede ikoner, `manifest.webmanifest` +
@@ -44,12 +50,13 @@ bygget, merget og i prod; sluttrydding gjort — neste: Chrome-QA, se «Neste st
 
 ## Neste steg (start her)
 
-**Sluttpakka er levert: v1.8.3–v1.12.0, alle i prod 2. sep.** Planen er
-arkivert i `docs/arkiv/plan-sluttpakka-v183-v1120.md` (beslutningsfasit
-med 9 punkter — ikke re-spør). **Neste: Marius kjører
-`docs/qa-chrome-prompt.md` i Claude for Chrome mot prod.** Kommer det funn:
-én `fix/`-branch per alvorlighet, TDD (rød før grønn), CHANGELOG-linje per
-fiks, release som v1.12.1. Ingen funn: kryss av Chrome-QA i ROADMAP § 0.
+**Sluttpakka (v1.8.3–v1.12.0) og QA-fiksene (v1.12.1) er i prod 2. sep.**
+Planen er arkivert i `docs/arkiv/plan-sluttpakka-v183-v1120.md`
+(beslutningsfasit med 9 punkter — ikke re-spør). ROADMAP § 0 er ferdig.
+**Neste: Marius re-kjører STEG 2, 3 og 5 i `docs/qa-chrome-prompt.md` på
+390 + 1440** — layout-funnene (3, 4, 5, 7, 9, 11) har bare CSS-låser i
+node:test, ikke visuell måling. Nye funn → `fix/`-branch, TDD, v1.12.2.
+Ingen funn → ROADMAP § 1 (P4, løpende) og «Senere / idéer».
 
 | Versjon | Innhold | Branch | Status |
 | --- | --- | --- | --- |
@@ -59,17 +66,31 @@ fiks, release som v1.12.1. Ingen funn: kryss av Chrome-QA i ROADMAP § 0.
 | v1.11.0 | Karriere-pakka: FPL-karrieren + merkedager (/innsikt), bonuskamp (BPS-race) på /live | `feat/karriere-v1110` | **ute 2. sep, 729/729** |
 | v1.12.0 | PWA: manifest, ikoner (eget PNG-skript, kun node:zlib), `/sw.js` nett-først, `/offline` | `feat/pwa-v1120` | **ute 2. sep, 743/743** |
 
-Sluttrydding utført 2. sep (docs, HANDOVER ≤ 200, oppgaveliste →
-`docs/qa-chrome-prompt.md`). Gjenstår: Chrome-QA (Marius), evt. v1.12.1.
+Sluttrydding utført 2. sep. Chrome-QA kjørt 2. sep → v1.12.1 ute samme
+dag. Gjenstår: visuell re-sjekk (Marius, punkt 4 under).
 
-**Kun Marius kan gjøre (uendret):**
+**Kun Marius kan gjøre:**
 1. `kill 1` i containerterminalen → «SIGTERM mottatt — lukker serveren» +
    «Serveren lukket ryddig» (siste bevis for v1.3.5).
 2. Mobil-QA på ekte telefon (Chrome-QA-en emulerer 390 px, ikke ekte touch).
 3. Kostnad i `console.anthropic.com` (P4, løpende).
+4. Re-sjekk av layout-fiksene i v1.12.1 (STEG 2, 3, 5 på 390 + 1440) og
+   de utestede stegene: STEG 7 (/live mens en kamp pågår), 9c (installer-
+   tilbudet i adresselinja) og 9e (offline-modus i DevTools).
 
 ## Driftslærdommer (ikke glem disse)
 
+- **Stale-banner på /live mellom runder = delt cache-nøkkel, ikke nett
+  (v1.12.1, QA-funn 6).** `live:N` deles av `getLive` (1 min) og
+  `getLiveHistoric` (6 t); første skriver setter TTL-en. Etter /innsikt fikk
+  /live 6 t-verdien som «fersk», ingen revalidering, og 10-min-taket ga
+  banner i timevis mens FPL svarte 200. Diagnose: to kall på
+  `/api/live.json` med mellomrom — stiger `dataAlder` mens `/api/brief.json`
+  er fersk, er det cachen. Fiks: `getLiveHistoric` + `staleInfo(gw,
+  { finished: true })` for ferdige runder.
+- **FPL-bootstrap `chips[]`: wildcard og Free Hit har `start_event` 2** (kan
+  ikke spilles i runde 1) — halvdeler grupperes på `stop_event`, aldri på
+  (start, stopp)-paret.
 - **401 med `Basic realm="traefik"`: sjekk FØRST om «HTTP Basic
   Authentication» er huket av for appen i Coolify.** Haken henger en
   basicauth-middleware på HTTPS-routeren og rammer ALLE stier, også
@@ -164,37 +185,15 @@ Sluttrydding utført 2. sep (docs, HANDOVER ≤ 200, oppgaveliste →
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
-- 2026-09-01 (økt 53, Fable): «Lag en lang og detaljert plan over alle
-  planer og funksjoner som skal fikses på eller lages. Alt skal lages og
-  gjøres ferdig. Full QA etterpå med Claude in Chrome — lag prompten til
-  slutt. Legg til egne ting som bør gjøres. Når planen er godkjent,
-  begynn å jobbe.» Handling: tre spørsmålsrunder (omfang, deploy-policy,
-  AI-budsjett, egne tillegg, plassering, Lagsjekk-funn, rekkefølge,
-  prisformat, brancher, Lagsjekk-grunnlag) → plan godkjent →
-  `docs/plan-sluttpakka-v183-v1120.md` + denne fila rotert (økt 50/51 →
-  historikkfila). Baseline verifisert: 626/626 + lint 0 på main. Så
-  bygget v1.8.3 (T1–T7, røyktestfunn, 655/655), deploy-vindu sjekket
-  (natt til onsdag, `anyLive:false`), merget `--no-ff`, tagget, pushet.
-  Deretter v1.9.0 på `feat/planleggingspakka-v190`: T1–T9 (chips.js,
-  deadline.js + notify-timer, calendar.js + rute, P3 verifisert read-only
-  mot `entry/7185653/transfers/` — feltene stemmer), 691/691 + lint 0,
-  røyktest grønn (0 AI-kall), deploy-vindu (onsdag 00:32, `anyLive:false`),
-  merget `--no-ff` `28d34fb`, tag `v1.9.0`, pushet; prod: hash `82d7c7a2`,
-  `/kalender.ics` 200 (272 VEVENT), Lagsjekk og chip-planlegger synlige.
-  Så v1.10.0 på `feat/prisvarsler-v1100`: T1–T5 (prices.js: snapshot/
-  diff/beslutning/rapport/timer, kort på /overganger, kildelås), 710/710
-  + lint 0, røyktest grønn (første snapshot 629 priser, 0 AI-kall),
-  deploy-vindu (onsdag 00:44), merget `--no-ff` `7f64ba8`, tag `v1.10.0`,
-  pushet; prod: v1.10.0 live, hash uendret `82d7c7a2`, /overganger 200.
-- 2026-09-02 (økt 53, Fable): «Fortsett.» → v1.11.0 på `feat/karriere-v1110`:
-  T1–T5 (buildCareer, buildBadges/gwsAllPlayed, kortene på /innsikt +
-  entry history i assembleInsights, topBps, bpsRaceHtml), 729/729 + lint
-  0, røyktest grønn (0 AI-kall), deploy-vindu (onsdag 12:23, `anyLive:
-  false`), merget `--no-ff` `4d7c065`, tag `v1.11.0`, pushet; prod: hash
-  `4718ea73`, /innsikt-kortene og bpsTop i live.json verifisert. Deretter
-  v1.12.0 på `feat/pwa-v1120`: T1–T4 (ikonskript + ikoner, manifest +
-  layout + ICON_VERSION, sw.js + /sw.js + /offline, registrering), 743/743
-  + lint 0, røyktest grønn, deploy-vindu (onsdag 12:36), merget `--no-ff`
-  `1ff9ed2`, tag `v1.12.0`, pushet; prod: hash `b6c8f095`, /sw.js,
-  manifest, /offline verifisert. Sluttrydding: plan arkivert, oppgaveliste
-  slettet, `docs/qa-chrome-prompt.md` skrevet, HANDOVER rotert.
+- 2026-09-02 (økt 54, Fable): Marius limte inn QA-rapporten fra Claude for
+  Chrome (v1.12.0, 13:15–14:00: STEG 1/6/8/10 OK, STEG 7 og 9c/9e ikke
+  testet, 6 VIKTIG + 5 KOSMETISK, 12 skjermbilder). Handling: plan-modus —
+  rotårsak per funn bekreftet i kode og mot prod/FPL (live.json fryst på
+  2929 s mens FPL svarte 200; bootstrap-chips med `start_event` 2), ett
+  spørsmålssett (funn 2 → grå pille, funn 11 → `#e6003c`; anbefalingene
+  valgt), plan godkjent. Så «Fortsett» → begge branchene bygget med rød
+  test først, merget `--no-ff`, 756/756 + lint 0, røyktest grønn, docs
+  ajour (CHANGELOG [1.12.1], ROADMAP-rad + § 0 ferdig, CLAUDE.md, QA-fasit
+  STEG 3b, arkivplanens FDR-tabell), loggpostene fra økt 53 rotert til
+  historikkfila, tag `v1.12.1`, push, prod-sjekk.
+

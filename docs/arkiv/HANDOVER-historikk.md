@@ -1721,3 +1721,40 @@ designvalg endret) — verbatim fra HANDOVER.md:
   spørsmål; versjon v1.8.1. Funn: terskelvelger-JS mangler helt (død i
   prod, fikses i T6). Plan skrevet og godkjent, docs ajour, økt 47-loggen
   rotert. Så: «kjøreprompt til opus» → levert i chatten (stopp før merge).
+
+## Rotert 2026-09-02 (økt 54): loggpostene fra økt 53 (verbatim fra HANDOVER.md)
+
+- 2026-09-01 (økt 53, Fable): «Lag en lang og detaljert plan over alle
+  planer og funksjoner som skal fikses på eller lages. Alt skal lages og
+  gjøres ferdig. Full QA etterpå med Claude in Chrome — lag prompten til
+  slutt. Legg til egne ting som bør gjøres. Når planen er godkjent,
+  begynn å jobbe.» Handling: tre spørsmålsrunder (omfang, deploy-policy,
+  AI-budsjett, egne tillegg, plassering, Lagsjekk-funn, rekkefølge,
+  prisformat, brancher, Lagsjekk-grunnlag) → plan godkjent →
+  `docs/plan-sluttpakka-v183-v1120.md` + denne fila rotert (økt 50/51 →
+  historikkfila). Baseline verifisert: 626/626 + lint 0 på main. Så
+  bygget v1.8.3 (T1–T7, røyktestfunn, 655/655), deploy-vindu sjekket
+  (natt til onsdag, `anyLive:false`), merget `--no-ff`, tagget, pushet.
+  Deretter v1.9.0 på `feat/planleggingspakka-v190`: T1–T9 (chips.js,
+  deadline.js + notify-timer, calendar.js + rute, P3 verifisert read-only
+  mot `entry/7185653/transfers/` — feltene stemmer), 691/691 + lint 0,
+  røyktest grønn (0 AI-kall), deploy-vindu (onsdag 00:32, `anyLive:false`),
+  merget `--no-ff` `28d34fb`, tag `v1.9.0`, pushet; prod: hash `82d7c7a2`,
+  `/kalender.ics` 200 (272 VEVENT), Lagsjekk og chip-planlegger synlige.
+  Så v1.10.0 på `feat/prisvarsler-v1100`: T1–T5 (prices.js: snapshot/
+  diff/beslutning/rapport/timer, kort på /overganger, kildelås), 710/710
+  + lint 0, røyktest grønn (første snapshot 629 priser, 0 AI-kall),
+  deploy-vindu (onsdag 00:44), merget `--no-ff` `7f64ba8`, tag `v1.10.0`,
+  pushet; prod: v1.10.0 live, hash uendret `82d7c7a2`, /overganger 200.
+- 2026-09-02 (økt 53, Fable): «Fortsett.» → v1.11.0 på `feat/karriere-v1110`:
+  T1–T5 (buildCareer, buildBadges/gwsAllPlayed, kortene på /innsikt +
+  entry history i assembleInsights, topBps, bpsRaceHtml), 729/729 + lint
+  0, røyktest grønn (0 AI-kall), deploy-vindu (onsdag 12:23, `anyLive:
+  false`), merget `--no-ff` `4d7c065`, tag `v1.11.0`, pushet; prod: hash
+  `4718ea73`, /innsikt-kortene og bpsTop i live.json verifisert. Deretter
+  v1.12.0 på `feat/pwa-v1120`: T1–T4 (ikonskript + ikoner, manifest +
+  layout + ICON_VERSION, sw.js + /sw.js + /offline, registrering), 743/743
+  + lint 0, røyktest grønn, deploy-vindu (onsdag 12:36), merget `--no-ff`
+  `1ff9ed2`, tag `v1.12.0`, pushet; prod: hash `b6c8f095`, /sw.js,
+  manifest, /offline verifisert. Sluttrydding: plan arkivert, oppgaveliste
+  slettet, `docs/qa-chrome-prompt.md` skrevet, HANDOVER rotert.

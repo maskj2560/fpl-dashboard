@@ -58,6 +58,9 @@ src/services/
   prompts.js       rene promptbyggere (brief + rådgiver) og
                    sanitizeBriefText (etterkontroll av AI-briefen)
   live.js          live-visningen: buildLive (ren data), assembleLive (henter)
+                   (v1.12.1) ferdig runde hentes via getLiveHistoric (DELT
+                   nøkkel med getLive — se FPL-API) og måles med
+                   staleInfo(gw, { finished }); buildLive bærer `finished`
                    (v1.11.0) topBps: bonuskamp per kamp — topp 5 på BPS m/
                    bonus (publisert når ferdig/publisert, ellers estimat),
                    bpsTop + bpsSource på hver kamp; rendres av bpsRaceHtml
@@ -118,6 +121,8 @@ src/services/
                    Element-summary hentes
                    KUN lazy per klikk, aldri i bulk. ALDRI ai.js
   chips.js         (v1.9.0) chip-planleggeren på /lag: chipHalves, specialGws
+                   (v1.12.1: chipHalves grupperer på stop_event — wildcard og
+                   Free Hit har start_event 2, de kan ikke spilles i runde 1)
                    (dobbel-/blankrunder fra fixtureGrid i analysis.js — delt
                    med fdrMatrix), buildChipPlan (BB/TC/FH/WC per halvdel:
                    brukt eller anbefalt m/ begrunnelse), describeRec. Rent,
@@ -220,6 +225,15 @@ Base `https://fantasy.premierleague.com/api/` — åpent, ingen nøkkel. Viktig:
   fortsatt, men med banneret «Viser data fra HH:MM — får ikke kontakt med
   FPL akkurat nå» (`staleInfo` i fplClient). `/api/brief.json` og
   `/api/live.json` oppgir `dataAlder` (sekunder siden forrige henting)
+- **`live:N` er DELT mellom `getLive` (1 min) og `getLiveHistoric` (6 t) —
+  første skriver setter TTL-en** (v1.12.1, QA-funn 6). Har /innsikt
+  skrevet nøkkelen, får `getLive` 6 t-verdien tilbake som «fersk» uten
+  revalidering, og 10-min-taket gir «får ikke kontakt med FPL» i timevis
+  mens FPL svarer 200. Live-siden henter derfor ferdige runder BEVISST via
+  `getLiveHistoric` og måler med `staleInfo(gw, { finished: true })` (aldri
+  banner — poengene er immutable). Feilsøk stale-banner med to kall på
+  `/api/live.json` med mellomrom: stiger `dataAlder` mens FPL svarer, er det
+  cachen, ikke nettet
 
 ## AI-funksjoner (valgfrie — appen krever aldri nøkkel)
 
@@ -302,8 +316,11 @@ Prompts holdes korte. Uten nøkkel vises rå data
   som finnes i BEGGE blokker, ingen hardkodede farger utenfor dem, kontrast
   ≥ 4,5:1 tekst / ≥ 3:1 grafikk — låst av `test/style.test.js`. FPLs
   merkevarefarger (lilla #37003C, grønn #00ff87, cyan #04f5ff, rosa
-  #e90052) og FPLs egne FDR-farger; grønn er fyll med mørk tekst, grønn
-  TEKST kun i mørkt tema. Klubbgrafikk (merker 70 px, drakter 110 px)
+  #e90052) og FPLs egne FDR-farger (unntak fra v1.12.1: `--fdr-4` er
+  `#e6003c`, ikke FPLs `#ff1751` — cellene bærer 12 px-tekst og trenger
+  4,5:1 mot hvit); grønn er fyll med mørk tekst, grønn TEKST kun i mørkt
+  tema — unntatt på den lilla hero-flaten, som er mørk i begge temaer
+  (`--hero-link`, v1.12.1). Klubbgrafikk (merker 70 px, drakter 110 px)
   selvhostes i `public/img/clubs/`, versjonert med `?v=<IMG_VERSION>`;
   viewene skriver aldri `<img>` for en fil som ikke finnes (clubAssets).
   Systemfonter + lokal Archivo, ingen eksterne CDN-er ved kjøretid,
