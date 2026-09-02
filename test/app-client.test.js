@@ -34,6 +34,24 @@ function loadAppScript() {
 
 const app = loadAppScript();
 
+// v1.12.0: SW-registreringen bruker asset-hashen som ?v — ny URL per deploy gir
+// ny registrering, uavhengig av hva Cloudflare måtte ha cachet.
+test('swRegistrationUrl bygger /sw.js?v=<hash> og gir null uten versjon', () => {
+  assert.equal(app.swRegistrationUrl('a1b2c3d4'), '/sw.js?v=a1b2c3d4');
+  assert.equal(app.swRegistrationUrl(''), null);
+  assert.equal(app.swRegistrationUrl(null), null);
+});
+
+test('app.js registrerer service workeren med updateViaCache none og aldri uten navigator', () => {
+  const code = fs.readFileSync(new URL('../public/app.js', import.meta.url), 'utf8');
+  const block = code.slice(code.indexOf('serviceWorker'));
+  assert.ok(block.length > 0, 'ingen SW-registrering i app.js');
+  assert.match(code, /'serviceWorker' in navigator/, 'registreringen må være bak en navigator-guard');
+  assert.match(block, /meta\[name="fpl-asset-version"\]/, 'asset-versjonen leses fra meta-taggen');
+  assert.match(block, /updateViaCache:\s*'none'/, 'SW-kilden skal aldri hentes fra HTTP-cachen');
+  assert.match(block, /addEventListener\('load'/, 'registreringen venter til load');
+});
+
 // v1.11.0: bonuskampen rendres klientside per kamp (matches fylles av render()).
 test('bpsRaceHtml escaper navn, markerer mine og viser estimat-merket', () => {
   const match = {

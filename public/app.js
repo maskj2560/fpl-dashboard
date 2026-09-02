@@ -1223,6 +1223,13 @@ function bpsRaceHtml(match) {
   );
 }
 
+// PWA (v1.12.0): SW-URL-en bærer asset-hashen — ny URL per deploy gir ny
+// registrering. Uten kjent versjon registreres ingenting.
+function swRegistrationUrl(assetVersion) {
+  if (!assetVersion) return null;
+  return '/sw.js?v=' + encodeURIComponent(assetVersion);
+}
+
 function nextSortDir(current) {
   return current === 'descending' ? 'ascending' : 'descending';
 }
@@ -1296,4 +1303,20 @@ function terskelSynlighet(valgt, terskler = [5, 10, 15]) {
   // Dyplenke: /spillere#differensialer aapner riktig fane ved last.
   const fraHash = decodeURIComponent(location.hash.slice(1));
   if (knapper.some((k) => k.dataset.fane === fraHash)) vis(fraHash, false);
+})();
+
+// Modul 13: PWA — registrer service workeren (v1.12.0). ?v er asset-hashen fra
+// <meta name="fpl-asset-version">: ny URL per deploy → ny SW → gamle cacher
+// ryddes ved activate. updateViaCache 'none': SW-kilden leses aldri fra
+// HTTP-cachen (Cloudflare kan ikke holde en gammel SW i live).
+(function () {
+  if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return;
+  const meta = document.querySelector('meta[name="fpl-asset-version"]');
+  const url = swRegistrationUrl(meta && meta.getAttribute('content'));
+  if (!url) return;
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register(url, { updateViaCache: 'none' }).catch(function (err) {
+      console.warn('Service worker ikke registrert:', err && err.message);
+    });
+  });
 })();

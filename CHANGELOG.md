@@ -30,6 +30,11 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   med `/offline` som fallback, `?v=`-assets cache-først, alt annet rett til
   nett; `/api`, `/kalender.ics`, `/health` og `sw.js` selv går alltid utenom.
   Ny side `GET /offline` («Du er frakoblet»). Seks nye tester.
+- PWA (registrering): `app.js` registrerer `/sw.js?v=<asset-hash>` ved
+  `load` med `updateViaCache: 'none'`, bak en `navigator`-guard; hashen
+  leses fra `<meta name="fpl-asset-version">`. Dermed kan appen legges til
+  på hjemskjermen («Legg til på hjemskjerm» / installer-prompt) med eget
+  ikon, og viser frakoblet-siden uten nett. To nye tester.
 
 ## [1.11.0] - 2026-09-02
 
