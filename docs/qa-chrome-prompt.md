@@ -69,8 +69,8 @@ Under rankgrafen, over «Anbefalinger», skal det ligge et kort
 «Chip-planlegger».
 a) Viser det to halvdeler (runde 1–19 og 20–38) med fire chips hver: Bench
    Boost, Triple Captain, Free Hit og Wildcard?
-b) Har hver chip enten en grå pille «Brukt i runde N» eller en grønn pille
-   med anbefalt runde + en begrunnelse i grå tekst?
+b) Har hver chip en pille: grå «Brukt i runde N», grønn med anbefalt runde +
+   en begrunnelse i grå tekst, eller grå «Ingen anbefaling» + begrunnelse?
 c) Står det enten en liste over dobbel-/blankrunder, eller teksten «Ingen
    dobbel- eller blankrunder er kjent ennå»?
 Begge temaer, begge bredder.

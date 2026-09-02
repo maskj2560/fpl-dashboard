@@ -102,6 +102,7 @@
                   <span class="status status-best">Runde <%= c.rec.gw %><% if (c.rec.until) { %>–<%= c.rec.until %><% } %></span>
                   <span class="dim chip-grunn"><%= describeRec(name, c.rec) %></span>
                 <% } else { %>
+                  <span class="status">Ingen anbefaling</span>
                   <span class="dim chip-grunn"><%= c.reason %></span>
                 <% } %>
               </li>

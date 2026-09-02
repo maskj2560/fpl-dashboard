@@ -18,6 +18,15 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   baseline.js/transfers.js alt gjorde), `buildLive` bærer `finished`, og
   `staleInfo(gw, { finished: true })` utløser aldri banneret — poengene er
   immutable. `dataAlder` rapporteres som før. Fire nye tester.
+- Chip-planleggeren på /lag viste tre halvdeler («1–19», «2–19» med samme
+  innhold, «20–38») (QA-funn 1): FPL 2026/27 gir wildcard og Free Hit
+  `start_event` 2 (kan ikke spilles i runde 1), og `chipHalves` skilte på
+  (start, stopp)-paret. Halvdelen er nå stopp-runden, `from` er laveste
+  start i gruppa. Én ny test med FPLs faktiske chip-data.
+- Chip-planleggeren: en chip uten anbefaling (ingen kjent blankrunde / ingen
+  tung periode) får grå pille «Ingen anbefaling» foran begrunnelsen, så hver
+  rad alltid har en pille (QA-funn 2, Marius' valg). QA-fasiten STEG 3b
+  oppdatert. Én ny view-test.
 
 ## [1.12.0] - 2026-09-02
 

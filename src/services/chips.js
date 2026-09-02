@@ -18,17 +18,20 @@ const isGw = (n) => Number.isInteger(n) && n >= 1 && n <= 38;
 
 /**
  * Chip-halvdelene. Siden 2024/25 gir FPL ett sett chips per halvdel, og
- * bootstrap `chips[]` bærer `start_event`/`stop_event` per chip. Halvdelene
- * er de distinkte (start, stop)-parene sortert på start. Uten gyldige
- * felter: 1–19 og 20–38.
+ * bootstrap `chips[]` bærer `start_event`/`stop_event` per chip. Halvdelen
+ * er STOPP-runden: wildcard og Free Hit kan ikke spilles i runde 1 og har
+ * `start_event` 2 (QA-funn 1, v1.12.1) — de hører likevel til samme halvdel
+ * som Bench Boost/Triple Captain med start 1. `from` er laveste start i
+ * gruppa. Uten gyldige felter: 1–19 og 20–38.
  */
 export function chipHalves(bootstrapChips, lastGw = 38) {
-  const ranges = new Map();
+  const byStop = new Map();
   for (const c of Array.isArray(bootstrapChips) ? bootstrapChips : []) {
     if (!isGw(c?.start_event) || !isGw(c?.stop_event) || c.stop_event < c.start_event) continue;
-    ranges.set(`${c.start_event}-${c.stop_event}`, { from: c.start_event, to: c.stop_event });
+    const prev = byStop.get(c.stop_event);
+    byStop.set(c.stop_event, { from: Math.min(prev?.from ?? c.start_event, c.start_event), to: c.stop_event });
   }
-  const list = [...ranges.values()].sort((a, b) => a.from - b.from);
+  const list = [...byStop.values()].sort((a, b) => a.from - b.from);
   if (list.length === 0) {
     const mid = Math.floor(lastGw / 2);
     return [
