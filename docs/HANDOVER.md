@@ -53,9 +53,9 @@ og ute som v1.12.1 — neste: Marius' visuelle re-sjekk, se «Neste steg»)
 **Sluttpakka (v1.8.3–v1.12.0) og QA-fiksene (v1.12.1) er i prod 2. sep.**
 Planen er arkivert i `docs/arkiv/plan-sluttpakka-v183-v1120.md`
 (beslutningsfasit med 9 punkter — ikke re-spør). ROADMAP § 0 er ferdig.
-**Neste: Marius re-kjører STEG 2, 3 og 5 i `docs/qa-chrome-prompt.md` på
-390 + 1440** — layout-funnene (3, 4, 5, 7, 9, 11) har bare CSS-låser i
-node:test, ikke visuell måling. Nye funn → `fix/`-branch, TDD, v1.12.2.
+**Neste: Marius kjører `docs/qa-chrome-reqa-v1121.md` i Claude for Chrome**
+(alle 11 funn på 390 + 1440) — layout-funnene (3, 4, 5, 7, 9, 11) har bare
+CSS-låser i node:test, ikke visuell måling. Funn → `fix/`-branch, TDD, v1.12.2.
 Ingen funn → ROADMAP § 1 (P4, løpende) og «Senere / idéer».
 
 | Versjon | Innhold | Branch | Status |
@@ -74,9 +74,9 @@ dag. Gjenstår: visuell re-sjekk (Marius, punkt 4 under).
    «Serveren lukket ryddig» (siste bevis for v1.3.5).
 2. Mobil-QA på ekte telefon (Chrome-QA-en emulerer 390 px, ikke ekte touch).
 3. Kostnad i `console.anthropic.com` (P4, løpende).
-4. Re-sjekk av layout-fiksene i v1.12.1 (STEG 2, 3, 5 på 390 + 1440) og
-   de utestede stegene: STEG 7 (/live mens en kamp pågår), 9c (installer-
-   tilbudet i adresselinja) og 9e (offline-modus i DevTools).
+4. Re-sjekk av v1.12.1 i Claude for Chrome: `docs/qa-chrome-reqa-v1121.md`
+   (kan kjøres nå). Fortsatt manuelt: STEG 7 (/live under en kamp, fredag
+   fra 21:00), 9c (installer-tilbud) og 9e (offline-modus i DevTools).
 
 ## Driftslærdommer (ikke glem disse)
 
@@ -186,14 +186,13 @@ dag. Gjenstår: visuell re-sjekk (Marius, punkt 4 under).
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
 - 2026-09-02 (økt 54, Fable): Marius limte inn QA-rapporten fra Claude for
-  Chrome (v1.12.0, 13:15–14:00: STEG 1/6/8/10 OK, STEG 7 og 9c/9e ikke
-  testet, 6 VIKTIG + 5 KOSMETISK, 12 skjermbilder). Handling: plan-modus —
-  rotårsak per funn bekreftet i kode og mot prod/FPL (live.json fryst på
-  2929 s mens FPL svarte 200; bootstrap-chips med `start_event` 2), ett
-  spørsmålssett (funn 2 → grå pille, funn 11 → `#e6003c`; anbefalingene
-  valgt), plan godkjent. Så «Fortsett» → begge branchene bygget med rød
-  test først, merget `--no-ff`, 756/756 + lint 0, røyktest grønn, docs
-  ajour (CHANGELOG [1.12.1], ROADMAP-rad + § 0 ferdig, CLAUDE.md, QA-fasit
-  STEG 3b, arkivplanens FDR-tabell), loggpostene fra økt 53 rotert til
-  historikkfila, tag `v1.12.1`, push, prod-sjekk.
+  Chrome (v1.12.0: 6 VIKTIG + 5 KOSMETISK, STEG 7/9c/9e utestet). Handling:
+  plan-modus, rotårsak per funn bekreftet i kode + prod/FPL, ett
+  spørsmålssett (funn 2 → grå pille, funn 11 → `#e6003c`), plan godkjent.
+  «Fortsett» → to fix-brancher med rød test først, 756/756 + lint 0, docs
+  ajour, økt 53-loggen rotert, tag `v1.12.1`, push, prod-sjekk 12/12 +
+  11,5-min-bevis for funn 6 (`dataAlder` 711, 0 banner).
+- 2026-09-02 (økt 54): «Kan den som står i handover [sjekkes] av Claude in
+  Chrome? Gi meg en prompt.» → `docs/qa-chrome-reqa-v1121.md` (alle 11 funn
+  + regresjon; STEG 7/9c/9e, telefon og `kill 1` kan den fortsatt ikke).
 
