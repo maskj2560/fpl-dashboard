@@ -28,7 +28,20 @@ derfor regner verktøyet under ut begge deler.
 
 ## Datagrunnlag — hentes av Marius
 
-`ai.js:59-60` logger én linje per faktiske API-kall:
+**Fra v1.13.0 (2. sep 2026) leses tallene direkte på `/health` → `aiStats`**
+— persistert i volumets `ai-stats.json`, så de overlever deploy:
+
+```
+curl -s https://fpl.marsk.no/health | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>console.log(JSON.stringify(JSON.parse(s).aiStats,null,1)))"
+```
+
+`since` er første registrering, `totals` summen, og `byKey.<cacheKey>` har
+`calls`, `inputTokens`, `outputTokens`, `failures`, `lastAt` og `model`.
+Kostnad = inn × innpris + ut × utpris (tabellen over); del på døgn siden
+`since` for ukestakt. Merk at hver deploy koster 2 kall (oppstartstikket:
+brief + nyheter). Loggmetoden under er historikk — virker, men er unødvendig.
+
+`ai.js` logger dessuten én linje per faktiske API-kall:
 
 ```
 AI-kall: <cacheKey> modell=<modell> inn=<N> ut=<N> tokens
@@ -106,6 +119,8 @@ AI-kall: ai-brief-gw2  modell=claude-sonnet-5 inn=1192 ut=885 tokens
 De beviser at loggformatet virker og at begge funksjonene fyrer i prod, men
 ikke fordelingen. **Skal fordelingen måles, må loggen samles løpende** — for
 eksempel ved å hente `AI-kall:`-linjene fra Coolify før hver deploy.
+**Løst i v1.13.0 (2. sep):** `aiStats` på `/health` teller per funksjon og
+persisterer i volumet — se «Datagrunnlag» over.
 
 ### Hva de 185 637 tokenene sannsynligvis er
 

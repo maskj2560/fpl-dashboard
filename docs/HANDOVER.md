@@ -129,6 +129,8 @@ Køen har ingen åpne kodepunkter — kun P4 (løpende) og Marius' punkter under
   `/brief` og `/nyheter` leser kun cachen. T.o.m. v1.3.3 kostet hvert besøk
   et AI-kall. Unntaket består: klikk ALDRI «Spør AI om råd» på `/lag` i en
   verifisering — det er det eneste stedet et klikk kan utløse et kall.
+- **Hver deploy koster 2 AI-kall** (oppstartstikket: brief + nyheter; målt på
+  `/health` 2. sep: calls 2 → 4 over én docs-deploy). Bundle docs-pusher.
 - **Per-funksjon-AI-kostnad leses på `/health` (fra v1.13.0):** `aiStats`
   har `since`, `totals` og `byKey.<cacheKey>` (calls/inputTokens/
   outputTokens/failures/lastAt/model), persistert i volumets
@@ -167,10 +169,8 @@ Køen har ingen åpne kodepunkter — kun P4 (løpende) og Marius' punkter under
   linjer med rotering til historikkfila.
 - **v1.8.0 (1. sep):** fasit i `docs/arkiv/plan-spillerpakka-v180.md`.
 - **Sluttpakka (1. sep, økt 53):** 9-punkts fasit i
-  `docs/arkiv/plan-sluttpakka-v183-v1120.md` — bl.a. AI-økten merger/pusher selv
-  per versjon, 0 nye AI-kall, ingen e-post/spillerbilder/Playwright i repo,
-  Lagsjekk-grunnlag = picks N−1 + bytter, prisdelta med norsk komma,
-  `-D` på de tre umergede branchene.
+  `docs/arkiv/plan-sluttpakka-v183-v1120.md` — AI-økten merger/pusher selv per
+  versjon, 0 nye AI-kall, ingen e-post/spillerbilder/Playwright i repo.
 - Eldre, fortsatt gyldige beslutninger: rotert til historikkfila.
 
 ## Miljø
@@ -193,7 +193,8 @@ Køen har ingen åpne kodepunkter — kun P4 (løpende) og Marius' punkter under
   gjøre? … skriv en planleggingsprompt til fable» → seks kandidater med bevis,
   Marius valgte 1–4 (ingen ekstra) → `docs/prompt-vedlikehold-v1122-v1130.md` + § 5.
 - 2026-09-02 (økt 56, Fable): Marius limte inn vedlikeholdsprompten; «Stopp
-  arbeid. Jeg oppdaterer drivers» midt i planleggingen, så «Du kan forsette».
-  Handling: plan godkjent i plan-modus → v1.12.2 og v1.13.0 bygget (TDD),
-  merget `--no-ff`, tagget, deployet og prod-sjekket; docs slanket; prompten slettet.
+  arbeid. Jeg oppdaterer drivers», så «Du kan forsette», så «Er det noe mer
+  som bør gjøres?» → «Fiks docs-hullene». Handling: plan godkjent → v1.12.2 og
+  v1.13.0 (TDD, `--no-ff`, tag, deploy, prod-sjekk); docs slanket; prompten
+  slettet; README- og sjekkpunkt-d-hullene om `/health`/`aiStats` fikset.
 

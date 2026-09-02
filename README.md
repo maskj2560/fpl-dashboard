@@ -32,7 +32,7 @@ Mobil (390 px): [dashbord](docs/img/dashbord-mobil.png) ·
 | `/api/live.json` | Live-data som JSON (polles kun under kamper) | ✅ |
 | `/kalender.ics` | Kalenderabonnement (webcal): alle deadlines med varsel + troppens kamper | ✅ |
 | `POST /api/ai-rad` | AI-råd for laget ditt (krever `ANTHROPIC_API_KEY`) | ✅ |
-| `/health` | `{"status":"ok"}` for helsesjekk | ✅ |
+| `/health` | Helsesjekk: `status`, `features` (hvilke valgfrie funksjoner som er på — aldri verdiene) og `aiStats` (AI-kall og tokens per funksjon siden `since`; `null` uten AI) | ✅ |
 
 Pluss `/kalender.ics` (kalenderabonnement), `/offline` (frakoblet-side) og
 `/sw.js` (service worker). Appen er en PWA fra v1.12.0: «Legg til på
