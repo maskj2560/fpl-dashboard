@@ -4,6 +4,7 @@ import path from 'node:path';
 import fsp from 'node:fs/promises';
 import ejs from 'ejs';
 import * as fx from './fixtures/views.js';
+import { formatSigned } from '../src/services/format.js';
 
 const VIEWS = path.resolve('views');
 function renderView(name, locals) {
@@ -131,6 +132,26 @@ test('alle ikon-knapper har aria-label', async () => {
       assert.match(m[1], /aria-label="[^"]+"/, `${name}.ejs: ikon-knapp uten aria-label: <button${m[1]}>${m[2].slice(0, 40)}`);
     }
   }
+});
+
+// QA-funn 8 (v1.12.1): `line.replace(/^[-*]\s*/, '• ')` traff første stjerne i
+// «**Watkins** …» og etterlot «• *Watkins**» — fet-regexen fant aldri lukkingen.
+test('brief.ejs: en linje som starter rett på **fet** blir fet, ikke et punkt med stjerner', async () => {
+  const html = await renderView('brief', fx.briefBoldFirst);
+  assert.ok(html.includes('<p><strong>Watkins</strong> (AVL, eid 5.4 %)'), 'fet skrift i linjestart mangler');
+  assert.ok(!html.includes('• *'), 'stjerner lekker ut som punkttegn');
+  assert.ok(html.includes('<p>• <strong>Haaland</strong>'), 'ekte punktlinje beholder punktet');
+});
+
+// QA-funn 10 (v1.12.1): Gevinst-kolonnen brukte '+' + formatPrice → «+0.2»,
+// mens prisendringskortet på samme side skriver «+0,1» (formatSigned).
+// Prisdelta har norsk komma (Marius' beslutning); absolutte priser beholder
+// punktum som resten av appen. Fixturen stubber formatSigned — bruk den ekte.
+test('transfers.ejs: Gevinst i Prisgevinst-tabellen er et prisdelta med norsk komma', async () => {
+  const html = await renderView('transfers', { ...fx.transfers, formatSigned });
+  const table = html.slice(html.indexOf('Prisgevinst per spiller'));
+  assert.ok(table.includes('>+0,2<'), 'Haaland: gain 2 (tideler) → +0,2');
+  assert.ok(!table.includes('>+0.2<'), 'gammelt punktum-format henger igjen');
 });
 
 test('live.ejs annonserer status og totalsum med aria-live', async () => {

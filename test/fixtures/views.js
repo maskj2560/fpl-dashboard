@@ -346,6 +346,17 @@ export const brief = {
   calendarUrl: 'webcal://fpl.marsk.no/kalender.ics',
 };
 
+// QA-funn 8 (v1.12.1): modellen starter en linje rett på fet skrift (uten
+// punktmarkør). Prod viste «• *Watkins**» fordi bullet-regexen spiste den
+// første stjernen.
+export const briefBoldFirst = {
+  ...brief,
+  aiBrief: {
+    text: '### Skadenytt\n**Watkins** (AVL, eid 5.4 %) har gått til Al Hilal.\n- **Haaland** er kapteinsvalget\n',
+    generatedAt: Date.parse('2026-09-02T10:00:00Z'),
+  },
+};
+
 // Uten nøkkel og uten FPL_TEAM_ID: ingen AI-brief, ingen personlige anbefalinger.
 export const briefEmpty = {
   clubAssets,
