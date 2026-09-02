@@ -142,6 +142,11 @@ tar appen nytt snapshot etter hver deploy og **første natt etter en deploy
 gir ingen prismelding** — bare snapshot; kortet på /overganger fylles fra
 neste prisendring.
 
+Fra v1.13.0 ligger også `ai-stats.json` der: tellere og tokentall per
+AI-funksjon (`calls`, `inputTokens`, `outputTokens`, `failures`, `lastAt`,
+`model`) siden `since`, vist som `aiStats` på `/health`. Uten volum starter
+tellingen på null ved hver deploy — appen krasjer aldri av det.
+
 Oppsett i Coolify (én gang): **Storages → Add → destination path**
 `/app/data`. Satt opp 26. aug 2026 — navngitt volum
 `liq9mdauin1nj74631t37aaz-fpl-data` (Coolify prefikser med app-UUID).

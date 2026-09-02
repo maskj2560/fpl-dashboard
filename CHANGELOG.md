@@ -7,6 +7,11 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.13.0] - 2026-09-02
+
+Vedlikeholdspakke, del 2 (`docs/prompt-vedlikehold-v1122-v1130.md`, T2) på
+`feat/ai-stats-v1130`. Rød test først. 767/767, lint 0. 0 nye AI-kall.
+
 ### Added
 
 - AI-kall-statistikk per funksjon (`ai.js`): hver generering registreres

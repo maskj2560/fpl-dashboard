@@ -37,7 +37,9 @@ src/routes/        tynne ruter: én fil per side + api.js + calendar.js
                    injiserbar load/now så ruta testes uten nett) + pwa.js
                    (v1.12.0: GET /sw.js — createSwHandler bytter
                    __ASSET_VERSION__ mot ekte asset-hash, no-store — og
-                   GET /offline)
+                   GET /offline). health.js (v1.13.0): healthPayload()
+                   ren og testbar — features (av/på, aldri verdier) +
+                   aiStats fra ai.getStats() (null når AI er av)
 src/pwa/sw.js      (v1.12.0) service workeren (klassisk script, worker-
                    globals via eslint-override): cache `fpl-<hash>`, install
                    precacher /offline + skipWaiting, activate rydder gamle
@@ -152,7 +154,11 @@ src/services/
                    hasBadge/hasShirt/hasKeeper og skriver aldri <img> i blinde.
                    Versjonen (IMG_VERSION) kommer fra middleware.js
   ai.js            felles Claude API-service: lazy init, modell fra config,
-                   cache med minimumsintervall per funksjon
+                   cache med minimumsintervall per funksjon. (v1.13.0)
+                   AI-statistikk per cacheKey (calls/tokens/failures/lastAt/
+                   model + since) i DATA_DIR/ai-stats.json — lagres etter
+                   hver registrering, leses lazy; getStats() er synkron og
+                   leser aldri disk per kall. Vises på /health
   news.js          RSS-nyheter + valgfri AI-oppsummering (via ai.js, cachet)
   notify.js        deadline-scheduler + Discord-webhook for auto-brief (valgfri)
                    «Brief sendt»-markøren lagres i DATA_DIR/brief-state.json

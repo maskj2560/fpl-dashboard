@@ -5,7 +5,25 @@
 > sjekkpunkt-tabellen, versjonshistorikken, utdaterte åpne punkter og hele
 > loggen over brukerbeskjeder til og med økt 22. Nyere logg: HANDOVER.md.
 
-## Rotert 2026-09-02 (økt 56, v1.12.2): statuspunktene v1.8.3–v1.11.0 + sluttrydding og loggpost økt 54 (verbatim fra HANDOVER.md)
+## Rotert 2026-09-02 (økt 56, v1.12.2/v1.13.0): statuspunktene v1.8.3–v1.12.1 + sluttrydding og loggpost økt 54 (verbatim fra HANDOVER.md)
+
+- **v1.12.1 «QA-fikser» i prod 2. sep (økt 54).** Chrome-QA-en ga 6 VIKTIG
+  + 5 KOSMETISK; alle 11 fikset med rød test først på `fix/qa-viktig-v1121`
+  (funn 1–6) og `fix/qa-kosmetisk-v1121` (7–11), merget `--no-ff`.
+  **756/756 + lint 0** (baseline 743), røyktest grønn (0 AI-kall).
+  /live-banneret var IKKE drift, men delt cache-nøkkel (se driftslærdom).
+  Marius' valg: FDR-4 → `#e6003c`, chip uten anbefaling → grå pille.
+  **Re-QA i Claude for Chrome 2. sep 18:20: 11/11 FIKSET, 0 nye funn**,
+  begge temaer, 390 + 1440 (funn 6: 0 banner ved `dataAlder` 1671).
+  Rapport: `docs/arkiv/qa-rapport-v1121.md`.
+- **v1.12.0 «PWA» i prod 2. sep (økt 53) — SISTE release i sluttpakka.**
+  Bygget på `feat/pwa-v1120`, T1–T4 med rød før grønn: `make-pwa-icons.mjs`
+  (PNG med kun node:zlib) + committede ikoner, `manifest.webmanifest` +
+  PWA-meta i layout (`ICON_VERSION`), `src/pwa/sw.js` på /sw.js (ekte
+  asset-hash, no-store, nett-først med `/offline` som fallback), `/offline`,
+  registrering i app.js. **743/743 + lint 0** (baseline 729). Prod: hash
+  `b6c8f095`, `/sw.js` no-store med `fpl-b6c8f095`, manifest immutable,
+  /offline 200, nøyaktig 2 `<script`.
 
 - **v1.9.0–v1.11.0 i prod 2. sep** (691 → 710 → 729 tester; kalender,
   Lagsjekk, chip-planlegger, prisvarsler, karriere, merkedager, bonuskamp):
