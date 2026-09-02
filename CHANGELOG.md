@@ -7,6 +7,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.12.2] - 2026-09-02
+
+Vedlikeholdspakke, del 1 (`docs/prompt-vedlikehold-v1122-v1130.md`, T1) på
+`fix/hygiene-cache-keys-v1122`. Rød test før fiksen. 758/758, lint 0,
+`npm audit --omit=dev` ren.
+
 ### Security
 
 - `npm audit fix`: `qs` 6.15.3 → 6.16.0 (Express sin query-parser;

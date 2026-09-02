@@ -5,6 +5,21 @@
 > sjekkpunkt-tabellen, versjonshistorikken, utdaterte åpne punkter og hele
 > loggen over brukerbeskjeder til og med økt 22. Nyere logg: HANDOVER.md.
 
+## Rotert 2026-09-02 (økt 56, v1.12.2): statuspunktene v1.8.3–v1.11.0 + sluttrydding og loggpost økt 54 (verbatim fra HANDOVER.md)
+
+- **v1.9.0–v1.11.0 i prod 2. sep** (691 → 710 → 729 tester; kalender,
+  Lagsjekk, chip-planlegger, prisvarsler, karriere, merkedager, bonuskamp):
+  detaljer rotert til historikkfila. Prisvarslene: **første natt etter en
+  deploy gir ingen melding** (bare snapshot) — ventes natt til 4. sep.
+- **Sluttrydding gjort 2. sep:** planen arkivert, `docs/oppgaveliste.md`
+  slettet, **`docs/qa-chrome-prompt.md`** skrevet (STEG 1–10 + fasit).
+- **v1.8.3 «Herding + tilgjengelighet» i prod 2. sep** (655/655; prod-sjekk
+  gjort: CSP-header live, nøyaktig 2 `<script`). Detaljer rotert til
+  historikkfila. Hver prod-sjekk videre: `<script`-tellingen skal være 2.
+- 2026-09-02 (økt 54): «Kan den som står i handover [sjekkes] av Claude in
+  Chrome? Gi meg en prompt.» → `docs/qa-chrome-reqa-v1121.md` (alle 11 funn
+  + regresjon; STEG 7/9c/9e, telefon og `kill 1` kan den fortsatt ikke).
+
 ## Rotert 2026-09-02 (økt 53, etter v1.12.0): statusblokkene v1.9.0–v1.11.0 (verbatim fra HANDOVER.md)
 
 - **v1.11.0 «Karriere-pakka» i prod 2. sep (økt 53).** Bygget på
