@@ -4,6 +4,8 @@ import { refreshDecision, startAiRefresher, _tick, _setNow, _reset } from '../sr
 import * as ai from '../src/services/ai.js';
 import { clear as cacheClear } from '../src/services/cache.js';
 
+ai._setHooks({ load: () => null, save: () => {} }); // v1.13.0: AI-statistikken skriver aldri til ekte DATA_DIR i tester
+
 const MIN = 60_000;
 const HOUR = 60 * MIN;
 const NOW = Date.UTC(2026, 7, 25, 12, 0, 0);

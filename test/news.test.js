@@ -24,6 +24,8 @@ test('nextSummaryUpdateAt gir generatedAt + maks-alderen, null uten tidspunkt', 
 import * as ai from '../src/services/ai.js';
 import { clear as cacheClear } from '../src/services/cache.js';
 
+ai._setHooks({ load: () => null, save: () => {} }); // v1.13.0: AI-statistikken skriver aldri til ekte DATA_DIR i tester
+
 test('buildNewsPrompt tar med titler og krav om norsk + fete navn', () => {
   const prompt = buildNewsPrompt([
     { title: 'Haaland injury update', description: 'Out for two weeks' },

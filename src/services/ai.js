@@ -1,5 +1,7 @@
 // Felles Claude API-service. Brukes av nyheter, AI-brief og transfer-rådgiver.
 // Kostnadsdisiplin: hard cache med minimumsintervall per nøkkel + in-flight dedup.
+import fs from 'node:fs';
+import path from 'node:path';
 import Anthropic from '@anthropic-ai/sdk';
 import config from '../config.js';
 
@@ -12,6 +14,106 @@ const FAILURE_BACKOFF_MS = 5 * 60_000;
 let client = null;
 let injectedClient = null; // kun satt av tester via _setClient
 let now = () => Date.now();
+
+// AI-statistikk (v1.13.0): teller per cacheKey, persistert i DATA_DIR/ai-stats.json
+// så tallene overlever deploy (Coolify-loggen er 100 linjer og nullstilles).
+// Leses lazy ved første bruk; getStats() er synkron og leser aldri disk per
+// kall (Docker-healthchecken poller /health hvert 30. sekund). En diskfeil
+// velter aldri en generering. Aldri Discord, aldri nye AI-kall.
+const STATS_VERSION = 1;
+const hooks = { load: null, save: null }; // kun tester (_setHooks)
+let stats = null; // { since, byKey } — null = ikke lest ennå
+
+const emptyEntry = () => ({ calls: 0, inputTokens: 0, outputTokens: 0, failures: 0, lastAt: null, model: null });
+const toCount = (v) => (Number.isFinite(v) && v >= 0 ? Math.trunc(v) : 0);
+
+export function statsFile() {
+  return path.join(config.dataDir, 'ai-stats.json');
+}
+
+/** Leser ai-stats.json-innhold. null ved ugyldig JSON, feil versjon eller manglende byKey. */
+export function parseStatsFile(text) {
+  try {
+    const raw = JSON.parse(text);
+    if (raw?.version !== STATS_VERSION || !raw.byKey || typeof raw.byKey !== 'object') return null;
+    const byKey = {};
+    for (const [key, e] of Object.entries(raw.byKey)) {
+      byKey[key] = {
+        calls: toCount(e?.calls),
+        inputTokens: toCount(e?.inputTokens),
+        outputTokens: toCount(e?.outputTokens),
+        failures: toCount(e?.failures),
+        lastAt: typeof e?.lastAt === 'string' ? e.lastAt : null,
+        model: typeof e?.model === 'string' ? e.model : null,
+      };
+    }
+    return { since: typeof raw.since === 'string' ? raw.since : null, byKey };
+  } catch {
+    return null;
+  }
+}
+
+function readStatsFile() {
+  try {
+    return parseStatsFile(fs.readFileSync(statsFile(), 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+function writeStatsFile(file) {
+  fs.mkdirSync(config.dataDir, { recursive: true });
+  fs.writeFileSync(statsFile(), JSON.stringify(file));
+}
+
+function ensureStats() {
+  if (stats) return stats;
+  let loaded = null;
+  try {
+    loaded = (hooks.load ?? readStatsFile)();
+  } catch {
+    loaded = null;
+  }
+  stats = loaded ?? { since: null, byKey: {} };
+  return stats;
+}
+
+/** Registrerer ett kall (ok = vellykket svar med tekst) og lagrer. Kaster aldri. */
+function record(cacheKey, { ok, model, usage }) {
+  const s = ensureStats();
+  const at = new Date(now()).toISOString();
+  s.since ??= at;
+  const e = (s.byKey[cacheKey] ??= emptyEntry());
+  if (ok) {
+    e.calls += 1;
+    e.inputTokens += toCount(usage?.input_tokens);
+    e.outputTokens += toCount(usage?.output_tokens);
+  } else {
+    e.failures += 1;
+  }
+  e.lastAt = at;
+  if (model) e.model = model;
+  try {
+    (hooks.save ?? writeStatsFile)({ version: STATS_VERSION, ...s });
+  } catch (err) {
+    console.error('AI-statistikk: klarte ikke å lagre ai-stats.json:', err.message);
+  }
+}
+
+/** Synkron kopi av statistikken — for /health. Leser disk kun første gang. */
+export function getStats() {
+  const s = ensureStats();
+  const totals = { calls: 0, inputTokens: 0, outputTokens: 0, failures: 0 };
+  const byKey = {};
+  for (const [key, e] of Object.entries(s.byKey)) {
+    byKey[key] = { ...e };
+    totals.calls += e.calls;
+    totals.inputTokens += e.inputTokens;
+    totals.outputTokens += e.outputTokens;
+    totals.failures += e.failures;
+  }
+  return { since: s.since, totals, byKey };
+}
 
 export function isEnabled() {
   return Boolean(config.anthropicApiKey || injectedClient);
@@ -101,15 +203,18 @@ function startGeneration({ cacheKey, system, prompt, maxTokens, cached }) {
       );
       if (!text) {
         // Tomt svar (f.eks. avkortet) — behold forrige, og vent før nytt forsøk.
+        record(cacheKey, { ok: false, model: res.model });
         lastFailureAt.set(cacheKey, now());
         return cached ?? null;
       }
+      record(cacheKey, { ok: true, model: res.model, usage: res.usage });
       const entry = { text, generatedAt: now() };
       store.set(cacheKey, entry);
       lastFailureAt.delete(cacheKey);
       return entry;
     } catch (err) {
       console.error('AI-kall feilet:', err.message);
+      record(cacheKey, { ok: false, model: config.aiModel });
       lastFailureAt.set(cacheKey, now());
       return cached ?? null; // behold gammel oppsummering ved feil
     } finally {
@@ -137,8 +242,23 @@ export function _setNow(fn) {
   now = fn ?? (() => Date.now());
 }
 
+/**
+ * Overstyrer lese/skrive-funksjonene for ai-stats.json (load() → { since,
+ * byKey } | null, save(file)). null = tilbake til disk. Nullstilles IKKE av
+ * _reset(), så en testfil kan koble fra disken én gang på modulnivå.
+ */
+export function _setHooks(overrides) {
+  if (overrides == null) {
+    hooks.load = null;
+    hooks.save = null;
+  } else {
+    Object.assign(hooks, overrides);
+  }
+}
+
 export function _reset() {
   store.clear();
   inFlight.clear();
   lastFailureAt.clear();
+  stats = null;
 }
