@@ -33,9 +33,9 @@ og ute som v1.12.1 — neste: Marius' visuelle re-sjekk, se «Neste steg»)
 - **v1.8.3 «Herding + tilgjengelighet» i prod 2. sep** (655/655; prod-sjekk
   gjort: CSP-header live, nøyaktig 2 `<script`). Detaljer rotert til
   historikkfila. Hver prod-sjekk videre: `<script`-tellingen skal være 2.
-- **Asset-hashen i prod er `b6c8f095` etter v1.12.0** (v1.11.0: `4718ea73`; v1.9.0/v1.10.0: `82d7c7a2`; v1.8.3: `6a3b2714`; før det v1.8.2
-  `257cfce2` — metoden kontrollert mot v1.8.2-blobbene). Regnet fra
-  git-blobbene, aldri fra arbeidstreet.
+- **Asset-hashen i prod er `ba91839a` etter v1.12.1** (v1.12.0 `b6c8f095`,
+  v1.11.0 `4718ea73`, v1.9/1.10 `82d7c7a2`, v1.8.3 `6a3b2714`). Regnes fra
+  git-blobbene. Prod-sjekk v1.12.1 (2. sep 17:20): 12/12 OK, sw.js no-store.
 - **Ekte SIGTERM-bevis mangler.** Beviset er `kill 1` i containerterminalen —
   de to avslutningslinjene skal stå der. Lokalt bevist med
   `process.emit('SIGINT')`, exit 0.
