@@ -6,10 +6,17 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-09-02 (økt 53, Fable: v1.8.3, v1.9.0 og v1.10.0
-bygget, merget og i prod; sluttpakka fortsetter med v1.11.0 — se «Neste steg»)
+**Sist oppdatert:** 2026-09-02 (økt 53, Fable: v1.8.3–v1.11.0 bygget,
+merget og i prod; sluttpakka fortsetter med v1.12.0 PWA — se «Neste steg»)
 
 ## Status akkurat nå
+- **v1.11.0 «Karriere-pakka» i prod 2. sep (økt 53).** Bygget på
+  `feat/karriere-v1110`, T1–T5 med rød før grønn: `buildCareer` +
+  `buildBadges`/`gwsAllPlayed` (åtte merker) i insights.js, kortene
+  #karriere/#merkedager øverst på /innsikt (også før første runde),
+  `topBps` i live.js + `bpsRaceHtml` i app.js (bonuskamp under hver kamp i
+  gang). `assembleInsights` henter nå entry history (mykt). **729/729 +
+  lint 0** (baseline 710). Prod: hash `4718ea73`, kortene synlige.
 - **v1.10.0 «Prisvarsler» i prod 2. sep (økt 53).** Bygget på
   `feat/prisvarsler-v1100`, T1–T5 med rød før grønn: `prices.js` (snapshot/
   diff/beslutning/rapport/timer, alltid aktiv, Discord maks én melding per
@@ -27,7 +34,7 @@ bygget, merget og i prod; sluttpakka fortsetter med v1.11.0 — se «Neste steg�
 - **v1.8.3 «Herding + tilgjengelighet» i prod 2. sep** (655/655; prod-sjekk
   gjort: CSP-header live, nøyaktig 2 `<script`). Detaljer rotert til
   historikkfila. Hver prod-sjekk videre: `<script`-tellingen skal være 2.
-- **Asset-hashen i prod er `82d7c7a2` etter v1.9.0** (v1.8.3: `6a3b2714`; før det v1.8.2
+- **Asset-hashen i prod er `4718ea73` etter v1.11.0** (v1.9.0/v1.10.0: `82d7c7a2`; v1.8.3: `6a3b2714`; før det v1.8.2
   `257cfce2` — metoden kontrollert mot v1.8.2-blobbene). Regnet fra
   git-blobbene, aldri fra arbeidstreet.
 - **Ekte SIGTERM-bevis mangler.** Beviset er `kill 1` i containerterminalen —
@@ -55,8 +62,8 @@ planen — ikke re-spør.
 | v1.8.3 | Herding (CSP m/ nonce, sikkerhetshoder, JSON-tak, takstbegrensning) + tilgjengelighetspass + branch-rydding | `fix/herding-a11y-v183` | **ute 2. sep, 655/655** |
 | v1.9.0 | Planleggingspakka: chip-planlegger (/lag), deadline-sjekk «Lagsjekk» (/brief + Discord ved funn), `/kalender.ics` + P3-verifisering mot en rivals transfers | `feat/planleggingspakka-v190` | **ute 2. sep, 691/691** |
 | v1.10.0 | Prisvarsler: timesnapshot i `DATA_DIR/price-state.json`, Discord maks 1/natt, kort på /overganger | `feat/prisvarsler-v1100` | **ute 2. sep, 710/710** |
-| v1.11.0 | Karriere-pakka: FPL-karrieren + merkedager (/innsikt), bonuskamp (BPS-race) på /live | `feat/karriere-v1110` | **neste** |
-| v1.12.0 | PWA: manifest, ikoner (eget PNG-skript, kun node:zlib), `/sw.js` nett-først, `/offline` | `feat/pwa-v1120` | venter |
+| v1.11.0 | Karriere-pakka: FPL-karrieren + merkedager (/innsikt), bonuskamp (BPS-race) på /live | `feat/karriere-v1110` | **ute 2. sep, 729/729** |
+| v1.12.0 | PWA: manifest, ikoner (eget PNG-skript, kun node:zlib), `/sw.js` nett-først, `/offline` | `feat/pwa-v1120` | **i gang** |
 
 Etter v1.12.0: sluttrydding (docs, HANDOVER ≤ 200, `docs/oppgaveliste.md`
 → `docs/qa-chrome-prompt.md`), så kjører Marius Chrome-QA-prompten mot prod.
@@ -185,5 +192,10 @@ Etter v1.12.0: sluttrydding (docs, HANDOVER ≤ 200, `docs/oppgaveliste.md`
   + lint 0, røyktest grønn (første snapshot 629 priser, 0 AI-kall),
   deploy-vindu (onsdag 00:44), merget `--no-ff` `7f64ba8`, tag `v1.10.0`,
   pushet; prod: v1.10.0 live, hash uendret `82d7c7a2`, /overganger 200.
-- 2026-09-02 (økt 53, Fable): «Fortsett.» → v1.11.0 karriere-pakka
-  startet på `feat/karriere-v1110`.
+- 2026-09-02 (økt 53, Fable): «Fortsett.» → v1.11.0 på `feat/karriere-v1110`:
+  T1–T5 (buildCareer, buildBadges/gwsAllPlayed, kortene på /innsikt +
+  entry history i assembleInsights, topBps, bpsRaceHtml), 729/729 + lint
+  0, røyktest grønn (0 AI-kall), deploy-vindu (onsdag 12:23, `anyLive:
+  false`), merget `--no-ff` `4d7c065`, tag `v1.11.0`, pushet; prod: hash
+  `4718ea73`, /innsikt-kortene og bpsTop i live.json verifisert. Deretter
+  v1.12.0 PWA startet på `feat/pwa-v1120` (T1 ikoner inne).
