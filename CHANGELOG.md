@@ -7,6 +7,16 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+
+- PWA (ikoner): `scripts/make-pwa-icons.mjs` (`npm run make-icons`) tegner
+  app-ikonet — FPL-lilla flate med avrundede hjørner og FPL-grønn sirkel —
+  som PNG med kun `node:zlib` (egen PNG-koder: signatur, IHDR, IDAT, IEND,
+  CRC via `zlib.crc32`, 4× supersampling). Genererte og committede filer:
+  `icon-192.png`, `icon-512.png`, `icon-512-maskable.png` (full flate),
+  `apple-touch-icon.png` (180, ugjennomsiktig) + håndskrevet `icon.svg`.
+  To nye tester.
+
 ## [1.11.0] - 2026-09-02
 
 ### Added
