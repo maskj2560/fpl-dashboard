@@ -124,6 +124,15 @@ test('kun api.js når element-summary — aldri /spillere-sidevisningen', () => 
   assert.match(readService('players.js'), /\bgetElementSummary\b/);
 });
 
+// v1.12.2: en ferdig runde ligger på live:N:hist — dataAlder i /api/live.json
+// må måles med finished-flagget, ellers blir den null mellom rundene.
+test('api.js måler dataAlder for /api/live.json med finished-flagget', () => {
+  assert.ok(
+    /staleInfo\(live\.gameweek,\s*\{\s*finished:\s*live\.finished\s*\}\)/.test(read('api.js')),
+    'api.js: /live.json må måle dataAlder med staleInfo(live.gameweek, { finished: live.finished })',
+  );
+});
+
 // v1.7.1: nettleseren skal aldri cache API-JSON — serverens cache styrer
 // TTL, og et cachet /live.json ville vist gamle poeng under polling.
 test('hele API-routeren svarer med no-store', () => {

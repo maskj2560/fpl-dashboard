@@ -457,7 +457,8 @@ test('buildLive setter finished fra rundens finished-flagg i bootstrap', () => {
 // Prod 2. sep: /innsikt skrev `live:2` med 6 t TTL, /live leste samme nøkkel
 // via getLive og fikk «fersk» tilbake uten revalidering — mens alderstaket på
 // 10 min slo til. Ferdig runde skal derfor BEVISST leses fra 6 t-lageret;
-// pågående runde skal fortsatt fornyes etter 1 min.
+// pågående runde skal fortsatt fornyes etter 1 min. (v1.12.2: 6 t-lageret har
+// egen nøkkel `live:N:hist` — fellen er lukket ved kilden.)
 const liveBootstrap = (finished) => ({
   ...bootstrap,
   events: [{ id: 2, is_current: true, finished }],

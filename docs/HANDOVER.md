@@ -80,13 +80,13 @@ dag → re-QA bestått samme kveld. Gjenstår: punkt 1–4 under (kun Marius).
 ## Driftslærdommer (ikke glem disse)
 
 - **Stale-banner på /live mellom runder = delt cache-nøkkel, ikke nett
-  (v1.12.1, QA-funn 6).** `live:N` deles av `getLive` (1 min) og
-  `getLiveHistoric` (6 t); første skriver setter TTL-en. Etter /innsikt fikk
-  /live 6 t-verdien som «fersk», ingen revalidering, og 10-min-taket ga
-  banner i timevis mens FPL svarte 200. Diagnose: to kall på
-  `/api/live.json` med mellomrom — stiger `dataAlder` mens `/api/brief.json`
-  er fersk, er det cachen. Fiks: `getLiveHistoric` + `staleInfo(gw,
-  { finished: true })` for ferdige runder.
+  (v1.12.1, QA-funn 6) — fellen LUKKET i v1.12.2.** `live:N` ble delt av
+  `getLive` (1 min) og `getLiveHistoric` (6 t); første skriver satte TTL-en.
+  Lukket slik: historic-variantene (live/picks/entry-history) har egne
+  nøkler med suffiks `:hist`, `staleInfo(gw, { finished: true })` måler
+  hist-nøkkelen, `/api/live.json` sender `finished` (ellers `dataAlder`
+  null); låst av fplClient.test.js + kildelås i routes.test.js. Diagnose: to
+  `/api/live.json`-kall — stiger `dataAlder` mens FPL svarer, er det cachen.
 - **FPL-bootstrap `chips[]`: wildcard og Free Hit har `start_event` 2** (kan
   ikke spilles i runde 1) — halvdeler grupperes på `stop_event`, aldri på
   (start, stopp)-paret.

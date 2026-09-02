@@ -21,6 +21,20 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   `>=22`, `HEALTHCHECK` uendret. Lokal røyktest på Node 24.11.1: alle sider
   200, ingen `DeprecationWarning` i loggen.
 
+### Fixed
+
+- Rotårsaken bak QA-funn 6 (falskt stale-banner på /live): tre funksjonspar
+  i `fplClient.js` delte cache-nøkkel med ulik TTL (`getLive`/
+  `getLiveHistoric` 1 min vs 6 t, `getPicks`/`getPicksHistoric` og
+  `getEntryHistory`/`getEntryHistoryHistoric` 5 min vs 6 t), og «første
+  skriver satte TTL-en» — hver kaller måtte velge riktig funksjon, og
+  fellen sto åpen for neste. Historic-variantene har nå egne nøkler med
+  suffiks `:hist`, `staleInfo(gw, { finished: true })` måler hist-nøkkelen,
+  og `/api/live.json` sender `finished` så `dataAlder` ikke blir null mellom
+  rundene. Pris: en ferdig runde kan hentes én gang ekstra per 6 t når både
+  live-siden og /innsikt ber om den. Tre «deler nøkkel»-tester skrevet om
+  til «egne nøkler» + to nye (staleInfo måler `:hist`, kildelås for api.js).
+
 ## [1.12.1] - 2026-09-02
 
 Elleve funn fra Chrome-QA-en mot prod (`docs/qa-chrome-prompt.md`, 2. sep):

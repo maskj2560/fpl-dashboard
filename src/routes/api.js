@@ -160,7 +160,9 @@ router.get('/spiller/:id', async (req, res, next) => {
 router.get('/live.json', async (req, res, next) => {
   try {
     const live = await assembleLive();
-    res.json({ ...live, dataAlder: staleInfo(live.gameweek)?.ageSec ?? null });
+    // Ferdig runde ligger på live:N:hist (v1.12.2) — mål den nøkkelen, ellers
+    // blir dataAlder null mellom rundene.
+    res.json({ ...live, dataAlder: staleInfo(live.gameweek, { finished: live.finished })?.ageSec ?? null });
   } catch (err) {
     next(err);
   }

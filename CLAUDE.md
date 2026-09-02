@@ -58,8 +58,8 @@ src/services/
   prompts.js       rene promptbyggere (brief + rådgiver) og
                    sanitizeBriefText (etterkontroll av AI-briefen)
   live.js          live-visningen: buildLive (ren data), assembleLive (henter)
-                   (v1.12.1) ferdig runde hentes via getLiveHistoric (DELT
-                   nøkkel med getLive — se FPL-API) og måles med
+                   (v1.12.1) ferdig runde hentes via getLiveHistoric (egen
+                   nøkkel `live:N:hist` fra v1.12.2 — se FPL-API) og måles med
                    staleInfo(gw, { finished }); buildLive bærer `finished`
                    (v1.11.0) topBps: bonuskamp per kamp — topp 5 på BPS m/
                    bonus (publisert når ferdig/publisert, ellers estimat),
@@ -90,7 +90,7 @@ src/services/
                    (rapportgrunnlag). assembleLeagueInsights/-ReportData henter
                    via fplClient med _mapLimit(8) og myk feil per seksjon.
                    MAX_MANAGERS 20. Egen team-id ALLTID via getEntryHistory
-                   (5 min) — getEntryHistoryHistoric (delt nøkkel, 6 t) er kun
+                   (5 min) — getEntryHistoryHistoric (egen `:hist`-nøkkel, 6 t) er kun
                    for andre managere
   insights.js      (v1.7.0) sesonginnsikten på /innsikt: optimalXi +
                    buildBenchReport (benkesløsing), buildCaptainAudit
@@ -225,15 +225,18 @@ Base `https://fantasy.premierleague.com/api/` — åpent, ingen nøkkel. Viktig:
   fortsatt, men med banneret «Viser data fra HH:MM — får ikke kontakt med
   FPL akkurat nå» (`staleInfo` i fplClient). `/api/brief.json` og
   `/api/live.json` oppgir `dataAlder` (sekunder siden forrige henting)
-- **`live:N` er DELT mellom `getLive` (1 min) og `getLiveHistoric` (6 t) —
-  første skriver setter TTL-en** (v1.12.1, QA-funn 6). Har /innsikt
-  skrevet nøkkelen, får `getLive` 6 t-verdien tilbake som «fersk» uten
-  revalidering, og 10-min-taket gir «får ikke kontakt med FPL» i timevis
-  mens FPL svarer 200. Live-siden henter derfor ferdige runder BEVISST via
-  `getLiveHistoric` og måler med `staleInfo(gw, { finished: true })` (aldri
-  banner — poengene er immutable). Feilsøk stale-banner med to kall på
-  `/api/live.json` med mellomrom: stiger `dataAlder` mens FPL svarer, er det
-  cachen, ikke nettet
+- **Historic-variantene har EGNE nøkler med suffiks `:hist`** (v1.12.2):
+  `live:N` (getLive, 1 min) / `live:N:hist` (getLiveHistoric, 6 t), og
+  tilsvarende `picks:…:hist` og `history:…:hist`. Før delte de nøkkel, og
+  «første skriver satte TTL-en»: hadde /innsikt skrevet `live:N` med 6 t,
+  fikk `getLive` verdien som «fersk» uten revalidering, og 10-min-taket ga
+  «får ikke kontakt med FPL» i timevis mens FPL svarte 200 (v1.12.1,
+  QA-funn 6). Live-siden og `/api/live.json` leser ferdige runder via
+  `getLiveHistoric` og måler med `staleInfo(gw, { finished: true })`, som
+  måler hist-nøkkelen (aldri banner — poengene er immutable). Pris: en
+  ferdig runde kan hentes én gang ekstra per 6 t. Feilsøk stale-banner med
+  to kall på `/api/live.json` med mellomrom: stiger `dataAlder` mens FPL
+  svarer, er det cachen, ikke nettet
 
 ## AI-funksjoner (valgfrie — appen krever aldri nøkkel)
 

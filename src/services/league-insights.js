@@ -366,7 +366,8 @@ export async function assembleLeagueInsights({ leagueId, teamId = config.fplTeam
   });
 
   // Sesonggraf: entry-history per manager. Egen id ALLTID via
-  // getEntryHistory (5 min) — delt nøkkel med 6 t-varianten.
+  // getEntryHistory (5 min) — 6 t-varianten har egen :hist-nøkkel (v1.12.2),
+  // men regelen står: egen id skal alltid være fersk.
   base.graph = await softNull(async () => {
     const histories = await _mapLimit(results, 8, async (r) => {
       const history = r.entry === teamId ? await getEntryHistory(r.entry) : await getEntryHistoryHistoric(r.entry);
