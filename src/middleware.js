@@ -117,6 +117,11 @@ export const FONT_VERSION = '1';
 // immutable fra Cloudflare.
 export const IMG_VERSION = '2627';
 
+// PWA-ikonene og manifestet (v1.12.0): `?v=<ICON_VERSION>` i layout.ejs og
+// manifest.webmanifest. Bumpes i samme commit som `npm run make-icons`
+// endrer ikonene — se DEPLOY.md.
+export const ICON_VERSION = '1';
+
 /**
  * Cache-Control for statiske filer. Kun versjonsstrenger vi selv serverer nå
  * får `immutable`: under en deploy-overlapp kan en gammel container bli spurt
@@ -125,7 +130,7 @@ export const IMG_VERSION = '2627';
  */
 export function cacheControlFor(v, assetVersion) {
   return typeof v === 'string' &&
-    (v === assetVersion || v === FONT_VERSION || v === IMG_VERSION)
+    (v === assetVersion || v === FONT_VERSION || v === IMG_VERSION || v === ICON_VERSION)
     ? IMMUTABLE
     : 'no-cache';
 }
@@ -195,6 +200,7 @@ export function createErrorHandler({ version, assetVersion, startedAt }) {
           gameUpdating: false,
           version,
           assetVersion,
+          iconVersion: ICON_VERSION,
           startedAt,
         },
         (layoutErr, html) => {

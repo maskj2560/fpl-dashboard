@@ -16,6 +16,14 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   `icon-192.png`, `icon-512.png`, `icon-512-maskable.png` (full flate),
   `apple-touch-icon.png` (180, ugjennomsiktig) + håndskrevet `icon.svg`.
   To nye tester.
+- PWA (manifest): `public/manifest.webmanifest` (navn «FPL-dashboard»,
+  kortnavn «FPL», `standalone`, FPL-lilla `theme_color`, mørkt `--bg` som
+  `background_color`, SVG + 192/512 + maskable-ikoner, alle `?v=1`).
+  `layout.ejs` lenker manifestet og apple-touch-ikonet med `ICON_VERSION`
+  (ny i `middleware.js`, får `immutable` som font- og bildeversjonene) og
+  bærer `theme-color`, `mobile-web-app-capable`, `apple-mobile-web-app-title`
+  og `<meta name="fpl-asset-version">` (leses av SW-registreringen). Tre
+  nye tester.
 
 ## [1.11.0] - 2026-09-02
 

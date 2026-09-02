@@ -1,7 +1,49 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import zlib from 'node:zlib';
-import { encodePng, paintIcon, PURPLE, GREEN } from '../scripts/make-pwa-icons.mjs';
+import { encodePng, paintIcon, PURPLE, GREEN, ICONS } from '../scripts/make-pwa-icons.mjs';
+
+const publicDir = new URL('../public/', import.meta.url);
+const readPublic = (file) => fs.readFileSync(new URL(file, publicDir), 'utf8');
+
+// ---- v1.12.0 T2: manifest + ikoner på disk ---------------------------------
+
+test('manifest.webmanifest har navn, short_name, start_url, display standalone og FPL-farger', () => {
+  const manifest = JSON.parse(readPublic('manifest.webmanifest'));
+  assert.equal(manifest.name, 'FPL-dashboard');
+  assert.equal(manifest.short_name, 'FPL');
+  assert.equal(manifest.lang, 'nb');
+  assert.equal(manifest.start_url, '/');
+  assert.equal(manifest.scope, '/');
+  assert.equal(manifest.display, 'standalone');
+  assert.equal(manifest.theme_color, '#37003C');
+  assert.match(manifest.background_color, /^#[0-9a-fA-F]{6}$/);
+  const css = readPublic('style.css');
+  const bg = css.match(/:root\s*\{[^}]*--bg:\s*(#[0-9a-fA-F]{6})/)?.[1];
+  assert.ok(bg, 'fant ikke --bg i :root');
+  assert.equal(manifest.background_color.toLowerCase(), bg.toLowerCase(), 'background_color skal være mørkt --bg');
+});
+
+test('manifest-ikonene finnes i public/img og har 192, 512 og maskable', () => {
+  const manifest = JSON.parse(readPublic('manifest.webmanifest'));
+  const icons = manifest.icons;
+  assert.ok(Array.isArray(icons) && icons.length >= 4, 'minst fire ikoner');
+  for (const icon of icons) {
+    assert.match(icon.src, /^\/img\/[a-z0-9-]+\.(png|svg)\?v=\d+$/, `${icon.src}: uversjonert eller feil sti`);
+    const file = icon.src.replace(/^\//, '').split('?')[0];
+    assert.ok(fs.existsSync(new URL(file, publicDir)), `${file} mangler på disk`);
+  }
+  const sizes = (purpose) => icons.filter((i) => (i.purpose ?? 'any') === purpose).map((i) => i.sizes);
+  assert.ok(sizes('any').includes('192x192') && sizes('any').includes('512x512'), '192 og 512 «any»');
+  assert.ok(sizes('maskable').includes('512x512'), '512 maskable');
+  assert.ok(icons.some((i) => i.src.includes('icon.svg') && i.sizes === 'any'), 'SVG-ikon med sizes any');
+  for (const { file, size } of ICONS) {
+    const png = fs.readFileSync(new URL(`img/${file}`, publicDir));
+    assert.equal(png.readUInt32BE(16), size, `${file}: bredde`);
+    assert.equal(png.readUInt32BE(20), size, `${file}: høyde`);
+  }
+});
 
 // ---- v1.12.0 T1: ikonskriptet (kun node:zlib) ------------------------------
 

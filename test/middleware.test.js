@@ -6,6 +6,7 @@ import {
   createShutdown,
   FONT_VERSION,
   IMG_VERSION,
+  ICON_VERSION,
   noStore,
 } from '../src/middleware.js';
 import * as mw from '../src/middleware.js';
@@ -163,6 +164,11 @@ const IMMUTABLE = 'public, max-age=31536000, immutable';
 test('cacheControlFor gir immutable for gjeldende asset-hash og fontversjonen', () => {
   assert.equal(cacheControlFor('ead67020', 'ead67020'), IMMUTABLE);
   assert.equal(cacheControlFor(FONT_VERSION, 'ead67020'), IMMUTABLE);
+});
+
+test('cacheControlFor gir immutable for ikonversjonen (PWA, v1.12.0)', () => {
+  assert.equal(typeof ICON_VERSION, 'string');
+  assert.equal(cacheControlFor(ICON_VERSION, 'ead67020'), IMMUTABLE);
 });
 
 test('cacheControlFor gir no-cache for en annen velformet hash', () => {

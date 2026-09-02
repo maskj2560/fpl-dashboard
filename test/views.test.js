@@ -81,7 +81,7 @@ for (const [name, locals, marker] of cases) {
 const layoutLocals = (path) => ({
   body: '<p>innhold</p>', title: 'Test', path,
   gameUpdating: false, staleSince: null, version: '1.0.1', assetVersion: 'a1b2c3d4',
-  startedAt: '19.08.2026, 21:00', cspNonce: 'testnonce',
+  startedAt: '19.08.2026, 21:00', cspNonce: 'testnonce', iconVersion: '1',
 });
 
 test('layout.ejs gir tema-scriptet CSP-noncen', async () => {
@@ -223,6 +223,17 @@ test('dashboard.ejs merker fullnavnet i FDR-matrisen', async () => {
 
   assert.ok(html.includes('team-name-full'), 'fullnavnet mangler klassen');
   assert.ok(html.includes('Arsenal'), 'fullnavnet er fjernet fra markupen');
+});
+
+// v1.12.0: PWA — manifest, ikoner og asset-versjonen som meta (leses av SW-registreringen).
+test('layout.ejs lenker manifest, apple-touch-icon og asset-versjon-meta', async () => {
+  const html = await renderView('layout', layoutLocals('/'));
+  assert.ok(html.includes('<link rel="manifest" href="/manifest.webmanifest?v=1">'), 'manifest-lenken mangler eller er uversjonert');
+  assert.ok(html.includes('<link rel="apple-touch-icon" href="/img/apple-touch-icon.png?v=1">'), 'apple-touch-icon mangler');
+  assert.ok(html.includes('<meta name="fpl-asset-version" content="a1b2c3d4">'), 'asset-versjon-meta mangler');
+  assert.ok(html.includes('<meta name="theme-color" content="#37003C">'), 'theme-color mangler');
+  assert.ok(html.includes('<meta name="mobile-web-app-capable" content="yes">'), 'mobile-web-app-capable mangler');
+  assert.ok(html.includes('<meta name="apple-mobile-web-app-title" content="FPL">'), 'apple-mobile-web-app-title mangler');
 });
 
 test('layout.ejs versjonerer css og js med innholdshash', async () => {

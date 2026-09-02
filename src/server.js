@@ -13,6 +13,7 @@ import {
   createErrorHandler,
   createSecurityHeaders,
   createShutdown,
+  ICON_VERSION,
 } from './middleware.js';
 import indexRouter from './routes/index.js';
 import healthRouter from './routes/health.js';
@@ -94,6 +95,7 @@ app.use((req, res, next) => {
           : stale?.tooOld ? formatTime(stale.fetchedIso) : null,
         version,
         assetVersion,
+        iconVersion: ICON_VERSION,
         startedAt,
       });
     });
