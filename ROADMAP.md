@@ -43,7 +43,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.9.0**~~ | ~~«Planleggingspakka»: chip-planlegger (/lag), «Lagsjekk» (/brief + Discord), `/kalender.ics` + P3~~ | **utført 2. sep — 691/691** | — |
 | ~~**v1.10.0**~~ | ~~«Prisvarsler»: timesnapshot, Discord maks 1/natt, kort på /overganger~~ | **utført 2. sep — 710/710** | — |
 | ~~**v1.11.0**~~ | ~~«Karriere-pakka»: FPL-karrieren + merkedager (/innsikt), bonuskamp (/live)~~ | **utført 2. sep — 729/729** | — |
-| **v1.12.0** | «PWA»: manifest, ikoner, service worker, /offline | 0 | **neste** |
+| ~~**v1.12.0**~~ | ~~«PWA»: manifest, ikoner, service worker, /offline~~ | **utført 2. sep — 743/743** | — |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
 Kalenderlogikk: utviklingssporet (v1.3.0 → v1.3.1+) går uavbrutt;
@@ -63,8 +63,9 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
 - **Blokkert av:** ingenting. AI-økten merger `--no-ff`, tagger og pusher
   selv per versjon etter deploy-vindu-sjekk (Marius' beslutning).
 - **Status:** v1.8.3 ute 2. sep (655/655), v1.9.0 ute 2. sep (691/691),
-  v1.10.0 ute 2. sep (710/710), v1.11.0 ute 2. sep (729/729). Neste:
-  v1.12.0 PWA.
+  v1.10.0 ute 2. sep (710/710), v1.11.0 ute 2. sep (729/729), v1.12.0 ute
+  2. sep (743/743). **Alle fem releasene er ute.** Gjenstår: sluttrydding
+  (docs, `docs/qa-chrome-prompt.md`) og Marius' Chrome-QA mot prod.
 - **Størrelse:** stor (fem releaser).
 
 ### 1. (P4) Løpende kostnadskontroll
@@ -189,7 +190,7 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 - ~~BPS-race live~~ — **utført 2. sep i v1.11.0** (`topBps` i live.js)
 - ~~FPL-karrieren~~ — **utført 2. sep i v1.11.0** (`buildCareer`)
 - ~~Badges/merkedager~~ — **utført 2. sep i v1.11.0** (`buildBadges`, åtte merker)
-- ~~PWA~~ — planlagt som v1.12.0 (køpunkt 0)
+- ~~PWA~~ — **utført 2. sep som v1.12.0** (manifest, ikoner, `/sw.js`, `/offline`)
 - ~~AI-kommentar til overgangsanalysen~~ — bygget i v1.5.0
 
 ---

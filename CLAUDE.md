@@ -34,7 +34,18 @@ src/config.js      env-variabler: PORT, FPL_TEAM_ID, LEAGUE_IDS, TZ,
                    DATA_DIR (default `data`)
 src/routes/        tynne ruter: én fil per side + api.js + calendar.js
                    (v1.9.0: GET /kalender.ics, createCalendarHandler med
-                   injiserbar load/now så ruta testes uten nett)
+                   injiserbar load/now så ruta testes uten nett) + pwa.js
+                   (v1.12.0: GET /sw.js — createSwHandler bytter
+                   __ASSET_VERSION__ mot ekte asset-hash, no-store — og
+                   GET /offline)
+src/pwa/sw.js      (v1.12.0) service workeren (klassisk script, worker-
+                   globals via eslint-override): cache `fpl-<hash>`, install
+                   precacher /offline + skipWaiting, activate rydder gamle
+                   fpl-*-cacher + clients.claim. Fetch: kun GET same-origin;
+                   /api, /kalender.ics, /health, sw.js går ALLTID utenom;
+                   navigasjon nett-først (fallback /offline); ?v= cache-
+                   først; alt annet nett uten cache. Ingen HTML caches
+                   utenom /offline (HTML bærer CSP-nonce per forespørsel)
 src/services/
   fplClient.js     ENESTE modul med nettverkskall til FPL-API-et
   cache.js         TTL-cache med stale-while-revalidate, in-flight dedup
@@ -157,10 +168,16 @@ views/             EJS: layout.ejs + én fil per side. views/partials/:
 public/            style.css (alle farger som tokens: :root = mørkt tema,
                    :root[data-theme="light"] = lyst), app.js (vanilla JS),
                    fonts/ (lokal Archivo), img/clubs/ (klubbgrafikk fra v1.3.1:
-                   60 filer, t{code}/shirt_{code}/shirt_{code}_1, ~560 KB)
+                   60 filer, t{code}/shirt_{code}/shirt_{code}_1, ~560 KB),
+                   (v1.12.0) manifest.webmanifest + img/icon.svg,
+                   icon-192/512.png, icon-512-maskable.png,
+                   apple-touch-icon.png — alle `?v=<ICON_VERSION>`
 scripts/           fetch-club-assets.mjs (v1.3.1): henter klubbmerker og
                    drakter fra FPL én gang per sesong — CLI-verktøy, aldri
                    kjøretid. Eneste nettverkskall utenfor fplClient.js
+                   make-pwa-icons.mjs (v1.12.0): tegner PWA-ikonene som PNG
+                   med kun node:zlib (`npm run make-icons`); PNG-ene
+                   committes, ICON_VERSION bumpes i samme commit
 test/              node:test — ingen nettverkskall. Fakes injiseres via små
                    test-hooks (_setNow/_flush/clear i cache.js, _setClient/
                    _setNow/_reset i ai.js, _send/_setHooks/_reset/_initState i notify.js)
@@ -257,7 +274,8 @@ oppstart (AI-cachen bor i minnet og er tom etter hver deploy) — til sammen
 (v1.8.0, inkludert `/api/spiller/:id`), planleggingspakka (v1.9.0:
 `chips.js`, `deadline.js`, `calendar.js`) og prisvarslene (v1.10.0:
 `prices.js`) og karriere-pakka (v1.11.0: buildCareer/buildBadges i
-`insights.js`, topBps i `live.js`) er utenfor dette regnskapet: de
+`insights.js`, topBps i `live.js`) og PWA-en (v1.12.0: `src/pwa/sw.js`,
+`routes/pwa.js`) er utenfor dette regnskapet: de
 importerer aldri `ai.js` og koster **0 AI-kall** i alle tilstander — låst
 på kilden i `test/routes.test.js`.
 Prompts holdes korte. Uten nøkkel vises rå data
