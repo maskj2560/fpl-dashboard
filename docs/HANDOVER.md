@@ -6,10 +6,17 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-09-02 (økt 53, Fable: v1.8.3 og v1.9.0 bygget,
-merget og i prod; sluttpakka fortsetter med v1.10.0 — se «Neste steg»)
+**Sist oppdatert:** 2026-09-02 (økt 53, Fable: v1.8.3, v1.9.0 og v1.10.0
+bygget, merget og i prod; sluttpakka fortsetter med v1.11.0 — se «Neste steg»)
 
 ## Status akkurat nå
+- **v1.10.0 «Prisvarsler» i prod 2. sep (økt 53).** Bygget på
+  `feat/prisvarsler-v1100`, T1–T5 med rød før grønn: `prices.js` (snapshot/
+  diff/beslutning/rapport/timer, alltid aktiv, Discord maks én melding per
+  Oslo-natt, `postToDiscord` lånt fra notify.js), kort på /overganger,
+  kildelås. **710/710 + lint 0** (baseline 691). Ny fil i volumet:
+  `price-state.json`. **Første natt etter deploy gir ingen melding** (bare
+  snapshot) — første ekte prismelding ventes natt til 4. sep tidligst.
 - **v1.9.0 «Planleggingspakka» i prod 2. sep (økt 53).** Bygget på
   `feat/planleggingspakka-v190`, T1–T9 med rød før grønn: chip-planlegger
   (`chips.js` + kort på /lag), Lagsjekk (`deadline.js` + timer i notify.js
@@ -17,22 +24,9 @@ merget og i prod; sluttpakka fortsetter med v1.10.0 — se «Neste steg»)
   rute + lenker på / og /brief), P3 verifisert mot en rivals transfers.
   **691/691 + lint 0** (baseline 655). Ny env `DEADLINE_CHECK_HOURS_BEFORE`
   (default 3, ikke satt i Coolify = default), ny markør `check-state.json`.
-- **v1.8.3 «Herding + tilgjengelighet» merget til main 2. sep (økt 53).**
-  Bygget på `fix/herding-a11y-v183`: T1–T7 + røyktestfunn, TDD med rød
-  før grønn i hver task (a11y-låsene bevist med mutasjoner), CHANGELOG-
-  linje i hver commit. **655/655 + lint 0** (baseline 626). Innhold: CSP
-  med nonce (script-src uten unsafe-inline), nosniff/DENY/Referrer/
-  Permissions, JSON-tak 32 kB, takstbegrensning 30 POST/DELETE per IP per
-  5 min på /api, hopp-lenke + `main#innhold`, `role=timer`, `scope=col`,
-  26 tabellcaptions, aria-live på /live, `test/a11y.test.js`. Røyktest
-  med tomme nøkler: 11 ruter 200 + 404, hoder på plass, nonce header =
-  body, nøyaktig 2 `<script`, 413 JSON på 40 kB, 429 + Retry-After på
-  kall 31, **0 AI-kall**. Røyktestfunn fikset: body-parserens 413/400
-  ble 500 — feilhandleren leser nå `err.status`.
-  **Prod-sjekk etter deploy (gjør dette først i neste økt hvis ikke gjort):**
-  `curl -sI https://fpl.marsk.no/ | grep -i content-security` og
-  `curl -s https://fpl.marsk.no/ | grep -c '<script'` = 2. Flere → en
-  Cloudflare-funksjon injiserer script (DEPLOY.md «CSP og Cloudflare»).
+- **v1.8.3 «Herding + tilgjengelighet» i prod 2. sep** (655/655; prod-sjekk
+  gjort: CSP-header live, nøyaktig 2 `<script`). Detaljer rotert til
+  historikkfila. Hver prod-sjekk videre: `<script`-tellingen skal være 2.
 - **Asset-hashen i prod er `82d7c7a2` etter v1.9.0** (v1.8.3: `6a3b2714`; før det v1.8.2
   `257cfce2` — metoden kontrollert mot v1.8.2-blobbene). Regnet fra
   git-blobbene, aldri fra arbeidstreet.
@@ -60,8 +54,8 @@ planen — ikke re-spør.
 | --- | --- | --- | --- |
 | v1.8.3 | Herding (CSP m/ nonce, sikkerhetshoder, JSON-tak, takstbegrensning) + tilgjengelighetspass + branch-rydding | `fix/herding-a11y-v183` | **ute 2. sep, 655/655** |
 | v1.9.0 | Planleggingspakka: chip-planlegger (/lag), deadline-sjekk «Lagsjekk» (/brief + Discord ved funn), `/kalender.ics` + P3-verifisering mot en rivals transfers | `feat/planleggingspakka-v190` | **ute 2. sep, 691/691** |
-| v1.10.0 | Prisvarsler: timesnapshot i `DATA_DIR/price-state.json`, Discord maks 1/natt, kort på /overganger | `feat/prisvarsler-v1100` | **neste** |
-| v1.11.0 | Karriere-pakka: FPL-karrieren + merkedager (/innsikt), bonuskamp (BPS-race) på /live | `feat/karriere-v1110` | venter |
+| v1.10.0 | Prisvarsler: timesnapshot i `DATA_DIR/price-state.json`, Discord maks 1/natt, kort på /overganger | `feat/prisvarsler-v1100` | **ute 2. sep, 710/710** |
+| v1.11.0 | Karriere-pakka: FPL-karrieren + merkedager (/innsikt), bonuskamp (BPS-race) på /live | `feat/karriere-v1110` | **neste** |
 | v1.12.0 | PWA: manifest, ikoner (eget PNG-skript, kun node:zlib), `/sw.js` nett-først, `/offline` | `feat/pwa-v1120` | venter |
 
 Etter v1.12.0: sluttrydding (docs, HANDOVER ≤ 200, `docs/oppgaveliste.md`
@@ -169,15 +163,6 @@ Etter v1.12.0: sluttrydding (docs, HANDOVER ≤ 200, `docs/oppgaveliste.md`
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
-- 2026-09-01 (økt 52, Fable): «Runderapporten skal ha mer detaljert prompt,
-  bruke eksempler fra lagene mer, kan være lenger. Kom med forslag og
-  spør.» Valg via spørsmål: alle fire datapunkter, ~300 ord, alle lag
-  nevnes, samme tone. Handling: buildReportData utvidet (0 nye kall),
-  buildLeagueReportPrompt med tre nye seksjoner, maxTokens 3000, chipLabel
-  flyttet til league-insights.js. TDD: 5 røde før grønn. 626/626 + lint 0.
-  Deretter v1.8.2 godkjent: deploy-vindu sjekket (tirsdag 17:58, 0
-  kamper), release-commit, merge `--no-ff`, tag `v1.8.2`, push, hash
-  `257cfce2`.
 - 2026-09-01 (økt 53, Fable): «Lag en lang og detaljert plan over alle
   planer og funksjoner som skal fikses på eller lages. Alt skal lages og
   gjøres ferdig. Full QA etterpå med Claude in Chrome — lag prompten til
@@ -195,3 +180,10 @@ Etter v1.12.0: sluttrydding (docs, HANDOVER ≤ 200, `docs/oppgaveliste.md`
   røyktest grønn (0 AI-kall), deploy-vindu (onsdag 00:32, `anyLive:false`),
   merget `--no-ff` `28d34fb`, tag `v1.9.0`, pushet; prod: hash `82d7c7a2`,
   `/kalender.ics` 200 (272 VEVENT), Lagsjekk og chip-planlegger synlige.
+  Så v1.10.0 på `feat/prisvarsler-v1100`: T1–T5 (prices.js: snapshot/
+  diff/beslutning/rapport/timer, kort på /overganger, kildelås), 710/710
+  + lint 0, røyktest grønn (første snapshot 629 priser, 0 AI-kall),
+  deploy-vindu (onsdag 00:44), merget `--no-ff` `7f64ba8`, tag `v1.10.0`,
+  pushet; prod: v1.10.0 live, hash uendret `82d7c7a2`, /overganger 200.
+- 2026-09-02 (økt 53, Fable): «Fortsett.» → v1.11.0 karriere-pakka
+  startet på `feat/karriere-v1110`.

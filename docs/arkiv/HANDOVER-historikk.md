@@ -5,6 +5,35 @@
 > sjekkpunkt-tabellen, versjonshistorikken, utdaterte åpne punkter og hele
 > loggen over brukerbeskjeder til og med økt 22. Nyere logg: HANDOVER.md.
 
+## Rotert 2026-09-02 (økt 53, etter v1.10.0): v1.8.3-statusblokka + loggpost økt 52 (verbatim fra HANDOVER.md)
+
+- **v1.8.3 «Herding + tilgjengelighet» merget til main 2. sep (økt 53).**
+  Bygget på `fix/herding-a11y-v183`: T1–T7 + røyktestfunn, TDD med rød
+  før grønn i hver task (a11y-låsene bevist med mutasjoner), CHANGELOG-
+  linje i hver commit. **655/655 + lint 0** (baseline 626). Innhold: CSP
+  med nonce (script-src uten unsafe-inline), nosniff/DENY/Referrer/
+  Permissions, JSON-tak 32 kB, takstbegrensning 30 POST/DELETE per IP per
+  5 min på /api, hopp-lenke + `main#innhold`, `role=timer`, `scope=col`,
+  26 tabellcaptions, aria-live på /live, `test/a11y.test.js`. Røyktest
+  med tomme nøkler: 11 ruter 200 + 404, hoder på plass, nonce header =
+  body, nøyaktig 2 `<script`, 413 JSON på 40 kB, 429 + Retry-After på
+  kall 31, **0 AI-kall**. Røyktestfunn fikset: body-parserens 413/400
+  ble 500 — feilhandleren leser nå `err.status`.
+  **Prod-sjekk etter deploy (gjort 2. sep, økt 53 — CSP-header live,
+  nøyaktig 2 `<script`):**
+  `curl -sI https://fpl.marsk.no/ | grep -i content-security` og
+  `curl -s https://fpl.marsk.no/ | grep -c '<script'` = 2. Flere → en
+  Cloudflare-funksjon injiserer script (DEPLOY.md «CSP og Cloudflare»).
+- 2026-09-01 (økt 52, Fable): «Runderapporten skal ha mer detaljert prompt,
+  bruke eksempler fra lagene mer, kan være lenger. Kom med forslag og
+  spør.» Valg via spørsmål: alle fire datapunkter, ~300 ord, alle lag
+  nevnes, samme tone. Handling: buildReportData utvidet (0 nye kall),
+  buildLeagueReportPrompt med tre nye seksjoner, maxTokens 3000, chipLabel
+  flyttet til league-insights.js. TDD: 5 røde før grønn. 626/626 + lint 0.
+  Deretter v1.8.2 godkjent: deploy-vindu sjekket (tirsdag 17:58, 0
+  kamper), release-commit, merge `--no-ff`, tag `v1.8.2`, push, hash
+  `257cfce2`.
+
 ## Rotert 2026-09-01 (økt 53): v1.8.1-statusblokka + loggposter økt 50–51 (verbatim fra HANDOVER.md)
 
 - **v1.8.1 «Redesign av /spillere» MERGET TIL MAIN 1. sep (økt 50).**
