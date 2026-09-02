@@ -27,6 +27,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   tung periode) får grå pille «Ingen anbefaling» foran begrunnelsen, så hver
   rad alltid har en pille (QA-funn 2, Marius' valg). QA-fasiten STEG 3b
   oppdatert. Én ny view-test.
+- «Abonner på kalender» i nedtellingskortet på / var uleselig i lyst tema
+  (QA-funn 3): lenken arvet den globale `--accent-text` (mørkegrønn) på den
+  lilla gradienten — 1,85–2,76:1. Ny token `--hero-link` (FPL-grønn i begge
+  temaer, 8,5–13:1 mot begge gradientfargene, låst i kontrastparene) og
+  regelen `.hero a`. Hero-en er lilla i begge temaer, som topbaren, så
+  regelen «grønn tekst kun i mørkt tema» gjelder ikke der.
 
 ## [1.12.0] - 2026-09-02
 

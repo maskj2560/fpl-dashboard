@@ -72,6 +72,7 @@
   --hero-to: #3a2358;
   --hero-text: #f4f1fa;
   --hero-dim: #b8a9d1;
+  --hero-link: #00ff87; /* lenke på lilla flate — grønn i begge temaer, som topbar-logoen */
 
   /* Banen, skygger, scrollbar, fokus, plassholder */
   --pitch-line: rgba(240, 253, 248, 0.09);
@@ -161,6 +162,7 @@
   --hero-to: #5e1a6b;
   --hero-text: #ffffff;
   --hero-dim: #d9cfe0;
+  --hero-link: #00ff87;
   --pitch-line: rgba(55, 0, 60, 0.12);
   --pitch-stripe-a: rgba(0, 255, 135, 0.16);
   --pitch-stripe-b: rgba(0, 255, 135, 0.1);
@@ -488,6 +490,13 @@ footer {
 
 .hero .hero-links-hint {
   color: var(--hero-dim);
+}
+
+/* QA-funn 3 (v1.12.1): den globale lenkefargen er mørkegrønn i lyst tema og
+   forsvinner på gradienten (1,85:1). Hero-en er lilla i begge temaer, så
+   «grønn tekst kun i mørkt tema» gjelder ikke her — samme unntak som logoen. */
+.hero a {
+  color: var(--hero-link);
 }
 
 .hero-links code {

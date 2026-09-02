@@ -64,6 +64,8 @@ const PAIRS = [
   ['warn-text', 'warn-bg', 4.5],
   ['topbar-text', 'topbar-bg', 4.5], ['topbar-dim', 'topbar-bg', 4.5], ['accent-ink', 'accent', 4.5],
   ['hero-text', 'hero-from', 4.5], ['hero-text', 'hero-to', 4.5], ['hero-dim', 'hero-from', 4.5], ['hero-dim', 'hero-to', 4.5],
+  // QA-funn 3 (v1.12.1): lenker på hero-gradienten fikk --accent-text (1,85:1 i lyst tema).
+  ['hero-link', 'hero-from', 4.5], ['hero-link', 'hero-to', 4.5],
   ['fdr-ink-light', 'fdr-1', 3], ['fdr-ink-dark', 'fdr-2', 3], ['fdr-ink-dark', 'fdr-3', 3],
   ['fdr-ink-light', 'fdr-4', 3], ['fdr-ink-light', 'fdr-5', 3],
   ['focus', 'bg', 3], ['focus', 'surface', 3],
@@ -164,6 +166,13 @@ test('style.css: plassifferet reserverer plass til trendpila', () => {
 // så spiller 2 måtte dras fram sidelengs.
 test('style.css: duellen deler bredden på mobil i stedet for å scrolle', () => {
   assert.match(css, /\.duell-panel table\.data \{\s*width: 100%;\s*table-layout: fixed;\s*white-space: normal;/);
+});
+
+// QA-funn 3 (v1.12.1): «Abonner på kalender» i nedtellingskortet arvet den
+// globale lenkefargen — mørkegrønn på lilla gradient i lyst tema. Hero-en er
+// lilla i BEGGE temaer, så lenken får en egen token (grønn som topbar-logoen).
+test('style.css: lenker på hero-gradienten bruker --hero-link', () => {
+  assert.match(block('.hero a'), /color: var\(--hero-link\)/);
 });
 
 test('style.css: smale tabeller krymper til innholdet', () => {
