@@ -5,6 +5,30 @@
 > sjekkpunkt-tabellen, versjonshistorikken, utdaterte åpne punkter og hele
 > loggen over brukerbeskjeder til og med økt 22. Nyere logg: HANDOVER.md.
 
+## Rotert 2026-09-02 (økt 53, etter v1.12.0): statusblokkene v1.9.0–v1.11.0 (verbatim fra HANDOVER.md)
+
+- **v1.11.0 «Karriere-pakka» i prod 2. sep (økt 53).** Bygget på
+  `feat/karriere-v1110`, T1–T5 med rød før grønn: `buildCareer` +
+  `buildBadges`/`gwsAllPlayed` (åtte merker) i insights.js, kortene
+  #karriere/#merkedager øverst på /innsikt (også før første runde),
+  `topBps` i live.js + `bpsRaceHtml` i app.js (bonuskamp under hver kamp i
+  gang). `assembleInsights` henter nå entry history (mykt). **729/729 +
+  lint 0** (baseline 710). Prod: hash `4718ea73`, kortene synlige.
+- **v1.10.0 «Prisvarsler» i prod 2. sep (økt 53).** Bygget på
+  `feat/prisvarsler-v1100`, T1–T5 med rød før grønn: `prices.js` (snapshot/
+  diff/beslutning/rapport/timer, alltid aktiv, Discord maks én melding per
+  Oslo-natt, `postToDiscord` lånt fra notify.js), kort på /overganger,
+  kildelås. **710/710 + lint 0** (baseline 691). Ny fil i volumet:
+  `price-state.json`. **Første natt etter deploy gir ingen melding** (bare
+  snapshot) — første ekte prismelding ventes natt til 4. sep tidligst.
+- **v1.9.0 «Planleggingspakka» i prod 2. sep (økt 53).** Bygget på
+  `feat/planleggingspakka-v190`, T1–T9 med rød før grønn: chip-planlegger
+  (`chips.js` + kort på /lag), Lagsjekk (`deadline.js` + timer i notify.js
+  + kort på /brief, Discord kun ved funn), `/kalender.ics` (`calendar.js` +
+  rute + lenker på / og /brief), P3 verifisert mot en rivals transfers.
+  **691/691 + lint 0** (baseline 655). Ny env `DEADLINE_CHECK_HOURS_BEFORE`
+  (default 3, ikke satt i Coolify = default), ny markør `check-state.json`.
+
 ## Rotert 2026-09-02 (økt 53, etter v1.10.0): v1.8.3-statusblokka + loggpost økt 52 (verbatim fra HANDOVER.md)
 
 - **v1.8.3 «Herding + tilgjengelighet» merget til main 2. sep (økt 53).**

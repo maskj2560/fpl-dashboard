@@ -6,35 +6,28 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-09-02 (økt 53, Fable: v1.8.3–v1.11.0 bygget,
-merget og i prod; sluttpakka fortsetter med v1.12.0 PWA — se «Neste steg»)
+**Sist oppdatert:** 2026-09-02 (økt 53, Fable: hele sluttpakka v1.8.3–v1.12.0
+bygget, merget og i prod; sluttrydding gjort — neste: Chrome-QA, se «Neste steg»)
 
 ## Status akkurat nå
-- **v1.11.0 «Karriere-pakka» i prod 2. sep (økt 53).** Bygget på
-  `feat/karriere-v1110`, T1–T5 med rød før grønn: `buildCareer` +
-  `buildBadges`/`gwsAllPlayed` (åtte merker) i insights.js, kortene
-  #karriere/#merkedager øverst på /innsikt (også før første runde),
-  `topBps` i live.js + `bpsRaceHtml` i app.js (bonuskamp under hver kamp i
-  gang). `assembleInsights` henter nå entry history (mykt). **729/729 +
-  lint 0** (baseline 710). Prod: hash `4718ea73`, kortene synlige.
-- **v1.10.0 «Prisvarsler» i prod 2. sep (økt 53).** Bygget på
-  `feat/prisvarsler-v1100`, T1–T5 med rød før grønn: `prices.js` (snapshot/
-  diff/beslutning/rapport/timer, alltid aktiv, Discord maks én melding per
-  Oslo-natt, `postToDiscord` lånt fra notify.js), kort på /overganger,
-  kildelås. **710/710 + lint 0** (baseline 691). Ny fil i volumet:
-  `price-state.json`. **Første natt etter deploy gir ingen melding** (bare
-  snapshot) — første ekte prismelding ventes natt til 4. sep tidligst.
-- **v1.9.0 «Planleggingspakka» i prod 2. sep (økt 53).** Bygget på
-  `feat/planleggingspakka-v190`, T1–T9 med rød før grønn: chip-planlegger
-  (`chips.js` + kort på /lag), Lagsjekk (`deadline.js` + timer i notify.js
-  + kort på /brief, Discord kun ved funn), `/kalender.ics` (`calendar.js` +
-  rute + lenker på / og /brief), P3 verifisert mot en rivals transfers.
-  **691/691 + lint 0** (baseline 655). Ny env `DEADLINE_CHECK_HOURS_BEFORE`
-  (default 3, ikke satt i Coolify = default), ny markør `check-state.json`.
+- **v1.12.0 «PWA» i prod 2. sep (økt 53) — SISTE release i sluttpakka.**
+  Bygget på `feat/pwa-v1120`, T1–T4 med rød før grønn: `make-pwa-icons.mjs`
+  (PNG med kun node:zlib) + committede ikoner, `manifest.webmanifest` +
+  PWA-meta i layout (`ICON_VERSION`), `src/pwa/sw.js` på /sw.js (ekte
+  asset-hash, no-store, nett-først med `/offline` som fallback), `/offline`,
+  registrering i app.js. **743/743 + lint 0** (baseline 729). Prod: hash
+  `b6c8f095`, `/sw.js` no-store med `fpl-b6c8f095`, manifest immutable,
+  /offline 200, nøyaktig 2 `<script`.
+- **v1.9.0–v1.11.0 i prod 2. sep** (691 → 710 → 729 tester; kalender,
+  Lagsjekk, chip-planlegger, prisvarsler, karriere, merkedager, bonuskamp):
+  detaljer rotert til historikkfila. Prisvarslene: **første natt etter en
+  deploy gir ingen melding** (bare snapshot) — ventes natt til 4. sep.
+- **Sluttrydding gjort 2. sep:** planen arkivert, `docs/oppgaveliste.md`
+  slettet, **`docs/qa-chrome-prompt.md`** skrevet (STEG 1–10 + fasit).
 - **v1.8.3 «Herding + tilgjengelighet» i prod 2. sep** (655/655; prod-sjekk
   gjort: CSP-header live, nøyaktig 2 `<script`). Detaljer rotert til
   historikkfila. Hver prod-sjekk videre: `<script`-tellingen skal være 2.
-- **Asset-hashen i prod er `4718ea73` etter v1.11.0** (v1.9.0/v1.10.0: `82d7c7a2`; v1.8.3: `6a3b2714`; før det v1.8.2
+- **Asset-hashen i prod er `b6c8f095` etter v1.12.0** (v1.11.0: `4718ea73`; v1.9.0/v1.10.0: `82d7c7a2`; v1.8.3: `6a3b2714`; før det v1.8.2
   `257cfce2` — metoden kontrollert mot v1.8.2-blobbene). Regnet fra
   git-blobbene, aldri fra arbeidstreet.
 - **Ekte SIGTERM-bevis mangler.** Beviset er `kill 1` i containerterminalen —
@@ -45,17 +38,18 @@ merget og i prod; sluttpakka fortsetter med v1.12.0 PWA — se «Neste steg»)
   terskler i `docs/sjekkpunkt-d-kostnad.md`. Takt **~49–53 AI-kall/uke**;
   alt i sluttpakka legger til **0**.
 - **Git:** de 13 gamle lokale branchene er slettet (10 med `-d`, 3 med `-D`
-  etter Marius' beslutning) — kun `main` + arbeidsbranchen finnes. Tagger
-  t.o.m. `v1.8.3`.
+  etter Marius' beslutning) — kun `main` finnes (alle fem feature-branchene
+  i sluttpakka er merget `--no-ff` og slettet). Tagger t.o.m. `v1.12.0`.
 - Eldre status og alle detaljer: `docs/arkiv/HANDOVER-historikk.md`.
 
 ## Neste steg (start her)
 
-**Planen som styrer alt videre: `docs/plan-sluttpakka-v183-v1120.md`**
-(godkjent av Marius 1. sep, økt 53). Fem releaser i rekkefølge, hver
-bygget TDD på egen branch, merget `--no-ff`, tagget og pushet av AI-økten
-selv (deploy-vindu sjekkes først). Beslutningsfasit med 9 punkter står i
-planen — ikke re-spør.
+**Sluttpakka er levert: v1.8.3–v1.12.0, alle i prod 2. sep.** Planen er
+arkivert i `docs/arkiv/plan-sluttpakka-v183-v1120.md` (beslutningsfasit
+med 9 punkter — ikke re-spør). **Neste: Marius kjører
+`docs/qa-chrome-prompt.md` i Claude for Chrome mot prod.** Kommer det funn:
+én `fix/`-branch per alvorlighet, TDD (rød før grønn), CHANGELOG-linje per
+fiks, release som v1.12.1. Ingen funn: kryss av Chrome-QA i ROADMAP § 0.
 
 | Versjon | Innhold | Branch | Status |
 | --- | --- | --- | --- |
@@ -63,10 +57,10 @@ planen — ikke re-spør.
 | v1.9.0 | Planleggingspakka: chip-planlegger (/lag), deadline-sjekk «Lagsjekk» (/brief + Discord ved funn), `/kalender.ics` + P3-verifisering mot en rivals transfers | `feat/planleggingspakka-v190` | **ute 2. sep, 691/691** |
 | v1.10.0 | Prisvarsler: timesnapshot i `DATA_DIR/price-state.json`, Discord maks 1/natt, kort på /overganger | `feat/prisvarsler-v1100` | **ute 2. sep, 710/710** |
 | v1.11.0 | Karriere-pakka: FPL-karrieren + merkedager (/innsikt), bonuskamp (BPS-race) på /live | `feat/karriere-v1110` | **ute 2. sep, 729/729** |
-| v1.12.0 | PWA: manifest, ikoner (eget PNG-skript, kun node:zlib), `/sw.js` nett-først, `/offline` | `feat/pwa-v1120` | **i gang** |
+| v1.12.0 | PWA: manifest, ikoner (eget PNG-skript, kun node:zlib), `/sw.js` nett-først, `/offline` | `feat/pwa-v1120` | **ute 2. sep, 743/743** |
 
-Etter v1.12.0: sluttrydding (docs, HANDOVER ≤ 200, `docs/oppgaveliste.md`
-→ `docs/qa-chrome-prompt.md`), så kjører Marius Chrome-QA-prompten mot prod.
+Sluttrydding utført 2. sep (docs, HANDOVER ≤ 200, oppgaveliste →
+`docs/qa-chrome-prompt.md`). Gjenstår: Chrome-QA (Marius), evt. v1.12.1.
 
 **Kun Marius kan gjøre (uendret):**
 1. `kill 1` i containerterminalen → «SIGTERM mottatt — lukker serveren» +
@@ -153,7 +147,7 @@ Etter v1.12.0: sluttrydding (docs, HANDOVER ≤ 200, `docs/oppgaveliste.md`
   linjer med rotering til historikkfila.
 - **v1.8.0 (1. sep):** fasit i `docs/arkiv/plan-spillerpakka-v180.md`.
 - **Sluttpakka (1. sep, økt 53):** 9-punkts fasit i
-  `docs/plan-sluttpakka-v183-v1120.md` — bl.a. AI-økten merger/pusher selv
+  `docs/arkiv/plan-sluttpakka-v183-v1120.md` — bl.a. AI-økten merger/pusher selv
   per versjon, 0 nye AI-kall, ingen e-post/spillerbilder/Playwright i repo,
   Lagsjekk-grunnlag = picks N−1 + bytter, prisdelta med norsk komma,
   `-D` på de tre umergede branchene.
@@ -198,4 +192,9 @@ Etter v1.12.0: sluttrydding (docs, HANDOVER ≤ 200, `docs/oppgaveliste.md`
   0, røyktest grønn (0 AI-kall), deploy-vindu (onsdag 12:23, `anyLive:
   false`), merget `--no-ff` `4d7c065`, tag `v1.11.0`, pushet; prod: hash
   `4718ea73`, /innsikt-kortene og bpsTop i live.json verifisert. Deretter
-  v1.12.0 PWA startet på `feat/pwa-v1120` (T1 ikoner inne).
+  v1.12.0 på `feat/pwa-v1120`: T1–T4 (ikonskript + ikoner, manifest +
+  layout + ICON_VERSION, sw.js + /sw.js + /offline, registrering), 743/743
+  + lint 0, røyktest grønn, deploy-vindu (onsdag 12:36), merget `--no-ff`
+  `1ff9ed2`, tag `v1.12.0`, pushet; prod: hash `b6c8f095`, /sw.js,
+  manifest, /offline verifisert. Sluttrydding: plan arkivert, oppgaveliste
+  slettet, `docs/qa-chrome-prompt.md` skrevet, HANDOVER rotert.

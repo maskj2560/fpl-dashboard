@@ -58,8 +58,9 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
   (v1.11.0), PWA (v1.12.0) — pluss repo-rydding, P3 mot en rivals ekte
   transfers, og til slutt `docs/qa-chrome-prompt.md` for full prod-QA i
   Claude for Chrome. 0 nye AI-kall, ingen nye avhengigheter.
-- **Eier detaljene:** `docs/plan-sluttpakka-v183-v1120.md` (T-tasks,
-  testnavn, beslutningsfasit med 9 punkter — ikke re-spør).
+- **Eier detaljene:** `docs/arkiv/plan-sluttpakka-v183-v1120.md` (T-tasks,
+  testnavn, beslutningsfasit med 9 punkter — ikke re-spør; arkivert 2. sep
+  da alt var ute). QA-prompten: `docs/qa-chrome-prompt.md`.
 - **Blokkert av:** ingenting. AI-økten merger `--no-ff`, tagger og pusher
   selv per versjon etter deploy-vindu-sjekk (Marius' beslutning).
 - **Status:** v1.8.3 ute 2. sep (655/655), v1.9.0 ute 2. sep (691/691),
@@ -155,7 +156,7 @@ stedet for den AI-kostende promptendringen (droppet). Rekkefølge:
   `docs/arkiv/plan-spillere-redesign-v181.md`). **v1.9.0
   «Planleggingspakka» UTE I PROD 2. sep** (merget `--no-ff`, tagget
   `v1.9.0`, **691/691** + lint 0, røyktest med tomme nøkler grønn — 0
-  AI-kall; detaljene i `docs/plan-sluttpakka-v183-v1120.md`). **Idépakken
+  AI-kall; detaljene i `docs/arkiv/plan-sluttpakka-v183-v1120.md`). **Idépakken
   er dermed ferdig levert.**
 - **Blokkert av:** —
 - **Størrelse:** stor (fire releaser) — **utført**.
@@ -174,7 +175,8 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 | `docs/sjekkpunkt-d-kostnad.md` | metode + skript for P4-målingen |
 | `docs/arkiv/plan-sluttspurt.md` | utført plan: robusthetsreleasene, portene og docs-ryddingen |
 | `docs/arkiv/plan-idepakken-v16-v19.md` | beslutningsfasit for idépakken v1.7.0–v1.9.0 (utført, arkivert 2. sep) |
-| `docs/plan-sluttpakka-v183-v1120.md` | godkjent plan for v1.8.3–v1.12.0 (T-tasks, testnavn, 9-punkts fasit) — arkiveres når alt er ute |
+| `docs/arkiv/plan-sluttpakka-v183-v1120.md` | utført plan for v1.8.3–v1.12.0 (T-tasks, testnavn, 9-punkts fasit) — alt ute 2. sep |
+| `docs/qa-chrome-prompt.md` | prompten til Claude for Chrome: full prod-QA etter sluttpakka (STEG 1–10, rapportformat, fasit) |
 | `docs/arkiv/plan-spillere-redesign-v181.md` | utført detaljplan for v1.8.1 (redesign av /spillere, T1–T12) |
 | `docs/arkiv/plan-innsikt-v170.md` | utført detaljplan for v1.7.0 «/innsikt» (T1–T10) |
 | `docs/arkiv/plan-v134-ai-swr.md` | utført plan for v1.3.4 (SWR + oppfrisker) |
