@@ -69,12 +69,6 @@ docs-slanking. Prompten slettes når alt er ute.
 - `globals` 16.5 → 17.12: eneste brudd er `audioWorklet` skilt fra
   `browser`; vi bruker `nodeBuiltin`/`browser`/`serviceworker` → trygg.
 
-Sluttpakka v1.8.3 → v1.12.0: alle fem ute 2. sep (655 → 743 tester), brancher
-merget `--no-ff` og slettet. Detaljer: `docs/arkiv/plan-sluttpakka-v183-v1120.md`.
-
-Sluttrydding utført 2. sep. Chrome-QA kjørt 2. sep → v1.12.1 ute samme
-dag → re-QA bestått samme kveld. Gjenstår: punkt 1–4 under (kun Marius).
-
 **Kun Marius kan gjøre:**
 1. `kill 1` i containerterminalen → «SIGTERM mottatt — lukker serveren» +
    «Serveren lukket ryddig» (siste bevis for v1.3.5).
