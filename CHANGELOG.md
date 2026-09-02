@@ -43,6 +43,29 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   `.h2-title { min-width: 0 }` lot tittelen krympe under innholdet sitt.
   Korthodet får `flex-wrap: wrap`, så lang meta faller ned på egen linje.
   Låst i `test/style.test.js`.
+- AI-rundebriefen viste «• *Watkins**» med bokstavelige stjerner (QA-funn 8):
+  punktmarkør-regexen i brief.ejs (`^[-*]\s*`) spiste første stjerne i en
+  linje som starter rett på `**Navn**`. Markøren krever nå mellomrom etter
+  seg (`\s+`). Én ny view-test med fixture.
+- Prisgevinst-tabellen på /overganger skrev «+0.5»/«0.0» mens
+  prisendringskortet skrev «+0,1» (QA-funn 10): Gevinst-kolonnen (og
+  summen) bruker nå `formatSigned` — prisdelta med norsk komma, absolutte
+  priser beholder punktum som resten av appen. Én ny view-test.
+- webcal-adressen i sidehodet på /brief ble delt midt i ordet
+  («fpl.marsk.n / o/kalender.ics») innenfor 78ch-taket (QA-funn 7):
+  `word-break: break-all` → `overflow-wrap: anywhere`, så hele adressen
+  flyttes ned først. Låst i `test/style.test.js`.
+- Statflisene på /lag på 390 px brakk «3 345 863» over to linjer og
+  «TOTALRANGERING» midt i ordet (QA-funn 9): tre ~103 px-fliser → to i
+  bredden (`minmax(8.5rem, 1fr)`), en odde siste tar hele raden, og
+  etikettene får `overflow-wrap: normal`. Låst i `test/style.test.js`.
+
+### Changed
+
+- FDR-4-fargen er mørknet fra FPLs `#ff1751` til `#e6003c` (QA-funn 11,
+  Marius' valg): hvit 12 px-tekst i FDR-cellene ga 3,8:1, nå 4,7:1.
+  Kontrastkravet for `fdr-ink-light/fdr-4` hevet til 4,5 i
+  `test/style.test.js`. FDR 1/2/3/5 er fortsatt FPL-eksakte.
 
 ## [1.12.0] - 2026-09-02
 
