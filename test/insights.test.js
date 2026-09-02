@@ -10,7 +10,109 @@ import {
   assembleInsights,
   buildCareer,
   seasonLabelFrom,
+  buildBadges,
+  gwsAllPlayed,
+  BADGE_IDS,
 } from '../src/services/insights.js';
+
+// ---- v1.11.0: Merkedager ---------------------------------------------------
+
+const row = (event, overall_rank, extra = {}) => ({
+  event,
+  points: 50,
+  total_points: 50 * event,
+  overall_rank,
+  points_on_bench: 3,
+  ...extra,
+});
+const badge = (list, id) => list.find((b) => b.id === id);
+
+test('buildBadges gir «Tre grønne piler» ved tredje grønne runde på rad', () => {
+  const current = [
+    row(1, 1_000_000),
+    row(2, 900_000), // grønn 1
+    row(3, 950_000), // rød — nullstiller
+    row(4, 800_000), // grønn 1
+    row(5, 700_000), // grønn 2
+    row(6, 600_000), // grønn 3 → opptjent her
+    row(7, 500_000),
+  ];
+  const b = badge(buildBadges({ current }), 'tre-gronne');
+  assert.equal(b.earned, true);
+  assert.equal(b.gw, 6, 'tredje runde i første rekke på tre');
+  const two = badge(buildBadges({ current: current.slice(0, 5) }), 'tre-gronne');
+  assert.equal(two.earned, false, 'to grønne på rad holder ikke');
+});
+
+test('buildBadges teller ikke «Tom benk» i Bench Boost-runde', () => {
+  const current = [row(1, 500_000, { points_on_bench: 0 }), row(2, 400_000, { points_on_bench: 4 }), row(3, 300_000, { points_on_bench: 0 })];
+  const withChip = badge(buildBadges({ current, chips: [{ name: 'bboost', event: 1 }] }), 'null-benk');
+  assert.equal(withChip.gw, 3, 'runde 1 var Bench Boost — hele troppen telte');
+  const noChip = badge(buildBadges({ current, chips: [] }), 'null-benk');
+  assert.equal(noChip.gw, 1);
+});
+
+test('buildBadges låser «Bedre enn noen gang» uten tidligere sesonger', () => {
+  const current = [row(1, 900_000), row(2, 400_000)];
+  const locked = badge(buildBadges({ current, past: [] }), 'rekordrank');
+  assert.deepEqual([locked.earned, locked.gw, locked.detail], [false, null, null]);
+  const earned = badge(buildBadges({ current, past: [{ season_name: '2024/25', rank: 500_000, total_points: 2000 }] }), 'rekordrank');
+  assert.equal(earned.earned, true);
+  assert.equal(earned.gw, 2, 'første runde under beste sluttrank');
+  assert.match(earned.detail, /400.000 mot 500.000/, 'detaljen nevner ny og gammel rank');
+});
+
+test('buildBadges gir «Kapteinsteft» fra tre treff på rad', () => {
+  const captainRows = [
+    { gw: 1, squadBest: { hit: true } },
+    { gw: 2, squadBest: { hit: false } },
+    { gw: 3, squadBest: { hit: true } },
+    { gw: 4, squadBest: { hit: true } },
+    { gw: 5, squadBest: { hit: true } },
+  ];
+  const b = badge(buildBadges({ current: [row(1, 1), row(2, 1), row(3, 1), row(4, 1), row(5, 1)], extras: { captainRows } }), 'kapteinsrekke');
+  assert.equal(b.earned, true);
+  assert.equal(b.gw, 5);
+  const none = badge(buildBadges({ current: [row(1, 1)], extras: { captainRows: captainRows.slice(0, 4) } }), 'kapteinsrekke');
+  assert.equal(none.earned, false);
+});
+
+test('gwsAllPlayed krever minutter på alle 15', () => {
+  const picks = { picks: SQUAD.map((id, i) => ({ element: id, position: i + 1, multiplier: i < 11 ? 1 : 0 })) };
+  const picksByGw = new Map([[1, picks], [2, picks], [3, null]]);
+  const liveByGw = new Map([
+    [1, liveFor({})],
+    [2, liveFor({}, { 7: { minutes: 0 } })],
+    [3, liveFor({})],
+  ]);
+  assert.deepEqual(gwsAllPlayed({ picksByGw, liveByGw, gws: [1, 2, 3] }), [1]);
+});
+
+test('buildBadges returnerer hele katalogen i fast rekkefølge med earned-flagg', () => {
+  assert.deepEqual(BADGE_IDS, ['beste-runde', 'tre-gronne', 'hundre', 'topp-100k', 'rekordrank', 'null-benk', 'kapteinsrekke', 'alle-15']);
+  const locked = buildBadges({});
+  assert.deepEqual(locked.map((b) => b.id), BADGE_IDS);
+  for (const b of locked) {
+    assert.equal(b.earned, false, `${b.id} skal være låst uten data`);
+    assert.equal(b.gw, null);
+    assert.equal(b.detail, null);
+    assert.ok(typeof b.title === 'string' && b.title.length > 0, `${b.id} mangler tittel`);
+    assert.ok(typeof b.description === 'string' && b.description.length > 0, `${b.id} mangler beskrivelse`);
+  }
+
+  const current = [
+    row(1, 2_000_000, { points: 60 }),
+    row(2, 90_000, { points: 112 }), // topp 100k + hundreklubben + sesongbeste
+    row(3, 80_000, { points: 112 }), // likhet → første beholdes
+  ];
+  const earned = buildBadges({ current, extras: { allPlayedGws: [3] } });
+  assert.deepEqual([badge(earned, 'beste-runde').gw, badge(earned, 'beste-runde').detail], [2, 'Runde 2 · 112 p']);
+  assert.deepEqual([badge(earned, 'hundre').gw, badge(earned, 'hundre').detail], [2, '112 p']);
+  assert.equal(badge(earned, 'topp-100k').gw, 2);
+  assert.match(badge(earned, 'topp-100k').detail, /90.000/);
+  assert.equal(badge(earned, 'alle-15').gw, 3);
+  assert.equal(earned.filter((b) => b.earned).length, 4, 'nøyaktig fire opptjent i dette datasettet');
+});
 
 // ---- v1.11.0: FPL-karrieren ----------------------------------------------
 

@@ -14,6 +14,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   sesongen så langt (`current`); `seasonLabelFrom` utleder «2026/27» fra
   første deadline. Finnes før første runde er spilt. Tre nye tester.
   0 AI-kall.
+- Merkedager (grunnlag): `buildBadges` — fast katalog på åtte merker i fast
+  rekkefølge (Sesongbeste, Tre grønne piler, Hundreklubben, Topp 100 000,
+  Bedre enn noen gang, Tom benk, Kapteinsteft, Alle femten spilte) med
+  `earned`/`gw`/`detail`; låste merker har null. Tom benk teller ikke i
+  Bench Boost-runder, Kapteinsteft bygger på kapteinsfasiten, «Alle femten
+  spilte» på `gwsAllPlayed` (minutter > 0 for alle 15). Seks nye tester.
 
 ## [1.10.0] - 2026-09-02
 

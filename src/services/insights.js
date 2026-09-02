@@ -10,6 +10,7 @@
 
 import config from '../config.js';
 import { resolvedGw } from './analysis.js';
+import { formatNumber } from './format.js';
 import { effectiveCaptain, _mapLimit, chipLabel } from './league-insights.js';
 import { getBootstrap, getPicksHistoric, getLiveHistoric, getDreamTeam } from './fplClient.js';
 
@@ -222,6 +223,96 @@ export function buildCareer({ past = [], current = [], seasonLabel = null } = {}
     ? { label: seasonLabel, points: last.total_points ?? 0, rank: last.overall_rank ?? null, gws: current.length }
     : null;
   return { seasons, best, current: now };
+}
+
+// ---- v1.11.0: Merkedager ---------------------------------------------------
+// Fast katalog i fast rekkefølge; låste merker har earned:false, gw:null,
+// detail:null. Aldri avhengig av drømmelaget eller AI.
+
+export const BADGE_IDS = ['beste-runde', 'tre-gronne', 'hundre', 'topp-100k', 'rekordrank', 'null-benk', 'kapteinsrekke', 'alle-15'];
+
+const BADGE_CATALOG = {
+  'beste-runde': { title: 'Sesongbeste', description: 'Runden med flest poeng så langt i sesongen.' },
+  'tre-gronne': { title: 'Tre grønne piler', description: 'Bedre samlet rank tre runder på rad.' },
+  hundre: { title: 'Hundreklubben', description: 'Minst 100 poeng i én runde.' },
+  'topp-100k': { title: 'Topp 100 000', description: 'Samlet rank blant de 100 000 beste.' },
+  rekordrank: { title: 'Bedre enn noen gang', description: 'Samlet rank bedre enn din beste sluttrank fra tidligere sesonger.' },
+  'null-benk': { title: 'Tom benk', description: 'Null poeng igjen på benken i en runde — Bench Boost teller ikke.' },
+  kapteinsrekke: { title: 'Kapteinsteft', description: 'Kapteinen var troppens beste tre runder på rad.' },
+  'alle-15': { title: 'Alle femten spilte', description: 'Hele troppen fikk minutter i samme runde.' },
+};
+
+/** Runder der alle 15 i troppen hadde minutter > 0. */
+export function gwsAllPlayed({ picksByGw, liveByGw, gws }) {
+  const out = [];
+  for (const gw of gws ?? []) {
+    const picks = picksByGw?.get(gw)?.picks;
+    const live = liveByGw?.get(gw);
+    if (!picks?.length || !live) continue;
+    const minutes = new Map((live.elements ?? []).map((e) => [e.id, e.stats?.minutes ?? 0]));
+    if (picks.every((p) => (minutes.get(p.element) ?? 0) > 0)) out.push(gw);
+  }
+  return out;
+}
+
+/**
+ * Merkedagene fra entry history (`current` per runde, `past` per sesong,
+ * `chips`) og to ekstra grunnlag som /innsikt alt regner ut:
+ * `extras.captainRows` (buildCaptainAudit) og `extras.allPlayedGws`.
+ */
+export function buildBadges({ current = [], past = [], chips = [], extras = {} } = {}) {
+  const rows = (current ?? []).filter((r) => r && Number.isFinite(r.event));
+  const chipByEvent = new Map((chips ?? []).map((c) => [c.event, c.name]));
+  const found = {};
+
+  let best = null;
+  for (const r of rows) if (best === null || (r.points ?? 0) > (best.points ?? 0)) best = r;
+  if (best) found['beste-runde'] = { gw: best.event, detail: `Runde ${best.event} · ${best.points} p` };
+
+  let streak = 0;
+  for (let i = 1; i < rows.length; i++) {
+    const prev = rows[i - 1].overall_rank;
+    const cur = rows[i].overall_rank;
+    streak = prev != null && cur != null && cur < prev ? streak + 1 : 0;
+    if (streak === 3 && !found['tre-gronne']) {
+      found['tre-gronne'] = { gw: rows[i].event, detail: `Runde ${rows[i - 2].event}–${rows[i].event}` };
+    }
+  }
+
+  const hundred = rows.find((r) => (r.points ?? 0) >= 100);
+  if (hundred) found.hundre = { gw: hundred.event, detail: `${hundred.points} p` };
+
+  const top = rows.find((r) => r.overall_rank != null && r.overall_rank <= 100_000);
+  if (top) found['topp-100k'] = { gw: top.event, detail: `Rank ${formatNumber(top.overall_rank)}` };
+
+  const pastRanks = (past ?? []).map((s) => s?.rank).filter((r) => Number.isFinite(r));
+  if (pastRanks.length) {
+    const bestPast = Math.min(...pastRanks);
+    const record = rows.find((r) => r.overall_rank != null && r.overall_rank < bestPast);
+    if (record) {
+      found.rekordrank = { gw: record.event, detail: `${formatNumber(record.overall_rank)} mot ${formatNumber(bestPast)}` };
+    }
+  }
+
+  const emptyBench = rows.find((r) => r.points_on_bench === 0 && chipByEvent.get(r.event) !== 'bboost');
+  if (emptyBench) found['null-benk'] = { gw: emptyBench.event, detail: 'Alle poengene på banen' };
+
+  let hits = 0;
+  for (const c of extras?.captainRows ?? []) {
+    hits = c?.squadBest?.hit ? hits + 1 : 0;
+    if (hits === 3 && !found.kapteinsrekke) found.kapteinsrekke = { gw: c.gw, detail: 'Tre treff på rad' };
+  }
+
+  const allPlayed = extras?.allPlayedGws ?? [];
+  if (allPlayed.length) found['alle-15'] = { gw: allPlayed[0], detail: `Runde ${allPlayed[0]}` };
+
+  return BADGE_IDS.map((id) => ({
+    id,
+    ...BADGE_CATALOG[id],
+    earned: Boolean(found[id]),
+    gw: found[id]?.gw ?? null,
+    detail: found[id]?.detail ?? null,
+  }));
 }
 
 /** Poengverdien av et mål per posisjon: keeper/forsvar 6, midtbane 5, spiss 4. */
