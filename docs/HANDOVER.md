@@ -7,31 +7,25 @@
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
 **Sist oppdatert:** 2026-09-02 (økt 56, Fable: vedlikeholdspakka — v1.12.2
-bygget, se «Neste steg»)
+ute, v1.13.0 bygget, se «Neste steg»)
 
 ## Status akkurat nå
-- **v1.12.2 «Vedlikehold» bygget 2. sep (økt 56)** på
+- **v1.13.0 «AI-statistikk» bygget 2. sep (økt 56)** på `feat/ai-stats-v1130`:
+  teller per cacheKey i `ai.js` (calls/tokens/failures/lastAt/model + since)
+  → `DATA_DIR/ai-stats.json`, `aiStats` på /health via `healthPayload()`.
+  **767/767 + lint 0** (baseline 758). Røyktest med tomme nøkler:
+  `aiStats: null`, ingen fil skrevet. Prod-sjekk: under.
+- **v1.12.2 «Vedlikehold» i prod 2. sep 20:52 (økt 56)** på
   `fix/hygiene-cache-keys-v1122`: `npm audit fix` (qs 6.16.0, audit ren),
   fast-xml-parser 5.11.1, `node:24-alpine`, egne `:hist`-nøkler (rotårsak
   QA-funn 6) + `finished` i `/api/live.json`. **758/758 + lint 0** (baseline
-  756). Røyktest på Node 24: alle sider 200, 0 DEP0169. Prod-sjekk: under.
-- **v1.12.1 «QA-fikser» i prod 2. sep (økt 54).** Chrome-QA-en ga 6 VIKTIG
-  + 5 KOSMETISK; alle 11 fikset med rød test først på `fix/qa-viktig-v1121`
-  (funn 1–6) og `fix/qa-kosmetisk-v1121` (7–11), merget `--no-ff`.
-  **756/756 + lint 0** (baseline 743), røyktest grønn (0 AI-kall).
-  /live-banneret var IKKE drift, men delt cache-nøkkel (se driftslærdom).
-  Marius' valg: FDR-4 → `#e6003c`, chip uten anbefaling → grå pille.
-  **Re-QA i Claude for Chrome 2. sep 18:20: 11/11 FIKSET, 0 nye funn**,
-  begge temaer, 390 + 1440 (funn 6: 0 banner ved `dataAlder` 1671).
-  Rapport: `docs/arkiv/qa-rapport-v1121.md`.
-- **v1.12.0 «PWA» i prod 2. sep (økt 53) — SISTE release i sluttpakka.**
-  Bygget på `feat/pwa-v1120`, T1–T4 med rød før grønn: `make-pwa-icons.mjs`
-  (PNG med kun node:zlib) + committede ikoner, `manifest.webmanifest` +
-  PWA-meta i layout (`ICON_VERSION`), `src/pwa/sw.js` på /sw.js (ekte
-  asset-hash, no-store, nett-først med `/offline` som fallback), `/offline`,
-  registrering i app.js. **743/743 + lint 0** (baseline 729). Prod: hash
-  `b6c8f095`, `/sw.js` no-store med `fpl-b6c8f095`, manifest immutable,
-  /offline 200, nøyaktig 2 `<script`.
+  756). Røyktest på Node 24: alle sider 200, 0 DEP0169. Prod-sjekk 20:55:
+  footer v1.12.2, `<script` 2, /health 200, `dataAlder` 0 (ikke null), sw.js
+  no-store, 6 sider 200, hash `ba91839a` (uendret). Merk: `git merge -F -`
+  leser IKKE stdin — bruk `-m` (feiltaggen ble slettet og satt på nytt).
+- **v1.12.0 «PWA» + v1.12.1 «QA-fikser» i prod 2. sep** (743 → 756 tester;
+  re-QA 11/11 FIKSET): statusblokkene rotert til historikkfila. Rapport:
+  `docs/arkiv/qa-rapport-v1121.md`. Marius' valg: FDR-4 `#e6003c`, grå pille.
 - **v1.8.3–v1.11.0 i prod 2. sep** (655 → 729 tester): statusblokkene rotert
   til historikkfila. Prisvarslene: første melding ventes natt til 4. sep.
 - **Asset-hashen i prod er `ba91839a` etter v1.12.1** (v1.12.0 `b6c8f095`,
@@ -56,7 +50,7 @@ Planen er arkivert i `docs/arkiv/plan-sluttpakka-v183-v1120.md`
 (beslutningsfasit med 9 punkter — ikke re-spør). ROADMAP § 0 er ferdig.
 **Re-QA bestått 2. sep (11/11 FIKSET, 0 nye funn).** § 0 ferdig. Økt 56
 kjører `docs/prompt-vedlikehold-v1122-v1130.md` (ROADMAP § 5): plan godkjent
-av Marius, v1.12.2 bygget (758/758), så v1.13.0 AI-statistikk på /health og
+av Marius, v1.12.2 ute 20:52 (758/758), v1.13.0 bygget (767/767), så
 docs-slanking. Prompten slettes når alt er ute.
 
 **Majors vurdert 2. sep (kun rapport — ikke oppgradert, Marius' fasit):**
@@ -134,8 +128,11 @@ docs-slanking. Prompten slettes når alt er ute.
   `/brief` og `/nyheter` leser kun cachen. T.o.m. v1.3.3 kostet hvert besøk
   et AI-kall. Unntaket består: klikk ALDRI «Spør AI om råd» på `/lag` i en
   verifisering — det er det eneste stedet et klikk kan utløse et kall.
-- **Per-funksjon-AI-kostnad kan ikke måles retroaktivt:** Coolify-loggen er
-  100 linjer og nullstilles ved deploy — samle `AI-kall:`-linjene løpende.
+- **Per-funksjon-AI-kostnad leses på `/health` (fra v1.13.0):** `aiStats`
+  har `since`, `totals` og `byKey.<cacheKey>` (calls/inputTokens/
+  outputTokens/failures/lastAt/model), persistert i volumets
+  `ai-stats.json` — overlever deploy. Coolify-loggen (100 linjer,
+  nullstilles ved deploy) trengs ikke lenger for dette.
 - **En ren merge er ikke bevis på en riktig merge:** git plasserte
   v1.2.3-punkter inni `[1.2.2]`-seksjonen i CHANGELOG uten konflikt.
 - Cloudflare overstyrer origins `no-cache` med `max-age=14400` på

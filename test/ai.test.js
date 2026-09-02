@@ -1,6 +1,21 @@
 import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { generate, getCached, isEnabled, _flush, _setClient, _setNow, _reset } from '../src/services/ai.js';
+import fs from 'node:fs';
+import path from 'node:path';
+import config from '../src/config.js';
+import {
+  generate,
+  getCached,
+  isEnabled,
+  getStats,
+  statsFile,
+  parseStatsFile,
+  _flush,
+  _setClient,
+  _setNow,
+  _setHooks,
+  _reset,
+} from '../src/services/ai.js';
 
 // Ingen ekte Claude-kall: klienten injiseres, klokken styres.
 function fakeClient(handler) {
@@ -25,6 +40,7 @@ let clock;
 
 beforeEach(() => {
   _reset();
+  _setHooks({ load: () => null, save: () => {} }); // v1.13.0: aldri ekte DATA_DIR
   clock = 1_000_000;
   _setNow(() => clock);
   console.log = () => {};
@@ -33,6 +49,7 @@ beforeEach(() => {
 
 afterEach(() => {
   _reset();
+  _setHooks(null);
   _setNow(null);
   _setClient(null);
   console.log = quiet.log;
@@ -44,6 +61,110 @@ const opts = { cacheKey: 'test', minIntervalMs: 60_000, system: 's', prompt: 'p'
 test('injisert klient slår på AI uten at en nøkkel er satt', () => {
   fakeClient(() => textResponse('hei'));
   assert.equal(isEnabled(), true);
+});
+
+// ---- v1.13.0: AI-statistikk per cacheKey, persistert i DATA_DIR/ai-stats.json ----
+// Coolify-loggen er 100 linjer og nullstilles ved deploy, så «AI-kall:»-
+// linjene kunne aldri summeres i ettertid. Telleren gjør § 1 (P4) målbar på
+// /health. Disken injiseres (hooks) — ingen test skriver til ekte DATA_DIR.
+
+test('AI-statistikk er tom før første registrering', () => {
+  assert.deepEqual(getStats(), {
+    since: null,
+    totals: { calls: 0, inputTokens: 0, outputTokens: 0, failures: 0 },
+    byKey: {},
+  });
+});
+
+test('AI-statistikk: to kall på ulike nøkler gir riktige totals og byKey', async () => {
+  fakeClient((n) => ({ ...textResponse(`svar ${n}`), usage: { input_tokens: 100 * n, output_tokens: 10 * n } }));
+  await generate({ ...opts, cacheKey: 'brief' });
+  clock += 1000;
+  await generate({ ...opts, cacheKey: 'news' });
+  const stats = getStats();
+  assert.equal(stats.since, new Date(1_000_000).toISOString());
+  assert.deepEqual(stats.totals, { calls: 2, inputTokens: 300, outputTokens: 30, failures: 0 });
+  assert.deepEqual(stats.byKey.brief, {
+    calls: 1,
+    inputTokens: 100,
+    outputTokens: 10,
+    failures: 0,
+    lastAt: new Date(1_000_000).toISOString(),
+    model: 'fake-model',
+  });
+  assert.equal(stats.byKey.news.calls, 1);
+  assert.equal(stats.byKey.news.lastAt, new Date(1_001_000).toISOString());
+});
+
+test('AI-statistikk: tomt svar og kastet feil teller som failures, ikke calls', async () => {
+  fakeClient((n) => {
+    if (n === 1) return textResponse('');
+    throw new Error('nede');
+  });
+  await generate(opts); // tomt svar
+  clock += 6 * 60_000; // forbi backoff (5 min) og minInterval
+  await generate(opts); // kastet feil
+  const { totals, byKey } = getStats();
+  assert.deepEqual(totals, { calls: 0, inputTokens: 0, outputTokens: 0, failures: 2 });
+  assert.equal(byKey.test.lastAt, new Date(clock).toISOString());
+  assert.equal(byKey.test.model, config.aiModel, 'ved kastet feil noteres modellen vi prøvde');
+});
+
+test('AI-statistikk lagres etter hver registrering og leses tilbake etter _reset', async () => {
+  const saved = [];
+  _setHooks({ load: () => null, save: (file) => saved.push(JSON.stringify(file)) });
+  fakeClient(() => ({ ...textResponse('hei'), usage: { input_tokens: 5, output_tokens: 2 } }));
+  await generate(opts);
+  assert.equal(saved.length, 1);
+  const file = JSON.parse(saved[0]);
+  assert.equal(file.version, 1);
+  assert.equal(file.byKey.test.calls, 1);
+
+  _reset();
+  _setHooks({ load: () => parseStatsFile(saved[0]), save: () => {} });
+  const stats = getStats();
+  assert.deepEqual(stats.totals, { calls: 1, inputTokens: 5, outputTokens: 2, failures: 0 });
+  assert.equal(stats.since, file.since);
+});
+
+test('parseStatsFile: ugyldig JSON, feil versjon eller manglende byKey gir null uten å kaste', () => {
+  assert.equal(parseStatsFile('{ikke json'), null);
+  assert.equal(parseStatsFile(JSON.stringify({ version: 2, byKey: {} })), null);
+  assert.equal(parseStatsFile(JSON.stringify({ version: 1 })), null);
+  const ok = parseStatsFile(JSON.stringify({ version: 1, since: 'x', byKey: { a: { calls: 'tull' } } }));
+  assert.deepEqual(ok.byKey.a, { calls: 0, inputTokens: 0, outputTokens: 0, failures: 0, lastAt: null, model: null });
+});
+
+test('AI-statistikk: load som kaster gir tom statistikk, save som kaster velter ikke genereringen', async () => {
+  _setHooks({
+    load: () => {
+      throw new Error('disk');
+    },
+    save: () => {
+      throw new Error('disk full');
+    },
+  });
+  assert.equal(getStats().since, null);
+  fakeClient(() => textResponse('hei'));
+  const r = await generate(opts);
+  assert.equal(r.text, 'hei');
+  assert.equal(getStats().totals.calls, 1, 'telleren i minnet oppdateres selv om disken feiler');
+});
+
+test('statsFile ligger i config.dataDir', () => {
+  assert.equal(statsFile(), path.join(config.dataDir, 'ai-stats.json'));
+});
+
+// Kildelås: en test som injiserer klienten registrerer statistikk — uten hooks
+// ville den skrevet til ekte DATA_DIR (data/ lokalt).
+test('hver testfil som injiserer AI-klienten kobler fra ai-stats-disken med _setHooks', () => {
+  const testDir = new URL('./', import.meta.url);
+  for (const file of fs.readdirSync(testDir).filter((f) => f.endsWith('.test.js'))) {
+    const code = fs.readFileSync(new URL(file, testDir), 'utf8');
+    if (/_setClient\(/.test(code)) {
+      assert.match(code, /_setHooks\(/, `${file}: sett ai._setHooks({ load, save }) før klienten injiseres`);
+    }
+  }
 });
 
 test('feilet kall gir backoff: neste generate koster ingen nye tokens', async () => {

@@ -7,6 +7,30 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.13.0] - 2026-09-02
+
+Vedlikeholdspakke, del 2 (`docs/prompt-vedlikehold-v1122-v1130.md`, T2) på
+`feat/ai-stats-v1130`. Rød test først. 767/767, lint 0. 0 nye AI-kall.
+
+### Added
+
+- AI-kall-statistikk per funksjon (`ai.js`): hver generering registreres
+  per cacheKey — `calls`, `inputTokens`, `outputTokens` (fra `res.usage`),
+  `failures` (tomt svar eller kastet feil), `lastAt`, `model` — pluss
+  `since` (første registrering). Persisteres til `DATA_DIR/ai-stats.json`
+  (versjon 1) etter hver registrering, leses lazy ved første bruk; ugyldig
+  fil eller diskfeil gir tom statistikk / én logglinje, aldri en veltet
+  generering. `getStats()` er synkron og leser aldri disk per kall. Gjør
+  ROADMAP § 1 (P4 kostnadskontroll) målbart uten Coolify-loggen (100
+  linjer, nullstilles ved deploy). 0 nye AI-kall, aldri Discord.
+- `/health` bærer `aiStats` (= `getStats()` når AI er på, `null` ellers).
+  Payloaden er trukket ut i `healthPayload()` (ren, deps injiseres) og
+  testes uten lytter i `test/routes.test.js`. Tokentall er ikke
+  hemmeligheter; nøkkelverdier vises fortsatt aldri.
+- Tester: åtte nye i `test/ai.test.js` (totals/byKey, failures, persistens
+  via `_setHooks`, ugyldig JSON, diskfeil, filsti, kildelås som krever
+  `_setHooks` i hver testfil som injiserer klienten) + health-payloaden.
+
 ## [1.12.2] - 2026-09-02
 
 Vedlikeholdspakke, del 1 (`docs/prompt-vedlikehold-v1122-v1130.md`, T1) på

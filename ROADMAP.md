@@ -45,7 +45,8 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.11.0**~~ | ~~«Karriere-pakka»: FPL-karrieren + merkedager (/innsikt), bonuskamp (/live)~~ | **utført 2. sep — 729/729** | — |
 | ~~**v1.12.0**~~ | ~~«PWA»: manifest, ikoner, service worker, /offline~~ | **utført 2. sep — 743/743** | — |
 | ~~**v1.12.1**~~ | ~~QA-fikser: 11 funn fra Chrome-QA-en (falskt stale-banner på /live, tre chip-halvdeler, mobil-layout, kontrast)~~ | **utført 2. sep — 756/756** | — |
-| ~~**v1.12.2**~~ | ~~Vedlikehold: `npm audit fix` (qs), `node:24-alpine`, egne `:hist`-cache-nøkler (rotårsaken bak QA-funn 6)~~ | **utført 2. sep — 758/758** | — |
+| ~~**v1.12.2**~~ | ~~Vedlikehold: `npm audit fix` (qs), `node:24-alpine`, egne `:hist`-cache-nøkler (rotårsaken bak QA-funn 6)~~ | **utført 2. sep — 758/758, ute i prod 20:52** | — |
+| ~~**v1.13.0**~~ | ~~AI-kall-statistikk per funksjon i `DATA_DIR/ai-stats.json`, vist som `aiStats` på `/health` (gjør P4 målbart)~~ | **utført 2. sep — 767/767** | — |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
 Kalenderlogikk: utviklingssporet (v1.3.0 → v1.3.1+) går uavbrutt;
@@ -86,6 +87,10 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
   overgangskommentar, ligarapport).
 - **Eier detaljene:** `docs/sjekkpunkt-d-kostnad.md` (metode, terskler,
   analyseskript).
+- **Måling (fra v1.13.0):** tallene finnes på `/health` → `aiStats`
+  (`since`, `totals`, `byKey` per AI-funksjon: calls/inputTokens/
+  outputTokens/failures/lastAt/model), persistert i volumets
+  `ai-stats.json` — Coolify-loggen trengs ikke.
 - **Blokkert av:** ingenting — løpende oppfølging hos Marius.
 - **Størrelse:** liten.
 

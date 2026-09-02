@@ -27,7 +27,19 @@ går ut i drift for seg:
 Ingen av delene bruker AI, så kostnaden er uendret. Til slutt får du én
 ferdig prompt til Claude for Chrome som tester alt i drift.
 
-## Nytt: v1.12.0 — app på mobilen (2. september)
+## Nytt: v1.12.2 og v1.13.0 — vedlikehold under panseret (2. september)
+
+To små oppdateringer du knapt merker, men som gjør drifta tryggere:
+
+- **v1.12.2:** sikkerhetsoppdatering av en bibliotekpakke, nyere Node-versjon
+  i serveren (24, den anbefalte), og rotårsaken bak det falske «får ikke
+  kontakt med FPL»-banneret på Live er fjernet for godt — ikke bare omgått.
+- **v1.13.0:** dashbordet teller nå selv hvor mange AI-kall det gjør og hvor
+  mange tokens de bruker, per funksjon (brief, nyheter, rådgiver …). Tallene
+  ligger på `/health` og overlever omstarter, så du kan sjekke kostnaden
+  uten å grave i Coolify-loggen.
+
+## Før det: v1.12.0 — app på mobilen (2. september)
 
 Dashbordet kan nå legges til på hjemskjermen som en app, med eget ikon
 (lilla med grønn ball) og uten nettleserens adresselinje:

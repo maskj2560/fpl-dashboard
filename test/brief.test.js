@@ -8,6 +8,8 @@ import {
 } from '../src/services/brief.js';
 import * as ai from '../src/services/ai.js';
 
+ai._setHooks({ load: () => null, save: () => {} }); // v1.13.0: AI-statistikken skriver aldri til ekte DATA_DIR i tester
+
 const teamsById = new Map([
   [1, { id: 1, short_name: 'ARS', name: 'Arsenal' }],
   [2, { id: 2, short_name: 'CHE', name: 'Chelsea' }],

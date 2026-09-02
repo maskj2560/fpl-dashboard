@@ -13,6 +13,8 @@ import {
 import { clear } from '../src/services/cache.js';
 import * as ai from '../src/services/ai.js';
 
+ai._setHooks({ load: () => null, save: () => {} }); // v1.13.0: AI-statistikken skriver aldri til ekte DATA_DIR i tester
+
 // GW1–2 ferdige, GW3 pågår → maxGw 3.
 const bootstrap = {
   events: [

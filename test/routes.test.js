@@ -106,6 +106,21 @@ test('kalender-ruta svarer med text/calendar, no-store og inline filnavn', async
   assert.equal(passed?.message, 'FPL nede', 'feil skal gå til next(err)');
 });
 
+// v1.13.0: /health bærer AI-statistikken — synkron fra minnet, aldri nøkkelverdier.
+test('health-payloaden bærer aiStats når AI er på og null når den er av', async () => {
+  const { healthPayload } = await import('../src/routes/health.js');
+  const stats = { since: '2026-09-02T18:00:00.000Z', totals: { calls: 2, inputTokens: 300, outputTokens: 30, failures: 0 }, byKey: {} };
+  const cfg = { aiModel: 'claude-sonnet-5', discordWebhookUrl: 'https://discord.example/hook', hasTeamId: true };
+  const on = healthPayload({ svc: { isEnabled: () => true, getStats: () => stats }, cfg, leagues: 2, clubImages: 60 });
+  assert.equal(on.status, 'ok');
+  assert.deepEqual(on.features, { ai: true, aiModel: 'claude-sonnet-5', discord: true, teamId: true, leagues: 2, clubImages: 60 });
+  assert.deepEqual(on.aiStats, stats);
+  assert.ok(!JSON.stringify(on).includes('discord.example'), 'aldri verdier, bare av/på');
+  const off = healthPayload({ svc: { isEnabled: () => false, getStats: () => stats }, cfg, leagues: 0, clubImages: null });
+  assert.deepEqual(off.features, { ai: false, aiModel: null, discord: true, teamId: true, leagues: 0, clubImages: null });
+  assert.equal(off.aiStats, null);
+});
+
 test('kun api.js når element-summary — aldri /spillere-sidevisningen', () => {
   for (const file of routeFiles) {
     if (file === 'api.js') continue;
