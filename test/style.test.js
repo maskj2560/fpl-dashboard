@@ -175,6 +175,24 @@ test('style.css: lenker på hero-gradienten bruker --hero-link', () => {
   assert.match(block('.hero a'), /color: var\(--hero-link\)/);
 });
 
+// QA-funn 4 (v1.12.1): .chip { min-width: 7.5rem } × 4 + gap = 509 px i en
+// ~330 px bred bane på 390 px → 3-4-3 ble 2+1 / 2+2 / 2+1. På mobil deler
+// kortene raden likt og navnet får ellipse; benken (.bench) beholder wrap.
+test('style.css: oppstillingen holder radene hele på mobil', () => {
+  const mobile = css.slice(css.indexOf('@media (max-width: 480px)'));
+  assert.match(mobile, /\.pitch-row \{[^}]*flex-wrap: nowrap;/);
+  assert.match(mobile, /\.pitch-row \.chip \{[^}]*min-width: 0;/);
+  assert.match(mobile, /\.pitch-row \.chip \{[^}]*flex: 1 1 0;/);
+  assert.match(mobile, /\.pitch-row \.chip-name[^{]*\{[^}]*text-overflow: ellipsis;/);
+});
+
+// QA-funn 5 (v1.12.1): korthodet er flex uten wrap, og .h2-title { min-width: 0 }
+// lot tittelen krympe under innholdet sitt — «AI Oppsummering» fløt over
+// «generert 12:42 · neste tidligst 18:42» på 390 px. Lang meta faller nå ned.
+test('style.css: korthodet bryter meta-teksten ned på egen linje ved plassmangel', () => {
+  assert.match(block('.card h2'), /flex-wrap: wrap/);
+});
+
 test('style.css: smale tabeller krymper til innholdet', () => {
   assert.match(block('table.data.data--fit'), /width: auto/);
   assert.match(block('table.data.data--fit'), /min-width: min\(100%, 30rem\)/);

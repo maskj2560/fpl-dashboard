@@ -33,6 +33,16 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   temaer, 8,5–13:1 mot begge gradientfargene, låst i kontrastparene) og
   regelen `.hero a`. Hero-en er lilla i begge temaer, som topbaren, så
   regelen «grønn tekst kun i mørkt tema» gjelder ikke der.
+- Oppstillingen på /lag brakk radene på 390 px (3-4-3 ble 2+1 / 2+2 / 2+1)
+  (QA-funn 4): spillerkortene hadde `min-width: 7.5rem` og raden fikk
+  wrappe. På ≤ 480 px deler kortene nå raden likt (`flex: 1 1 0`, uten wrap),
+  navn og meta får ellipse ved plassmangel. Benken beholder wrap. Låst i
+  `test/style.test.js`.
+- Korthodet «AI Oppsummering» på /nyheter overlappet «generert 12:42 · neste
+  tidligst 18:42» på 390 px (QA-funn 5): `.card h2` er flex uten wrap, og
+  `.h2-title { min-width: 0 }` lot tittelen krympe under innholdet sitt.
+  Korthodet får `flex-wrap: wrap`, så lang meta faller ned på egen linje.
+  Låst i `test/style.test.js`.
 
 ## [1.12.0] - 2026-09-02
 
