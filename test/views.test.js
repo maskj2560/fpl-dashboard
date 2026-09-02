@@ -17,6 +17,7 @@ const cases = [
   ['dashboard', fx.dashboardEmpty, 'Formtallene nullstilles'],
   ['dashboard', fx.dashboardEmpty, 'Ingen overganger er registrert'],
   ['team', fx.team, 'Marius XI'],
+  ['team', fx.team, 'Ingen anbefaling'], // QA-funn 2: chip uten anbefaling får grå pille
   ['team', fx.teamEmpty, 'Fant ingen lagoppstilling'],
   ['players', fx.players, 'players-table'],
   ['players', fx.players, 'Differensialer'],

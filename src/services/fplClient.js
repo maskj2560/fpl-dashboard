@@ -33,14 +33,17 @@ export function _setNow(fn) {
 const STALE_BANNER_MS = 60 * 60_000;
 const STALE_BANNER_LIVE_MS = 10 * 60_000;
 
-export function staleInfo(gw = null) {
+// `finished: true` (v1.12.1): en ferdig runde ligger i 6 t-lageret (delt
+// nøkkel med getLive) og revalideres ikke — poengene er immutable, så alderen
+// sier ingenting om kontakten med FPL og skal aldri utløse banneret.
+export function staleInfo(gw = null, { finished = false } = {}) {
   const key = gw == null ? 'bootstrap' : `live:${gw}`;
   const cap = gw == null ? STALE_BANNER_MS : STALE_BANNER_LIVE_MS;
   const age = ageOf(key);
   if (age == null) return null;
   return {
     ageSec: Math.round(age / 1000),
-    tooOld: age > cap,
+    tooOld: finished ? false : age > cap,
     fetchedIso: new Date(now() - age).toISOString(),
   };
 }
@@ -180,7 +183,10 @@ export function getLive(gw) {
  * getLive(), men 6 t TTL: poengene i en ferdigspilt runde er i praksis
  * immutable. Delt nøkkel betyr at første skriver setter TTL-en — derfor
  * skal denne KUN kalles for runder bootstrap melder `finished`, ellers
- * kunne live-siden servert timegammel data for pågående runde.
+ * kunne live-siden servert timegammel data for pågående runde. Motsatt
+ * vei (v1.12.1): live-siden leser ferdige runder BEVISST herfra og måler
+ * dem med staleInfo(gw, { finished: true }) — ellers får den 6 t-verdien
+ * tilbake som «fersk» uten revalidering, mens 10-min-taket slår til.
  */
 export function getLiveHistoric(gw) {
   return getOrFetch(`live:${gw}`, () => fplFetch(`event/${gw}/live/`), { ttl: 360 * MIN });

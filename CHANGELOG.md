@@ -7,6 +7,43 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Fixed
+
+- Live-siden viste «Viser data fra HH:MM — får ikke kontakt med FPL» i
+  timevis mellom runder (QA-funn 6): en ferdig runde deler cache-nøkkel
+  `live:N` med 6 t-lageret (`getLiveHistoric`, skrevet av /innsikt,
+  /overganger og /liga), så `getLive` fikk verdien tilbake som «fersk» uten
+  revalidering — mens alderstaket på 10 min slo til. Ferdige runder leses nå
+  bevisst fra 6 t-lageret (`event.finished ? getLiveHistoric : getLive`, som
+  baseline.js/transfers.js alt gjorde), `buildLive` bærer `finished`, og
+  `staleInfo(gw, { finished: true })` utløser aldri banneret — poengene er
+  immutable. `dataAlder` rapporteres som før. Fire nye tester.
+- Chip-planleggeren på /lag viste tre halvdeler («1–19», «2–19» med samme
+  innhold, «20–38») (QA-funn 1): FPL 2026/27 gir wildcard og Free Hit
+  `start_event` 2 (kan ikke spilles i runde 1), og `chipHalves` skilte på
+  (start, stopp)-paret. Halvdelen er nå stopp-runden, `from` er laveste
+  start i gruppa. Én ny test med FPLs faktiske chip-data.
+- Chip-planleggeren: en chip uten anbefaling (ingen kjent blankrunde / ingen
+  tung periode) får grå pille «Ingen anbefaling» foran begrunnelsen, så hver
+  rad alltid har en pille (QA-funn 2, Marius' valg). QA-fasiten STEG 3b
+  oppdatert. Én ny view-test.
+- «Abonner på kalender» i nedtellingskortet på / var uleselig i lyst tema
+  (QA-funn 3): lenken arvet den globale `--accent-text` (mørkegrønn) på den
+  lilla gradienten — 1,85–2,76:1. Ny token `--hero-link` (FPL-grønn i begge
+  temaer, 8,5–13:1 mot begge gradientfargene, låst i kontrastparene) og
+  regelen `.hero a`. Hero-en er lilla i begge temaer, som topbaren, så
+  regelen «grønn tekst kun i mørkt tema» gjelder ikke der.
+- Oppstillingen på /lag brakk radene på 390 px (3-4-3 ble 2+1 / 2+2 / 2+1)
+  (QA-funn 4): spillerkortene hadde `min-width: 7.5rem` og raden fikk
+  wrappe. På ≤ 480 px deler kortene nå raden likt (`flex: 1 1 0`, uten wrap),
+  navn og meta får ellipse ved plassmangel. Benken beholder wrap. Låst i
+  `test/style.test.js`.
+- Korthodet «AI Oppsummering» på /nyheter overlappet «generert 12:42 · neste
+  tidligst 18:42» på 390 px (QA-funn 5): `.card h2` er flex uten wrap, og
+  `.h2-title { min-width: 0 }` lot tittelen krympe under innholdet sitt.
+  Korthodet får `flex-wrap: wrap`, så lang meta faller ned på egen linje.
+  Låst i `test/style.test.js`.
+
 ## [1.12.0] - 2026-09-02
 
 ### Added

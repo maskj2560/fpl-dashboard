@@ -72,6 +72,7 @@
   --hero-to: #3a2358;
   --hero-text: #f4f1fa;
   --hero-dim: #b8a9d1;
+  --hero-link: #00ff87; /* lenke på lilla flate — grønn i begge temaer, som topbar-logoen */
 
   /* Banen, skygger, scrollbar, fokus, plassholder */
   --pitch-line: rgba(240, 253, 248, 0.09);
@@ -161,6 +162,7 @@
   --hero-to: #5e1a6b;
   --hero-text: #ffffff;
   --hero-dim: #d9cfe0;
+  --hero-link: #00ff87;
   --pitch-line: rgba(55, 0, 60, 0.12);
   --pitch-stripe-a: rgba(0, 255, 135, 0.16);
   --pitch-stripe-b: rgba(0, 255, 135, 0.1);
@@ -490,6 +492,13 @@ footer {
   color: var(--hero-dim);
 }
 
+/* QA-funn 3 (v1.12.1): den globale lenkefargen er mørkegrønn i lyst tema og
+   forsvinner på gradienten (1,85:1). Hero-en er lilla i begge temaer, så
+   «grønn tekst kun i mørkt tema» gjelder ikke her — samme unntak som logoen. */
+.hero a {
+  color: var(--hero-link);
+}
+
 .hero-links code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: var(--fs-xs);
@@ -630,6 +639,7 @@ footer {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
+  flex-wrap: wrap; /* QA-funn 5: lang meta («generert … · neste …») faller ned i stedet for å bli overlappet */
   gap: var(--space-2);
   margin: 0 0 var(--space-3);
   font-family: var(--font-display);
@@ -1884,6 +1894,32 @@ footer .version {
   .stat-strip {
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     gap: var(--space-2);
+  }
+
+  /* QA-funn 4 (v1.12.1): 4 × 7.5rem + gap = 509 px i en ~330 px bred bane,
+     så 3-4-3 brakk til 2+1 / 2+2 / 2+1. Kortene deler raden likt (5-x-x gir
+     ~66 px), navn og meta får ellipse. Benken (.bench) beholder wrap. */
+  .pitch-row {
+    flex-wrap: nowrap;
+    gap: 0.35rem;
+  }
+
+  .pitch-row .chip {
+    min-width: 0;
+    flex: 1 1 0;
+    max-width: 7.5rem;
+    padding: 0.35rem 0.25rem;
+  }
+
+  .pitch-row .chip-name,
+  .pitch-row .chip-meta {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pitch-row .chip-name {
+    font-size: var(--fs-xs);
   }
 
   /* Tabellene får hele bredden på små skjermer — de scroller uansett. */

@@ -52,6 +52,27 @@ test('chipHalves leser start_event/stop_event og faller tilbake på 1–19/20–
   ]);
 });
 
+// QA-funn 1 (v1.12.1): FPL 2026/27 lar ikke wildcard og Free Hit spilles i
+// runde 1 — de har start_event 2, mens Bench Boost og Triple Captain har 1.
+// Prod viste «Halvdel 1 runde 1–19», «Halvdel 2 runde 2–19», «Halvdel 3 runde
+// 20–38». Halvdelen er stopp-runden, ikke (start, stopp)-paret.
+test('chipHalves: chips som først kan spilles i runde 2 lager ikke en egen halvdel', () => {
+  const fpl2026 = [
+    { id: 1, name: 'wildcard', start_event: 2, stop_event: 19 },
+    { id: 2, name: 'wildcard', start_event: 20, stop_event: 38 },
+    { id: 3, name: 'freehit', start_event: 2, stop_event: 19 },
+    { id: 4, name: 'bboost', start_event: 1, stop_event: 19 },
+    { id: 5, name: '3xc', start_event: 1, stop_event: 19 },
+    { id: 6, name: 'freehit', start_event: 20, stop_event: 38 },
+    { id: 7, name: 'bboost', start_event: 20, stop_event: 38 },
+    { id: 8, name: '3xc', start_event: 20, stop_event: 38 },
+  ];
+  assert.deepEqual(chipHalves(fpl2026), [
+    { half: 1, from: 1, to: 19 },
+    { half: 2, from: 20, to: 38 },
+  ]);
+});
+
 test('fixtureGrid gir kamper per lag per runde, delt med fdrMatrix', () => {
   const grid = fixtureGrid(teams, fixtures, 4, 8);
   assert.equal(grid.get(1).get(5).length, 2, 'ARS har dobbel i GW5');

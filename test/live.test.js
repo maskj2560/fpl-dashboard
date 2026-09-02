@@ -1,6 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildLive, topBps } from '../src/services/live.js';
+import { buildLive, topBps, assembleLive } from '../src/services/live.js';
+import { clear as cacheClear, _setNow as cacheSetNow, _flush as cacheFlush } from '../src/services/cache.js';
+import { _setNow as fplSetNow } from '../src/services/fplClient.js';
 
 const bootstrap = {
   teams: [
@@ -404,6 +406,7 @@ test('payloaden har ingen døde felter', () => {
   });
   assert.deepEqual(Object.keys(result).sort(), [
     'anyLive',
+    'finished',
     'gameweek',
     'leagues',
     'matches',
@@ -438,4 +441,67 @@ test('buildLive legger teamCode på mine spillere og homeCode/awayCode på kampe
   assert.equal(result.myPlayers[0].teamCode, 3);
   assert.equal(result.matches[0].homeCode, 3);
   assert.equal(result.matches[0].awayCode, 8);
+});
+
+// ---- QA-funn 6 (v1.12.1): ferdig runde deler cache-nøkkel med 6 t-lageret ----
+
+test('buildLive setter finished fra rundens finished-flagg i bootstrap', () => {
+  const events = (finished) => [{ id: 1, is_current: true, finished }];
+  const args = { gw: 1, fixtures: [], live: liveStats([]), picks: null };
+  assert.equal(buildLive({ ...args, bootstrap: { ...bootstrap, events: events(true) } }).finished, true);
+  assert.equal(buildLive({ ...args, bootstrap: { ...bootstrap, events: events(false) } }).finished, false);
+  assert.equal(buildLive({ ...args, bootstrap }).finished, false, 'uten events: ikke ferdig');
+  assert.equal(buildLive({ bootstrap, gw: null }).finished, false, 'tom visning er ikke ferdig');
+});
+
+// Prod 2. sep: /innsikt skrev `live:2` med 6 t TTL, /live leste samme nøkkel
+// via getLive og fikk «fersk» tilbake uten revalidering — mens alderstaket på
+// 10 min slo til. Ferdig runde skal derfor BEVISST leses fra 6 t-lageret;
+// pågående runde skal fortsatt fornyes etter 1 min.
+const liveBootstrap = (finished) => ({
+  ...bootstrap,
+  events: [{ id: 2, is_current: true, finished }],
+});
+
+async function assembleTwiceTwoMinutesApart(finished) {
+  const calls = [];
+  const originalFetch = globalThis.fetch;
+  let t = 1_000_000;
+  cacheClear();
+  cacheSetNow(() => t);
+  fplSetNow(() => t);
+  globalThis.fetch = async (url) => {
+    const u = String(url);
+    calls.push(u);
+    const json = (body, status = 200) => ({ ok: status < 300, status, json: async () => body });
+    if (u.endsWith('bootstrap-static/')) return json(liveBootstrap(finished));
+    if (u.includes('fixtures/')) return json([]);
+    if (u.endsWith('event/2/live/')) return json({ elements: [] });
+    return json('', 404); // picks/entry/liga: mykt fravær
+  };
+  try {
+    const first = await assembleLive();
+    t += 2 * 60_000;
+    const second = await assembleLive();
+    await cacheFlush();
+    return { first, second, liveFetches: calls.filter((u) => u.endsWith('event/2/live/')).length };
+  } finally {
+    globalThis.fetch = originalFetch;
+    cacheSetNow(null);
+    fplSetNow(null);
+    cacheClear();
+  }
+}
+
+test('assembleLive henter en ferdig runde via 6 t-lageret: ett kall på to minutter', async () => {
+  const r = await assembleTwiceTwoMinutesApart(true);
+  assert.equal(r.first.gameweek, 2);
+  assert.equal(r.first.finished, true);
+  assert.equal(r.liveFetches, 1, 'ferdig runde skal ikke revalideres etter 1 min');
+});
+
+test('assembleLive fornyer en pågående runde etter 1 min: to kall på to minutter', async () => {
+  const r = await assembleTwiceTwoMinutesApart(false);
+  assert.equal(r.first.finished, false);
+  assert.equal(r.liveFetches, 2, 'pågående runde skal revalideres (SWR) etter 1 min');
 });

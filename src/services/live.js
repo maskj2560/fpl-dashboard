@@ -4,6 +4,7 @@ import {
   getBootstrap,
   getFixtures,
   getLive,
+  getLiveHistoric,
   getPicks,
   getLeagueStandings,
   FplError,
@@ -21,6 +22,7 @@ import { resolveLeagueIds } from './leagues.js';
 function emptyLive() {
   return {
     anyLive: false,
+    finished: false,
     gameweek: null,
     nextKickoff: null,
     totalLive: null,
@@ -78,6 +80,8 @@ export function topBps(fixture, elementsById, teamsById, myIds = new Set()) {
 export function buildLive({ bootstrap, gw, fixtures = [], live = null, picks = null, leagues = [] }) {
   if (!gw) return emptyLive();
 
+  // Ferdig runde: poengene er immutable — styrer cache-lag og alderstak.
+  const finished = Boolean(bootstrap.events?.find((e) => e.id === gw)?.finished);
   const teamsById = byId(bootstrap.teams);
   const elementsById = byId(bootstrap.elements);
   const liveById = new Map((live?.elements ?? []).map((e) => [e.id, e.stats]));
@@ -153,16 +157,22 @@ export function buildLive({ bootstrap, gw, fixtures = [], live = null, picks = n
     };
   });
 
-  return { anyLive, gameweek: gw, nextKickoff, totalLive, myPlayers, matches, leagues };
+  return { anyLive, finished, gameweek: gw, nextKickoff, totalLive, myPlayers, matches, leagues };
 }
 
 /** Henter alt live-siden trenger. Deler av det er valgfritt og feiler mykt. */
 export async function assembleLive() {
   const bootstrap = await getBootstrap();
-  const gw = currentEvent(bootstrap.events)?.id;
+  const event = currentEvent(bootstrap.events);
+  const gw = event?.id;
   if (!gw) return emptyLive();
 
-  const [fixtures, live] = await Promise.all([getFixtures(gw), getLive(gw)]);
+  // Ferdig runde leses fra 6 t-lageret (samme nøkkel som getLive — se
+  // getLiveHistoric); pågående runde fornyes etter 1 min som før.
+  const [fixtures, live] = await Promise.all([
+    getFixtures(gw),
+    event.finished ? getLiveHistoric(gw) : getLive(gw),
+  ]);
 
   let picks = null;
   try {

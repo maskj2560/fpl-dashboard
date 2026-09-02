@@ -64,6 +64,8 @@ const PAIRS = [
   ['warn-text', 'warn-bg', 4.5],
   ['topbar-text', 'topbar-bg', 4.5], ['topbar-dim', 'topbar-bg', 4.5], ['accent-ink', 'accent', 4.5],
   ['hero-text', 'hero-from', 4.5], ['hero-text', 'hero-to', 4.5], ['hero-dim', 'hero-from', 4.5], ['hero-dim', 'hero-to', 4.5],
+  // QA-funn 3 (v1.12.1): lenker på hero-gradienten fikk --accent-text (1,85:1 i lyst tema).
+  ['hero-link', 'hero-from', 4.5], ['hero-link', 'hero-to', 4.5],
   ['fdr-ink-light', 'fdr-1', 3], ['fdr-ink-dark', 'fdr-2', 3], ['fdr-ink-dark', 'fdr-3', 3],
   ['fdr-ink-light', 'fdr-4', 3], ['fdr-ink-light', 'fdr-5', 3],
   ['focus', 'bg', 3], ['focus', 'surface', 3],
@@ -164,6 +166,31 @@ test('style.css: plassifferet reserverer plass til trendpila', () => {
 // så spiller 2 måtte dras fram sidelengs.
 test('style.css: duellen deler bredden på mobil i stedet for å scrolle', () => {
   assert.match(css, /\.duell-panel table\.data \{\s*width: 100%;\s*table-layout: fixed;\s*white-space: normal;/);
+});
+
+// QA-funn 3 (v1.12.1): «Abonner på kalender» i nedtellingskortet arvet den
+// globale lenkefargen — mørkegrønn på lilla gradient i lyst tema. Hero-en er
+// lilla i BEGGE temaer, så lenken får en egen token (grønn som topbar-logoen).
+test('style.css: lenker på hero-gradienten bruker --hero-link', () => {
+  assert.match(block('.hero a'), /color: var\(--hero-link\)/);
+});
+
+// QA-funn 4 (v1.12.1): .chip { min-width: 7.5rem } × 4 + gap = 509 px i en
+// ~330 px bred bane på 390 px → 3-4-3 ble 2+1 / 2+2 / 2+1. På mobil deler
+// kortene raden likt og navnet får ellipse; benken (.bench) beholder wrap.
+test('style.css: oppstillingen holder radene hele på mobil', () => {
+  const mobile = css.slice(css.indexOf('@media (max-width: 480px)'));
+  assert.match(mobile, /\.pitch-row \{[^}]*flex-wrap: nowrap;/);
+  assert.match(mobile, /\.pitch-row \.chip \{[^}]*min-width: 0;/);
+  assert.match(mobile, /\.pitch-row \.chip \{[^}]*flex: 1 1 0;/);
+  assert.match(mobile, /\.pitch-row \.chip-name[^{]*\{[^}]*text-overflow: ellipsis;/);
+});
+
+// QA-funn 5 (v1.12.1): korthodet er flex uten wrap, og .h2-title { min-width: 0 }
+// lot tittelen krympe under innholdet sitt — «AI Oppsummering» fløt over
+// «generert 12:42 · neste tidligst 18:42» på 390 px. Lang meta faller nå ned.
+test('style.css: korthodet bryter meta-teksten ned på egen linje ved plassmangel', () => {
+  assert.match(block('.card h2'), /flex-wrap: wrap/);
 });
 
 test('style.css: smale tabeller krymper til innholdet', () => {
