@@ -1801,3 +1801,14 @@ designvalg endret) — verbatim fra HANDOVER.md:
   «Fortsett» → to fix-brancher med rød test først, 756/756 + lint 0, docs
   ajour, økt 53-loggen rotert, tag `v1.12.1`, push, prod-sjekk 12/12 +
   11,5-min-bevis for funn 6 (`dataAlder` 711, 0 banner).
+
+## Rotert 2026-09-04 (økt 57): loggpostene fra økt 55 (verbatim fra HANDOVER.md)
+
+- 2026-09-02 (økt 55, Fable): Marius limte inn re-QA-rapporten fra Claude
+  for Chrome (17:45–18:20: STEG 1–3 OK, 11/11 FIKSET, 0 nye funn, begge
+  temaer, 390 + 1440). Handling: plan-modus, plan godkjent → rapporten
+  arkivert (`docs/arkiv/qa-rapport-v1121.md`), re-QA-prompten slettet,
+  økt 54-posten rotert, HANDOVER/ROADMAP/VIDERE ajour, 0 kode, én commit.
+- 2026-09-02 (økt 55): «Er det noe du kunne anbefalt å gjøre som du kan
+  gjøre? … skriv en planleggingsprompt til fable» → seks kandidater med bevis,
+  Marius valgte 1–4 (ingen ekstra) → `docs/prompt-vedlikehold-v1122-v1130.md` + § 5.

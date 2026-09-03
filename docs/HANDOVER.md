@@ -6,8 +6,8 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-09-02 (økt 56, Fable: vedlikeholdspakka — v1.12.2
-ute, v1.13.0 bygget, se «Neste steg»)
+**Sist oppdatert:** 2026-09-04 (økt 57, Fable: kjøreprompt for v1.13.1
+«Sikkerhetsnett» skrevet til Opus — se «Neste steg» og ROADMAP § 6)
 
 ## Status akkurat nå
 - **v1.13.0 «AI-statistikk» i prod 2. sep 20:59 (økt 56)** på `feat/ai-stats-v1130`:
@@ -53,7 +53,9 @@ Planen er arkivert i `docs/arkiv/plan-sluttpakka-v183-v1120.md`
 **§ 0 og § 5 er ferdige (2. sep).** Vedlikeholdspakka (v1.12.2 20:52,
 v1.13.0 20:59, docs-slanking) er ute; prompten er konsumert og slettet (git
 bevarer den: `git show d34e3c8:docs/prompt-vedlikehold-v1122-v1130.md`).
-Køen har ingen åpne kodepunkter — kun P4 (løpende) og Marius' punkter under.
+**Neste kodepunkt: ROADMAP § 6 — v1.13.1 «Sikkerhetsnett»** (4. sep, økt 57):
+kjøreprompt til Opus i `docs/prompt-sikkerhetsnett-v1131.md` (app-fabrikk,
+rute-tester, CI Node 22/24, pre-push-hook). Ellers kun P4 og Marius' punkter.
 
 **Majors vurdert 2. sep (kun rapport — ikke oppgradert, Marius' fasit):**
 - `ejs` 3.1.10 → 6.0.1: v4 fjernet `client`-flagget + Jake, v6 er dual
@@ -184,17 +186,14 @@ Køen har ingen åpne kodepunkter — kun P4 (løpende) og Marius' punkter under
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
-- 2026-09-02 (økt 55, Fable): Marius limte inn re-QA-rapporten fra Claude
-  for Chrome (17:45–18:20: STEG 1–3 OK, 11/11 FIKSET, 0 nye funn, begge
-  temaer, 390 + 1440). Handling: plan-modus, plan godkjent → rapporten
-  arkivert (`docs/arkiv/qa-rapport-v1121.md`), re-QA-prompten slettet,
-  økt 54-posten rotert, HANDOVER/ROADMAP/VIDERE ajour, 0 kode, én commit.
-- 2026-09-02 (økt 55): «Er det noe du kunne anbefalt å gjøre som du kan
-  gjøre? … skriv en planleggingsprompt til fable» → seks kandidater med bevis,
-  Marius valgte 1–4 (ingen ekstra) → `docs/prompt-vedlikehold-v1122-v1130.md` + § 5.
 - 2026-09-02 (økt 56, Fable): Marius limte inn vedlikeholdsprompten; «Stopp
   arbeid. Jeg oppdaterer drivers», så «Du kan forsette», så «Er det noe mer
   som bør gjøres?» → «Fiks docs-hullene». Handling: plan godkjent → v1.12.2 og
   v1.13.0 (TDD, `--no-ff`, tag, deploy, prod-sjekk); docs slanket; prompten
   slettet; README- og sjekkpunkt-d-hullene om `/health`/`aiStats` fikset.
+- 2026-09-04 (økt 57, Fable): «Jeg vil forbedre siden. Hva kan du gjøre?» →
+  fire retninger (A–D); «Lag en plan for å gjennomføre A»; «send planen til
+  opus. Gjør den veldig bra». Handling: premisser målt, ett spørsmålssett
+  (alle anbefalinger valgt) → `docs/prompt-sikkerhetsnett-v1131.md` + § 6,
+  økt 55-loggen rotert. 0 kode, én docs-commit, ikke pushet (spares til v1.13.1).
 
