@@ -87,6 +87,92 @@ const layoutLocals = (path) => ({
   startedAt: '19.08.2026, 21:00', cspNonce: 'testnonce', iconVersion: '1',
 });
 
+// v1.13.2 (fiks 10): fem kolonner sprengte 390 px, og «Gevinst» — den ene man
+// faktisk er ute etter — falt utenfor. «Nå» er den minst viktige og skjules.
+test('transfers.ejs merker Nå-kolonna i Prisgevinst', async () => {
+  const html = await renderView('transfers', fx.transfers);
+  assert.match(html, /<th class="num col-now">Nå<\/th>/);
+  // Hodet, hver spillerrad og sumraden — ellers rakner kolonnetellinga.
+  assert.ok(
+    (html.match(/class="num[^"]* col-now"/g) || []).length >= 2,
+    'både datacellene og sumraden må merkes',
+  );
+  // Ukjent-raden hadde colspan=4 tvers over «Nå». Med kolonna skjult ville
+  // raden kreve én kolonne mer enn de andre og skape en fantomkolonne.
+  assert.doesNotMatch(html, /colspan="4"/);
+  assert.match(html, /<td class="dim">ukjent<\/td>/);
+});
+
+// v1.13.2 (fiks 8): forklaringene sto som 6–9 linjer brødtekst FØR tallene på
+// 390 px. De legges sammen, lukket, så tallene står rett under overskriften.
+test('innsikt.ejs legger forklaringene i lukkede details', async () => {
+  const html = await renderView('innsikt', fx.insights);
+  const apnede = html.match(/<details class="hint-details" open/g) || [];
+  assert.equal(apnede.length, 0, 'ingen forklaring skal stå åpen');
+  assert.ok(
+    (html.match(/<details class="hint-details">/g) || []).length >= 3,
+    'minst tre forklaringer skal være sammenleggbare',
+  );
+  assert.ok(
+    (html.match(/<summary>Slik regnes det<\/summary>/g) || []).length >= 3,
+    'hver sammenleggbare forklaring trenger samme etikett',
+  );
+});
+
+// v1.13.2 (fiks 7): «4.9.2026, 01:40:13» var eneste stedet i appen med
+// tallrik dato og sekunder. Resten bruker formatDay/formatTime.
+test('news.ejs viser publiseringstidspunkt i appens datoformat, uten sekunder', async () => {
+  const html = await renderView('news', {
+    ...fx.news,
+    items: [{ ...fx.news.items[0], published: '2026-09-04T01:40:13Z' }],
+  });
+  assert.match(html, /fredag 4\. september kl\. 03:40/);
+  assert.doesNotMatch(html, /\d{2}:\d{2}:\d{2}/);
+});
+
+// v1.13.2 (fiks 9): serveren skriver samme streng som klienten regner ut, ellers
+// blafrer teksten når app.js rendrer fra JSON-beholderen ved lasting.
+test('live.ejs viser neste avspark mellom runder', async () => {
+  const mellom = { ...fx.live, live: { ...fx.live.live, anyLive: false }, nextKickoffText: 'fredag 4. september kl. 21:00' };
+  const html = await renderView('live', mellom);
+  assert.match(html, /Ingen kamper pågår — neste avspark fredag 4\. september kl\. 21:00/);
+
+  const uten = await renderView('live', { ...mellom, nextKickoffText: null });
+  assert.match(uten, /Ingen kamper pågår akkurat nå/);
+});
+
+// v1.13.2 (fiks 4): assembleDeadlineCheck gir null både uten team-id og når
+// hentingen feiler. Uten et eget flagg forsvant kortet sporløst i feiltilfellet.
+test('brief.ejs viser tomtilstand når lagsjekken feilet', async () => {
+  const html = await renderView('brief', { ...fx.brief, deadlineCheck: null, deadlineCheckFailed: true });
+  assert.match(html, /id="lagsjekk"/);
+  assert.match(html, /Lagsjekken er utilgjengelig akkurat nå/);
+});
+
+test('brief.ejs skjuler Lagsjekk-kortet uten team-id', async () => {
+  const html = await renderView('brief', { ...fx.brief, deadlineCheck: null, deadlineCheckFailed: false });
+  assert.doesNotMatch(html, /id="lagsjekk"/);
+});
+
+// v1.13.2 (fiks 3): lagnavn og managernavn på samme linje gjorde «Lag»-kolonna
+// så bred at «Totalt» falt utenfor 390 px. Managernavnet får egen klasse så
+// mobilregelen kan bryte det ned på egen linje.
+test('league.ejs merker managernavnet så det kan brytes ned', async () => {
+  const html = await renderView('league', fx.league);
+  assert.match(html, /<span class="dim manager">/);
+});
+
+// v1.13.2 (fiks 2): knappen som løfter rad-taket står under tabellen, før
+// tomtilstanden. Den er skjult til klienten finner skjulte treff.
+test('players.ejs har knappen som viser alle rader', async () => {
+  const html = await renderView('players', fx.players);
+  assert.match(html, /<button type="button" id="players-more" class="btn-quiet" hidden>/);
+  assert.ok(
+    html.indexOf('id="players-more"') < html.indexOf('id="players-empty"'),
+    'knappen skal stå før tomtilstanden',
+  );
+});
+
 test('layout.ejs gir tema-scriptet CSP-noncen', async () => {
   const html = await renderView('layout', layoutLocals('/'));
   assert.ok(html.includes('<script nonce="testnonce">'), 'tema-scriptet mangler nonce');
@@ -751,7 +837,9 @@ test('transfers.ejs merker beste og verste bytte som piller', async () => {
 test('transfers.ejs: prisgevinst med salgspris, ukjent-fallback og tapte salg', async () => {
   const html = await renderView('transfers', fx.transfers);
   assert.match(html, /14\.2/); // salgspris 142 tideler
-  assert.match(html, /ukjent kjøpspris/); // Salah mangler element_in_cost
+  // Salah mangler element_in_cost. «Kjøpt» står i kolonnehodet, så cella sier
+  // bare «ukjent» — «ukjent kjøpspris» gjorde kolonna 15 px for bred på 390 px.
+  assert.match(html, /<td class="dim">ukjent<\/td>/);
   assert.match(html, /Saka: solgt for 5\.5, nå 6\.0/);
 
   const uten = await renderView('transfers', fx.transfersEmpty);

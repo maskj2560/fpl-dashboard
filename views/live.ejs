@@ -1,7 +1,14 @@
 <section class="page-head">
   <h1>Live<% if (gw) { %> — Runde <%= gw %><% } %></h1>
   <p class="dim">
-    <span id="live-status" role="status"><%= live && live.anyLive ? 'Kamper pågår' : 'Ingen kamper pågår akkurat nå' %></span>
+    <%# nextKickoffText er formatert med formatDay + formatTime, nøyaktig som
+        liveStatusText() i app.js — klienten rendrer fra JSON-beholderen straks
+        siden lastes, og ulike strenger ville gitt et synlig blaff. %>
+    <span id="live-status" role="status"><%= live && live.anyLive
+      ? 'Kamper pågår'
+      : (typeof nextKickoffText !== 'undefined' && nextKickoffText
+        ? 'Ingen kamper pågår — neste avspark ' + nextKickoffText
+        : 'Ingen kamper pågår akkurat nå') %></span>
     <span class="pulse<%= live && live.anyLive ? ' pulse-on' : '' %>" id="live-pulse" aria-hidden="true"></span>
     · <span id="live-updated">Sist oppdatert <%= new Date().toLocaleTimeString('nb-NO') %></span>
   </p>

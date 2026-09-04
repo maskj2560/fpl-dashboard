@@ -270,17 +270,25 @@
     <div class="table-scroll">
       <table class="data"><caption class="sr-only">Prisgevinst per spiller</caption>
         <thead>
-          <tr><th>Spiller</th><th class="num">Kjøpt</th><th class="num">Nå</th><th class="num">Salg</th><th class="num">Gevinst</th></tr>
+          <%# «Nå» skjules under 480 px (.col-now) — fem kolonner sprengte 390 px
+              og dyttet «Gevinst» ut. Ingen colspan får krysse den kolonna. %>
+          <tr><th>Spiller</th><th class="num">Kjøpt</th><th class="num col-now">Nå</th><th class="num">Salg</th><th class="num">Gevinst</th></tr>
         </thead>
         <tbody>
           <% for (const h of priceReport.holdings) { %>
             <tr>
               <td><%- include('partials/club-badge', { team: { short_name: h.teamShort, code: h.teamCode, name: h.teamShort }, showName: false }) %> <%= h.name %></td>
               <% if (h.ukjent) { %>
-                <td class="num dim" colspan="4">ukjent kjøpspris</td>
+                <%# Egne celler i stedet for colspan=4: en colspan tvers over
+                    «Nå» ville kreve én kolonne mer enn de andre radene når
+                    kolonna er skjult, og skape en tom fantomkolonne. Kolonnen
+                    Salg+Gevinst ligger etter «Nå» og kan trygt slås sammen. %>
+                <td class="dim">ukjent</td>
+                <td class="num dim col-now"><%= h.nowCost === null ? '–' : formatPrice(h.nowCost) %></td>
+                <td class="num dim" colspan="2">–</td>
               <% } else { %>
                 <td class="num"><%= formatPrice(h.buyCost) %></td>
-                <td class="num"><%= formatPrice(h.nowCost) %></td>
+                <td class="num col-now"><%= formatPrice(h.nowCost) %></td>
                 <td class="num"><%= formatPrice(h.sellPrice) %></td>
                 <td class="num <%= h.gain > 0 ? 'accent' : (h.gain < 0 ? 'negative' : '') %>"><%= formatSigned(h.gain / 10) %></td>
               <% } %>
@@ -289,7 +297,7 @@
           <tr>
             <td><strong>Sum</strong></td>
             <td class="num"><strong><%= formatPrice(priceReport.totals.buyCost) %></strong></td>
-            <td class="num"><strong><%= formatPrice(priceReport.totals.nowCost) %></strong></td>
+            <td class="num col-now"><strong><%= formatPrice(priceReport.totals.nowCost) %></strong></td>
             <td class="num"><strong><%= formatPrice(priceReport.totals.sellPrice) %></strong></td>
             <td class="num <%= priceReport.totals.gain > 0 ? 'accent' : (priceReport.totals.gain < 0 ? 'negative' : '') %>"><strong><%= formatSigned(priceReport.totals.gain / 10) %></strong></td>
           </tr>

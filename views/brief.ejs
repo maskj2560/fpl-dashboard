@@ -45,6 +45,13 @@
     <% } %>
     <p class="hint">Gratisbytter igjen: <%= ft %> (<%= deadlineCheck.footer.transfersMade %> brukt) · Chip: <%= chip %> · Grunnlag: <%= deadlineCheck.basis %> — FPL viser ikke det nye laget før deadline.</p>
   </section>
+<% } else if (typeof deadlineCheckFailed !== 'undefined' && deadlineCheckFailed) { %>
+  <%# Uten team-id skal kortet være borte, men når hentingen glapp skal det si
+      fra: et kort som forsvinner uten forklaring leses som «alt er i orden». %>
+  <section class="card card-wide" id="lagsjekk">
+    <h2><span class="h2-title">Lagsjekk</span></h2>
+    <p class="empty">Lagsjekken er utilgjengelig akkurat nå — prøv igjen om litt.</p>
+  </section>
 <% } %>
 
 <% if (typeof aiBrief !== 'undefined' && aiBrief?.text) { %>

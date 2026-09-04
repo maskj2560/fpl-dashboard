@@ -90,7 +90,9 @@
   --font-display: 'Archivo', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-mono: ui-monospace, 'Cascadia Mono', Consolas, 'SF Mono', monospace;
-  --fs-xs: 0.7rem;
+  /* 0.7rem = 11,2 px var under lesbarhetsgrensa på tabellhoder, statetiketter
+     og statuspiller (fiks 6, v1.13.2). 0.75rem = 12 px. */
+  --fs-xs: 0.75rem;
   --fs-sm: 0.8rem;
   --fs-base: 0.9rem;
   --fs-md: 1rem;
@@ -1185,6 +1187,40 @@ table.data tbody tr:hover {
   margin-top: var(--space-3);
 }
 
+/* Fiks 8 (v1.13.2): forklaringene på /innsikt sto som 6–9 linjer brødtekst FØR
+   tallene på 390 px. De legges sammen, lukket, så tallene kommer rett under
+   kortoverskriften. Ren HTML — ingen JS, ingen animasjon. */
+.hint-details {
+  margin-top: 0.6rem;
+}
+
+.hint-details summary {
+  cursor: pointer;
+  width: fit-content;
+  font-size: var(--fs-sm);
+  color: var(--text-dim);
+}
+
+.hint-details summary:hover {
+  color: var(--text);
+}
+
+.hint-details summary:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Forklaringen inni arver .hint sin toppmarg — den trenger mindre her. */
+.hint-details .hint {
+  margin-top: 0.4rem;
+}
+
+.hint-details + .table-scroll,
+.hint-details + .stat-strip {
+  margin-top: var(--space-3);
+}
+
 /* ---------- Tomtilstander / feilsider ---------- */
 
 .empty-state {
@@ -1882,6 +1918,36 @@ footer .version {
   .topbar nav a {
     padding: 0.3rem 0.6rem;
     font-size: var(--fs-base);
+  }
+
+  /* Fiks 1 (v1.13.2): «FPLdashboard» + temabryteren spiste 217 px av 390, så
+     nav-en satt igjen med 173 px av de 596 den trenger — 1–2 lenker synlige.
+     Ordmerket kortes til «FPL» på mobil; lenketeksten er fortsatt «FPL», så
+     det tilgjengelige navnet følger det synlige. */
+  .wordmark span {
+    display: none;
+  }
+
+  /* Fiks 3 (v1.13.2): «Lagnavn Managernavn» på én linje gjorde «Lag»-kolonna
+     så bred at «Totalt» havnet utenfor 390 px-banen. Managernavnet faller ned
+     på egen linje under lagnavnet. */
+  .manager {
+    display: block;
+  }
+
+  /* Fiks 10 (v1.13.2): Prisgevinst har fem kolonner, og «Gevinst» — den man
+     faktisk er ute etter — falt utenfor 390 px. «Nå» er den minst viktige:
+     kjøpspris, salgspris og gevinst forteller hele historien. */
+  .col-now {
+    display: none;
+  }
+
+  /* Rangkolonna reserverer 2rem til pila (som ligger absolutt på 0.6rem).
+     På mobil er de siste 8 pikslene forskjellen på om «Totalt» får luft eller
+     står klemt mot kortkanten — pila har fortsatt klaring. */
+  table.data th.rang,
+  table.data td.rang {
+    padding-right: 1.5rem;
   }
 
   main {

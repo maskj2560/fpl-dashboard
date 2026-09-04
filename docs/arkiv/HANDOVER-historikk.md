@@ -5,6 +5,39 @@
 > sjekkpunkt-tabellen, versjonshistorikken, utdaterte åpne punkter og hele
 > loggen over brukerbeskjeder til og med økt 22. Nyere logg: HANDOVER.md.
 
+## Rotert 2026-09-04 (økt 60, v1.13.2): statusblokkene v1.13.1, v1.13.0 og v1.8.3–v1.12.2 samt loggpostene for økt 57 og 58 (verbatim fra HANDOVER.md)
+
+- **v1.13.1 «Sikkerhetsnett» i prod 4. sep 02:37 (økt 58)** på `feat/sikkerhetsnett-v1131`:
+  `createApp()` i `src/app.js` (ren fabrikk — lytter aldri, starter ingen
+  timer), `src/server.js` er den eneste fila som lytter og starter schedulere.
+  `test/app.test.js` (23 tester, 0,8 s) kjører hele stacken på loopback mot
+  `test/fixtures/fpl-world.js`. `.github/workflows/ci.yml` (Node 22 + 24) og
+  `.githooks/pre-push` + `npm run hooks`. **792/792 + lint 0** (baseline 767).
+  CI-kjøring `33822168239` på merge-commiten grønn på både Node 22 og 24.
+  Prod-sjekk 02:41: footer v1.13.1, `<script` 2, /health 200 med `aiStats`
+  (13 kall, 0 failures), hash `ba91839a` (uendret), 9 sider 200.
+  **Bonusfunn fikset:** `createErrorHandler` sendte aldri `staleSince` til
+  `layout.ejs`, som leser den ubetinget → EJS kastet og alle feilsider (503,
+  500, 413) falt ned til ren tekst «Noe gikk galt.». Gjaldt i prod siden
+  v1.4.0. Regresjonstest i `middleware.test.js`.
+
+- **v1.13.0 «AI-statistikk» i prod 2. sep 20:59 (økt 56)**: teller per cacheKey
+  i `ai.js` → `DATA_DIR/ai-stats.json`, `aiStats` på /health via
+  `healthPayload()`. **767/767 + lint 0**. Prod-sjekk 21:03 grønn.
+- **v1.8.3–v1.12.2 i prod 2. sep** (655 → 758 tester) — statusblokkene i historikkfila.
+  Prisvarslene: første Discord-melding var ventet natt til 4. sep — sjekk at den kom.
+
+- 2026-09-04 (økt 57, Fable): «Jeg vil forbedre siden. Hva kan du gjøre?» →
+  fire retninger (A–D). «Lag en plan for A» / «send planen til opus» →
+  `docs/prompt-sikkerhetsnett-v1131.md` + § 6 (bygget i økt 58). Så «C … lag en
+  prompt til fable som skal planlegge dette», «fable-planen skal lage en
+  kjøreprompt til opus», «ikke denne økten» → `docs/prompt-ux-gjennomgang-v1132.md` + § 7.
+- 2026-09-04 (økt 58, Opus): Marius limte inn kjøreprompten for v1.13.1.
+  Handling: premissene verifisert mot koden (server.js var 148 linjer, ikke
+  138), plan godkjent → app-fabrikk, falsk FPL-verden, 23 rute-tester, CI og
+  pre-push-hook. Rute-testene avdekket at feilsidene har vært ren tekst siden
+  v1.4.0 — fikset i samme branch. 792/792, CI grønn, prompten slettet.
+
 ## Rotert 2026-09-04 (økt 58, v1.13.1): statusblokkene v1.12.2 og v1.12.0/v1.12.1, majors-vurderingen og loggpost økt 56 (verbatim fra HANDOVER.md)
 
 **Majors vurdert 2. sep (kun rapport — ikke oppgradert, Marius' fasit):**

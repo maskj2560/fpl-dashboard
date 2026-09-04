@@ -39,7 +39,7 @@
                   <% if (r.entry === myEntry) { %>
                     <strong><%= r.entry_name %></strong> <span class="dim">(meg)</span>
                   <% } else { %>
-                    <a href="/liga?rival=<%= r.entry %>"><%= r.entry_name %></a> <span class="dim"><%= r.player_name %></span>
+                    <a href="/liga?rival=<%= r.entry %>"><%= r.entry_name %></a> <span class="dim manager"><%= r.player_name %></span>
                   <% } %>
                 </td>
                 <td class="num"><%= r.event_total %></td>

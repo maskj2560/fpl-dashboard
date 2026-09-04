@@ -247,6 +247,47 @@ test('rowMatchesFilters krever at alle aktive filtre treffer', () => {
   assert.equal(app.rowMatchesFilters(ds, { maxPrice: 14.5, team: '13' }), true);
 });
 
+// v1.13.2 (fiks 2): 686 rader × ~20 data-attributter ga 13 544 DOM-noder og
+// 957 kB på /spillere. `content-visibility` har ingen effekt på tabellrader
+// (size containment gjelder ikke table-interne bokser), så taket ligger i
+// klienten: de 100 første treffene vises, resten bak «Vis alle».
+test('rowLimit kapper til taket og teller resten', () => {
+  // Spredning flytter objektet inn i denne realmen: vm-konteksten har sin egen
+  // Object.prototype, og deepStrictEqual sammenligner prototyper.
+  const r = (...a) => ({ ...app.rowLimit(...a) });
+  assert.deepEqual(r(652, 100, false), { shown: 100, hidden: 552 });
+  assert.deepEqual(r(30, 100, false), { shown: 30, hidden: 0 });
+  assert.deepEqual(r(652, 100, true), { shown: 652, hidden: 0 });
+  assert.deepEqual(r(0, 100, false), { shown: 0, hidden: 0 });
+});
+
+test('rad-taket på /spillere er 100', () => {
+  assert.equal(app.evaluate('PLAYER_ROW_LIMIT'), 100);
+});
+
+// v1.13.2 (fiks 5): poll() svelget feil stille — «Sist oppdatert 12:30:05» ble
+// stående mens tallene under var minutter gamle.
+test('liveUpdatedText skiller mellom fersk henting og mistet kontakt', () => {
+  assert.equal(app.liveUpdatedText(true, '12:30:05'), 'Sist oppdatert 12:30:05');
+  assert.equal(
+    app.liveUpdatedText(false, '12:30:05'),
+    'Får ikke kontakt — prøver igjen om 1 min (sist OK 12:30:05)',
+  );
+  assert.equal(app.liveUpdatedText(false, null), 'Får ikke kontakt — prøver igjen om 1 min');
+});
+
+// v1.13.2 (fiks 9): «Ingen kamper pågår akkurat nå» sa ingenting om når det
+// smeller igjen. nextKickoff finnes alt i /api/live.json.
+test('liveStatusText viser neste avspark mellom runder', () => {
+  assert.equal(app.liveStatusText({ anyLive: true, nextKickoff: null }), 'Kamper pågår');
+  assert.equal(app.liveStatusText({ anyLive: false, nextKickoff: null }), 'Ingen kamper pågår akkurat nå');
+  assert.equal(app.liveStatusText({ anyLive: false, nextKickoff: 'tull' }), 'Ingen kamper pågår akkurat nå');
+
+  const t = app.liveStatusText({ anyLive: false, nextKickoff: '2026-09-04T19:00:00Z' });
+  assert.ok(t.startsWith('Ingen kamper pågår — neste avspark '), t);
+  assert.ok(t.includes(' kl. '), t);
+});
+
 test('queryParam leser og dekoder verdien fra søkestrengen', () => {
   assert.equal(app.queryParam('?sok=Haaland&pos=4', 'sok'), 'Haaland');
   assert.equal(app.queryParam('?sok=De%20Bruyne', 'sok'), 'De Bruyne');

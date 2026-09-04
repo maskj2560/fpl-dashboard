@@ -7,6 +7,52 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.13.2] - 2026-09-04
+
+«UX-polering 2» på `feat/ux-polering-v1132`: ti småfiks fra
+funksjonsgjennomgangen i økt 59. Rød test først. 809/809, lint 0. Hver fiks
+sett i nettleser ved 390 px i begge temaer. 0 nye AI-kall, 0 nye avhengigheter,
+ingen nye FPL-kall.
+
+### Changed
+
+- Mobilmenyen får plass: ordmerket kortes til «FPL» under 480 px, så nav-en
+  vokser fra 173 til 265 px og viser tre lenker i stedet for én–to. Full logo
+  fra 481 px og opp (fiks 1).
+- Minste tekststørrelse (`--fs-xs`) er hevet fra 11,2 til 12 px. Gjelder
+  tabellhoder, statetiketter, statuspiller og kodetekst (fiks 6).
+- Spillertabellen viser de 100 første treffene, med «Vis alle N spillere»
+  under tabellen for resten. Taket regnes på nytt ved sortering, og enhver
+  filter- eller søkeendring starter på de 100 første igjen. Serveren sender
+  fortsatt alle radene — dette er ren klientavlastning (fiks 2).
+- Ligatabellen setter managernavnet på egen linje under lagnavnet på mobil, og
+  rangkolonna reserverer litt mindre plass til pila. «#», «Lag», «GW» og
+  «Totalt» får dermed plass innenfor 390 px uten sidescroll (fiks 3).
+- «Nå»-kolonna i Prisgevinst på /overganger skjules under 480 px, så Spiller,
+  Kjøpt, Salg og Gevinst får plass uten sidescroll. Fra 481 px vises alle fem.
+  Raden for ukjent kjøpspris er samtidig delt i egne celler og sier «ukjent»
+  under «Kjøpt» (fiks 10).
+- Forklaringene på /innsikt (Benkesløsing, Kapteinsfasit, Flaksbarometer) er
+  lagt i sammenleggbare «Slik regnes det», lukket som standard. Tallene står nå
+  rett under kortoverskriften i stedet for etter 6–9 linjer brødtekst. Ren
+  HTML, ingen JS (fiks 8).
+- /nyheter bruker appens datoformat på publiseringstidspunktet: «BBC Sport ·
+  fredag 4. september kl. 01:40» i stedet for «4.9.2026, 01:40:13». Sekundene
+  er borte (fiks 7).
+- /live sier «Ingen kamper pågår — neste avspark fredag 4. september kl. 21:00»
+  mellom runder. Serveren og klienten formaterer strengen likt, så teksten
+  ikke blafrer når siden lastes (fiks 9).
+
+### Fixed
+
+- /live sier fra når live-hentingen glipper: «Får ikke kontakt — prøver igjen
+  om 1 min (sist OK 12:30:05)». Før ble et ferskt «Sist oppdatert»-klokkeslett
+  stående over tall som var minutter gamle — også mens kamper pågikk, der
+  feilstien ikke rørte statuslinja i det hele tatt (fiks 5).
+- Lagsjekk-kortet på /brief sier fra når hentingen glapp, i stedet for å
+  forsvinne sporløst. Uten `FPL_TEAM_ID` er kortet borte som før — ruta skiller
+  nå de to tilfellene med et eget flagg (fiks 4).
+
 ## [1.13.1] - 2026-09-04
 
 «Sikkerhetsnett» (`docs/prompt-sikkerhetsnett-v1131.md`) på
