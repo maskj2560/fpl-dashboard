@@ -1,6 +1,6 @@
 // Mock-locals for view-render-testene. Ingen nettverkskall.
 // Fasit er viewene selv: hvert objekt her dekker alle locals viewet refererer.
-import { formatDateTime, formatNumber, formatSigned } from '../../src/services/format.js';
+import { formatDateTime, formatDay, formatNumber, formatSigned, formatTime } from '../../src/services/format.js';
 import { formatPrice, POSITIONS, POSITIONS_SHORT, translateFplNews } from '../../src/services/analysis.js';
 import { clubAssetsFrom } from '../../src/services/clubAssets.js';
 import { CHIPS, CHIP_LABELS, describeRec } from '../../src/services/chips.js';
@@ -387,6 +387,8 @@ export const live = {
 export const liveEmpty = { clubAssets, gw: null, live: null };
 
 export const news = {
+  formatDay,
+  formatTime,
   aiEnabled: true,
   generatedAt: Date.parse('2026-08-19T10:00:00Z'),
   nextUpdateAt: Date.parse('2026-08-19T16:00:00Z'),
@@ -403,6 +405,8 @@ export const news = {
 // Uten nøkkel og uten feed-svar: ingen AI-punkter, tom saksliste,
 // og en lenke som ikke er http(s) (safeLink skal blokkere den).
 export const newsEmpty = {
+  formatDay,
+  formatTime,
   aiEnabled: false,
   generatedAt: null,
   nextUpdateAt: null,

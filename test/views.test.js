@@ -87,6 +87,17 @@ const layoutLocals = (path) => ({
   startedAt: '19.08.2026, 21:00', cspNonce: 'testnonce', iconVersion: '1',
 });
 
+// v1.13.2 (fiks 7): «4.9.2026, 01:40:13» var eneste stedet i appen med
+// tallrik dato og sekunder. Resten bruker formatDay/formatTime.
+test('news.ejs viser publiseringstidspunkt i appens datoformat, uten sekunder', async () => {
+  const html = await renderView('news', {
+    ...fx.news,
+    items: [{ ...fx.news.items[0], published: '2026-09-04T01:40:13Z' }],
+  });
+  assert.match(html, /fredag 4\. september kl\. 03:40/);
+  assert.doesNotMatch(html, /\d{2}:\d{2}:\d{2}/);
+});
+
 // v1.13.2 (fiks 9): serveren skriver samme streng som klienten regner ut, ellers
 // blafrer teksten når app.js rendrer fra JSON-beholderen ved lasting.
 test('live.ejs viser neste avspark mellom runder', async () => {

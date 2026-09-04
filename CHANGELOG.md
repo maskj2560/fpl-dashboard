@@ -22,6 +22,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   rangkolonna reserverer litt mindre plass til pila. «#», «Lag», «GW» og
   «Totalt» får dermed plass innenfor 390 px uten sidescroll (fiks 3).
 
+- /nyheter bruker appens datoformat på publiseringstidspunktet: «BBC Sport ·
+  fredag 4. september kl. 01:40» i stedet for «4.9.2026, 01:40:13». Sekundene
+  er borte (fiks 7).
 - /live sier «Ingen kamper pågår — neste avspark fredag 4. september kl. 21:00»
   mellom runder. Serveren og klienten formaterer strengen likt, så teksten
   ikke blafrer når siden lastes (fiks 9).
