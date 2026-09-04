@@ -38,6 +38,20 @@ const DODBALL_ETIKETTER = [
   ['frispark', 'Direkte frispark'],
 ];
 
+/**
+ * Nyhetslinja i kortet: teksten, når FPL meldte den, og en lenke til klubbens
+ * egen sak når `scout_news_link` finnes. Serveren slipper bare https gjennom.
+ */
+function nyhetsLinje(d) {
+  if (!d.nytt) return '';
+  const e = escapeHtml;
+  const naar = d.nyttMeldt ? ' — meldt ' + e(d.nyttMeldt) : '';
+  const kilde = d.nyttKilde
+    ? ' · <a href="' + e(d.nyttKilde) + '" rel="noopener noreferrer" target="_blank">Kilde</a>'
+    : '';
+  return '<p class="dim">' + e(d.nytt) + naar + kilde + '</p>';
+}
+
 function playerCardHtml(d, shirtHtml) {
   const e = escapeHtml;
   const stat = (navn, verdi, stor) =>
@@ -51,8 +65,21 @@ function playerCardHtml(d, shirtHtml) {
     ' · £' + e(d.pris) + 'm</p>' +
     '<p><span class="status status-' + e(d.status) + '">' + e(d.statusTekst) + '</span>' +
     (d.spillesjanse == null ? '' : ' <span class="dim">' + e(d.spillesjanse) + ' % sjanse</span>') +
-    '</p>' + (d.nytt ? '<p class="dim">' + e(d.nytt) + '</p>' : '') +
+    '</p>' + nyhetsLinje(d) +
     '</div></div>';
+
+  // Rank blant spillerne på samme posisjon (v1.14.0) — «nr. 4 av alle
+  // midtbaner på form» er billigere å lese enn å sortere seg fram til det.
+  if (d.rangering) {
+    const r = d.rangering;
+    const deler = [
+      'Form nr. ' + e(r.form.nr) + ' av ' + e(r.form.av) + ' ' + e(r.posisjonFlertall),
+      r.poengPerKamp == null ? null : 'P/K nr. ' + e(r.poengPerKamp),
+      r.eid == null ? null : 'Eid nr. ' + e(r.eid),
+      r.pris == null ? null : 'Pris nr. ' + e(r.pris),
+    ].filter(Boolean);
+    html += '<p class="dim">' + deler.join(' · ') + '</p>';
+  }
 
   html += '<div class="kort-stats kort-stats--primar">' +
     stat('Form', d.form, true) + stat('Poeng', d.totalPoeng, true) +
@@ -60,6 +87,12 @@ function playerCardHtml(d, shirtHtml) {
     '<div class="kort-stats">' +
     stat('Eid %', d.eid) + stat('xG', d.xg) + stat('xA', d.xa) +
     stat('Minutter', d.minutter) + '</div>';
+
+  // Statraden som faktisk sier noe om posisjonen (v1.14.0). 0 vises — det er
+  // en ekte verdi, ikke manglende data.
+  if (d.stats && d.stats.length > 0) {
+    html += '<div class="kort-stats">' + d.stats.map((s) => stat(s.navn, s.verdi)).join('') + '</div>';
+  }
 
   // Forsvarsbidrag (v1.14.0): poenggivende fra 2025/26 — 2 p ved 10 (forsvar)
   // eller 12 (midt, spiss) i én kamp. Vises bare når spilleren faktisk har noe.
@@ -85,14 +118,35 @@ function playerCardHtml(d, shirtHtml) {
     html += '<div class="table-scroll"><table class="data"><caption class="sr-only">Siste kamper</caption><thead><tr>' +
       '<th>Runde</th><th>Mot</th><th class="num">P</th><th class="num">Min</th>' +
       '<th class="num">Mål</th><th class="num">A</th><th class="num">xG</th>' +
-      '<th class="num">xA</th><th class="num">Bonus</th></tr></thead><tbody>' +
+      '<th class="num">xA</th><th class="num">Bonus</th><th class="num">Pris</th></tr></thead><tbody>' +
       d.sisteKamper.map((k) =>
         '<tr><td>' + e(k.runde) + '</td><td>' + e(k.motstander || '–') +
         (k.hjemme == null ? '' : ' <span class="dim">' + (k.hjemme ? 'H' : 'B') + '</span>') +
         '</td><td class="num"><strong>' + e(k.poeng) + '</strong></td>' +
         '<td class="num">' + e(k.minutter) + '</td><td class="num">' + e(k.mal) + '</td>' +
         '<td class="num">' + e(k.assists) + '</td><td class="num">' + e(k.xg) + '</td>' +
-        '<td class="num">' + e(k.xa) + '</td><td class="num">' + e(k.bonus) + '</td></tr>').join('') +
+        '<td class="num">' + e(k.xa) + '</td><td class="num">' + e(k.bonus) + '</td>' +
+        '<td class="num">' + (k.pris == null ? '–' : '£' + e(k.pris) + 'm') + '</td></tr>').join('') +
+      '</tbody></table></div>';
+  }
+
+  // Tidligere sesonger (v1.14.0): history_past lå i element-summary uten å bli
+  // lest. Prisreisen start_cost → end_cost sier hvor markedet endte forrige år.
+  html += '<h3>Tidligere sesonger</h3>';
+  if (!d.sesonger || d.sesonger.length === 0) {
+    html += '<p class="empty">Første sesong i Premier League.</p>';
+  } else {
+    html += '<div class="table-scroll"><table class="data"><caption class="sr-only">Tidligere sesonger</caption><thead><tr>' +
+      '<th>Sesong</th><th class="num">P</th><th class="num">Min</th><th class="num">Mål</th>' +
+      '<th class="num">A</th><th class="num">Nullere</th><th class="num">Bonus</th>' +
+      '<th class="num">Pris</th></tr></thead><tbody>' +
+      d.sesonger.map((s) =>
+        '<tr><td>' + e(s.sesong) + '</td><td class="num"><strong>' + e(s.poeng) + '</strong></td>' +
+        '<td class="num">' + e(s.minutter) + '</td><td class="num">' + e(s.mal) + '</td>' +
+        '<td class="num">' + e(s.assists) + '</td><td class="num">' + e(s.nullere) + '</td>' +
+        '<td class="num">' + e(s.bonus) + '</td><td class="num">' +
+        (s.prisStart == null ? '–' : e(s.prisStart) + ' → ' + e(s.prisSlutt)) +
+        '</td></tr>').join('') +
       '</tbody></table></div>';
   }
 

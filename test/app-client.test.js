@@ -588,3 +588,73 @@ test('playerCardHtml viser forsvarsbidraget som linje med CBI, Rec og Tk', () =>
   const uten = app.playerCardHtml({ ...kort, forsvar: { dc: 0, cbi: 0, rec: 0, tk: 0, per90: 0 } }, '');
   assert.ok(!uten.includes('Forsvarsbidrag'), 'ingen linje når spilleren ikke har bidrag');
 });
+
+// v1.14.0 (T6): spillerkort-pakka — statrad per posisjon, rank blant posisjonen,
+// tidligere sesonger med prisreise, nyhetsdato og kildelenke.
+const kortBase = {
+  lag: { navn: 'Arsenal' }, posisjon: 'Keeper', pris: '5.5', status: 'a', statusTekst: 'Klar',
+  spillesjanse: null, nytt: null, nyttMeldt: null, nyttKilde: null,
+  form: '5.0', totalPoeng: 12, poengPerKamp: '6.0', eid: '3.0', xg: '0.10', xa: '0.20', minutter: 180,
+  forsvar: { dc: 0, cbi: 0, rec: 0, tk: 0, per90: 0 },
+  dodball: {}, sisteKamper: [], kommende: [], sesonger: [], rangering: null, stats: [],
+};
+
+test('playerCardHtml viser statraden for keeper mot spiss', () => {
+  const keeper = app.playerCardHtml({
+    ...kortBase,
+    stats: [{ navn: 'Redninger', verdi: 22 }, { navn: 'Straffer reddet', verdi: 0 }],
+    rangering: { posisjonFlertall: 'keepere', form: { nr: 3, av: 71 }, poengPerKamp: 3, eid: 1, pris: 1 },
+  }, '');
+  assert.match(keeper, /Redninger/);
+  assert.match(keeper, /Straffer reddet/, 'null skal vises, ikke skjules');
+  assert.match(keeper, /Form nr\. 3 av 71 keepere/, 'rank-linja mangler');
+  assert.match(keeper, /P\/K nr\. 3/);
+  assert.match(keeper, /Eid nr\. 1/);
+  assert.match(keeper, /Pris nr\. 1/);
+
+  const spiss = app.playerCardHtml({ ...kortBase, posisjon: 'Angrep', stats: [{ navn: 'xGI', verdi: '3.00' }] }, '');
+  assert.match(spiss, /xGI/);
+  assert.ok(!spiss.includes('Redninger'), 'spisser får ikke keeperstatistikk');
+  assert.ok(!spiss.includes('Form nr.'), 'ingen rank-linje uten rangering');
+});
+
+test('playerCardHtml viser tidligere sesonger med prisreise og tomtilstand', () => {
+  const med = app.playerCardHtml({
+    ...kortBase,
+    sesonger: [{ sesong: '2025/26', poeng: 162, minutter: 3330, mal: 0, assists: 0, nullere: 19, bonus: 11, prisStart: '5.5', prisSlutt: '6.2' }],
+  }, '');
+  assert.match(med, /Tidligere sesonger/);
+  assert.match(med, /2025\/26/);
+  assert.match(med, /5\.5 → 6\.2/, 'prisreisen mangler');
+
+  const uten = app.playerCardHtml(kortBase, '');
+  assert.match(uten, /Tidligere sesonger/);
+  assert.match(uten, /Første sesong i Premier League\./);
+});
+
+test('playerCardHtml viser nyhetsdato og kildelenke med rel=noopener og escaper URL-en', () => {
+  const html = app.playerCardHtml({
+    ...kortBase,
+    nytt: 'Lyskeskade',
+    nyttMeldt: 'torsdag 23. juli',
+    nyttKilde: 'https://arsenal.com/news?a="b"&c=1',
+  }, '');
+  assert.match(html, /Lyskeskade — meldt torsdag 23\. juli/);
+  assert.match(html, /rel="noopener noreferrer"/);
+  assert.match(html, /target="_blank"/);
+  assert.ok(!html.includes('news?a="b"'), 'URL-en må escapes i attributtet');
+  assert.match(html, /&quot;b&quot;/, 'anførselstegn escapes');
+
+  const utenKilde = app.playerCardHtml({ ...kortBase, nytt: 'Lyskeskade', nyttMeldt: 'torsdag 23. juli' }, '');
+  assert.match(utenKilde, /Lyskeskade — meldt torsdag 23\. juli/);
+  assert.ok(!utenKilde.includes('<a href'), 'ingen lenke uten kilde');
+});
+
+test('playerCardHtml viser prisen i Siste kamper', () => {
+  const html = app.playerCardHtml({
+    ...kortBase,
+    sisteKamper: [{ runde: 2, motstander: 'WOL', hjemme: true, poeng: 5, minutter: 90, mal: 1, assists: 0, xg: '0.93', xa: '0.40', bonus: 1, pris: '5.5' }],
+  }, '');
+  assert.match(html, /<th class="num">Pris<\/th>/, 'Pris-kolonna mangler');
+  assert.match(html, /£5\.5m/, 'prisen i runden mangler');
+});

@@ -108,7 +108,22 @@ test('buildPlayerCard mapper hele payloaden til norske feltnavn', () => {
     status: 'a',
     statusTekst: 'Klar',
     nytt: null,
+    nyttMeldt: null,
+    nyttKilde: null,
     spillesjanse: null,
+    stats: [
+      { navn: 'xGI', verdi: 0 },
+      { navn: 'Bonus', verdi: 5 },
+      { navn: 'BPS', verdi: 0 },
+      { navn: 'Gule', verdi: 0 },
+      { navn: 'Røde', verdi: 0 },
+      { navn: 'Straffebom', verdi: 0 },
+      { navn: 'ICT', verdi: 0 },
+      { navn: 'Drømmelag', verdi: 0 },
+      { navn: 'Verdi', verdi: 0 },
+    ],
+    rangering: null,
+    sesonger: [],
     dodball: { straffer: 1, hjorner: null, frispark: null },
     forsvar: { dc: 0, cbi: 0, rec: 0, tk: 0, per90: 0 },
     sisteKamper: [
@@ -123,6 +138,7 @@ test('buildPlayerCard mapper hele payloaden til norske feltnavn', () => {
         xg: '0.93',
         xa: '0.40',
         bonus: 1,
+        pris: '14.0',
       },
     ],
     kommende: [{ runde: 3, motstander: 'LIV', hjemme: false, fdr: 4 }],
@@ -512,4 +528,133 @@ test('buildPlayerCard tar med forsvarsbidraget med delene og per 90', () => {
   // 339 av 652 spillere hadde ingen verdi 4. sep — nullene må være tall, ikke undefined.
   const uten = buildPlayerCard({ element: el(), teamsById, summary: { fixtures: [], history: [] } });
   assert.deepEqual(uten.forsvar, { dc: 0, cbi: 0, rec: 0, tk: 0, per90: 0 });
+});
+
+// ---- v1.14.0 (T6): statrad per posisjon, rank, sesonger, nyhetskilde -------
+
+const elementTypes = [
+  { id: 1, singular_name_short: 'GKP', element_count: 71 },
+  { id: 2, singular_name_short: 'DEF', element_count: 214 },
+  { id: 3, singular_name_short: 'MID', element_count: 289 },
+  { id: 4, singular_name_short: 'FWD', element_count: 78 },
+];
+
+const rangeringsfelt = {
+  form_rank_type: 2,
+  points_per_game_rank_type: 2,
+  selected_rank_type: 1,
+  now_cost_rank_type: 1,
+};
+
+function pastSeason(over = {}) {
+  return {
+    season_name: '2025/26',
+    start_cost: 55,
+    end_cost: 62,
+    total_points: 162,
+    minutes: 3330,
+    goals_scored: 0,
+    assists: 0,
+    clean_sheets: 19,
+    bonus: 11,
+    saves: 60,
+    ...over,
+  };
+}
+
+test('buildPlayerCard gir posisjonsstatistikk, rank blant posisjonen og tidligere sesonger', () => {
+  const keeper = buildPlayerCard({
+    element: el({
+      element_type: 1,
+      saves: 22,
+      clean_sheets: 3,
+      goals_conceded: 4,
+      expected_goals_conceded: '3.90',
+      penalties_saved: 0,
+      bonus: 5,
+      ict_index: '35.4',
+      dreamteam_count: 2,
+      value_season: '5.8',
+      ...rangeringsfelt,
+    }),
+    teamsById,
+    elementTypes,
+    summary: { fixtures: [], history: [hist(2, { value: 55 })], history_past: [pastSeason({ season_name: '2024/25' }), pastSeason()] },
+  });
+
+  assert.deepEqual(keeper.stats.map((s) => s.navn), [
+    'Redninger', 'Nullere', 'Baklengs', 'xGC', 'Straffer reddet', 'Bonus', 'ICT', 'Drømmelag', 'Verdi',
+  ]);
+  assert.equal(keeper.stats.find((s) => s.navn === 'Redninger').verdi, 22);
+  assert.equal(keeper.stats.find((s) => s.navn === 'Straffer reddet').verdi, 0, 'null er en ekte verdi i september');
+  assert.equal(keeper.stats.find((s) => s.navn === 'ICT').verdi, '35.4', 'strengtall sendes som strenger');
+
+  assert.deepEqual(keeper.rangering, {
+    posisjonFlertall: 'keepere',
+    form: { nr: 2, av: 71 },
+    poengPerKamp: 2,
+    eid: 1,
+    pris: 1,
+  });
+
+  assert.deepEqual(keeper.sesonger[0], {
+    sesong: '2025/26',
+    poeng: 162,
+    minutter: 3330,
+    mal: 0,
+    assists: 0,
+    nullere: 19,
+    bonus: 11,
+    prisStart: '5.5',
+    prisSlutt: '6.2',
+  }, 'nyeste sesong først, priser som £m');
+  assert.equal(keeper.sesonger.length, 2);
+  assert.equal(keeper.sisteKamper[0].pris, '5.5', 'prisen i runden fra history[].value');
+
+  const spiss = buildPlayerCard({
+    element: el({ element_type: 4, expected_goal_involvements: '3.00', bps: 120, yellow_cards: 1, red_cards: 0, penalties_missed: 0, ...rangeringsfelt }),
+    teamsById,
+    elementTypes,
+    summary: { fixtures: [], history: [] },
+  });
+  assert.deepEqual(spiss.stats.map((s) => s.navn), ['xGI', 'Bonus', 'BPS', 'Gule', 'Røde', 'Straffebom', 'ICT', 'Drømmelag', 'Verdi']);
+  assert.equal(spiss.rangering.posisjonFlertall, 'spisser');
+  assert.equal(spiss.rangering.form.av, 78);
+
+  const forsvarer = buildPlayerCard({ element: el({ element_type: 2, ...rangeringsfelt }), teamsById, elementTypes, summary: {} });
+  assert.deepEqual(forsvarer.stats.map((s) => s.navn), ['Nullere', 'Baklengs', 'xGC', 'Bonus', 'Gule', 'Røde', 'ICT', 'Drømmelag', 'Verdi']);
+  assert.equal(forsvarer.rangering.posisjonFlertall, 'forsvarere');
+
+  const midt = buildPlayerCard({ element: el({ element_type: 3, ...rangeringsfelt }), teamsById, elementTypes, summary: {} });
+  assert.equal(midt.rangering.posisjonFlertall, 'midtbanespillere');
+  assert.equal(midt.stats[0].navn, 'xGI');
+});
+
+test('buildPlayerCard gir tom sesongliste, null-rank og ingen kilde når summary, element_types eller lenke mangler', () => {
+  const bar = buildPlayerCard({ element: el(), teamsById, summary: { fixtures: [], history: [] } });
+  assert.deepEqual(bar.sesonger, []);
+  assert.equal(bar.rangering, null, 'uten element_types finnes ikke antallet å rangere mot');
+  assert.equal(bar.nyttMeldt, null);
+  assert.equal(bar.nyttKilde, null);
+
+  const usikker = buildPlayerCard({
+    element: el({ news: 'Groin injury', news_added: '2026-07-23T12:01:23Z', scout_news_link: 'http://arsenal.com/news/x' }),
+    teamsById,
+    elementTypes,
+    summary: {},
+  });
+  assert.match(usikker.nyttMeldt, /juli/, 'nyhetsdatoen skrives på norsk');
+  assert.equal(usikker.nyttKilde, null, 'kun https-lenker slippes gjennom');
+
+  const trygg = buildPlayerCard({
+    element: el({ news: 'Groin injury', news_added: '2026-07-23T12:01:23Z', scout_news_link: 'https://arsenal.com/news/x' }),
+    teamsById,
+    elementTypes,
+    summary: {},
+  });
+  assert.equal(trygg.nyttKilde, 'https://arsenal.com/news/x');
+
+  // Nyhetsdato uten nyhet (57 spillere hadde det 4. sep) skal ikke vises.
+  const datoUtenNyhet = buildPlayerCard({ element: el({ news: '', news_added: '2026-07-23T12:01:23Z' }), teamsById, summary: {} });
+  assert.equal(datoUtenNyhet.nyttMeldt, null);
 });

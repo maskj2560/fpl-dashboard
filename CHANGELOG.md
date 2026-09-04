@@ -36,6 +36,13 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   interceptions, recoveries og tackles, med per 90 og hva som skal til for
   poeng. Statistikken ble poenggivende i 2025/26 og var ikke vist noe sted.
   313 av 652 spillere har en verdi i dag; resten viser 0.
+- **Rikere spillerkort** — kortet viser nå statistikk som faktisk passer
+  posisjonen (keepere får redninger, nullere, baklengs, xGC og straffer reddet;
+  forsvarere nullere og kort; midtbane og spisser xGI, BPS og straffebom, alle
+  med ICT, drømmelag og poeng per £m), rangeringen blant spillerne på samme
+  posisjon («Form nr. 2 av 78 spisser»), tidligere sesonger med prisreise
+  («5.5 → 6.2»), prisen spilleren hadde i hver av de siste kampene, og når FPL
+  meldte en nyhet — med lenke til klubbens egen sak når den finnes.
 
 ## [1.13.2] - 2026-09-04
 

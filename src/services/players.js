@@ -10,9 +10,65 @@ import {
   teamFdrMap,
   translateFplNews,
 } from './analysis.js';
+import { formatDay } from './format.js';
 
 const SISTE_KAMPER = 5;
 const KOMMENDE_KAMPER = 3;
+
+// Posisjonen i flertall — «nr. 2 av 78 spisser» leser bedre enn «av 78 Angrep».
+const POSISJON_FLERTALL = Object.freeze({
+  1: 'keepere',
+  2: 'forsvarere',
+  3: 'midtbanespillere',
+  4: 'spisser',
+});
+
+// Statistikken som faktisk sier noe om posisjonen. Keepere måles på redninger,
+// forsvarere på nullere, midt/spiss på involvering — resten er støy i kortet.
+const STATS_ANGREPENDE = [
+  ['xGI', 'expected_goal_involvements'], ['Bonus', 'bonus'], ['BPS', 'bps'],
+  ['Gule', 'yellow_cards'], ['Røde', 'red_cards'], ['Straffebom', 'penalties_missed'],
+];
+const STATS_PER_POSISJON = Object.freeze({
+  1: [['Redninger', 'saves'], ['Nullere', 'clean_sheets'], ['Baklengs', 'goals_conceded'], ['xGC', 'expected_goals_conceded'], ['Straffer reddet', 'penalties_saved'], ['Bonus', 'bonus']],
+  2: [['Nullere', 'clean_sheets'], ['Baklengs', 'goals_conceded'], ['xGC', 'expected_goals_conceded'], ['Bonus', 'bonus'], ['Gule', 'yellow_cards'], ['Røde', 'red_cards']],
+  3: STATS_ANGREPENDE,
+  4: STATS_ANGREPENDE,
+});
+
+// Felles for alle posisjoner, etter posisjonsstatistikken.
+const STATS_FELLES = Object.freeze([
+  ['ICT', 'ict_index'],
+  ['Drømmelag', 'dreamteam_count'],
+  ['Verdi', 'value_season'],
+]);
+
+/**
+ * Statraden i kortet. Strengtall (xGC, ICT, Verdi) sendes videre SOM STRENGER,
+ * som resten av payloaden. 0 er en ekte verdi — `penalties_saved` var 0 for
+ * alle 652 spillere 4. sep 2026, og skal vises som 0, ikke skjules.
+ */
+function posisjonsStats(element) {
+  const felt = STATS_PER_POSISJON[element.element_type] ?? STATS_PER_POSISJON[3];
+  return [...felt, ...STATS_FELLES].map(([navn, key]) => ({ navn, verdi: element[key] ?? 0 }));
+}
+
+/**
+ * «Form nr. 2 av 78 spisser». FPL rangerer alle spillere innen posisjonen
+ * (`*_rank_type`); antallet står i `element_types[].element_count`. Uten
+ * `elementTypes` finnes ikke nevneren — da er hele blokka null.
+ */
+function rangeringAv(element, elementTypes) {
+  const type = (elementTypes ?? []).find((t) => t.id === element.element_type);
+  if (!type?.element_count) return null;
+  return {
+    posisjonFlertall: POSISJON_FLERTALL[element.element_type] ?? 'spillere',
+    form: { nr: element.form_rank_type ?? null, av: type.element_count },
+    poengPerKamp: element.points_per_game_rank_type ?? null,
+    eid: element.selected_rank_type ?? null,
+    pris: element.now_cost_rank_type ?? null,
+  };
+}
 
 /** Eierandelene brukeren kan veksle mellom på /spillere. 10 % er default. */
 export const DIFF_TERSKLER = Object.freeze([5, 10, 15]);
@@ -35,10 +91,11 @@ function opponentShort(fixture, teamsById) {
  * visningsverdier fra FPL og skal aldri reformateres her.
  * `dataAlder` legges på av ruta, ikke her.
  */
-export function buildPlayerCard({ element, teamsById, summary }) {
+export function buildPlayerCard({ element, teamsById, summary, elementTypes }) {
   const team = teamsById.get(element.team) ?? null;
   const history = Array.isArray(summary?.history) ? summary.history : [];
   const fixtures = Array.isArray(summary?.fixtures) ? summary.fixtures : [];
+  const past = Array.isArray(summary?.history_past) ? summary.history_past : [];
 
   // Nyeste først. Dobbeltrunde gir to innslag med samme `round` — begge vises.
   const sisteKamper = history
@@ -55,7 +112,21 @@ export function buildPlayerCard({ element, teamsById, summary }) {
       xg: h.expected_goals,
       xa: h.expected_assists,
       bonus: h.bonus,
+      pris: h.value == null ? null : formatPrice(h.value),
     }));
+
+  // Tidligere sesonger, nyeste først. Prisreisen er start_cost → end_cost.
+  const sesonger = [...past].reverse().map((s) => ({
+    sesong: s.season_name,
+    poeng: s.total_points,
+    minutter: s.minutes,
+    mal: s.goals_scored,
+    assists: s.assists,
+    nullere: s.clean_sheets,
+    bonus: s.bonus,
+    prisStart: s.start_cost == null ? null : formatPrice(s.start_cost),
+    prisSlutt: s.end_cost == null ? null : formatPrice(s.end_cost),
+  }));
 
   // Blank runde (`event: null`) og allerede spilte kamper hoppes over.
   const kommende = fixtures
@@ -91,7 +162,14 @@ export function buildPlayerCard({ element, teamsById, summary }) {
     status: element.status,
     statusTekst: STATUS_LABELS[element.status] ?? element.status,
     nytt: nytt || null,
+    // 57 spillere hadde news_added uten nyhet 4. sep — datoen betyr ingenting
+    // uten teksten. Kilden er en klubbside; kun https slipper gjennom.
+    nyttMeldt: nytt && element.news_added ? formatDay(element.news_added) : null,
+    nyttKilde: String(element.scout_news_link ?? '').startsWith('https://') ? element.scout_news_link : null,
     spillesjanse: element.chance_of_playing_next_round ?? null,
+    stats: posisjonsStats(element),
+    rangering: rangeringAv(element, elementTypes),
+    sesonger,
     dodball: {
       straffer: element.penalties_order ?? null,
       hjorner: element.corners_and_indirect_freekicks_order ?? null,
@@ -229,10 +307,15 @@ export function buildSetPieceTable({ elements, teams }) {
  * ikke finnes — ruta gjør det om til 404.
  */
 export async function assemblePlayerCard(id) {
-  const { elements, teams } = await getBootstrap();
+  const { elements, teams, element_types } = await getBootstrap();
   const element = elements.find((e) => e.id === id);
   if (!element) return null;
 
   const summary = await getElementSummary(id);
-  return buildPlayerCard({ element, teamsById: new Map(teams.map((t) => [t.id, t])), summary });
+  return buildPlayerCard({
+    element,
+    teamsById: new Map(teams.map((t) => [t.id, t])),
+    summary,
+    elementTypes: element_types,
+  });
 }
