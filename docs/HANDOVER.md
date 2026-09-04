@@ -6,8 +6,8 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-09-04 (økt 57 del 2, Fable: planprompt for v1.13.2
-«UX-polering 2» → ROADMAP § 7; v1.13.1 i prod fra økt 58)
+**Sist oppdatert:** 2026-09-04 (økt 59, Fable: UX-gjennomgangen for v1.13.2 utført,
+kjøreprompt til Opus i `docs/prompt-ux-polering-v1132.md`; v1.13.1 i prod fra økt 58)
 
 ## Status akkurat nå
 - **v1.13.1 «Sikkerhetsnett» i prod 4. sep 02:37 (økt 58)** på `feat/sikkerhetsnett-v1131`:
@@ -26,10 +26,8 @@
 - **v1.13.0 «AI-statistikk» i prod 2. sep 20:59 (økt 56)**: teller per cacheKey
   i `ai.js` → `DATA_DIR/ai-stats.json`, `aiStats` på /health via
   `healthPayload()`. **767/767 + lint 0**. Prod-sjekk 21:03 grønn.
-- **v1.12.0–v1.12.2 i prod 2. sep** (743 → 758 tester): statusblokkene rotert
-  til historikkfila. `git merge -F -` leser IKKE stdin — bruk `-m`.
-- **v1.8.3–v1.11.0 i prod 2. sep** (655 → 729 tester): statusblokkene rotert
-  til historikkfila. Prisvarslene: første melding ventes natt til 4. sep.
+- **v1.8.3–v1.12.2 i prod 2. sep** (655 → 758 tester) — statusblokkene i historikkfila.
+  Prisvarslene: første Discord-melding var ventet natt til 4. sep — sjekk at den kom.
 - **Feilsiden i prod er ikke visuelt bevist ennå** (fiksen er låst av tester).
   Neste gang FPL har et 503-vindu: sjekk at `/` viser «FPL oppdaterer spillet»
   og ikke ren tekst.
@@ -48,21 +46,16 @@
 
 ## Neste steg (start her)
 
-**Sluttpakka (v1.8.3–v1.12.0) og QA-fiksene (v1.12.1) er i prod 2. sep.**
-Planen er arkivert i `docs/arkiv/plan-sluttpakka-v183-v1120.md`
-(beslutningsfasit med 9 punkter — ikke re-spør). ROADMAP § 0 er ferdig.
-**§ 0 og § 5 er ferdige (2. sep).** Vedlikeholdspakka (v1.12.2 20:52,
-v1.13.0 20:59, docs-slanking) er ute; prompten er konsumert og slettet (git
-bevarer den: `git show d34e3c8:docs/prompt-vedlikehold-v1122-v1130.md`).
-**§ 6 (v1.13.1 «Sikkerhetsnett») er utført 4. sep (økt 58)** — prompten er
-konsumert og slettet (`git show e63bd4b:docs/prompt-sikkerhetsnett-v1131.md`).
-**Neste: ROADMAP § 7 — v1.13.2 «UX-polering 2»** (valgt 4. sep, økt 57). Planprompt
-til en Fable-økt: `docs/prompt-ux-gjennomgang-v1132.md` (gjennomgang → Marius
-velger → kjøreprompt til Opus). Ikke valgt ennå: B funksjonssveip, D slanking.
+**Ferdig og i prod:** sluttpakka v1.8.3–v1.12.0 (plan: `docs/arkiv/plan-sluttpakka-v183-v1120.md`,
+9-punkts fasit — ikke re-spør), vedlikeholdspakka v1.12.2/v1.13.0 (prompt: `git show
+d34e3c8:docs/prompt-vedlikehold-v1122-v1130.md`) og § 6 v1.13.1 (økt 58, prompt: `git show
+e63bd4b:docs/prompt-sikkerhetsnett-v1131.md`). ROADMAP § 0, § 5 og § 6 er ferdige.
+**Neste: ROADMAP § 7 — v1.13.2 «UX-polering 2».** Gjennomgangen er utført (økt 59, Fable):
+10 funn, alle valgt «Fiks», kjøreprompt til Opus i `docs/prompt-ux-polering-v1132.md`
+(lim inn i en Opus-økt i plan-modus — den bygger, pusher og gjør prod-sjekk).
+Ikke valgt ennå: B funksjonssveip, D slanking.
 
-**Majors vurdert 2. sep, ikke oppgradert (Marius' fasit):** `ejs` 6, `eslint` 10
-og `globals` 17 — vurderingen med risiko per pakke er rotert til
-`docs/arkiv/HANDOVER-historikk.md` (økt 58).
+**Majors ikke oppgradert (Marius' fasit 2. sep):** `ejs` 6, `eslint` 10, `globals` 17 — vurderingen i historikkfila (økt 58).
 
 **Kun Marius kan gjøre:**
 1. `kill 1` i containerterminalen → «SIGTERM mottatt — lukker serveren» +
@@ -121,9 +114,9 @@ og `globals` 17 — vurderingen med risiko per pakke er rotert til
   git normaliserer.
 - **Lokal røyktest med prod-nøkler i repoets `.env`:** `config.js` kjører
   `process.loadEnvFile()` som leser `.env` UANSETT `--env-file`. Sett
-  `ANTHROPIC_API_KEY=` og `DISCORD_WEBHOOK_URL=` TOMME i en scratchpad-.env
-  (eller i `process.env` før import) — de settes først og overskrives ikke.
-  Verifiser med `/health` → `ai:false, discord:false`.
+  `ANTHROPIC_API_KEY=` og `DISCORD_WEBHOOK_URL=` TOMME i `process.env` før start —
+  fra Git Bash (`ANTHROPIC_API_KEY= DISCORD_WEBHOOK_URL= node src/server.js`);
+  PowerShell SLETTER tomme `$env:`-variabler. Verifiser: `/health` → `ai:false, discord:false`.
 - **Aldri push/deploy torsdag 19:00–21:00** — auto-briefen sendes ~19:30.
   Aldri push mens kamper pågår.
 - **`/health` først** ved «virker lokalt, ikke i prod» — viser hvilke
@@ -197,4 +190,9 @@ og `globals` 17 — vurderingen med risiko per pakke er rotert til
   138), plan godkjent → app-fabrikk, falsk FPL-verden, 23 rute-tester, CI og
   pre-push-hook. Rute-testene avdekket at feilsidene har vært ren tekst siden
   v1.4.0 — fikset i samme branch. 792/792, CI grønn, prompten slettet.
+- 2026-09-04 (økt 59, Fable): Marius limte inn planprompten for v1.13.2. Handling:
+  tre Explore-agenter + tverrgående, curl/Playwright-målinger lokalt (/health
+  ai:false), 10 funn i tre puljer — alle «Fiks», fire idéer til Senere. Premiss
+  for funn 2 endret underveis (`content-visibility` virker ikke på `<tr>` →
+  rad-tak). Kjøreprompt skrevet, 0 kode, 0 AI-kall, ingenting pushet.
 
