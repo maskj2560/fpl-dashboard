@@ -22,8 +22,16 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   rangkolonna reserverer litt mindre plass til pila. «#», «Lag», «GW» og
   «Totalt» får dermed plass innenfor 390 px uten sidescroll (fiks 3).
 
+- /live sier «Ingen kamper pågår — neste avspark fredag 4. september kl. 21:00»
+  mellom runder. Serveren og klienten formaterer strengen likt, så teksten
+  ikke blafrer når siden lastes (fiks 9).
+
 ### Fixed
 
+- /live sier fra når live-hentingen glipper: «Får ikke kontakt — prøver igjen
+  om 1 min (sist OK 12:30:05)». Før ble et ferskt «Sist oppdatert»-klokkeslett
+  stående over tall som var minutter gamle — også mens kamper pågikk, der
+  feilstien ikke rørte statuslinja i det hele tatt (fiks 5).
 - Lagsjekk-kortet på /brief sier fra når hentingen glapp, i stedet for å
   forsvinne sporløst. Uten `FPL_TEAM_ID` er kortet borte som før — ruta skiller
   nå de to tilfellene med et eget flagg (fiks 4).

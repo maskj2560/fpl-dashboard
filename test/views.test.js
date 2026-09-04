@@ -87,6 +87,17 @@ const layoutLocals = (path) => ({
   startedAt: '19.08.2026, 21:00', cspNonce: 'testnonce', iconVersion: '1',
 });
 
+// v1.13.2 (fiks 9): serveren skriver samme streng som klienten regner ut, ellers
+// blafrer teksten når app.js rendrer fra JSON-beholderen ved lasting.
+test('live.ejs viser neste avspark mellom runder', async () => {
+  const mellom = { ...fx.live, live: { ...fx.live.live, anyLive: false }, nextKickoffText: 'fredag 4. september kl. 21:00' };
+  const html = await renderView('live', mellom);
+  assert.match(html, /Ingen kamper pågår — neste avspark fredag 4\. september kl\. 21:00/);
+
+  const uten = await renderView('live', { ...mellom, nextKickoffText: null });
+  assert.match(uten, /Ingen kamper pågår akkurat nå/);
+});
+
 // v1.13.2 (fiks 4): assembleDeadlineCheck gir null både uten team-id og når
 // hentingen feiler. Uten et eget flagg forsvant kortet sporløst i feiltilfellet.
 test('brief.ejs viser tomtilstand når lagsjekken feilet', async () => {

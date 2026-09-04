@@ -2,7 +2,7 @@ import { Router } from 'express';
 import config from '../config.js';
 import { assembleLive } from '../services/live.js';
 import { staleInfo } from '../services/fplClient.js';
-import { formatTime } from '../services/format.js';
+import { formatDay, formatTime } from '../services/format.js';
 
 const router = Router();
 
@@ -17,6 +17,11 @@ router.get('/', async (req, res, next) => {
       title: 'Live',
       live,
       gw: live.gameweek,
+      // «fredag 4. september kl. 21:00» — samme form som liveStatusText() i
+      // app.js regner ut, så den første klientrenderen ikke endrer teksten.
+      nextKickoffText: live.nextKickoff
+        ? `${formatDay(live.nextKickoff)} kl. ${formatTime(live.nextKickoff)}`
+        : null,
       staleSince: liveStale?.tooOld ? formatTime(liveStale.fetchedIso) : null,
     });
   } catch (err) {

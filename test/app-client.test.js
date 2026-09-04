@@ -265,6 +265,29 @@ test('rad-taket på /spillere er 100', () => {
   assert.equal(app.evaluate('PLAYER_ROW_LIMIT'), 100);
 });
 
+// v1.13.2 (fiks 5): poll() svelget feil stille — «Sist oppdatert 12:30:05» ble
+// stående mens tallene under var minutter gamle.
+test('liveUpdatedText skiller mellom fersk henting og mistet kontakt', () => {
+  assert.equal(app.liveUpdatedText(true, '12:30:05'), 'Sist oppdatert 12:30:05');
+  assert.equal(
+    app.liveUpdatedText(false, '12:30:05'),
+    'Får ikke kontakt — prøver igjen om 1 min (sist OK 12:30:05)',
+  );
+  assert.equal(app.liveUpdatedText(false, null), 'Får ikke kontakt — prøver igjen om 1 min');
+});
+
+// v1.13.2 (fiks 9): «Ingen kamper pågår akkurat nå» sa ingenting om når det
+// smeller igjen. nextKickoff finnes alt i /api/live.json.
+test('liveStatusText viser neste avspark mellom runder', () => {
+  assert.equal(app.liveStatusText({ anyLive: true, nextKickoff: null }), 'Kamper pågår');
+  assert.equal(app.liveStatusText({ anyLive: false, nextKickoff: null }), 'Ingen kamper pågår akkurat nå');
+  assert.equal(app.liveStatusText({ anyLive: false, nextKickoff: 'tull' }), 'Ingen kamper pågår akkurat nå');
+
+  const t = app.liveStatusText({ anyLive: false, nextKickoff: '2026-09-04T19:00:00Z' });
+  assert.ok(t.startsWith('Ingen kamper pågår — neste avspark '), t);
+  assert.ok(t.includes(' kl. '), t);
+});
+
 test('queryParam leser og dekoder verdien fra søkestrengen', () => {
   assert.equal(app.queryParam('?sok=Haaland&pos=4', 'sok'), 'Haaland');
   assert.equal(app.queryParam('?sok=De%20Bruyne', 'sok'), 'De Bruyne');

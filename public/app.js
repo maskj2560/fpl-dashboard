@@ -258,6 +258,30 @@ function nextWakeupDelay(live, nowMs, bufferMs) {
   return Math.max(at + bufferMs - nowMs, 0);
 }
 
+/**
+ * Statuslinja på /live. Mellom runder er «neste avspark» det eneste
+ * interessante — datoen formateres som `formatDay` + `formatTime` på serveren,
+ * så teksten er identisk med den server-rendrede og aldri blafrer ved lasting.
+ */
+function liveStatusText(live) {
+  if (live && live.anyLive) return 'Kamper pågår';
+  const at = live && live.nextKickoff ? new Date(live.nextKickoff) : null;
+  if (!at || !Number.isFinite(at.getTime())) return 'Ingen kamper pågår akkurat nå';
+  const dag = at.toLocaleDateString('nb-NO', { weekday: 'long', day: 'numeric', month: 'long' });
+  const klokke = at.toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit' });
+  return 'Ingen kamper pågår — neste avspark ' + dag + ' kl. ' + klokke;
+}
+
+/**
+ * «Sist oppdatert»-linja. Feilet hentingen, skal linja si det — ellers står et
+ * ferskt klokkeslett over tall som er minutter gamle.
+ */
+function liveUpdatedText(ok, clock) {
+  if (ok) return 'Sist oppdatert ' + clock;
+  const base = 'Får ikke kontakt — prøver igjen om 1 min';
+  return clock ? base + ' (sist OK ' + clock + ')' : base;
+}
+
 // Tema: «auto» følger systemet, «light»/«dark» er lagret valg. Inline-
 // scriptet i layout.ejs setter data-theme før første paint med samme
 // regel — dette er bare bryteren og live-lytting på systemet etterpå.
@@ -630,14 +654,17 @@ function initEdgeFades(el, prefix) {
     for (const box of leaguesRoot.querySelectorAll('.table-scroll')) {
       initEdgeFades(box, 'table-fade');
     }
-    statusEl.textContent = live.anyLive ? 'Kamper pågår' : 'Ingen kamper pågår akkurat nå';
-    updatedEl.textContent = 'Sist oppdatert ' + new Date().toLocaleTimeString('nb-NO');
+    statusEl.textContent = liveStatusText(live);
+    lastOk = new Date().toLocaleTimeString('nb-NO');
+    updatedEl.textContent = liveUpdatedText(true, lastOk);
     pulseEl.classList.toggle('pulse-on', live.anyLive);
     return live;
   }
 
   let interval = null;
   let wakeup = null;
+  // Klokkeslettet for siste vellykkede henting — vises i feilteksten.
+  let lastOk = null;
 
   // Tilstandsmaskin, ikke et engangsvalg ved sidelast: pågår kamper, går et
   // 60 s-intervall. Gjør de ikke det, stoppes intervalet og siden sover til
@@ -666,6 +693,9 @@ function initEdgeFades(el, prefix) {
     } catch {
       // Nettverksglipp — håndteres som en feilet henting under.
     }
+    // Si fra i statuslinja FØR planleggingen: går et intervall (kamper pågår),
+    // returnerte den gamle koden her uten at brukeren så noe som helst.
+    updatedEl.textContent = liveUpdatedText(false, lastOk);
     // Går et intervall, tar neste tick den. Ellers ett nytt forsøk om et minutt.
     if (!interval) wakeup = setTimeout(poll, LIVE_POLL_MS);
   }
