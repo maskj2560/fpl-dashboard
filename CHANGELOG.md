@@ -14,6 +14,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   fra 481 px og opp (fiks 1).
 - Minste tekststørrelse (`--fs-xs`) er hevet fra 11,2 til 12 px. Gjelder
   tabellhoder, statetiketter, statuspiller og kodetekst (fiks 6).
+- Spillertabellen viser de 100 første treffene, med «Vis alle N spillere»
+  under tabellen for resten. Taket regnes på nytt ved sortering, og enhver
+  filter- eller søkeendring starter på de 100 første igjen. Serveren sender
+  fortsatt alle radene — dette er ren klientavlastning (fiks 2).
 
 ## [1.13.1] - 2026-09-04
 

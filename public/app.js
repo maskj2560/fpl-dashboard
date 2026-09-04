@@ -221,6 +221,17 @@ function duelHtml(a, b, winners, shirtA, shirtB) {
 }
 
 // Leser én query-parameter uten URLSearchParams (testbar i ren V8-kontekst).
+// Rad-taket på /spillere (v1.13.2). 686 rader er ~13 500 DOM-noder og gjorde
+// siden treg på telefon. `content-visibility` hjelper ikke — size containment
+// gjelder ikke table-interne bokser — så taket settes i klienten med `hidden`.
+const PLAYER_ROW_LIMIT = 100;
+
+/** Hvor mange treff som vises og hvor mange som holdes tilbake av taket. */
+function rowLimit(matchCount, limit, showAll) {
+  const shown = showAll ? matchCount : Math.min(matchCount, limit);
+  return { shown, hidden: matchCount - shown };
+}
+
 function queryParam(qs, name) {
   for (const part of String(qs).replace(/^\?/, '').split('&')) {
     const i = part.indexOf('=');
@@ -394,6 +405,10 @@ function initEdgeFades(el, prefix) {
     [...table.tHead.rows[0].cells].forEach((h) => h.setAttribute('aria-sort', 'none'));
     th.setAttribute('aria-sort', dir);
     applySort(table, index, dir);
+    // Spillertabellen har et rad-tak (Modul 2b) som måles på DOM-rekkefølgen.
+    if (table.id === 'players-table' && window.playersReapplyLimit) {
+      window.playersReapplyLimit();
+    }
   }
 
   tables.forEach((table) => {
@@ -440,6 +455,11 @@ function initEdgeFades(el, prefix) {
   const count = document.getElementById('filter-count');
   const empty = document.getElementById('players-empty');
   const emptyReset = document.getElementById('players-empty-reset');
+  const more = document.getElementById('players-more');
+
+  // Taket gjelder til brukeren ber om alle. Enhver ny filtrering setter det
+  // tilbake — ellers ville et søk etter «Vis alle» gi 652 rader igjen.
+  let showAll = false;
 
   function applyFilters() {
     const filters = {
@@ -449,39 +469,64 @@ function initEdgeFades(el, prefix) {
       maxPrice: parseFloat(price.value),
       status: status.value,
     };
-    let shown = 0;
+    let matches = 0;
     const total = tbody.rows.length;
 
+    // Ett løp i DOM-rekkefølge: en rad vises bare når den både matcher
+    // filtrene og ligger innenfor taket. Sorteringen flytter radene, så
+    // «de 100 første» følger den kolonna brukeren sorterte på.
     for (const row of tbody.rows) {
       const ok = rowMatchesFilters(row.dataset, filters);
-      row.hidden = !ok;
-      if (ok) shown++;
+      if (ok) matches++;
+      row.hidden = !ok || (!showAll && matches > PLAYER_ROW_LIMIT);
     }
+
+    const { shown, hidden } = rowLimit(matches, PLAYER_ROW_LIMIT, showAll);
     count.textContent = 'Viser ' + shown + ' av ' + total + ' spillere';
-    if (empty) empty.hidden = shown !== 0;
+    if (empty) empty.hidden = matches !== 0;
+    if (more) {
+      more.hidden = hidden === 0;
+      more.textContent = 'Vis alle ' + matches + ' spillere';
+    }
     // En rad som filtreres bort skal ikke bli stående som duell-valg (Modul 10).
     if (window.duellRyddSkjulte) window.duellRyddSkjulte();
   }
+
+  // Filterendringer starter alltid på nytt fra toppen av trefflista.
+  function applyFiltersFresh() {
+    showAll = false;
+    applyFilters();
+  }
+
+  // Sorteringen (Modul 2) bytter rekkefølge i DOM og må regne taket på nytt,
+  // ellers blir «de 100 første» stående fra forrige rekkefølge.
+  window.playersReapplyLimit = applyFilters;
 
   // Enter i søkefeltet skal ikke sende skjemaet. Lå før som inline
   // onsubmit i viewet — CSP-en (v1.8.3) blokkerer inline-handlere stille.
   const form = document.getElementById('player-filters');
   if (form) form.addEventListener('submit', (e) => e.preventDefault());
 
-  search.addEventListener('input', applyFilters);
-  position.addEventListener('change', applyFilters);
-  team.addEventListener('change', applyFilters);
-  price.addEventListener('input', applyFilters);
-  status.addEventListener('change', applyFilters);
+  search.addEventListener('input', applyFiltersFresh);
+  position.addEventListener('change', applyFiltersFresh);
+  team.addEventListener('change', applyFiltersFresh);
+  price.addEventListener('input', applyFiltersFresh);
+  status.addEventListener('change', applyFiltersFresh);
   reset.addEventListener('click', () => {
     search.value = '';
     position.value = '';
     team.value = '';
     price.value = '';
     status.value = '';
-    applyFilters();
+    applyFiltersFresh();
   });
   if (emptyReset) emptyReset.addEventListener('click', () => reset.click());
+  if (more) {
+    more.addEventListener('click', () => {
+      showAll = true;
+      applyFilters();
+    });
+  }
 
   // Krysslenker (v1.7.1): /spillere?sok=Haaland prefyller søket.
   const preSearch = queryParam(location.search, 'sok');

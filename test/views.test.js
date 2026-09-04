@@ -87,6 +87,17 @@ const layoutLocals = (path) => ({
   startedAt: '19.08.2026, 21:00', cspNonce: 'testnonce', iconVersion: '1',
 });
 
+// v1.13.2 (fiks 2): knappen som løfter rad-taket står under tabellen, før
+// tomtilstanden. Den er skjult til klienten finner skjulte treff.
+test('players.ejs har knappen som viser alle rader', async () => {
+  const html = await renderView('players', fx.players);
+  assert.match(html, /<button type="button" id="players-more" class="btn-quiet" hidden>/);
+  assert.ok(
+    html.indexOf('id="players-more"') < html.indexOf('id="players-empty"'),
+    'knappen skal stå før tomtilstanden',
+  );
+});
+
 test('layout.ejs gir tema-scriptet CSP-noncen', async () => {
   const html = await renderView('layout', layoutLocals('/'));
   assert.ok(html.includes('<script nonce="testnonce">'), 'tema-scriptet mangler nonce');
