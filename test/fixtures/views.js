@@ -31,6 +31,7 @@ const player = (id, name, extra = {}) => ({
 
 const shared = {
   teamsById, clubAssets, STATUS_LABELS, POSITIONS_SHORT, formatDateTime, formatPrice, formatNumber,
+  formatDay: () => 'torsdag 23. juli',
   translateFplNews,
 };
 
@@ -38,7 +39,7 @@ export const dashboard = {
   ...shared,
   deadlineEvent: { name: 'Runde 1', deadline_time: '2026-08-21T17:30:00Z' },
   calendarUrl: 'webcal://fpl.marsk.no/kalender.ics',
-  flagged: [player(1, 'Saka', { status: 'i', news: 'Knee injury - 25% chance of playing', chance_of_playing_next_round: 25 })],
+  flagged: [player(1, 'Saka', { status: 'i', news: 'Knee injury - 25% chance of playing', news_added: '2026-07-23T12:01:23Z', chance_of_playing_next_round: 25 })],
   inForm: [player(2, 'Salah', { team: 2 })],
   boughtMost: [player(3, 'Haaland')],
   soldMost: [player(4, 'Watkins')],

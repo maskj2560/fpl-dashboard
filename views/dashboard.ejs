@@ -37,7 +37,11 @@
               <tr>
                 <td>
                   <strong><%= p.web_name %></strong>
-                  <% if (p.news) { %><span class="news"><%= translateFplNews(p.news) %></span><% } %>
+                  <% if (p.news) { %>
+                    <span class="news"><%= translateFplNews(p.news) %></span>
+                    <%# Når FPL meldte det (v1.14.0): en skade fra juli er noe annet enn en fra i går. %>
+                    <% if (p.news_added) { %><span class="dim">meldt <%= formatDay(p.news_added) %></span><% } %>
+                  <% } %>
                 </td>
                 <td><%- include('partials/club-badge', { team: teamsById.get(p.team) }) %></td>
                 <td class="num"><%= p.selected_by_percent %> %</td>

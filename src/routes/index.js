@@ -15,7 +15,7 @@ import {
   byId,
   STATUS_LABELS,
 } from '../services/analysis.js';
-import { formatDateTime, formatEventName, formatNumber } from '../services/format.js';
+import { formatDateTime, formatDay, formatEventName, formatNumber } from '../services/format.js';
 import { getNews } from '../services/news.js';
 import { calendarUrlFor } from './calendar.js';
 
@@ -54,6 +54,7 @@ router.get('/', async (req, res, next) => {
       POSITIONS_SHORT,
       formatPrice,
       formatDateTime,
+      formatDay,
       formatNumber,
       translateFplNews,
     });

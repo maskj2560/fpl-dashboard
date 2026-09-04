@@ -43,6 +43,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   posisjon («Form nr. 2 av 78 spisser»), tidligere sesonger med prisreise
   («5.5 → 6.2»), prisen spilleren hadde i hver av de siste kampene, og når FPL
   meldte en nyhet — med lenke til klubbens egen sak når den finnes.
+- **Låneklausul i «Lagsjekk»** — sjekken før deadline fanger nå også startere
+  som ikke får møte moderklubben sin i runden på grunn av lånevilkår. Samme
+  funn går til Discord-meldingen. Spillerkortet viser hvilke runder det gjelder.
+- **Nyhetsdato flere steder** — «Ukens flagg» på dashbordet og skadedetaljene i
+  «Lagsjekk» viser når FPL meldte nyheten, så en skade fra juli ikke lenger ser
+  like fersk ut som en fra i går.
 
 ## [1.13.2] - 2026-09-04
 

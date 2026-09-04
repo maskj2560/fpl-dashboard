@@ -103,6 +103,13 @@ function playerCardHtml(d, shirtHtml) {
       '<p class="hint">Gir 2 poeng i en kamp med 10 bidrag (forsvarere) eller 12 (midtbane og spisser).</p>';
   }
 
+  // Låneklausul (v1.14.0): rundene spilleren ikke får møte moderklubben sin.
+  if (d.klausuler && d.klausuler.length > 0) {
+    const r = d.klausuler.map(String);
+    const liste = r.length === 1 ? r[0] : r.slice(0, -1).join(', ') + ' og ' + r[r.length - 1];
+    html += '<p class="dim">Låneklausul: kan ikke spille runde ' + e(liste) + '</p>';
+  }
+
   const roller = DODBALL_ETIKETTER.filter(([key]) => d.dodball && d.dodball[key] != null);
   if (roller.length > 0) {
     html += '<h3>Dødball</h3><ul class="kort-dodball">' +

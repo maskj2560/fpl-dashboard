@@ -449,6 +449,26 @@ test('transfers.ejs viser prisendringene i natt med troppen først', async () =>
   assert.ok(html.includes('Sjekkes hver time'), 'hintet mangler');
 });
 
+// v1.14.0 (T7): låneklausul i Lagsjekk og nyhetsdato i Ukens flagg.
+test('brief.ejs viser klausul-funnet', async () => {
+  const html = await renderView('brief', {
+    ...fx.brief,
+    deadlineCheck: {
+      ...fx.brief.deadlineCheck,
+      ok: false,
+      findings: [{ type: 'klausul', player: { name: 'Garnacho', teamShort: 'AVL', teamCode: 7 }, detail: 'kan ikke møte moderklubben i runden (låneklausul)' }],
+    },
+  });
+  assert.match(html, /Låneklausul/, 'etiketten mangler');
+  assert.match(html, /Garnacho/);
+  assert.ok(!/Garnacho<\/strong>[\s\S]{0,200}>er /.test(html), 'klausul-linja skal ikke få «er»');
+});
+
+test('dashboard.ejs viser nyhetsdatoen i Ukens flagg', async () => {
+  const html = await renderView('dashboard', fx.dashboard);
+  assert.match(html, /meldt torsdag 23\. juli/, 'nyhetsdatoen mangler');
+});
+
 // v1.14.0 (T5): forsvarsbidrag som kolonne — 313 av 652 spillere har verdi.
 test('players.ejs har DC-kolonna med data-dc på radene', async () => {
   const html = await renderView('players', fx.players);

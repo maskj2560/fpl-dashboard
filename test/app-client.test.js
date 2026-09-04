@@ -658,3 +658,13 @@ test('playerCardHtml viser prisen i Siste kamper', () => {
   assert.match(html, /<th class="num">Pris<\/th>/, 'Pris-kolonna mangler');
   assert.match(html, /£5\.5m/, 'prisen i runden mangler');
 });
+
+test('playerCardHtml viser klausulrundene og ingenting uten dem', () => {
+  const en = app.playerCardHtml({ ...kortBase, klausuler: [16] }, '');
+  assert.match(en, /Låneklausul: kan ikke spille runde 16/);
+  const to = app.playerCardHtml({ ...kortBase, klausuler: [16, 27] }, '');
+  assert.match(to, /Låneklausul: kan ikke spille runde 16 og 27/);
+  const tre = app.playerCardHtml({ ...kortBase, klausuler: [8, 16, 27] }, '');
+  assert.match(tre, /runde 8, 16 og 27/);
+  assert.ok(!app.playerCardHtml(kortBase, '').includes('Låneklausul'));
+});

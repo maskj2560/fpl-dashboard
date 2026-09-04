@@ -170,6 +170,12 @@ export function buildPlayerCard({ element, teamsById, summary, elementTypes }) {
     stats: posisjonsStats(element),
     rangering: rangeringAv(element, elementTypes),
     sesonger,
+    // Rundene spilleren ikke kan møte moderklubben sin. FPLs `notes` er feil
+    // for minst én spiller — `gameweek` er fasit. 7 av 652 hadde dette 4. sep.
+    klausuler: (element.scout_risks ?? [])
+      .filter((r) => r?.property === 'loan_ineligible' && Number.isInteger(r.gameweek))
+      .map((r) => r.gameweek)
+      .sort((a, b) => a - b),
     dodball: {
       straffer: element.penalties_order ?? null,
       hjorner: element.corners_and_indirect_freekicks_order ?? null,

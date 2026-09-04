@@ -124,6 +124,7 @@ test('buildPlayerCard mapper hele payloaden til norske feltnavn', () => {
     ],
     rangering: null,
     sesonger: [],
+    klausuler: [],
     dodball: { straffer: 1, hjorner: null, frispark: null },
     forsvar: { dc: 0, cbi: 0, rec: 0, tk: 0, per90: 0 },
     sisteKamper: [
@@ -657,4 +658,20 @@ test('buildPlayerCard gir tom sesongliste, null-rank og ingen kilde når summary
   // Nyhetsdato uten nyhet (57 spillere hadde det 4. sep) skal ikke vises.
   const datoUtenNyhet = buildPlayerCard({ element: el({ news: '', news_added: '2026-07-23T12:01:23Z' }), teamsById, summary: {} });
   assert.equal(datoUtenNyhet.nyttMeldt, null);
+});
+
+test('buildPlayerCard lister klausulrundene sortert, og tom liste uten klausuler', () => {
+  const kort = buildPlayerCard({
+    element: el({
+      scout_risks: [
+        { property: 'loan_ineligible', gameweek: 27 },
+        { property: 'loan_ineligible', gameweek: 16 },
+        { property: 'noe_annet', gameweek: 3 },
+      ],
+    }),
+    teamsById,
+    summary: {},
+  });
+  assert.deepEqual(kort.klausuler, [16, 27], 'kun låneklausuler, sortert stigende');
+  assert.deepEqual(buildPlayerCard({ element: el(), teamsById, summary: {} }).klausuler, []);
 });
