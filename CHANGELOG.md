@@ -7,6 +7,21 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Fixed
+
+- Feilsidene (503, 500 og 4xx fra body-parser) rendres igjen som ekte
+  sider. `createErrorHandler` sendte ikke `staleSince` til `layout.ejs`,
+  som leser variabelen ubetinget — EJS kastet, og hele feilsiden falt ned
+  til ren tekst «Noe gikk galt.» med riktig statuskode. Gjaldt også i
+  prod siden v1.4.0. Funnet av de nye rute-testene.
+
+### Changed
+
+- `src/server.js` er splittet i `src/app.js` (`createApp()` — ren fabrikk
+  som monterer alt, aldri lytter og aldri starter timere) og
+  `src/server.js` (lytt, SIGTERM/SIGINT, de tre schedulerne). Ingen
+  atferdsendring; monteringsrekkefølgen er uendret.
+
 ## [1.13.0] - 2026-09-02
 
 Vedlikeholdspakke, del 2 (`docs/prompt-vedlikehold-v1122-v1130.md`, T2) på

@@ -198,6 +198,10 @@ export function createErrorHandler({ version, assetVersion, startedAt }) {
           title: 'Feil',
           path: req.originalUrl.split('?')[0],
           gameUpdating: false,
+          // layout.ejs leser staleSince ubetinget. Uten den kaster EJS og hele
+          // feilsiden faller ned til ren tekst — feilsiden har ingen data å
+          // være «gammel», så null er riktig verdi.
+          staleSince: null,
           version,
           assetVersion,
           iconVersion: ICON_VERSION,

@@ -254,6 +254,18 @@ test('feil på vanlig side rendrer fortsatt feilsiden', () => {
   assert.equal(res.body, '<layout>');
 });
 
+test('feilsiden sender staleSince til layouten', () => {
+  // layout.ejs leser `staleSince` ubetinget. Mangler den i locals, kaster EJS
+  // og hele feilsiden faller ned til ren tekst «Noe gikk galt.» — funnet av
+  // rute-testene i v1.13.1, gjaldt også i prod.
+  const res = fakeRes();
+  handler(Object.assign(new Error('oppdaterer'), { status: 503 }), { path: '/', originalUrl: '/' }, res, () => {});
+  const layout = res.renderCalls.find((c) => c.view === 'layout');
+  assert.ok(layout, 'layouten ble aldri rendret');
+  assert.ok('staleSince' in layout.locals, 'staleSince mangler i layout-locals');
+  assert.equal(layout.locals.staleSince, null);
+});
+
 test('feilhandleren gjør ingenting når svaret alt er sendt', () => {
   const res = fakeRes();
   res.headersSent = true;
