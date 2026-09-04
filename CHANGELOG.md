@@ -26,6 +26,11 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   beste spiller, mest kapteinet og visekapteinet, antall bytter, antall lag med
   rangering og hvor mange som spilte hver chip. Spillernavnene lenker videre til
   «Spillere». Tomtilstand før første runde er ferdig.
+- **«Topp X %» på «Mitt lag»** — hero-flisen «Totalrangering» viser nå også hvor
+  stor andel av alle managere du ligger foran («topp 34 % av 10 412 270»), og
+  under rankgrafen står en ny tabell med poeng, rundens snitt, rundens høyeste,
+  rangering og topp-prosent per runde. Runder der du slo snittet er uthevet.
+  Tallene er FPLs egne `percentile_rank` og `overall_rank_percentage`.
 
 ## [1.13.2] - 2026-09-04
 

@@ -7,6 +7,7 @@ import {
   transferOutCandidates,
   transferInCandidates,
   rankGraph,
+  rankTable,
   formatPrice,
   nextEvent,
   POSITIONS_SHORT,
@@ -104,6 +105,8 @@ router.get('/', async (req, res, next) => {
       CHIP_LABELS,
       describeRec,
       graph: rankGraph(history.current),
+      // «Topp X %» (v1.14.0): percentile_rank + overall_rank_percentage fra history.
+      rankTable: rankTable(history.current, events, bootstrap.total_players),
       chips: history.chips,
       teamsById,
       POSITIONS_SHORT,

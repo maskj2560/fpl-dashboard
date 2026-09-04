@@ -449,6 +449,21 @@ test('transfers.ejs viser prisendringene i natt med troppen først', async () =>
   assert.ok(html.includes('Sjekkes hver time'), 'hintet mangler');
 });
 
+// v1.14.0 (T4): FPLs percentile_rank — «du var i topp X %» — per runde.
+test('team.ejs viser topp-prosenten i hero og tabellen under rankgrafen', async () => {
+  const html = await renderView('team', fx.team);
+  assert.ok(html.includes('topp 34 % av'), 'hero-flisen mangler topp-prosenten');
+  assert.ok(html.includes('Topp %'), 'tabellkolonna mangler');
+  const graf = html.indexOf('rank-graph');
+  const tabell = html.indexOf('Topp %');
+  assert.ok(graf > 0 && tabell > graf, 'tabellen skal stå under grafen');
+  assert.ok(html.includes('25 %') && html.includes('50 %'), 'percentil per runde mangler');
+
+  const tom = await renderView('team', fx.teamEmpty);
+  assert.ok(!tom.includes('Topp %'), 'ingen tabell uten historikk');
+  assert.ok(!tom.includes('topp 34 % av'), 'ingen underlinje uten historikk');
+});
+
 // v1.14.0 (T3): FPLs fasit for siste ferdige runde, som kort på dashbordet.
 test('dashboard.ejs viser runden i tall og tomtilstanden', async () => {
   const html = await renderView('dashboard', fx.dashboard);

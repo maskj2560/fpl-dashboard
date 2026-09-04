@@ -393,6 +393,39 @@ export function transferInCandidates(outPlayer, elements, squadIds, bankTenths, 
     .slice(0, limit);
 }
 
+/**
+ * Rundetabellen bak rankgrafen: dine poeng mot rundens snitt og høyeste, med
+ * FPLs egen `percentile_rank` («du var i topp X % denne runden»). `overall`
+ * er siste rads totalrangering med `overall_rank_percentage` — feltene lå i
+ * `entry/{id}/history.current[]`, men ble aldri lest før v1.14.0.
+ * Manglende felt gir `null` i cellen; tom historikk gir `null`.
+ */
+export function rankTable(historyCurrent, events = [], totalPlayers) {
+  const rows = historyCurrent ?? [];
+  if (rows.length === 0) return null;
+  const eventsById = new Map((events ?? []).map((e) => [e.id, e]));
+  const last = rows[rows.length - 1];
+  return {
+    rows: rows.map((h) => {
+      const e = eventsById.get(h.event);
+      return {
+        gw: h.event,
+        points: h.points ?? null,
+        average: e?.average_entry_score ?? null,
+        highest: e?.highest_score ?? null,
+        rank: h.rank ?? null,
+        overallRank: h.overall_rank ?? null,
+        percentile: h.percentile_rank ?? null,
+      };
+    }),
+    overall: {
+      rank: last.overall_rank ?? null,
+      percentage: last.overall_rank_percentage ?? null,
+      totalPlayers: totalPlayers ?? null,
+    },
+  };
+}
+
 /** SVG-polyline for overall rank per GW. Lavere rank = bedre = høyere i grafen. */
 export function rankGraph(historyCurrent, width = 600, height = 140) {
   const ranks = historyCurrent.filter((h) => h.overall_rank != null);

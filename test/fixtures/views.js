@@ -103,6 +103,13 @@ export const team = {
     bench: [{ pick: {}, player: player(5, 'Turner', { element_type: 1 }) }],
   },
   graph: { points: '0,0 600,140', area: '0,0 600,140 600,140 0,140', min: 400000, max: 500000, last: 500000, gwFirst: 1, gwLast: 2 },
+  rankTable: {
+    rows: [
+      { gw: 1, points: 58, average: 50, highest: 131, rank: 2201657, overallRank: 2201654, percentile: 25 },
+      { gw: 2, points: 81, average: 81, highest: null, rank: 4714786, overallRank: 3345863, percentile: 50 },
+    ],
+    overall: { rank: 3345863, percentage: '34', totalPlayers: 10412270 },
+  },
   chips: [],
   CHIPS, CHIP_LABELS, describeRec,
   chipPlan: {
@@ -144,6 +151,7 @@ export const teamEmpty = {
   gw: null,
   squadView: null,
   graph: null,
+  rankTable: null,
   recommendations: null,
   chipPlan: null,
 };

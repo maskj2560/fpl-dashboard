@@ -7,6 +7,7 @@ import {
   topForm,
   mostTransferredIn,
   roundInNumbers,
+  rankTable,
   mostTransferredOut,
   translateFplNews,
   fdrMatrix,
@@ -789,4 +790,30 @@ test('roundInNumbers gir null før første runde er ferdig eller når FPL ikke h
   assert.equal(ukjent.topPlayer, null);
   assert.deepEqual(ukjent.chips, [], 'ingen chip_plays gir tom liste');
   assert.equal(ukjent.highest, null);
+});
+
+// ---- v1.14.0 (T4): «Topp X %» per runde ------------------------------------
+
+const rankHistory = [
+  { event: 1, points: 58, rank: 2_201_657, overall_rank: 2_201_654, percentile_rank: 25, overall_rank_percentage: '25' },
+  { event: 2, points: 81, rank: 4_714_786, overall_rank: 3_345_863, percentile_rank: 50, overall_rank_percentage: '34' },
+];
+
+test('rankTable kobler runder mot snittet og topp-prosenten', () => {
+  const t = rankTable(rankHistory, rundeEvents, 10_412_270);
+  assert.deepEqual(t.rows, [
+    { gw: 1, points: 58, average: 50, highest: 131, rank: 2_201_657, overallRank: 2_201_654, percentile: 25 },
+    { gw: 2, points: 81, average: 81, highest: 161, rank: 4_714_786, overallRank: 3_345_863, percentile: 50 },
+  ]);
+  assert.deepEqual(t.overall, { rank: 3_345_863, percentage: '34', totalPlayers: 10_412_270 });
+});
+
+test('rankTable tåler manglende percentile-felt og tom historikk', () => {
+  assert.equal(rankTable([], rundeEvents, 100), null);
+  assert.equal(rankTable(null, rundeEvents, 100), null);
+  const t = rankTable([{ event: 9, points: 40 }], [], undefined);
+  assert.deepEqual(t.rows, [
+    { gw: 9, points: 40, average: null, highest: null, rank: null, overallRank: null, percentile: null },
+  ]);
+  assert.deepEqual(t.overall, { rank: null, percentage: null, totalPlayers: null });
 });
