@@ -22,6 +22,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   rangkolonna reserverer litt mindre plass til pila. «#», «Lag», «GW» og
   «Totalt» får dermed plass innenfor 390 px uten sidescroll (fiks 3).
 
+- Forklaringene på /innsikt (Benkesløsing, Kapteinsfasit, Flaksbarometer) er
+  lagt i sammenleggbare «Slik regnes det», lukket som standard. Tallene står nå
+  rett under kortoverskriften i stedet for etter 6–9 linjer brødtekst. Ren
+  HTML, ingen JS (fiks 8).
 - /nyheter bruker appens datoformat på publiseringstidspunktet: «BBC Sport ·
   fredag 4. september kl. 01:40» i stedet for «4.9.2026, 01:40:13». Sekundene
   er borte (fiks 7).

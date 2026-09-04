@@ -1187,6 +1187,40 @@ table.data tbody tr:hover {
   margin-top: var(--space-3);
 }
 
+/* Fiks 8 (v1.13.2): forklaringene på /innsikt sto som 6–9 linjer brødtekst FØR
+   tallene på 390 px. De legges sammen, lukket, så tallene kommer rett under
+   kortoverskriften. Ren HTML — ingen JS, ingen animasjon. */
+.hint-details {
+  margin-top: 0.6rem;
+}
+
+.hint-details summary {
+  cursor: pointer;
+  width: fit-content;
+  font-size: var(--fs-sm);
+  color: var(--text-dim);
+}
+
+.hint-details summary:hover {
+  color: var(--text);
+}
+
+.hint-details summary:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Forklaringen inni arver .hint sin toppmarg — den trenger mindre her. */
+.hint-details .hint {
+  margin-top: 0.4rem;
+}
+
+.hint-details + .table-scroll,
+.hint-details + .stat-strip {
+  margin-top: var(--space-3);
+}
+
 /* ---------- Tomtilstander / feilsider ---------- */
 
 .empty-state {

@@ -73,11 +73,14 @@
   <% if (insights.bench) { %>
     <section class="card card-wide">
       <h2>Benkesløsing</h2>
-      <p class="hint">«På benken» er FPLs eget benkepoengtall. «Unngåelig tap»
-      er den delen du kunne hentet med et annet oppsett: differansen mellom
-      den beste lovlige elleveren av de femten (1 keeper, minst 3 forsvarere,
-      minst 1 spiss) og den du faktisk stilte. I en Bench Boost-runde teller
-      hele troppen, og da er ingenting sløst.</p>
+      <details class="hint-details">
+        <summary>Slik regnes det</summary>
+        <p class="hint">«På benken» er FPLs eget benkepoengtall. «Unngåelig tap»
+        er den delen du kunne hentet med et annet oppsett: differansen mellom
+        den beste lovlige elleveren av de femten (1 keeper, minst 3 forsvarere,
+        minst 1 spiss) og den du faktisk stilte. I en Bench Boost-runde teller
+        hele troppen, og da er ingenting sløst.</p>
+      </details>
       <div class="table-scroll">
         <table class="data data--fit"><caption class="sr-only">Benkesløsing per runde</caption>
           <thead>
@@ -113,11 +116,14 @@
   <% if (insights.captains) { %>
     <section class="card card-wide">
       <h2>Kapteinsfasit</h2>
-      <p class="hint">To fasiter per runde. «Troppens beste» spør om kapteinen
-      din fikk flest rå poeng av de femten — delt topp teller som treff.
-      «Global favoritt» spør om kapteinen din fikk minst like mange poeng som
-      spilleren flest i verden kapteinet. Runder der FPL ikke oppgir en global
-      favoritt står som «Ikke målt» og teller ikke mot deg.</p>
+      <details class="hint-details">
+        <summary>Slik regnes det</summary>
+        <p class="hint">To fasiter per runde. «Troppens beste» spør om kapteinen
+        din fikk flest rå poeng av de femten — delt topp teller som treff.
+        «Global favoritt» spør om kapteinen din fikk minst like mange poeng som
+        spilleren flest i verden kapteinet. Runder der FPL ikke oppgir en global
+        favoritt står som «Ikke målt» og teller ikke mot deg.</p>
+      </details>
       <div class="stat-strip">
         <div class="stat"><span class="stat-val"><%= insights.captains.hitSquadPct %> %</span><span class="stat-lbl">Traff troppens beste · <%= insights.captains.counted.squad %> runde<%= insights.captains.counted.squad === 1 ? '' : 'r' %></span></div>
         <div class="stat"><span class="stat-val"><%= insights.captains.hitGlobalPct === null ? '–' : insights.captains.hitGlobalPct + ' %' %></span><span class="stat-lbl">Minst like god som global favoritt · <%= insights.captains.counted.global %> runde<%= insights.captains.counted.global === 1 ? '' : 'r' %></span></div>
@@ -155,14 +161,17 @@
   <% if (insights.luck) { %>
     <section class="card card-wide">
       <h2>Flaksbarometer</h2>
-      <p class="hint">xG og xA er FPLs forventede mål og forventede målgivende,
-      regnet ut fra sjansene spilleren var involvert i. Flakspoeng er avstanden
-      mellom det spillerne dine faktisk
-      leverte og det de var forventet å levere: (mål − xG) ganget med
-      poengverdien for posisjonen, pluss (assist − xA) ganget med 3. Positivt
-      tall betyr at du fikk mer enn statistikken tilsa. Rundetallet gjelder
-      elleveren som spilte; spillertallene under gjelder hele sesongen,
-      uavhengig av når du kjøpte spilleren.</p>
+      <details class="hint-details">
+        <summary>Slik regnes det</summary>
+        <p class="hint">xG og xA er FPLs forventede mål og forventede målgivende,
+        regnet ut fra sjansene spilleren var involvert i. Flakspoeng er avstanden
+        mellom det spillerne dine faktisk
+        leverte og det de var forventet å levere: (mål − xG) ganget med
+        poengverdien for posisjonen, pluss (assist − xA) ganget med 3. Positivt
+        tall betyr at du fikk mer enn statistikken tilsa. Rundetallet gjelder
+        elleveren som spilte; spillertallene under gjelder hele sesongen,
+        uavhengig av når du kjøpte spilleren.</p>
+      </details>
       <div class="stat-strip">
         <div class="stat"><span class="stat-val <%= insights.luck.total > 0 ? 'accent' : (insights.luck.total < 0 ? 'negative' : '') %>"><%= formatSigned(insights.luck.total) %></span><span class="stat-lbl">Flakspoeng i sesongen</span></div>
       </div>

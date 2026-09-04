@@ -87,6 +87,22 @@ const layoutLocals = (path) => ({
   startedAt: '19.08.2026, 21:00', cspNonce: 'testnonce', iconVersion: '1',
 });
 
+// v1.13.2 (fiks 8): forklaringene sto som 6–9 linjer brødtekst FØR tallene på
+// 390 px. De legges sammen, lukket, så tallene står rett under overskriften.
+test('innsikt.ejs legger forklaringene i lukkede details', async () => {
+  const html = await renderView('innsikt', fx.insights);
+  const apnede = html.match(/<details class="hint-details" open/g) || [];
+  assert.equal(apnede.length, 0, 'ingen forklaring skal stå åpen');
+  assert.ok(
+    (html.match(/<details class="hint-details">/g) || []).length >= 3,
+    'minst tre forklaringer skal være sammenleggbare',
+  );
+  assert.ok(
+    (html.match(/<summary>Slik regnes det<\/summary>/g) || []).length >= 3,
+    'hver sammenleggbare forklaring trenger samme etikett',
+  );
+});
+
 // v1.13.2 (fiks 7): «4.9.2026, 01:40:13» var eneste stedet i appen med
 // tallrik dato og sekunder. Resten bruker formatDay/formatTime.
 test('news.ejs viser publiseringstidspunkt i appens datoformat, uten sekunder', async () => {

@@ -230,6 +230,15 @@ test('style.css: --fs-xs er minst 12 px', () => {
   assert.match(block(':root'), /--fs-xs: 0\.75rem;/);
 });
 
+// v1.13.2 (fiks 8): summary er klikkbar, har fokusring og samme lavmælte
+// uttrykk som .hint. Luften mot tabellen/tallstripa under følger med.
+test('style.css: sammenleggbare forklaringer er klikkbare og har fokusring', () => {
+  assert.match(block('.hint-details summary'), /cursor: pointer/);
+  assert.match(block('.hint-details summary'), /color: var\(--text-dim\)/);
+  assert.match(block('.hint-details summary:focus-visible'), /outline: 2px solid var\(--focus\)/);
+  assert.match(css, /\.hint-details \+ \.table-scroll,\s*\r?\n\.hint-details \+ \.stat-strip \{/);
+});
+
 // v1.13.2 (fiks 3): «Lagnavn Managernavn» på én linje presset «Totalt» ut av
 // 390 px-banen i ligatabellen.
 test('style.css: managernavnet står på egen linje i ligatabellen på mobil', () => {
