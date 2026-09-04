@@ -10,28 +10,30 @@
 app-fabrikk, 23 rute-tester, CI på Node 22/24, pre-push-hook)
 
 ## Status akkurat nå
-- **v1.13.1 «Sikkerhetsnett» (økt 58, 4. sep)** på `feat/sikkerhetsnett-v1131`:
+- **v1.13.1 «Sikkerhetsnett» i prod 4. sep 02:37 (økt 58)** på `feat/sikkerhetsnett-v1131`:
   `createApp()` i `src/app.js` (ren fabrikk — lytter aldri, starter ingen
   timer), `src/server.js` er den eneste fila som lytter og starter schedulere.
   `test/app.test.js` (23 tester, 0,8 s) kjører hele stacken på loopback mot
   `test/fixtures/fpl-world.js`. `.github/workflows/ci.yml` (Node 22 + 24) og
-  `.githooks/pre-push` + `npm run hooks`. **792/792 + lint 0** (baseline 767),
-  CI-kjøring `33821174976` grønn på begge Node-versjoner.
+  `.githooks/pre-push` + `npm run hooks`. **792/792 + lint 0** (baseline 767).
+  CI-kjøring `33822168239` på merge-commiten grønn på både Node 22 og 24.
+  Prod-sjekk 02:41: footer v1.13.1, `<script` 2, /health 200 med `aiStats`
+  (13 kall, 0 failures), hash `ba91839a` (uendret), 9 sider 200.
   **Bonusfunn fikset:** `createErrorHandler` sendte aldri `staleSince` til
   `layout.ejs`, som leser den ubetinget → EJS kastet og alle feilsider (503,
   500, 413) falt ned til ren tekst «Noe gikk galt.». Gjaldt i prod siden
   v1.4.0. Regresjonstest i `middleware.test.js`.
-- **v1.13.0 «AI-statistikk» i prod 2. sep 20:59 (økt 56)** på `feat/ai-stats-v1130`:
-  teller per cacheKey i `ai.js` (calls/tokens/failures/lastAt/model + since)
-  → `DATA_DIR/ai-stats.json`, `aiStats` på /health via `healthPayload()`.
-  **767/767 + lint 0** (baseline 758). Røyktest med tomme nøkler:
-  `aiStats: null`, ingen fil. Prod-sjekk 21:03: footer v1.13.0, `<script` 2,
-  /health 200 med `aiStats` (since 18:59Z, calls 2 = brief + nyheter, 2711
-  inn / 1855 ut, 0 failures), hash `ba91839a` (uendret), 6 sider 200.
+- **v1.13.0 «AI-statistikk» i prod 2. sep 20:59 (økt 56)**: teller per cacheKey
+  i `ai.js` → `DATA_DIR/ai-stats.json`, `aiStats` på /health via
+  `healthPayload()`. **767/767 + lint 0**. Prod-sjekk 21:03 grønn.
 - **v1.12.0–v1.12.2 i prod 2. sep** (743 → 758 tester): statusblokkene rotert
   til historikkfila. `git merge -F -` leser IKKE stdin — bruk `-m`.
 - **v1.8.3–v1.11.0 i prod 2. sep** (655 → 729 tester): statusblokkene rotert
   til historikkfila. Prisvarslene: første melding ventes natt til 4. sep.
+- **Feilsiden i prod er ikke visuelt bevist ennå.** Fiksen er låst av tester
+  (rute-test + `middleware.test.js`), men et ekte 503-vindu fra FPL er eneste
+  måte å se den styltes siden i prod. Neste gang FPL oppdaterer: sjekk at `/`
+  viser «FPL oppdaterer spillet» og ikke ren tekst.
 - **Asset-hashen i prod er `ba91839a` etter v1.12.1** (v1.12.0 `b6c8f095`,
   v1.11.0 `4718ea73`, v1.9/1.10 `82d7c7a2`, v1.8.3 `6a3b2714`). Regnes fra
   git-blobbene. Prod-sjekk v1.12.1 (2. sep 17:20): 12/12 OK, sw.js no-store.
