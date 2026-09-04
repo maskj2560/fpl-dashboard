@@ -52,6 +52,7 @@ npm run dev            # utvikling med auto-restart
 npm start              # produksjon
 npm test               # tester (node:test)
 npm run lint           # ESLint
+npm run hooks          # aktiver pre-push-hooken (test + lint før push) — én gang per maskin
 ```
 
 ## Miljøvariabler
@@ -83,15 +84,19 @@ Appen starter og viser `/` uten noen av disse satt.
 ## Arkitektur
 
 ```
-src/server.js      oppstart, middleware, feilhåndtering
+src/app.js         createApp(): monterer middleware, ruter og feilhåndtering
+src/server.js      oppstart: lytt, SIGTERM/SIGINT, schedulere
 src/config.js      env-variabler med validering og defaults
 src/routes/        tynne ruter, én per side
 src/services/      fplClient (eneste FPL-nettverkskall), cache (TTL+SWR),
                    analysis (ren logikk), format
 views/             EJS-views med felles layout
 public/            style.css, app.js (vanilla)
-test/              node:test — ren logikk, ingen nettverkskall
+test/              node:test — ren logikk + rute-tester, ingen nettverkskall
 ```
+
+Hver push kjøres gjennom GitHub Actions (`.github/workflows/ci.yml`): `npm ci`,
+lint og tester på Node 22 og 24. Lokalt gjør pre-push-hooken det samme.
 
 FPL-API-et caches server-side (bootstrap 15 min, live 1 min osv.), med
 stale-while-revalidate og deduplisering — mange besøkende gir få API-kall.

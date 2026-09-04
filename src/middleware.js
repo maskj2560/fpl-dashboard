@@ -1,5 +1,5 @@
-// Små, rene middleware-byggere. Ligger utenfor server.js fordi den starter
-// lytteren ved import og derfor ikke kan lastes i tester.
+// Små, rene middleware-byggere. Ligger utenfor app.js fordi de testes hver for
+// seg — app.js monterer dem, server.js starter lytteren.
 
 import crypto from 'node:crypto';
 
@@ -198,6 +198,10 @@ export function createErrorHandler({ version, assetVersion, startedAt }) {
           title: 'Feil',
           path: req.originalUrl.split('?')[0],
           gameUpdating: false,
+          // layout.ejs leser staleSince ubetinget. Uten den kaster EJS og hele
+          // feilsiden faller ned til ren tekst — feilsiden har ingen data å
+          // være «gammel», så null er riktig verdi.
+          staleSince: null,
           version,
           assetVersion,
           iconVersion: ICON_VERSION,

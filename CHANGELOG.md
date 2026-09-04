@@ -7,6 +7,48 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.13.1] - 2026-09-04
+
+«Sikkerhetsnett» (`docs/prompt-sikkerhetsnett-v1131.md`) på
+`feat/sikkerhetsnett-v1131`. Rød test først. 792/792, lint 0, CI grønn på
+Node 22 og 24. Ingen brukersynlig endring, 0 nye AI-kall, 0 nye avhengigheter.
+
+### Added
+
+- CI på GitHub Actions (`.github/workflows/ci.yml`): `npm ci`, `npm run lint`
+  og `npm test` på Node 22 (`engines`-gulvet) og Node 24 (prod-imaget), ved
+  hver push og pull request. Ingen secrets, ingen nettverkskall.
+- Pre-push-hook i repoet (`.githooks/pre-push`) som kjører test + lint før
+  push, aktivert med `npm run hooks` (`core.hooksPath`). `.gitattributes`
+  låser hookene til LF. `main` går rett i prod, og repoet har ingen branch
+  protection — hooken og CI-en er sikkerhetsnettet.
+- Rute-tester for hele stacken (`test/app.test.js`, 23 tester): appen
+  bygges med `createApp()`, lytter på loopback (port 0) og møter en falsk
+  FPL-verden (`test/fixtures/fpl-world.js`) i stedet for nettet. Dekker
+  alle ti sider (200, nøyaktig to kjørbare `<script>`, CSP-noncen i
+  headeren = noncen i HTML-en, `<main id="innhold">`, ingen stale- eller
+  503-banner), 404-siden, `/health` med features av, `/api` med
+  `no-store` og `dataAlder`, element-summary-økonomien på
+  `/api/spiller/:id`, scenario-CRUD mot `DATA_DIR`, statisk cache
+  (immutable vs. no-cache), `/sw.js`, FPLs 503-vindu, RSS nede, 413 og
+  429 med `Retry-After`. AI og Discord er slått av med tomme nøkler, og
+  testene beviser at ingen forespørsel går dit.
+
+### Fixed
+
+- Feilsidene (503, 500 og 4xx fra body-parser) rendres igjen som ekte
+  sider. `createErrorHandler` sendte ikke `staleSince` til `layout.ejs`,
+  som leser variabelen ubetinget — EJS kastet, og hele feilsiden falt ned
+  til ren tekst «Noe gikk galt.» med riktig statuskode. Gjaldt også i
+  prod siden v1.4.0. Funnet av de nye rute-testene.
+
+### Changed
+
+- `src/server.js` er splittet i `src/app.js` (`createApp()` — ren fabrikk
+  som monterer alt, aldri lytter og aldri starter timere) og
+  `src/server.js` (lytt, SIGTERM/SIGINT, de tre schedulerne). Ingen
+  atferdsendring; monteringsrekkefølgen er uendret.
+
 ## [1.13.0] - 2026-09-02
 
 Vedlikeholdspakke, del 2 (`docs/prompt-vedlikehold-v1122-v1130.md`, T2) på

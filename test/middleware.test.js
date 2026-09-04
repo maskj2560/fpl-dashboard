@@ -77,8 +77,8 @@ test('CSP-en har aldri unsafe-inline for script og alltid frame-ancestors none',
   assert.equal(directives['font-src'], "'self'");
 });
 
-test('server.js monterer securityHeaders før rutene og begrenser JSON-kroppen til 32kb', () => {
-  const src = fs.readFileSync(new URL('../src/server.js', import.meta.url), 'utf8');
+test('app.js monterer securityHeaders før rutene og begrenser JSON-kroppen til 32kb', () => {
+  const src = fs.readFileSync(new URL('../src/app.js', import.meta.url), 'utf8');
   const headersAt = src.indexOf('app.use(createSecurityHeaders())');
   const jsonAt = src.indexOf("app.use(express.json({ limit: '32kb' }))");
   const staticAt = src.indexOf('express.static(');
@@ -252,6 +252,18 @@ test('feil på vanlig side rendrer fortsatt feilsiden', () => {
   assert.equal(res.statusCode, 500);
   assert.equal(res.rendered, 'layout');
   assert.equal(res.body, '<layout>');
+});
+
+test('feilsiden sender staleSince til layouten', () => {
+  // layout.ejs leser `staleSince` ubetinget. Mangler den i locals, kaster EJS
+  // og hele feilsiden faller ned til ren tekst «Noe gikk galt.» — funnet av
+  // rute-testene i v1.13.1, gjaldt også i prod.
+  const res = fakeRes();
+  handler(Object.assign(new Error('oppdaterer'), { status: 503 }), { path: '/', originalUrl: '/' }, res, () => {});
+  const layout = res.renderCalls.find((c) => c.view === 'layout');
+  assert.ok(layout, 'layouten ble aldri rendret');
+  assert.ok('staleSince' in layout.locals, 'staleSince mangler i layout-locals');
+  assert.equal(layout.locals.staleSince, null);
 });
 
 test('feilhandleren gjør ingenting når svaret alt er sendt', () => {

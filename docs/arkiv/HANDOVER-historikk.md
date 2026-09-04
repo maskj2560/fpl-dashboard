@@ -5,6 +5,36 @@
 > sjekkpunkt-tabellen, versjonshistorikken, utdaterte åpne punkter og hele
 > loggen over brukerbeskjeder til og med økt 22. Nyere logg: HANDOVER.md.
 
+## Rotert 2026-09-04 (økt 58, v1.13.1): statusblokkene v1.12.2 og v1.12.0/v1.12.1, majors-vurderingen og loggpost økt 56 (verbatim fra HANDOVER.md)
+
+**Majors vurdert 2. sep (kun rapport — ikke oppgradert, Marius' fasit):**
+- `ejs` 3.1.10 → 6.0.1: v4 fjernet `client`-flagget + Jake, v6 er dual
+  ESM/CJS; appen bruker kun `view engine` + `include()` → lav risiko, men
+  tomme releasenotes — bevis med `npm i ejs@6 && npm test` når det passer.
+- `eslint`/`@eslint/js` 9.39 → 10.x: Node-krav ok, flat config ok; tre nye
+  regler i recommended (`no-unassigned-vars`, `no-useless-assignment`,
+  `preserve-caught-error`) kan gi lint-feil — kjør lint etter bump.
+- `globals` 16.5 → 17.12: eneste brudd er `audioWorklet` skilt fra
+  `browser`; vi bruker `nodeBuiltin`/`browser`/`serviceworker` → trygg.
+
+
+- **v1.12.2 «Vedlikehold» i prod 2. sep 20:52 (økt 56)** på
+  `fix/hygiene-cache-keys-v1122`: `npm audit fix` (qs 6.16.0, audit ren),
+  fast-xml-parser 5.11.1, `node:24-alpine`, egne `:hist`-nøkler (rotårsak
+  QA-funn 6) + `finished` i `/api/live.json`. **758/758 + lint 0** (baseline
+  756). Røyktest på Node 24: alle sider 200, 0 DEP0169. Prod-sjekk 20:55:
+  footer v1.12.2, `<script` 2, /health 200, `dataAlder` 0 (ikke null), sw.js
+  no-store, 6 sider 200, hash `ba91839a` (uendret). Merk: `git merge -F -`
+  leser IKKE stdin — bruk `-m` (feiltaggen ble slettet og satt på nytt).
+- **v1.12.0 «PWA» + v1.12.1 «QA-fikser» i prod 2. sep** (743 → 756 tester;
+  re-QA 11/11 FIKSET): statusblokkene rotert til historikkfila. Rapport:
+  `docs/arkiv/qa-rapport-v1121.md`. Marius' valg: FDR-4 `#e6003c`, grå pille.
+- 2026-09-02 (økt 56, Fable): Marius limte inn vedlikeholdsprompten; «Stopp
+  arbeid. Jeg oppdaterer drivers», så «Du kan forsette», så «Er det noe mer
+  som bør gjøres?» → «Fiks docs-hullene». Handling: plan godkjent → v1.12.2 og
+  v1.13.0 (TDD, `--no-ff`, tag, deploy, prod-sjekk); docs slanket; prompten
+  slettet; README- og sjekkpunkt-d-hullene om `/health`/`aiStats` fikset.
+
 ## Rotert 2026-09-02 (økt 56, v1.12.2/v1.13.0): statuspunktene v1.8.3–v1.12.1 + sluttrydding og loggpost økt 54 (verbatim fra HANDOVER.md)
 
 - **v1.12.1 «QA-fikser» i prod 2. sep (økt 54).** Chrome-QA-en ga 6 VIKTIG
