@@ -87,6 +87,22 @@ const layoutLocals = (path) => ({
   startedAt: '19.08.2026, 21:00', cspNonce: 'testnonce', iconVersion: '1',
 });
 
+// v1.13.2 (fiks 10): fem kolonner sprengte 390 px, og «Gevinst» — den ene man
+// faktisk er ute etter — falt utenfor. «Nå» er den minst viktige og skjules.
+test('transfers.ejs merker Nå-kolonna i Prisgevinst', async () => {
+  const html = await renderView('transfers', fx.transfers);
+  assert.match(html, /<th class="num col-now">Nå<\/th>/);
+  // Hodet, hver spillerrad og sumraden — ellers rakner kolonnetellinga.
+  assert.ok(
+    (html.match(/class="num[^"]* col-now"/g) || []).length >= 2,
+    'både datacellene og sumraden må merkes',
+  );
+  // Ukjent-raden hadde colspan=4 tvers over «Nå». Med kolonna skjult ville
+  // raden kreve én kolonne mer enn de andre og skape en fantomkolonne.
+  assert.doesNotMatch(html, /colspan="4"/);
+  assert.match(html, /<td class="dim">ukjent<\/td>/);
+});
+
 // v1.13.2 (fiks 8): forklaringene sto som 6–9 linjer brødtekst FØR tallene på
 // 390 px. De legges sammen, lukket, så tallene står rett under overskriften.
 test('innsikt.ejs legger forklaringene i lukkede details', async () => {
@@ -821,7 +837,9 @@ test('transfers.ejs merker beste og verste bytte som piller', async () => {
 test('transfers.ejs: prisgevinst med salgspris, ukjent-fallback og tapte salg', async () => {
   const html = await renderView('transfers', fx.transfers);
   assert.match(html, /14\.2/); // salgspris 142 tideler
-  assert.match(html, /ukjent kjøpspris/); // Salah mangler element_in_cost
+  // Salah mangler element_in_cost. «Kjøpt» står i kolonnehodet, så cella sier
+  // bare «ukjent» — «ukjent kjøpspris» gjorde kolonna 15 px for bred på 390 px.
+  assert.match(html, /<td class="dim">ukjent<\/td>/);
   assert.match(html, /Saka: solgt for 5\.5, nå 6\.0/);
 
   const uten = await renderView('transfers', fx.transfersEmpty);

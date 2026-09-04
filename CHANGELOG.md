@@ -22,6 +22,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   rangkolonna reserverer litt mindre plass til pila. «#», «Lag», «GW» og
   «Totalt» får dermed plass innenfor 390 px uten sidescroll (fiks 3).
 
+- «Nå»-kolonna i Prisgevinst på /overganger skjules under 480 px, så Spiller,
+  Kjøpt, Salg og Gevinst får plass uten sidescroll. Fra 481 px vises alle fem.
+  Raden for ukjent kjøpspris er samtidig delt i egne celler og sier «ukjent»
+  under «Kjøpt» (fiks 10).
 - Forklaringene på /innsikt (Benkesløsing, Kapteinsfasit, Flaksbarometer) er
   lagt i sammenleggbare «Slik regnes det», lukket som standard. Tallene står nå
   rett under kortoverskriften i stedet for etter 6–9 linjer brødtekst. Ren

@@ -1935,6 +1935,13 @@ footer .version {
     display: block;
   }
 
+  /* Fiks 10 (v1.13.2): Prisgevinst har fem kolonner, og «Gevinst» — den man
+     faktisk er ute etter — falt utenfor 390 px. «Nå» er den minst viktige:
+     kjøpspris, salgspris og gevinst forteller hele historien. */
+  .col-now {
+    display: none;
+  }
+
   /* Rangkolonna reserverer 2rem til pila (som ligger absolutt på 0.6rem).
      På mobil er de siste 8 pikslene forskjellen på om «Totalt» får luft eller
      står klemt mot kortkanten — pila har fortsatt klaring. */

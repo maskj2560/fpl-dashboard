@@ -230,6 +230,13 @@ test('style.css: --fs-xs er minst 12 px', () => {
   assert.match(block(':root'), /--fs-xs: 0\.75rem;/);
 });
 
+// v1.13.2 (fiks 10): «Nå»-kolonna i Prisgevinst skjules under 480 px så
+// Spiller/Kjøpt/Salg/Gevinst får plass uten sidescroll.
+test('style.css: Nå-kolonna i Prisgevinst skjules på mobil', () => {
+  const mobile = css.slice(css.indexOf('@media (max-width: 480px)'));
+  assert.match(mobile, /\.col-now \{[^}]*display: none;/);
+});
+
 // v1.13.2 (fiks 8): summary er klikkbar, har fokusring og samme lavmælte
 // uttrykk som .hint. Luften mot tabellen/tallstripa under følger med.
 test('style.css: sammenleggbare forklaringer er klikkbare og har fokusring', () => {
