@@ -436,13 +436,29 @@ export const priceChanges = {
   countDown: 5,
 };
 
+// v1.14.0: FPLs egne prognosefelt. Låst spiller har alltid pct 0.
+const priceForecast = {
+  mine: [
+    { id: 1, name: 'Haaland', teamShort: 'MCI', teamCode: 43, cost: 141, pct: 58.1, likelihood: 3, rate: 1200, lockedUntil: null, changed: 0 },
+    { id: 2, name: 'Mbeumo', teamShort: 'MUN', teamCode: 1, cost: 79, pct: -101.6, likelihood: -5, rate: -2002, lockedUntil: null, changed: -1 },
+    { id: 9, name: 'Raya', teamShort: 'ARS', teamCode: 3, cost: 55, pct: 0, likelihood: 0, rate: 0, lockedUntil: '2026-09-04T19:30:00Z', changed: 0 },
+  ],
+  risers: [{ id: 3, name: 'Cherki', teamShort: 'MCI', teamCode: 43, cost: 65, pct: 91.5, likelihood: 5, rate: 4215, lockedUntil: null, changed: 0 }],
+  fallers: [{ id: 2, name: 'Mbeumo', teamShort: 'MUN', teamCode: 1, cost: 79, pct: -101.6, likelihood: -5, rate: -2002, lockedUntil: null, changed: -1 }],
+  countRising: 4,
+  countFalling: 6,
+  lockedCount: 1,
+};
+
 export const transfers = {
   title: 'Overganger',
   clubAssets,
   formatSigned: (n) => String(n),
   formatPrice: (n) => (n / 10).toFixed(1),
   formatDay: () => 'torsdag 3. september',
+  formatTime: () => '21:30',
   priceChanges,
+  priceForecast,
   aiComment: { text: "Byttene treffer — **Haaland** inn var rett.", generatedAt: 1 },
   scenarios: [
     {
@@ -498,6 +514,7 @@ export const transfersEmpty = {
   clubAssets,
   formatSigned: (n) => String(n),
   formatPrice: (n) => (n / 10).toFixed(1),
+  priceForecast: { mine: [], risers: [], fallers: [], countRising: 0, countFalling: 0, lockedCount: 0 },
   priceReport: null,
   baseline: null,
   scenarios: [],

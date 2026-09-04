@@ -16,6 +16,7 @@ import {
 } from './fplClient.js';
 import { byId, resolvedGw } from './analysis.js';
 import { buildPurchases, buildPriceReport } from './pricing.js';
+import { buildPriceForecast } from './prices.js';
 import { assembleBaseline } from './baseline.js';
 import { listScenarios, buildFtLedger, evaluateScenario } from './scenarios.js';
 import * as ai from './ai.js';
@@ -323,9 +324,11 @@ export async function assembleTransfersPage({ teamId = config.fplTeamId } = {}) 
   ]);
 
   let priceReport = null;
+  let squadIds = [];
   try {
     const gw = Math.max(1, analysis.maxGw);
     const picks = await getPicks(teamId, gw);
+    squadIds = picks.picks.map((p) => p.element);
     // gw > 1 betyr at runde 1 er historikk — 6 t-cachen er trygg.
     const gw1Picks = gw === 1 ? picks : await getPicksHistoric(teamId, 1);
     const purchases = buildPurchases({
@@ -391,7 +394,15 @@ export async function assembleTransfersPage({ teamId = config.fplTeamId } = {}) 
     scenarios = [];
   }
 
-  return { analysis, priceReport, baseline, scenarios, aiComment: null };
+  // Prognosen leser bootstrap-felt vi alt har — 0 nye FPL-kall. Uten picks
+  // (404 før deadline) blir troppen tom, markedslistene står likevel.
+  const priceForecast = buildPriceForecast({
+    elements: bootstrap.elements,
+    squadIds,
+    teamsById: byId(bootstrap.teams ?? []),
+  });
+
+  return { analysis, priceReport, priceForecast, baseline, scenarios, aiComment: null };
 }
 
 /** Cachenøkkel for AI-kommentaren — deles av refresh.js og ruta. */

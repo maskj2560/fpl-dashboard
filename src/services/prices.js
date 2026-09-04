@@ -104,6 +104,72 @@ export function buildPriceChanges({ diffs, elements, squadIds = [], teamsById, d
   };
 }
 
+/**
+ * FPLs egne prognosefelt (udokumenterte, v1.14.0): `price_change_percent` er
+ * progresjonen mot terskelen for en endring — ±100 er nær, men ikke en garanti
+ * (fire spillere lå under −100 uten å falle 4. sep 2026). Terskler:
+ * troppen vises fra 20 %, markedslistene fra 50 %.
+ */
+export const FORECAST_MIN_PCT = 20;
+export const FORECAST_MARKET_PCT = 50;
+
+function forecastRow(el, teamsById) {
+  const team = lookup(teamsById, el.team);
+  return {
+    id: el.id,
+    name: el.web_name,
+    teamShort: team?.short_name ?? '?',
+    teamCode: team?.code ?? null,
+    cost: el.now_cost,
+    pct: Number.parseFloat(el.price_change_percent) || 0,
+    likelihood: el.price_change_projections[0]?.likelihood ?? 0,
+    rate: el.price_change_hourly_rate ?? 0,
+    lockedUntil: el.price_change_locked_until ?? null,
+    changed: el.cost_change_event ?? 0,
+  };
+}
+
+/**
+ * Prognosen på /overganger: troppen din først, så markedets største
+ * bevegelser hver vei. Låste spillere (`price_change_locked_until`) har alltid
+ * pct 0 — de vises i troppen med tidspunktet, men aldri i topplistene.
+ * Spillere uten `price_change_projections` (test-verdenen, eldre svar) hoppes
+ * over — funksjonen kaster aldri.
+ */
+export function buildPriceForecast({ elements = [], squadIds = [], teamsById }) {
+  const squad = new Set(squadIds);
+  const rows = [];
+  let lockedCount = 0;
+  for (const el of elements) {
+    if (!Array.isArray(el?.price_change_projections)) continue;
+    const row = forecastRow(el, teamsById);
+    if (row.lockedUntil) lockedCount += 1;
+    rows.push(row);
+  }
+  const byName = (a, b) => a.name.localeCompare(b.name, 'nb');
+  const open = rows.filter((r) => !r.lockedUntil);
+  const up = open
+    .filter((r) => r.pct >= FORECAST_MARKET_PCT)
+    .sort((a, b) => b.pct - a.pct || b.rate - a.rate || byName(a, b));
+  const down = open
+    .filter((r) => r.pct <= -FORECAST_MARKET_PCT)
+    .sort((a, b) => a.pct - b.pct || a.rate - b.rate || byName(a, b));
+
+  const inSquad = rows.filter((r) => squad.has(r.id) && (r.lockedUntil || Math.abs(r.pct) >= FORECAST_MIN_PCT));
+  const mineUp = inSquad.filter((r) => r.pct > 0).sort((a, b) => b.pct - a.pct || b.rate - a.rate || byName(a, b));
+  const mineDown = inSquad.filter((r) => r.pct < 0).sort((a, b) => a.pct - b.pct || a.rate - b.rate || byName(a, b));
+  const mineFlat = inSquad.filter((r) => r.pct === 0).sort(byName);
+
+  return {
+    mine: [...mineUp, ...mineDown, ...mineFlat],
+    risers: up.slice(0, TOP),
+    fallers: down.slice(0, TOP),
+    countRising: up.length,
+    countFalling: down.length,
+    lockedCount,
+  };
+}
+
 const priceMove = (r) => `£${formatPrice(r.from)}m → £${formatPrice(r.to)}m (${formatSigned(r.delta / 10)})`;
 
 /** Discord-teksten. Ren — samme innhold som kortet på /overganger. */

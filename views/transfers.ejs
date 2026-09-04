@@ -65,6 +65,81 @@
   </section>
 <% } %>
 
+<% if (typeof priceForecast !== 'undefined' && priceForecast) {
+  // Prisprognose (v1.14.0): FPLs egne, udokumenterte prognosefelt fra bootstrap.
+  // pct er progresjon mot terskelen, ikke et løfte — fire spillere lå under
+  // −100 uten å falle 4. sep 2026. likelihood er et heltall −5..+5.
+  const sannsynlighet = (n) => {
+    const v = Math.abs(n);
+    if (v >= 4) return 'svært trolig';
+    if (v === 3) return 'trolig';
+    if (v >= 1) return 'mulig';
+    return '–';
+  };
+%>
+  <section class="card card-wide" id="prisprognose">
+    <h2>
+      <span class="h2-title">Prisprognose</span>
+      <span class="dim"><%= priceForecast.countRising %> mot oppgang · <%= priceForecast.countFalling %> mot nedgang</span>
+    </h2>
+    <p class="hint">FPLs egne tall, oppdatert med bootstrap hvert kvarter. Prosenten er hvor nær
+    en prisendring spilleren er — rundt 100 endrer prisen seg som regel i natt, men FPL garanterer
+    ingenting. «Bytter/t» er netto overganger per time.</p>
+    <div class="grid">
+      <div>
+        <h3 class="sub-head">Din tropp</h3>
+        <% if (priceForecast.mine.length === 0) { %>
+          <p class="empty">Ingen i troppen din er nær en prisendring.</p>
+        <% } else { %>
+          <div class="table-scroll">
+            <table class="data data--fit">
+              <caption class="sr-only">Prisprognose for troppen din</caption>
+              <thead><tr><th scope="col">Spiller</th><th scope="col" class="num">Pris</th><th scope="col" class="num">Mot endring</th><th scope="col">FPL-sannsynlighet</th><th scope="col" class="num">Bytter/t</th></tr></thead>
+              <tbody>
+                <% for (const r of priceForecast.mine) { %>
+                  <tr>
+                    <td><strong><%= r.name %></strong> <%- include('partials/club-badge', { team: { short_name: r.teamShort, code: r.teamCode } }) %></td>
+                    <td class="num">£<%= formatPrice(r.cost) %>m</td>
+                    <td class="num <%= r.pct > 0 ? 'accent' : r.pct < 0 ? 'negative' : '' %>"><%= formatSigned(r.pct) %> %</td>
+                    <td><% if (r.lockedUntil) { %><span class="dim">låst til <%= formatDay(r.lockedUntil) %> kl. <%= formatTime(r.lockedUntil) %></span><% } else { %><%= sannsynlighet(r.likelihood) %><% } %></td>
+                    <td class="num"><%= formatSigned(r.rate) %></td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        <% } %>
+      </div>
+      <% for (const [label, rows, total] of [['Stiger', priceForecast.risers, priceForecast.countRising], ['Faller', priceForecast.fallers, priceForecast.countFalling]]) { %>
+        <div>
+          <h3 class="sub-head"><%= label %> (<%= rows.length %> av <%= total %>)</h3>
+          <% if (rows.length === 0) { %>
+            <p class="empty">Ingen.</p>
+          <% } else { %>
+            <div class="table-scroll">
+              <table class="data data--fit">
+                <caption class="sr-only">Markedet nærmest en prisendring — <%= label.toLowerCase() %></caption>
+                <thead><tr><th scope="col">Spiller</th><th scope="col" class="num">Pris</th><th scope="col" class="num">Mot endring</th><th scope="col">FPL-sannsynlighet</th><th scope="col" class="num">Bytter/t</th></tr></thead>
+                <tbody>
+                  <% for (const r of rows) { %>
+                    <tr>
+                      <td><a href="/spillere?sok=<%= encodeURIComponent(r.name) %>"><%= r.name %></a> <%- include('partials/club-badge', { team: { short_name: r.teamShort, code: r.teamCode } }) %></td>
+                      <td class="num">£<%= formatPrice(r.cost) %>m</td>
+                      <td class="num <%= r.pct > 0 ? 'accent' : 'negative' %>"><%= formatSigned(r.pct) %> %</td>
+                      <td><%= sannsynlighet(r.likelihood) %></td>
+                      <td class="num"><%= formatSigned(r.rate) %></td>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          <% } %>
+        </div>
+      <% } %>
+    </div>
+  </section>
+<% } %>
+
 <% if (analysis.totals.count === 0) { %>
   <section class="card">
     <p class="empty">

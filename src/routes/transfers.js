@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import config from '../config.js';
 import { assembleTransfersPage, transferCommentCacheKey } from '../services/transfers.js';
-import { formatSigned, formatDay } from '../services/format.js';
+import { formatSigned, formatDay, formatTime } from '../services/format.js';
 import { formatPrice } from '../services/analysis.js';
 import * as ai from '../services/ai.js';
 import { getLastPriceChanges } from '../services/prices.js';
@@ -18,6 +18,8 @@ router.get('/', async (req, res, next) => {
       title: 'Overganger',
       analysis: page.analysis,
       priceReport: page.priceReport,
+      // Prisprognose (v1.14.0): FPLs egne prognosefelt fra bootstrap — 0 nye kall.
+      priceForecast: page.priceForecast,
       baseline: page.baseline,
       scenarios: page.scenarios,
       // Kun cachen — genereringen eies av refresh.js (aldri en sidevisning).
@@ -27,6 +29,7 @@ router.get('/', async (req, res, next) => {
       formatSigned,
       formatPrice,
       formatDay,
+      formatTime,
     });
   } catch (err) {
     next(err);

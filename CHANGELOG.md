@@ -7,6 +7,16 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+
+- **Prisprognose på «Overganger»** — nytt kort under Prisendringer som viser
+  hvor nær en prisendring spillerne er, før den skjer. Troppen din først (fra
+  20 % mot terskelen), så de fem største bevegelsene hver vei i markedet.
+  Kolonnene er FPLs egne, udokumenterte prognosefelt: prosent mot endring,
+  FPLs sannsynlighet og netto bytter per time. Låste spillere vises med
+  tidspunktet de er låst til, og prognosen lover aldri en endring. 0 nye
+  FPL-kall — feltene kommer fra bootstrap, som allerede hentes hvert kvarter.
+
 ## [1.13.2] - 2026-09-04
 
 «UX-polering 2» på `feat/ux-polering-v1132`: ti småfiks fra

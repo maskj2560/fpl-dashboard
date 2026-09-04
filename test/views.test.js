@@ -449,6 +449,29 @@ test('transfers.ejs viser prisendringene i natt med troppen først', async () =>
   assert.ok(html.includes('Sjekkes hver time'), 'hintet mangler');
 });
 
+// v1.14.0 (T1): prognosen står under prisendringene og lover aldri en endring.
+test('transfers.ejs viser prisprognosen med troppen først og tomtilstand', async () => {
+  const html = await renderView('transfers', fx.transfers);
+  assert.ok(html.includes('id="prisprognose"'), 'prognosekortet mangler');
+  const endringer = html.indexOf('id="prisendringer"');
+  const prognose = html.indexOf('id="prisprognose"');
+  assert.ok(endringer > 0 && prognose > endringer, 'prognosen skal stå under prisendringene');
+  const mine = html.indexOf('Din tropp', prognose);
+  const opp = html.indexOf('Stiger (1 av 4)');
+  const ned = html.indexOf('Faller (1 av 6)');
+  assert.ok(mine > prognose && opp > mine && ned > opp, 'rekkefølgen skal være troppen, stiger, faller');
+  assert.ok(html.includes('svært trolig'), 'likelihood 5 mangler etiketten');
+  assert.ok(html.includes('trolig'), 'likelihood 3 mangler etiketten');
+  assert.ok(html.includes('Cherki') && html.includes('Mbeumo'), 'markedsradene mangler');
+  assert.ok(html.includes('låst til'), 'låst spiller mangler tidspunktet');
+  assert.ok(!/100 % gir en prisendring|garantert/.test(html), 'prognosen skal aldri love en endring');
+
+  const tom = await renderView('transfers', fx.transfersEmpty);
+  assert.ok(tom.includes('id="prisprognose"'), 'kortet vises også uten data');
+  assert.ok(tom.includes('Ingen i troppen din er nær en prisendring.'), 'tomtilstand for troppen mangler');
+  assert.ok(tom.includes('Stiger (0 av 0)'), 'tomme markedslister mangler');
+});
+
 test('transfers.ejs skjuler priskortet uten snapshot og sier fra om tom tropp', async () => {
   const none = await renderView('transfers', { ...fx.transfers, priceChanges: null });
   assert.ok(!none.includes('id="prisendringer"'), 'priskortet vises uten data');
