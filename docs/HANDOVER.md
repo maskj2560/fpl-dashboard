@@ -53,7 +53,8 @@ v1.13.1 (`git show e63bd4b:…`) og v1.13.2 (`git show 162ca4d:…`).
 `feat/funksjonssveip-v1140`. Mandag 7. sep eller senere, i denne rekkefølgen:
 
 1. `GET https://fpl.marsk.no/api/live.json` → `anyLive` MÅ være `false`; aldri tor. 19–21.
-2. `git push -u origin feat/funksjonssveip-v1140` → `gh run watch` grønn (Node 22 + 24).
+2. ~~Push branch → CI~~ **gjort 4. sep: kjøring `33885599446` på `d947a04` grønn på
+   Node 22 OG 24.** Branchen ligger på origin, `main` er urørt.
 3. `git switch main && git merge --no-ff -m "…" feat/funksjonssveip-v1140`, annotert tag
    `v1.14.0`, push `main` + tag, slett branchen begge steder.
 5. Prod-sjekk: footer v1.14.0, `<script` = 2 på `/`, `/health` 200 med `aiStats`, ny
