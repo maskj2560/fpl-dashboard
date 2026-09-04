@@ -1,0 +1,3 @@
+# Git-hookene kjøres av `sh`. Med core.autocrlf=true ville de fått CRLF i
+# arbeidstreet, og `sh` feiler stille på `\r` — derfor låses de til LF.
+.githooks/* text eol=lf
