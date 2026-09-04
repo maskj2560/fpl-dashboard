@@ -7,6 +7,15 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.14.0] - 2026-09-07
+
+«Funksjonssveip» på `feat/funksjonssveip-v1140`: åtte funksjoner bygget på
+FPL-felt appen allerede hentet, men aldri leste — 73 av 109 felt i
+`bootstrap.elements[]`, hele `explain` i live-svaret, `history_past` i
+element-summary og de globale ligaene i `entry`. **0 nye FPL-kall**, 0 nye
+AI-kall, 0 nye avhengigheter, 0 nye ruter. Rød test først. 841/841, lint 0.
+Hver funksjon sett i nettleser ved 390 px i begge temaer.
+
 ### Added
 
 - **Prisprognose på «Overganger»** — nytt kort under Prisendringer som viser

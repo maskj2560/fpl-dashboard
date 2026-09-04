@@ -6,36 +6,27 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-09-04 (økt 61, Fable: kjøreprompt for v1.14.0 «Funksjonssveip»)
+**Sist oppdatert:** 2026-09-04 (økt 62, Opus: v1.14.0 «Funksjonssveip» bygget — venter på deploy-vinduet)
 
 ## Status akkurat nå
-- **v1.14.0 «Funksjonssveip» planlagt 4. sep (økt 61, Fable)**: kjøreprompt i
-  `docs/prompt-feltpakka-v1140.md` — 8 T-tasks (funn A–J), premisser målt mot
-  live FPL-API med dekningstall. 0 kode, 0 AI-kall, `main` 2 docs-commits foran origin.
-- **v1.13.2 «UX-polering 2» i prod 4. sep 04:57 (økt 60)**: ti småfiks fra
-  gjennomgangen i økt 59. **809/809 + lint 0** (baseline 792), asset-hash
-  `781ffae6`. CI-kjøring `33831271617` på merge-commiten grønn på Node 22 og 24.
-  Prod-sjekk 04:58: footer v1.13.2, `<script` 2 på `/`, /health 200 med
-  `aiStats` (19 kall, 0 failures), hash `fpl-781ffae6` fra `/sw.js`, 9 sider
-  200, og alle fiksene bekreftet i prod-HTML-en (`#players-more`,
-  `.dim.manager` ×5, `.hint-details` ×3, `.col-now` ×17, 0 treff på sekunder
-  i /nyheter). Hver fiks sett i Playwright ved 390 px i BEGGE temaer.
-  **Tre avvik fra kjøreprompten, funnet i premissverifiseringen:** (1)
-  `colspan="4"` i Prisgevinst krysset «Nå»-kolonna — med kolonna skjult krevde
-  raden én kolonne mer enn de andre og lagde en fantomkolonne (målt: kolonner
-  per rad `[4, 5]` mot `[4]` etter splitting); (2) `poll()`s feilsti returnerte
-  uten å røre statuslinja når `interval` gikk — altså nettopp under kamp; (3)
-  `nextKickoff` var `null` i prod, så fiks 9 ble bevist med server/klient-paritet.
-  **Etter-tall:** nav 173 → 265 px (3 hele lenker mot 1–2; ikke 4 — en fjerde
-  krever mindre padding på lenker som alt er under 44 px tapphøyde). /spillere:
-  100 av 652 rader i første render, last 334 ms mot 988 ms i planøktens måling.
-  Ligatabellen 391 → 335 px = boksbredden.
-- **v1.13.1 «Sikkerhetsnett» i prod 4. sep 02:37 (økt 58)**: `createApp()` i
-  `src/app.js`, `test/app.test.js` (hele stacken på loopback mot
-  `test/fixtures/fpl-world.js`), CI på Node 22 + 24, pre-push-hook. 792/792,
-  CI-kjøring `33822168239` grønn, hash `ba91839a`. Bonusfunnet (alle feilsider
-  var ren tekst siden v1.4.0) er fikset og låst i `middleware.test.js`.
-  Detaljene: historikkfila.
+- **v1.14.0 «Funksjonssveip» BYGGET 4. sep (økt 62, Opus) — IKKE I PROD ENNÅ.**
+  Åtte funksjoner på FPL-felt appen alt hentet, men aldri leste, alle på
+  branchen `feat/funksjonssveip-v1140` (9 commits): prisprognose (/overganger),
+  poengoppdeling (/live), «Runden i tall» (/), «Topp X %» (/lag), forsvarsbidrag
+  (/spillere + kort), spillerkort-pakka, låneklausul + nyhetsdato (Lagsjekk, Ukens
+  flagg), «Dine plasseringer» (/liga). **841/841 + lint 0** (baseline 809), rød test
+  først på hver. **0 nye FPL-kall** — `fplClient.js` og `src/pwa/` er urørt
+  (`git diff main --stat` tom); kildelåsen i routes.test.js uendret grønn; 0 nye
+  avhengigheter. Hver funksjon sett i Playwright ved 390 px i BEGGE temaer, 0 px
+  vannrett overflow. Lokal sveip: 11 ruter 200, `<script` = 2 på `/`, `/health` →
+  `ai:false, discord:false`.
+  **Gjenstår (Marius eller neste økt):** push branch → CI grønn → merge `--no-ff`
+  → annotert tag `v1.14.0` → push `main` **tidligst mandag 7. sep** (GW3 spilles
+  fre 4. sep 21:00 → søn 6. sep) → prod-sjekk → `git rm docs/prompt-feltpakka-v1140.md`.
+  CHANGELOG-datoen står som 2026-09-07 — juster hvis mergen glipper til en annen dag.
+- **v1.13.2 i prod 4. sep 04:57** (ti småfiks, 809/809, hash `781ffae6`, CI `33831271617`)
+  og **v1.13.1 i prod 4. sep 02:37** (`createApp()`, `app.test.js`, CI Node 22+24,
+  pre-push-hook, 792/792, hash `ba91839a`). Fulle detaljer i historikkfila.
 - **v1.13.0 og v1.8.3–v1.12.2 i prod 2. sep** (655 → 767 tester) — detaljene i
   historikkfila. Prisvarslene: første Discord-melding var ventet natt til 4. sep.
 - **Feilsiden i prod er ikke visuelt bevist ennå** (fiksen er låst av tester).
@@ -58,12 +49,23 @@
 v1.12.2/v1.13.0 (`git show d34e3c8:docs/prompt-vedlikehold-v1122-v1130.md`),
 v1.13.1 (`git show e63bd4b:…`) og v1.13.2 (`git show 162ca4d:…`).
 
-**Neste: ROADMAP § 8 — v1.14.0 «Funksjonssveip».** Lim
-`docs/prompt-feltpakka-v1140.md` inn i en Opus-økt (plan-modus): den
-verifiserer premissene, bygger T1–T8 med rød test først, pusher og gjør
-prod-sjekk. Deploy-vindu: GW3 spilles fre 4.–søn 6. sep → push til `main`
-tidligst mandag 7. sep. Etter B gjenstår D (slanking av style.css/app.js),
-ikke besluttet.
+**Neste: slipp v1.14.0 (ROADMAP § 8).** Koden er ferdig og grønn på
+`feat/funksjonssveip-v1140`. Mandag 7. sep eller senere, i denne rekkefølgen:
+
+1. `GET https://fpl.marsk.no/api/live.json` → `anyLive` MÅ være `false`; aldri tor. 19–21.
+2. `git push -u origin feat/funksjonssveip-v1140` → `gh run watch` grønn (Node 22 + 24).
+3. `git switch main && git merge --no-ff -m "…" feat/funksjonssveip-v1140`, annotert tag
+   `v1.14.0`, push `main` + tag, slett branchen begge steder.
+5. Prod-sjekk: footer v1.14.0, `<script` = 2 på `/`, `/health` 200 med `aiStats`, ny
+   asset-hash fra `/sw.js` noteres her, 9 sider 200, og grep i prod-HTML: `id="prisprognose"`,
+   `live-why` + `explain` i `/api/live.json`, `id="runden-i-tall"`, «topp » i hero-flisen,
+   `data-dc`, «Tidligere sesonger» i `/api/spiller/1`, «Låneklausul» i `/api/spiller/160`,
+   `id="plasseringer"`.
+6. `git rm docs/prompt-feltpakka-v1140.md` + fjern dokumentkart-raden, sett
+   ROADMAP-raden til «utført», og skriv CI-run-ID + hash inn her.
+
+Etter B gjenstår **D** fra økt 57: slanking av `style.css` (2612 linjer) og
+`app.js` (1503 linjer — større etter T2/T5/T6). Ikke besluttet.
 
 **Majors ikke oppgradert (Marius' fasit 2. sep):** `ejs` 6, `eslint` 10, `globals` 17 — vurderingen i historikkfila (økt 58).
 
@@ -83,33 +85,27 @@ ikke besluttet.
   CI-en på Node 22/24. Hooken er IKKE aktiv før `npm run hooks` er kjørt på
   maskinen — `git config core.hooksPath` skal svare `.githooks`. Flyt: branch →
   push → CI grønn → merge `--no-ff` → push `main`.
-- **En mock som KASTER for en FPL-sti koster sekunder i retry-søvn**
-  (`fplFetch` prøver på nytt for alt unntatt 503/404). Ukjent FPL-sti skal
-  svare `{ ok: false, status: 404 }` — mønsteret ligger i `test/fixtures/fpl-world.js`.
+- **En mock som KASTER for en FPL-sti koster sekunder i retry-søvn** (`fplFetch` prøver
+  på nytt for alt unntatt 503/404). Ukjent FPL-sti skal svare `{ ok: false, status: 404 }`
+  — mønsteret ligger i `test/fixtures/fpl-world.js`.
 - **`/live` har tre `<script>`-tagger, ikke to.** Den tredje er
   `<script type="application/json">` med live-dataene — en databeholder som
   ikke kjøres. Script-tellingen i prod-sjekken gjelder `/`.
 
-- **Stale-banner på /live mellom runder var delt cache-nøkkel, ikke nett** —
-  fellen LUKKET i v1.12.2 med egne `:hist`-nøkler (detaljene i CLAUDE.md og
-  historikkfila). Diagnose: to `/api/live.json`-kall — stiger `dataAlder`
-  mens FPL svarer, er det cachen.
+- **Stale-banner på /live mellom runder var delt cache-nøkkel, ikke nett** — lukket i
+  v1.12.2 med egne `:hist`-nøkler. Diagnose: to `/api/live.json`-kall — stiger
+  `dataAlder` mens FPL svarer, er det cachen.
 - **FPL-bootstrap `chips[]`: wildcard og Free Hit har `start_event` 2** (kan
   ikke spilles i runde 1) — halvdeler grupperes på `stop_event`, aldri på
   (start, stopp)-paret.
-- **401 med `Basic realm="traefik"`: sjekk FØRST om «HTTP Basic Authentication»
-  er huket av for appen i Coolify.** Haken rammer ALLE stier, også `/health`;
-  realmnavnet er Traefiks standard, ikke tegn på manglende rute (som ville gitt
-  404). Redeploy hjelper ikke — fjern haken (løst 25. aug).
-- **Coolifys «Running (healthy)» sier bare at appen svarer INNE i containeren.**
-  Coolifys egen HTTP-sjekk overstyrte Dockerfilens og brukte `curl` (finnes ikke
-  i alpine-imaget) → «healthy» mens prod svarte 401 (fikset 25. aug: sjekken AV).
-  «Prod svarer rart» feilsøkes ALLTID utenfra først.
-- **`kill 1` virker FRA v1.3.5 — før det gjorde det ingenting** (målt 25. aug).
-  PID 1 i et container-namespace mottar kun signaler den har egen handler for.
-  Med `createShutdown` er `kill 1` i containerterminalen den trygge måten å
-  bevise ryddig avslutning: containeren restartes av `unless-stopped` og
-  BEHOLDER loggen. Aldri `docker stop`/`kill` på prod — da blir den nede.
+- **To Coolify-lærdommer fra 25. aug (fullt løst, detaljene i historikkfila):** en
+  huket «HTTP Basic Authentication» gir 401 på ALLE stier inkl. `/health`, og
+  «Running (healthy)» sier bare at appen svarer INNE i containeren. «Prod svarer
+  rart» feilsøkes ALLTID utenfra først.
+- **`kill 1` virker FRA v1.3.5 — før det gjorde det ingenting** (målt 25. aug): PID 1 i
+  et container-namespace mottar kun signaler den har egen handler for. Med
+  `createShutdown` er `kill 1` den trygge måten å bevise ryddig avslutning — containeren
+  restartes av `unless-stopped` og BEHOLDER loggen. Aldri `docker stop`/`kill` på prod.
 - **Restart serveren etter endringer i `src/`** — ESM lastes én gang.
 - **Sjekk `git status -sb`, ikke anta at `main` = `origin/main`:** ved
   starten av økt 30 lå `main` 2 docs-commits foran origin (loggføring fra
@@ -117,11 +113,10 @@ ikke besluttet.
 - **Klubbgrafikken hentes på nytt hver sesong:** `npm run fetch-clubs` + bump
   `IMG_VERSION` i `src/middleware.js` i SAMME commit, ellers serverer
   Cloudflare fjorårets drakter som `immutable`. Rutine: DEPLOY.md.
-- **ALLE docs er CRLF i arbeidstreet (LF i indeksen, `core.autocrlf=true`;
-  ROADMAP har BOM).** Et node-`replace` med `\n` i søkestrengen MATCHER IKKE
-  og feiler STILLE — det skjedde med to CHANGELOG-tillegg i økt 45. Bruk
-  Edit-verktøyet på docs. `sed -i` er forbudt. Nye filer skrives med LF;
-  git normaliserer.
+- **ALLE docs er CRLF i arbeidstreet (LF i indeksen, `core.autocrlf=true`; ROADMAP har
+  BOM).** Et node-`replace` med LF i søkestrengen MATCHER IKKE og feiler STILLE (skjedde
+  i økt 45, og igjen i økt 62 der `\n` i et `node -e`-argument ble en EKTE linjeskift i
+  fila). Bruk Edit-verktøyet på docs. `sed -i` er forbudt. Nye filer: LF, git normaliserer.
 - **Lokal røyktest med prod-nøkler i repoets `.env`:** `config.js` kjører
   `process.loadEnvFile()` som leser `.env` UANSETT `--env-file`. Sett
   `ANTHROPIC_API_KEY=` og `DISCORD_WEBHOOK_URL=` TOMME i `process.env` før start —
@@ -190,11 +185,16 @@ ikke besluttet.
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
-- 2026-09-04 (økt 61, Fable): Marius limte inn planprompten for v1.14.0 +
-  «Når planen er godkjent skriv en kjøreprompt til opus». Handling: alle 12
-  endepunkter curlet til scratchpad, felt-diff reprodusert (73/109), fire
-  Explore-agenter, ti funn A–J verifisert med grep (agent (c) meldte
-  `most_captained` ubrukt — grep viste insights.js:164), tre puljer → alle
-  «Bygg», F+G+J slått sammen. Plan godkjent → kjøreprompt skrevet, ROADMAP § 8
-  + Senere ajour, planprompten slettet. 0 kode, 0 AI-kall, ingenting pushet.
+- 2026-09-04 (økt 62, Opus): Marius limte inn kjøreprompten for v1.14.0. Handling:
+  premissene verifisert mot koden og ferskt curl-svar (åtte avvik justert — bl.a.
+  at test-verdenen FAKTISK har en type-s-liga og `news_added: null`, og at
+  `routes/league.js` ikke hadde noen `Promise.all` å henge `getEntry` på), plan
+  godkjent, T1–T8 bygget med rød test først (809 → 841), hver sett i nettleser ved
+  390 px i begge temaer. Docs oppdatert. IKKE pushet: deploy-vinduet er mandag 7. sep.
+
+- 2026-09-04 (økt 61, Fable): planprompten for v1.14.0 + «skriv en kjøreprompt til
+  opus». Handling: alle 12 endepunkter curlet, felt-diff reprodusert (73/109), ti funn
+  A–J verifisert med grep (en agent meldte `most_captained` ubrukt — grep viste
+  insights.js:164), tre puljer → alle «Bygg», F+G+J slått sammen. Kjøreprompt skrevet,
+  ROADMAP § 8 ajour, planprompten slettet. 0 kode, 0 AI-kall, ingenting pushet.
 
