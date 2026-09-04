@@ -77,8 +77,8 @@ test('CSP-en har aldri unsafe-inline for script og alltid frame-ancestors none',
   assert.equal(directives['font-src'], "'self'");
 });
 
-test('server.js monterer securityHeaders før rutene og begrenser JSON-kroppen til 32kb', () => {
-  const src = fs.readFileSync(new URL('../src/server.js', import.meta.url), 'utf8');
+test('app.js monterer securityHeaders før rutene og begrenser JSON-kroppen til 32kb', () => {
+  const src = fs.readFileSync(new URL('../src/app.js', import.meta.url), 'utf8');
   const headersAt = src.indexOf('app.use(createSecurityHeaders())');
   const jsonAt = src.indexOf("app.use(express.json({ limit: '32kb' }))");
   const staticAt = src.indexOf('express.static(');

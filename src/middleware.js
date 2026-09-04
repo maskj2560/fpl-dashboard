@@ -1,5 +1,5 @@
-// Små, rene middleware-byggere. Ligger utenfor server.js fordi den starter
-// lytteren ved import og derfor ikke kan lastes i tester.
+// Små, rene middleware-byggere. Ligger utenfor app.js fordi de testes hver for
+// seg — app.js monterer dem, server.js starter lytteren.
 
 import crypto from 'node:crypto';
 

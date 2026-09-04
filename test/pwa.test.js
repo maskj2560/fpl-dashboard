@@ -67,12 +67,12 @@ test('sw-ruta setter no-store, riktig type og bytter inn asset-versjonen', async
   assert.deepEqual(rendered, ['offline', { title: 'Frakoblet' }]);
 });
 
-test('server.js monterer /sw.js og /offline før 404', () => {
-  const server = fs.readFileSync(new URL('../src/server.js', import.meta.url), 'utf8');
+test('app.js monterer /sw.js og /offline før 404', () => {
+  const server = fs.readFileSync(new URL('../src/app.js', import.meta.url), 'utf8');
   const sw = server.indexOf("app.get('/sw.js'");
   const offline = server.indexOf("app.get('/offline'");
   const notFound = server.indexOf('res.status(404)');
-  assert.ok(sw > 0 && offline > 0, '/sw.js og /offline mangler i server.js');
+  assert.ok(sw > 0 && offline > 0, '/sw.js og /offline mangler i app.js');
   assert.ok(sw < notFound && offline < notFound, 'rutene må ligge før 404-handleren');
   assert.ok(server.includes('createSwHandler({ assetVersion })'), 'SW-ruta får den ekte asset-hashen');
 });
