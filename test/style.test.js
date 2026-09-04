@@ -229,3 +229,13 @@ test('style.css: logoen kortes til FPL på mobil så menyen får plass', () => {
 test('style.css: --fs-xs er minst 12 px', () => {
   assert.match(block(':root'), /--fs-xs: 0\.75rem;/);
 });
+
+// v1.13.2 (fiks 3): «Lagnavn Managernavn» på én linje presset «Totalt» ut av
+// 390 px-banen i ligatabellen.
+test('style.css: managernavnet står på egen linje i ligatabellen på mobil', () => {
+  const mobile = css.slice(css.indexOf('@media (max-width: 480px)'));
+  assert.match(mobile, /\.manager \{[^}]*display: block;/);
+  // De siste 8 pikslene: uten dette står «Totalt» klemt mot kortkanten
+  // (tabellen ble 343 px i en 335 px bred boks).
+  assert.match(mobile, /table\.data td\.rang \{[^}]*padding-right: 1\.5rem;/);
+});

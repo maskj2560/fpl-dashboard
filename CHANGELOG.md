@@ -18,6 +18,9 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   under tabellen for resten. Taket regnes på nytt ved sortering, og enhver
   filter- eller søkeendring starter på de 100 første igjen. Serveren sender
   fortsatt alle radene — dette er ren klientavlastning (fiks 2).
+- Ligatabellen setter managernavnet på egen linje under lagnavnet på mobil, og
+  rangkolonna reserverer litt mindre plass til pila. «#», «Lag», «GW» og
+  «Totalt» får dermed plass innenfor 390 px uten sidescroll (fiks 3).
 
 ## [1.13.1] - 2026-09-04
 

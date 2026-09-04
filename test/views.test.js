@@ -87,6 +87,14 @@ const layoutLocals = (path) => ({
   startedAt: '19.08.2026, 21:00', cspNonce: 'testnonce', iconVersion: '1',
 });
 
+// v1.13.2 (fiks 3): lagnavn og managernavn på samme linje gjorde «Lag»-kolonna
+// så bred at «Totalt» falt utenfor 390 px. Managernavnet får egen klasse så
+// mobilregelen kan bryte det ned på egen linje.
+test('league.ejs merker managernavnet så det kan brytes ned', async () => {
+  const html = await renderView('league', fx.league);
+  assert.match(html, /<span class="dim manager">/);
+});
+
 // v1.13.2 (fiks 2): knappen som løfter rad-taket står under tabellen, før
 // tomtilstanden. Den er skjult til klienten finner skjulte treff.
 test('players.ejs har knappen som viser alle rader', async () => {

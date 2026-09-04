@@ -1894,6 +1894,21 @@ footer .version {
     display: none;
   }
 
+  /* Fiks 3 (v1.13.2): «Lagnavn Managernavn» på én linje gjorde «Lag»-kolonna
+     så bred at «Totalt» havnet utenfor 390 px-banen. Managernavnet faller ned
+     på egen linje under lagnavnet. */
+  .manager {
+    display: block;
+  }
+
+  /* Rangkolonna reserverer 2rem til pila (som ligger absolutt på 0.6rem).
+     På mobil er de siste 8 pikslene forskjellen på om «Totalt» får luft eller
+     står klemt mot kortkanten — pila har fortsatt klaring. */
+  table.data th.rang,
+  table.data td.rang {
+    padding-right: 1.5rem;
+  }
+
   main {
     padding: var(--space-4) 0.9rem var(--space-6);
   }
