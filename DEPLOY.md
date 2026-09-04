@@ -4,6 +4,23 @@ Coolify bygger fra `Dockerfile` og deployer automatisk ved push til `main`.
 Appen kjører bak Cloudflare. Denne filen beskriver hva som må stemme for at
 en deploy faktisk blir synlig for brukerne.
 
+## Før push (fra v1.13.1)
+
+`main` går rett i prod, og repoet har ingen branch protection (privat repo på
+gratisplan). To lag vokter derfor grenen:
+
+1. **Pre-push-hook** (`.githooks/pre-push`): kjører `npm test` og `npm run lint`
+   før hver push. Aktiveres én gang per maskin med `npm run hooks` (setter
+   `core.hooksPath`) — uten det er hooken inaktiv. Sjekk: `git config core.hooksPath`
+   skal svare `.githooks`, og push-outputen skal vise linja
+   «pre-push: npm test + npm run lint».
+2. **CI** (`.github/workflows/ci.yml`): `npm ci` + lint + test på Node 22
+   (`engines`-gulvet) og Node 24 (prod-imaget), på hver push og PR. Ingen
+   secrets, ingen nettverkskall.
+
+Flyten er: feature-branch → push → CI grønn (`gh run watch`) → merge `--no-ff`
+→ push `main`. Aldri `git push --no-verify`.
+
 ## Flyt
 
 1. Merge til `main` → Coolify henter, bygger og starter ny container (port 3000)

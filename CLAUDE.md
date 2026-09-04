@@ -1,9 +1,8 @@
 # CLAUDE.md — FPL-dashboard
 
-Selvhostet Fantasy Premier League-dashboard. Server-rendret Express 5 + EJS,
-Node 22+ (imaget er `node:24-alpine`), ingen database, ingen byggesteg.
-Deployes på Coolify (Dockerfile, port 3000, health check på `/health`).
-All UI-tekst er på norsk.
+Selvhostet Fantasy Premier League-dashboard. Server-rendret Express 5 + EJS, Node 22+
+(imaget er `node:24-alpine`), ingen database, ingen byggesteg. Deployes på Coolify
+(Dockerfile, port 3000, health check på `/health`). All UI-tekst er på norsk.
 
 ## Kommandoer
 
@@ -14,6 +13,7 @@ npm test             # node:test — tester i test/, ingen nettverkskall
 npm run lint         # ESLint (flat config)
 npm run fetch-clubs  # klubbgrafikk fra FPL, én gang per sesong (CLI, aldri kjøretid)
 npm run make-icons   # PWA-ikoner som PNG (kun node:zlib); committes + ICON_VERSION-bump
+npm run hooks        # aktiverer .githooks (pre-push: test + lint) — én gang per maskin
 ```
 
 ## Arkitektur
@@ -23,7 +23,8 @@ routes eller views. Hver ekstern tjeneste har én modul: FPL i `fplClient.js`,
 RSS i `news.js`, Claude API i `ai.js`, Discord-webhook i `notify.js`.
 
 ```
-src/server.js      oppstart og montering (starter lytteren ved import)
+src/app.js         createApp(): ren fabrikk — monterer alt, lytter aldri, starter ingen timer
+src/server.js      oppstart: lytt, SIGTERM/SIGINT, de tre schedulerne. Eneste fila som starter noe
 src/middleware.js  rene, testbare byggere: cacheControlFor, createErrorHandler, createShutdown
                    (SIGTERM), noStore (hele /api), CSP med per-forespørsel-nonce (tema-scriptet i
                    layout.ejs er ENESTE inline-script; aldri unsafe-inline) + sikkerhetshoder,
@@ -34,9 +35,9 @@ src/config.js      env: PORT, FPL_TEAM_ID, LEAGUE_IDS, TZ, NEWS_FEEDS, AI_MODEL,
 src/routes/        tynne ruter: én per side + api.js (JSON, no-store), calendar.js (/kalender.ics),
                    pwa.js (/sw.js med ekte asset-hash, no-store; /offline), health.js
                    (healthPayload(): features av/på — aldri verdier — + aiStats fra ai.getStats())
-src/pwa/sw.js      service worker: cache `fpl-<hash>`; kun GET same-origin; /api, /kalender.ics,
-                   /health og sw.js alltid utenom; navigasjon nett-først (fallback /offline), ?v=
-                   cache-først; ingen HTML caches utenom /offline (HTML bærer CSP-nonce)
+src/pwa/sw.js      service worker: cache `fpl-<hash>`; kun GET same-origin; /api, /kalender.ics, /health
+                   og sw.js alltid utenom; navigasjon nett-først (fallback /offline), ?v= cache-først;
+                   ingen HTML caches utenom /offline (HTML bærer CSP-nonce)
 src/services/
   fplClient.js     ENESTE modul med nettverkskall til FPL-API-et; staleInfo (alderstaket)
   cache.js         TTL-cache: stale-while-revalidate, in-flight dedup, 30 s backoff per nøkkel etter feil; ageOf(key)
@@ -66,9 +67,9 @@ src/services/
                    hver time, ≤ 1 cachet bootstrap-kall/time); price-state.json, maks 1 melding/dato
   clubAssets.js    hvilke klubbbilder som finnes — partialene skriver aldri <img> i blinde
   ai.js            felles Claude-service: lazy init, cache med minimumsintervall, swr, 5 min
-                   backoff etter feil. AI-statistikk per cacheKey (calls/tokens/failures/lastAt/
-                   model + since) i DATA_DIR/ai-stats.json — lagres etter hver registrering,
-                   leses lazy; getStats() er synkron og leser aldri disk per kall
+                   backoff. AI-statistikk per cacheKey (calls/tokens/failures/lastAt/model +
+                   since) i DATA_DIR/ai-stats.json, lagres per registrering og leses lazy;
+                   getStats() er synkron
   news.js          RSS + valgfri AI-oppsummering (cachet)
   notify.js        6 t-scheduler + Discord: auto-brief, rundens rapport, Lagsjekk; markører i DATA_DIR/*-state.json (aldri dobbel-post)
   refresh.js       timer-styrt oppfrisking av AI-tekstene (oppstart + hver 30. min). Aldri Discord
@@ -77,7 +78,8 @@ public/            style.css (alle farger som tokens), app.js (vanilla JS), font
                    img/clubs/ (?v=IMG_VERSION), manifest + PWA-ikoner (?v=ICON_VERSION)
 scripts/           fetch-club-assets.mjs, make-pwa-icons.mjs — CLI, aldri kjøretid; eneste nettverkskall utenfor fplClient.js
 test/              node:test, ingen nettverkskall. Fakes via test-hooks (_setNow/_flush/clear i cache.js;
-                   _setClient/_setNow/_setHooks/_reset i ai.js; _setHooks i notify/prices) eller mocket global fetch
+                   _setClient/_setNow/_setHooks/_reset i ai.js; _setHooks i notify/prices) eller mocket global fetch.
+                   app.test.js: hele stacken på loopback mot fixtures/fpl-world.js (fremmede verter kaster)
 ```
 
 ## FPL-API
@@ -87,15 +89,15 @@ Base `https://fantasy.premierleague.com/api/` — åpent, ingen nøkkel.
 - Send nettleser-lignende `User-Agent`, ellers kan API-et avvise kall.
   Priser (`now_cost`) er i tideler: 55 = £5.5m.
 - `bootstrap-static/` er hovedkilden (events/teams/elements) — cache 15 min.
-- 503 «The game is being updated» under kampoppdateringer: server cachet
-  data med banner, ikke krasj. Flagget utløper 5 min etter siste 503; uten
-  cache viser feilhandleren en forklarende 503-side.
-- Live-data (`event/{gw}/live/`) caches maks 1 min; entry/picks/transfers
-  5 min. Ferdige runder via `getLiveHistoric`/`getPicksHistoric`/
-  `getEntryHistoryHistoric`: samme endepunkt, **egne nøkler med suffiks
-  `:hist`**, 6 t TTL (immutable). Egne nøkler fordi «første skriver setter
-  TTL-en» ellers ga `getLive` 6 t-verdien som «fersk» (falskt stale-banner).
-  Kun for runder som er `finished`; egen FPL_TEAM_ID alltid via `getEntryHistory`.
+- 503 «The game is being updated» under kampoppdateringer: server cachet data med
+  banner, ikke krasj. Flagget utløper 5 min etter siste 503; uten cache viser
+  feilhandleren en forklarende 503-side (som alle feilsider: `staleSince` MÅ med).
+- Live-data (`event/{gw}/live/`) caches maks 1 min; entry/picks/transfers 5 min.
+  Ferdige runder via `getLiveHistoric`/`getPicksHistoric`/`getEntryHistoryHistoric`:
+  samme endepunkt, **egne nøkler med suffiks `:hist`**, 6 t TTL (immutable). Egne
+  nøkler fordi «første skriver setter TTL-en» ellers ga `getLive` 6 t-verdien som
+  «fersk» (falskt stale-banner). Kun `finished`-runder; egen FPL_TEAM_ID alltid
+  via `getEntryHistory`.
 - `dream-team/{gw}/` (`dreamteam:${gw}`, 6 t) og `element-summary/{id}/`
   (`element:${id}`, 30 min). Element-summary hentes KUN lazy per klikk via
   `GET /api/spiller/:id` — aldri i bulk: /spillere koster 0 slike kall.
@@ -104,18 +106,18 @@ Base `https://fantasy.premierleague.com/api/` — åpent, ingen nøkkel.
   `entry/{id}/transfers/`. `event_transfers_cost` ligger i `history.current`.
 - Frontend poller live-data kun mens kamper pågår — aldri poll utenfor
   kampvinduer, og all polling går via serverens cache (aldri rett mot FPL).
-- Alderstak: stale data eldre enn 60 min (10 min for live) vises fortsatt, men
-  med banneret «Viser data fra HH:MM — får ikke kontakt med FPL» (`staleInfo`).
-  Med `{ finished: true }` måles `:hist`-nøkkelen og banneret utløses aldri.
-  `/api/brief.json` og `/api/live.json` oppgir `dataAlder` (sekunder); stiger
-  den mellom to kall mens FPL svarer, er det cachen — ikke nettet.
+- Alderstak: stale data eldre enn 60 min (10 min for live) vises fortsatt, men med
+  banneret «Viser data fra HH:MM — får ikke kontakt med FPL» (`staleInfo`); med
+  `{ finished: true }` måles `:hist`-nøkkelen og banneret utløses aldri.
+  `/api/brief.json` og `/api/live.json` oppgir `dataAlder` (sekunder); stiger den
+  mellom to kall mens FPL svarer, er det cachen — ikke nettet.
 
 ## AI-funksjoner (valgfrie — appen krever aldri nøkkel)
 
-Alle AI-kall går gjennom `ai.js`. Modell via `AI_MODEL` (default
-`claude-sonnet-5`; `claude-haiku-4-5` er billig-alternativet). `max_tokens` er
-romslig fordi adaptiv tenkning trekker fra samme budsjett — lengden styres av
-prompten. Seks funksjoner, alle kun aktive med `ANTHROPIC_API_KEY`:
+Alle AI-kall går gjennom `ai.js`. Modell via `AI_MODEL` (default `claude-sonnet-5`;
+`claude-haiku-4-5` er billig-alternativet). `max_tokens` er romslig fordi adaptiv
+tenkning trekker fra samme budsjett — lengden styres av prompten. Seks funksjoner,
+alle kun aktive med `ANTHROPIC_API_KEY`:
 
 1. **Nyhetsoppsummering** (`news.js`): maks 1 per 30 min, 2000 tokens.
    `getNews()` leser kun cachen; `refreshNewsSummary()` genererer.
@@ -130,20 +132,23 @@ prompten. Seks funksjoner, alle kun aktive med `ANTHROPIC_API_KEY`:
 6. **Rundens rapport** (/liga + Discord): roast av miniligaen etter hver
    ferdigspilt runde (`finished && data_checked`), 3000 tokens, maks 1/runde.
 
-**Kostnadsregel: timer-styrt, ikke besøks-styrt.** En sidevisning utløser aldri
-et AI-kall og blokkerer aldri på et — den leser cachen (`ai.getCached`);
-utgått tekst serveres straks og fornyes i bakgrunnen (`swr`). Unntaket er
-rådgiverklikket. Takt ~49–53 kall/uke + ett tikk ved oppstart (AI-cachen bor
-i minnet); måles på `/health` → `aiStats`. **Kildelås** i `test/routes.test.js`:
-ingen rute kaller generering, og players.js, chips.js, deadline.js, calendar.js
-og prices.js importerer aldri `ai.js` — 0 AI-kall i alle tilstander. Uten
-nøkkel vises rå data: AI er alltid et tillegg, aldri et krav.
+**Kostnadsregel: timer-styrt, ikke besøks-styrt.** En sidevisning utløser aldri et
+AI-kall og blokkerer aldri på et — den leser cachen (`ai.getCached`); utgått tekst
+serveres straks og fornyes i bakgrunnen (`swr`). Unntaket er rådgiverklikket.
+Takt ~49–53 kall/uke + ett tikk ved oppstart (AI-cachen bor i
+minnet); måles på `/health` → `aiStats`. **Kildelås** i `test/routes.test.js`: ingen rute
+kaller generering, og players.js, chips.js, deadline.js, calendar.js og prices.js
+importerer aldri `ai.js` — 0 AI-kall i alle tilstander. Uten nøkkel vises rå data:
+AI er alltid et tillegg, aldri et krav.
 
 ## Konvensjoner
 
 - **Commits**: conventional commits (`feat:`, `fix:`, `docs:`, `chore:`), minst
   én per delfunksjon. Feature-branch per versjon, merge `--no-ff`, annotert
   tag, push etter hver milepæl (`git merge -F -` leser ikke stdin — bruk `-m`).
+- **Push-flyt**: branch → push → CI grønn (`gh run watch`) → merge `--no-ff` →
+  push `main`. Pre-push-hooken kjører test + lint lokalt (`npm run hooks` én
+  gang per maskin); CI-en er andre lag og eneste bevis på Node 22.
 - **CHANGELOG.md**: Keep a Changelog. Hver brukersynlig endring under
   `[Unreleased]` i samme commit som endringen; ved release: versjonert seksjon
   med dato + tag (SemVer). Alle docs oppdateres i samme commit som koden.
@@ -152,25 +157,23 @@ nøkkel vises rå data: AI er alltid et tillegg, aldri et krav.
 - **Tester**: TDD — rød test først. All logikk i services har tester; grønn
   `npm test` + `npm run lint` før en milepæl er ferdig. Ingen test skriver
   til ekte DATA_DIR (hooks). Bevis før påstand: vis kommando og output.
-- **Stil**: moderne JS (ESM, async/await), ingen nye avhengigheter uten god
-  grunn — appen skal forbli liten og rask.
+- **Stil**: moderne JS (ESM, async/await), ingen nye avhengigheter uten god grunn.
 - **Design**: to temaer — mørkt er CSS-basen i `:root`, lyst er
-  `:root[data-theme="light"]`; auto følger `prefers-color-scheme`, manuelt valg
-  i `localStorage['fpl-theme']`, satt av inline-scriptet i `<head>` FØR
-  stilarket (ingen blaff). Alle farger er tokens som finnes i BEGGE blokker,
-  ingen hardkodede utenfor dem; kontrast ≥ 4,5:1 tekst / ≥ 3:1 grafikk (låst
-  av `test/style.test.js`). FPLs merkevarefarger (lilla #37003C, grønn
-  #00ff87, cyan #04f5ff, rosa #e90052) og FDR-farger — unntak `--fdr-4` =
-  `#e6003c` (12 px-tekst trenger 4,5:1 mot hvit). Grønn er fyll med mørk
-  tekst; grønn TEKST kun i mørkt tema, unntatt på hero-flaten (`--hero-link`).
-  Klubbgrafikk selvhostet, `?v=<IMG_VERSION>` (ny sesong = `npm run
-  fetch-clubs` + bump i SAMME commit, ellers serverer Cloudflare fjorårets
-  drakter immutable). Systemfonter + lokal Archivo, ingen CDN-er ved kjøretid,
-  responsivt (390 px er referansen), bevegelse bak `prefers-reduced-motion`.
+  `:root[data-theme="light"]`; auto følger `prefers-color-scheme`, manuelt valg i
+  `localStorage['fpl-theme']`, satt av inline-scriptet i `<head>` FØR stilarket
+  (ingen blaff). Alle farger er tokens som finnes i BEGGE blokker, ingen hardkodede
+  utenfor dem; kontrast ≥ 4,5:1 tekst / ≥ 3:1 grafikk (låst av `test/style.test.js`).
+  FPLs merkevarefarger (lilla #37003C, grønn #00ff87, cyan #04f5ff, rosa #e90052) og
+  FDR-farger — unntak `--fdr-4` = `#e6003c` (12 px-tekst trenger 4,5:1 mot hvit).
+  Grønn er fyll med mørk tekst; grønn TEKST kun i mørkt tema, unntatt på hero-flaten
+  (`--hero-link`). Klubbgrafikk selvhostet, `?v=<IMG_VERSION>` (ny sesong = `npm run
+  fetch-clubs` + bump i SAMME commit, ellers serverer Cloudflare fjorårets drakter
+  immutable). Systemfonter + lokal Archivo, ingen CDN-er ved kjøretid, responsivt
+  (390 px er referansen), bevegelse bak `prefers-reduced-motion`.
 - **CSP og tilgjengelighet**: ingen inline `<script>` uten nonce og ingen
-  `on*`-attributter i views/klient-markup (CSP-en blokkerer dem stille;
-  `style="…"` er ok). Hver `<table>` har `<caption>`, hvert skjemafelt etikett,
-  hver ikon-knapp `aria-label`, `<main id="innhold">` er hopp-lenkens mål (låst av testene).
+  `on*`-attributter i views/klient-markup (CSP-en blokkerer dem stille; `style="…"` er ok).
+  Hver `<table>` har `<caption>`, hvert skjemafelt etikett, hver ikon-knapp `aria-label`,
+  `<main id="innhold">` er hopp-lenkens mål (låst av testene).
 - **Docs er CRLF i arbeidstreet** (LF i indeksen, `core.autocrlf=true`;
   ROADMAP har BOM). Bruk Edit-verktøyet på docs — et node-`replace` med `\n`
   matcher ikke og feiler stille; `sed -i` er forbudt.
@@ -186,12 +189,12 @@ konsumerte prompter slettes. Nær usage-grensen (~95 %): oppdater HANDOVER, comm
 ## Deploy
 
 Coolify bygger fra Dockerfile ved push til `main` — det som merges går rett i
-prod, så hold `main` grønn. Env-variabler settes i Coolify, aldri i repoet;
+prod, så hold `main` grønn: hooken og CI-en (`.github/workflows/ci.yml`, Node
+22 + 24) er sikkerhetsnettet, prod-sjekken under består. Env-variabler settes i Coolify, aldri i repoet;
 `.env` er gitignored, `.env.example` holdes oppdatert. `DATA_DIR` er et volum
 (`/app/data`): brief-/report-/check-/price-state, scenarios og ai-stats.
-**Deploy-vindu: aldri torsdag 19:00–21:00 (auto-briefen), aldri mens kamper
-pågår** (`/api/live.json` → `anyLive` må være `false`). Prod-sjekk etter hver
-deploy: footer viser ny versjon, `<script`-telling på `/` er nøyaktig 2,
-`/health` er 200, hash fra `/sw.js` noteres i HANDOVER. Lokal røyktest:
-`config.js` leser repoets `.env` uansett — sett `ANTHROPIC_API_KEY=` og
-`DISCORD_WEBHOOK_URL=` tomme i egen env-fil (`--env-file`); `/health` → `ai:false`.
+**Deploy-vindu: aldri torsdag 19:00–21:00 (auto-briefen), aldri mens kamper pågår**
+(`/api/live.json` → `anyLive` må være `false`). Prod-sjekk etter hver deploy: footer
+viser ny versjon, `<script`-telling på `/` er nøyaktig 2, `/health` er 200, hash fra
+`/sw.js` noteres i HANDOVER. Lokal røyktest: `config.js` leser repoets `.env` uansett
+— sett `ANTHROPIC_API_KEY=` og `DISCORD_WEBHOOK_URL=` tomme (`--env-file`).

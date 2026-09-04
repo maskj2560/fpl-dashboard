@@ -1,0 +1,6 @@
+#!/bin/sh
+# main går rett i prod — ingen push uten grønn test og lint.
+set -e
+echo "pre-push: npm test + npm run lint"
+npm test --silent
+npm run lint --silent

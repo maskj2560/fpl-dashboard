@@ -9,6 +9,13 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Added
 
+- CI på GitHub Actions (`.github/workflows/ci.yml`): `npm ci`, `npm run lint`
+  og `npm test` på Node 22 (`engines`-gulvet) og Node 24 (prod-imaget), ved
+  hver push og pull request. Ingen secrets, ingen nettverkskall.
+- Pre-push-hook i repoet (`.githooks/pre-push`) som kjører test + lint før
+  push, aktivert med `npm run hooks` (`core.hooksPath`). `.gitattributes`
+  låser hookene til LF. `main` går rett i prod, og repoet har ingen branch
+  protection — hooken og CI-en er sikkerhetsnettet.
 - Rute-tester for hele stacken (`test/app.test.js`, 23 tester): appen
   bygges med `createApp()`, lytter på loopback (port 0) og møter en falsk
   FPL-verden (`test/fixtures/fpl-world.js`) i stedet for nettet. Dekker
