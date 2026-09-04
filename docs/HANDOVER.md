@@ -6,10 +6,21 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-09-04 (økt 57, Fable: kjøreprompt for v1.13.1
-«Sikkerhetsnett» skrevet til Opus — se «Neste steg» og ROADMAP § 6)
+**Sist oppdatert:** 2026-09-04 (økt 58, Opus: v1.13.1 «Sikkerhetsnett» —
+app-fabrikk, 23 rute-tester, CI på Node 22/24, pre-push-hook)
 
 ## Status akkurat nå
+- **v1.13.1 «Sikkerhetsnett» (økt 58, 4. sep)** på `feat/sikkerhetsnett-v1131`:
+  `createApp()` i `src/app.js` (ren fabrikk — lytter aldri, starter ingen
+  timer), `src/server.js` er den eneste fila som lytter og starter schedulere.
+  `test/app.test.js` (23 tester, 0,8 s) kjører hele stacken på loopback mot
+  `test/fixtures/fpl-world.js`. `.github/workflows/ci.yml` (Node 22 + 24) og
+  `.githooks/pre-push` + `npm run hooks`. **792/792 + lint 0** (baseline 767),
+  CI-kjøring `33821174976` grønn på begge Node-versjoner.
+  **Bonusfunn fikset:** `createErrorHandler` sendte aldri `staleSince` til
+  `layout.ejs`, som leser den ubetinget → EJS kastet og alle feilsider (503,
+  500, 413) falt ned til ren tekst «Noe gikk galt.». Gjaldt i prod siden
+  v1.4.0. Regresjonstest i `middleware.test.js`.
 - **v1.13.0 «AI-statistikk» i prod 2. sep 20:59 (økt 56)** på `feat/ai-stats-v1130`:
   teller per cacheKey i `ai.js` (calls/tokens/failures/lastAt/model + since)
   → `DATA_DIR/ai-stats.json`, `aiStats` på /health via `healthPayload()`.
@@ -17,25 +28,15 @@
   `aiStats: null`, ingen fil. Prod-sjekk 21:03: footer v1.13.0, `<script` 2,
   /health 200 med `aiStats` (since 18:59Z, calls 2 = brief + nyheter, 2711
   inn / 1855 ut, 0 failures), hash `ba91839a` (uendret), 6 sider 200.
-- **v1.12.2 «Vedlikehold» i prod 2. sep 20:52 (økt 56)** på
-  `fix/hygiene-cache-keys-v1122`: `npm audit fix` (qs 6.16.0, audit ren),
-  fast-xml-parser 5.11.1, `node:24-alpine`, egne `:hist`-nøkler (rotårsak
-  QA-funn 6) + `finished` i `/api/live.json`. **758/758 + lint 0** (baseline
-  756). Røyktest på Node 24: alle sider 200, 0 DEP0169. Prod-sjekk 20:55:
-  footer v1.12.2, `<script` 2, /health 200, `dataAlder` 0 (ikke null), sw.js
-  no-store, 6 sider 200, hash `ba91839a` (uendret). Merk: `git merge -F -`
-  leser IKKE stdin — bruk `-m` (feiltaggen ble slettet og satt på nytt).
-- **v1.12.0 «PWA» + v1.12.1 «QA-fikser» i prod 2. sep** (743 → 756 tester;
-  re-QA 11/11 FIKSET): statusblokkene rotert til historikkfila. Rapport:
-  `docs/arkiv/qa-rapport-v1121.md`. Marius' valg: FDR-4 `#e6003c`, grå pille.
+- **v1.12.0–v1.12.2 i prod 2. sep** (743 → 758 tester): statusblokkene rotert
+  til historikkfila. `git merge -F -` leser IKKE stdin — bruk `-m`.
 - **v1.8.3–v1.11.0 i prod 2. sep** (655 → 729 tester): statusblokkene rotert
   til historikkfila. Prisvarslene: første melding ventes natt til 4. sep.
 - **Asset-hashen i prod er `ba91839a` etter v1.12.1** (v1.12.0 `b6c8f095`,
   v1.11.0 `4718ea73`, v1.9/1.10 `82d7c7a2`, v1.8.3 `6a3b2714`). Regnes fra
   git-blobbene. Prod-sjekk v1.12.1 (2. sep 17:20): 12/12 OK, sw.js no-store.
-- **Ekte SIGTERM-bevis mangler.** Beviset er `kill 1` i containerterminalen —
-  de to avslutningslinjene skal stå der. Lokalt bevist med
-  `process.emit('SIGINT')`, exit 0.
+- **Ekte SIGTERM-bevis mangler.** Beviset er `kill 1` i containerterminalen — de
+  to avslutningslinjene skal stå der. Lokalt bevist med `SIGINT`, exit 0.
 - **Helsesjekken:** alt. a aktiv (Coolifys sjekk AV, Dockerfilens gjelder).
 - **Kostnad: måleuka DROPPET** (28. aug) — følges i `console.anthropic.com`,
   terskler i `docs/sjekkpunkt-d-kostnad.md`. Takt **~49–53 AI-kall/uke**;
@@ -53,19 +54,15 @@ Planen er arkivert i `docs/arkiv/plan-sluttpakka-v183-v1120.md`
 **§ 0 og § 5 er ferdige (2. sep).** Vedlikeholdspakka (v1.12.2 20:52,
 v1.13.0 20:59, docs-slanking) er ute; prompten er konsumert og slettet (git
 bevarer den: `git show d34e3c8:docs/prompt-vedlikehold-v1122-v1130.md`).
-**Neste kodepunkt: ROADMAP § 6 — v1.13.1 «Sikkerhetsnett»** (4. sep, økt 57):
-kjøreprompt til Opus i `docs/prompt-sikkerhetsnett-v1131.md` (app-fabrikk,
-rute-tester, CI Node 22/24, pre-push-hook). Ellers kun P4 og Marius' punkter.
+**§ 6 (v1.13.1 «Sikkerhetsnett») er utført 4. sep (økt 58)** — prompten er
+konsumert og slettet (`git show e63bd4b:docs/prompt-sikkerhetsnett-v1131.md`).
+Køen har ingen ublokkerte kodepunkter igjen: kun P4 og Marius' egne punkter.
+Kandidater notert i økt 57 (ikke besluttet): B funksjonssveip mot ubrukte
+FPL-felt, C funksjonsgjennomgang → småfiks, D slanking av style.css/app.js.
 
-**Majors vurdert 2. sep (kun rapport — ikke oppgradert, Marius' fasit):**
-- `ejs` 3.1.10 → 6.0.1: v4 fjernet `client`-flagget + Jake, v6 er dual
-  ESM/CJS; appen bruker kun `view engine` + `include()` → lav risiko, men
-  tomme releasenotes — bevis med `npm i ejs@6 && npm test` når det passer.
-- `eslint`/`@eslint/js` 9.39 → 10.x: Node-krav ok, flat config ok; tre nye
-  regler i recommended (`no-unassigned-vars`, `no-useless-assignment`,
-  `preserve-caught-error`) kan gi lint-feil — kjør lint etter bump.
-- `globals` 16.5 → 17.12: eneste brudd er `audioWorklet` skilt fra
-  `browser`; vi bruker `nodeBuiltin`/`browser`/`serviceworker` → trygg.
+**Majors vurdert 2. sep, ikke oppgradert (Marius' fasit):** `ejs` 6, `eslint` 10
+og `globals` 17 — vurderingen med risiko per pakke er rotert til
+`docs/arkiv/HANDOVER-historikk.md` (økt 58).
 
 **Kun Marius kan gjøre:**
 1. `kill 1` i containerterminalen → «SIGTERM mottatt — lukker serveren» +
@@ -78,34 +75,38 @@ rute-tester, CI Node 22/24, pre-push-hook). Ellers kun P4 og Marius' punkter.
 
 ## Driftslærdommer (ikke glem disse)
 
-- **Stale-banner på /live mellom runder = delt cache-nøkkel, ikke nett
-  (v1.12.1, QA-funn 6) — fellen LUKKET i v1.12.2.** `live:N` ble delt av
-  `getLive` (1 min) og `getLiveHistoric` (6 t); første skriver satte TTL-en.
-  Lukket slik: historic-variantene (live/picks/entry-history) har egne
-  nøkler med suffiks `:hist`, `staleInfo(gw, { finished: true })` måler
-  hist-nøkkelen, `/api/live.json` sender `finished` (ellers `dataAlder`
-  null); låst av fplClient.test.js + kildelås i routes.test.js. Diagnose: to
-  `/api/live.json`-kall — stiger `dataAlder` mens FPL svarer, er det cachen.
+- **Branch protection finnes ikke på gratis privat repo** (rulesets `[]`, målt
+  4. sep). Vakten for `main` er derfor `.githooks/pre-push` (test + lint) og
+  CI-en på Node 22/24. Hooken er IKKE aktiv før `npm run hooks` er kjørt på
+  maskinen — `git config core.hooksPath` skal svare `.githooks`. Flyt: branch →
+  push → CI grønn → merge `--no-ff` → push `main`.
+- **En mock som KASTER for en FPL-sti koster sekunder i retry-søvn**
+  (`fplFetch` prøver på nytt for alt unntatt 503/404). Ukjent FPL-sti skal
+  svare `{ ok: false, status: 404 }` — mønsteret ligger i `test/fixtures/fpl-world.js`.
+- **`/live` har tre `<script>`-tagger, ikke to.** Den tredje er
+  `<script type="application/json">` med live-dataene — en databeholder som
+  ikke kjøres. Script-tellingen i prod-sjekken gjelder `/`.
+
+- **Stale-banner på /live mellom runder var delt cache-nøkkel, ikke nett** —
+  fellen LUKKET i v1.12.2 med egne `:hist`-nøkler (detaljene i CLAUDE.md og
+  historikkfila). Diagnose: to `/api/live.json`-kall — stiger `dataAlder`
+  mens FPL svarer, er det cachen.
 - **FPL-bootstrap `chips[]`: wildcard og Free Hit har `start_event` 2** (kan
   ikke spilles i runde 1) — halvdeler grupperes på `stop_event`, aldri på
   (start, stopp)-paret.
-- **401 med `Basic realm="traefik"`: sjekk FØRST om «HTTP Basic
-  Authentication» er huket av for appen i Coolify.** Haken henger en
-  basicauth-middleware på HTTPS-routeren og rammer ALLE stier, også
-  `/health`; realmnavnet er Traefiks standard, ikke tegn på manglende rute
-  (som ville gitt 404). Redeploy hjelper ikke — fjern haken (løst 25. aug).
-- **Coolifys «Running (healthy)» sier bare at appen svarer INNE i
-  containeren.** Coolifys egen HTTP-sjekk overstyrte Dockerfilens og brukte
-  `curl`, som ikke finnes i `node:22-alpine` → «healthy» mens prod svarte
-  401 på alt (fikset 25. aug: Coolifys sjekk AV). Også den riktige sjekken
-  går utenom Traefik — «prod svarer rart» feilsøkes ALLTID utenfra først.
-- **`kill 1` virker FRA v1.3.5 — før det gjorde det ingenting** (målt
-  25. aug: null effekt, containeren restartet aldri). PID 1 i et
-  container-namespace mottar kun signaler den har egen handler for, og
-  appen hadde ingen. Med `createShutdown` på plass er `kill 1` i
-  containerterminalen den trygge måten å bevise ryddig avslutning:
-  containeren restartes av `unless-stopped` og BEHOLDER loggen.
-  Aldri `docker stop`/`kill` på prod — da blir den liggende nede.
+- **401 med `Basic realm="traefik"`: sjekk FØRST om «HTTP Basic Authentication»
+  er huket av for appen i Coolify.** Haken rammer ALLE stier, også `/health`;
+  realmnavnet er Traefiks standard, ikke tegn på manglende rute (som ville gitt
+  404). Redeploy hjelper ikke — fjern haken (løst 25. aug).
+- **Coolifys «Running (healthy)» sier bare at appen svarer INNE i containeren.**
+  Coolifys egen HTTP-sjekk overstyrte Dockerfilens og brukte `curl` (finnes ikke
+  i alpine-imaget) → «healthy» mens prod svarte 401 (fikset 25. aug: sjekken AV).
+  «Prod svarer rart» feilsøkes ALLTID utenfra først.
+- **`kill 1` virker FRA v1.3.5 — før det gjorde det ingenting** (målt 25. aug).
+  PID 1 i et container-namespace mottar kun signaler den har egen handler for.
+  Med `createShutdown` er `kill 1` i containerterminalen den trygge måten å
+  bevise ryddig avslutning: containeren restartes av `unless-stopped` og
+  BEHOLDER loggen. Aldri `docker stop`/`kill` på prod — da blir den nede.
 - **Restart serveren etter endringer i `src/`** — ESM lastes én gang.
 - **Sjekk `git status -sb`, ikke anta at `main` = `origin/main`:** ved
   starten av økt 30 lå `main` 2 docs-commits foran origin (loggføring fra
@@ -186,14 +187,14 @@ rute-tester, CI Node 22/24, pre-push-hook). Ellers kun P4 og Marius' punkter.
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
-- 2026-09-02 (økt 56, Fable): Marius limte inn vedlikeholdsprompten; «Stopp
-  arbeid. Jeg oppdaterer drivers», så «Du kan forsette», så «Er det noe mer
-  som bør gjøres?» → «Fiks docs-hullene». Handling: plan godkjent → v1.12.2 og
-  v1.13.0 (TDD, `--no-ff`, tag, deploy, prod-sjekk); docs slanket; prompten
-  slettet; README- og sjekkpunkt-d-hullene om `/health`/`aiStats` fikset.
 - 2026-09-04 (økt 57, Fable): «Jeg vil forbedre siden. Hva kan du gjøre?» →
   fire retninger (A–D); «Lag en plan for å gjennomføre A»; «send planen til
   opus. Gjør den veldig bra». Handling: premisser målt, ett spørsmålssett
   (alle anbefalinger valgt) → `docs/prompt-sikkerhetsnett-v1131.md` + § 6,
   økt 55-loggen rotert. 0 kode, én docs-commit, ikke pushet (spares til v1.13.1).
+- 2026-09-04 (økt 58, Opus): Marius limte inn kjøreprompten for v1.13.1.
+  Handling: premissene verifisert mot koden (server.js var 148 linjer, ikke
+  138), plan godkjent → app-fabrikk, falsk FPL-verden, 23 rute-tester, CI og
+  pre-push-hook. Rute-testene avdekket at feilsidene har vært ren tekst siden
+  v1.4.0 — fikset i samme branch. 792/792, CI grønn, prompten slettet.
 

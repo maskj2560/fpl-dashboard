@@ -48,7 +48,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.12.1**~~ | ~~QA-fikser: 11 funn fra Chrome-QA-en (falskt stale-banner på /live, tre chip-halvdeler, mobil-layout, kontrast)~~ | **utført 2. sep — 756/756** | — |
 | ~~**v1.12.2**~~ | ~~Vedlikehold: `npm audit fix` (qs), `node:24-alpine`, egne `:hist`-cache-nøkler (rotårsaken bak QA-funn 6)~~ | **utført 2. sep — 758/758, ute i prod 20:52** | — |
 | ~~**v1.13.0**~~ | ~~AI-kall-statistikk per funksjon i `DATA_DIR/ai-stats.json`, vist som `aiStats` på `/health` (gjør P4 målbart)~~ | **utført 2. sep — 767/767** | — |
-| **v1.13.1** | «Sikkerhetsnett»: `createApp()` i `src/app.js`, rute-tester for alle sider mot falsk FPL-verden, CI-workflow (Node 22/24), pre-push-hook | 6 | — |
+| ~~**v1.13.1**~~ | ~~«Sikkerhetsnett»: `createApp()` i `src/app.js`, rute-tester for alle sider mot falsk FPL-verden, CI-workflow (Node 22/24), pre-push-hook~~ | **utført 4. sep — 792/792, CI grønn** | — |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
 Kalenderlogikk: utviklingssporet (v1.3.0 → v1.3.1+) går uavbrutt;
@@ -193,24 +193,14 @@ stedet for den AI-kostende promptendringen (droppet). Rekkefølge:
 - **Blokkert av:** —
 - **Størrelse:** middels (to små releaser + én docs-commit). 0 AI-kall.
 
-### 6. v1.13.1 «Sikkerhetsnett»: app-fabrikk, rute-tester, CI + pre-push-hook (besluttet 4. sep, økt 57)
+### 6. ~~v1.13.1 «Sikkerhetsnett»: app-fabrikk, rute-tester, CI + pre-push-hook~~ (besluttet 4. sep, økt 57) — utført 4. sep (økt 58)
 
-- **Hva:** push til `main` er prod-deploy, og gratis privat repo har ingen
-  branch protection (rulesets `[]`, målt) — vakten er i dag kun disiplin.
-  (1) `src/server.js` splittes i `src/app.js` (`createApp()`, lytter aldri,
-  starter ingen timer) + `server.js` (lytt, SIGTERM, schedulere);
-  (2) `test/app.test.js` + `test/fixtures/fpl-world.js`: full Express-stack på
-  loopback mot en falsk FPL-verden — alle sider 200, `<script` = 2, CSP-nonce
-  matcher, 404, /api no-store, statisk cache, 503-siden, RSS nede, 413, 429;
-  (3) `.github/workflows/ci.yml` med lint + test på Node 22 og 24;
-  (4) `.githooks/pre-push` (test + lint) aktivert med `npm run hooks`, og
-  push-flyt-regel i CLAUDE.md. 0 nye avhengigheter, 0 AI-kall, `public/` urørt.
-- **Eier detaljene:** `docs/prompt-sikkerhetsnett-v1131.md` (fasit, målte
-  premisser med linjenumre, T1–T3 med testnavn, feller, ferdigkriterier) —
-  skrevet for en Opus-økt; slettes når alt er i prod.
-- **Blokkert av:** ingenting. Deploy-vindu: aldri under kamp (GW3 fre 4. sep
-  21:00 + helgen), aldri torsdag 19:00–21:00.
-- **Størrelse:** middels (én patch-release). Forventet ≥ 790 tester.
+- **Levert:** `createApp()` i `src/app.js` (lytter aldri, starter ingen timer),
+  `test/app.test.js` + `test/fixtures/fpl-world.js` (23 rute-tester mot en falsk
+  FPL-verden), `.github/workflows/ci.yml` (Node 22 + 24) og `.githooks/pre-push`
+  med `npm run hooks`. 792/792, lint 0, CI grønn. Bonusfunn fikset i samme
+  branch: feilsidene falt ned til ren tekst fordi `staleSince` manglet i
+  layout-locals. Prompten er konsumert og slettet.
 
 ## Dokumentkart — hvor alt bor
 
@@ -228,7 +218,6 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 | `docs/arkiv/plan-idepakken-v16-v19.md` | beslutningsfasit for idépakken v1.7.0–v1.9.0 (utført, arkivert 2. sep) |
 | `docs/arkiv/plan-sluttpakka-v183-v1120.md` | utført plan for v1.8.3–v1.12.0 (T-tasks, testnavn, 9-punkts fasit) — alt ute 2. sep |
 | `docs/qa-chrome-prompt.md` | prompten til Claude for Chrome: full prod-QA etter sluttpakka (STEG 1–10, rapportformat, fasit) |
-| `docs/prompt-sikkerhetsnett-v1131.md` | kjøreprompt til Opus for v1.13.1 (§ 6): fasit, målte premisser, T1–T3, feller, ferdigkriterier — slettes når utført |
 | `docs/arkiv/qa-rapport-v1121.md` | re-QA-rapporten fra Claude for Chrome 2. sep (11/11 FIKSET, målte kontraster og `dataAlder`) |
 | `docs/arkiv/roadmap-utfort-v010-v134.md` | ROADMAPs «Utført»-historikk v0.1.0 → v1.3.4, flyttet verbatim 2. sep 2026 (økt 56) |
 | `docs/arkiv/plan-spillere-redesign-v181.md` | utført detaljplan for v1.8.1 (redesign av /spillere, T1–T12) |

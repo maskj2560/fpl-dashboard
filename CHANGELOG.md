@@ -7,6 +7,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.13.1] - 2026-09-04
+
+«Sikkerhetsnett» (`docs/prompt-sikkerhetsnett-v1131.md`) på
+`feat/sikkerhetsnett-v1131`. Rød test først. 792/792, lint 0, CI grønn på
+Node 22 og 24. Ingen brukersynlig endring, 0 nye AI-kall, 0 nye avhengigheter.
+
 ### Added
 
 - CI på GitHub Actions (`.github/workflows/ci.yml`): `npm ci`, `npm run lint`
