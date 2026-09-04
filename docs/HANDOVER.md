@@ -6,8 +6,7 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-09-04 (økt 60, Opus: v1.13.2 «UX-polering 2» bygget og
-merget — ti fiks, 809/809)
+**Sist oppdatert:** 2026-09-04 (økt 60, Opus: v1.13.2 i prod + planprompt for § 8)
 
 ## Status akkurat nå
 - **v1.13.2 «UX-polering 2» i prod 4. sep 04:57 (økt 60)**: ti småfiks fra
@@ -37,10 +36,9 @@ merget — ti fiks, 809/809)
 - **v1.13.0 og v1.8.3–v1.12.2 i prod 2. sep** (655 → 767 tester) — detaljene i
   historikkfila. Prisvarslene: første Discord-melding var ventet natt til 4. sep.
 - **Feilsiden i prod er ikke visuelt bevist ennå** (fiksen er låst av tester).
-  Neste gang FPL har et 503-vindu: sjekk at `/` viser «FPL oppdaterer spillet»
-  og ikke ren tekst.
-- **Asset-hashen i prod er `781ffae6` etter v1.13.2** (v1.12.1–v1.13.1
-  `ba91839a`, v1.12.0 `b6c8f095`, eldre i historikkfila). Regnes fra git-blobbene.
+  Ved neste 503-vindu: sjekk at `/` viser «FPL oppdaterer spillet», ikke ren tekst.
+- **Asset-hash i prod: `781ffae6`** (v1.12.1–v1.13.1 `ba91839a`, eldre i
+  historikkfila). Regnes fra git-blobbene (LF), ikke arbeidstreet (CRLF).
 - **Ekte SIGTERM-bevis mangler.** Beviset er `kill 1` i containerterminalen — de
   to avslutningslinjene skal stå der. Lokalt bevist med `SIGINT`, exit 0.
 - **Helsesjekken:** alt. a aktiv (Coolifys sjekk AV, Dockerfilens gjelder).
@@ -52,15 +50,17 @@ merget — ti fiks, 809/809)
 
 ## Neste steg (start her)
 
-**Ferdig og i prod — ROADMAP § 0, § 5, § 6 og § 7:** sluttpakka v1.8.3–v1.12.0
-(plan: `docs/arkiv/plan-sluttpakka-v183-v1120.md`, 9-punkts fasit — ikke re-spør),
-vedlikeholdspakka v1.12.2/v1.13.0 (`git show d34e3c8:docs/prompt-vedlikehold-v1122-v1130.md`),
-v1.13.1 (`git show e63bd4b:docs/prompt-sikkerhetsnett-v1131.md`) og v1.13.2
-(`git show 162ca4d:docs/prompt-ux-polering-v1132.md`). **Køen er tom.**
-Ikke valgt ennå (notert i økt 57): B funksjonssveip mot ubrukte FPL-felt,
-D slanking av style.css/app.js. «Senere / idéer» i ROADMAP har de fire større
-UX-idéene fra gjennomgangen: desimalkomma i norsk UI, server-side paginering på
-/spillere, meny-knapp for mobil-nav, kopier-knapp for webcal-adressen.
+**Ferdig og i prod — ROADMAP § 0, § 5, § 6, § 7:** sluttpakka v1.8.3–v1.12.0
+(`docs/arkiv/plan-sluttpakka-v183-v1120.md`, 9-punkts fasit — ikke re-spør),
+v1.12.2/v1.13.0 (`git show d34e3c8:docs/prompt-vedlikehold-v1122-v1130.md`),
+v1.13.1 (`git show e63bd4b:…`) og v1.13.2 (`git show 162ca4d:…`).
+
+**Neste: ROADMAP § 8 — v1.14.0 «Funksjonssveip»** (retning B, valgt 4. sep).
+Planprompt til Fable i `docs/prompt-feltsveip-v1140.md` — lim den inn i et
+Fable-vindu; den kartlegger, henter dine valg og skriver kjøreprompten til
+Opus. Målt: 73 av 109 element-felt i bootstrap er ubrukt, pluss 19 event-felt,
+13 team-felt og hele `live.elements[].explain`. Etter B gjenstår D (slanking av
+style.css/app.js), ikke besluttet.
 
 **Majors ikke oppgradert (Marius' fasit 2. sep):** `ejs` 6, `eslint` 10, `globals` 17 — vurderingen i historikkfila (økt 58).
 

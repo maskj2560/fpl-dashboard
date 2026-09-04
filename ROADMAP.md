@@ -50,6 +50,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.13.0**~~ | ~~AI-kall-statistikk per funksjon i `DATA_DIR/ai-stats.json`, vist som `aiStats` på `/health` (gjør P4 målbart)~~ | **utført 2. sep — 767/767** | — |
 | ~~**v1.13.1**~~ | ~~«Sikkerhetsnett»: `createApp()` i `src/app.js`, rute-tester for alle sider mot falsk FPL-verden, CI-workflow (Node 22/24), pre-push-hook~~ | **utført 4. sep — 792/792, CI grønn** | — |
 | ~~**v1.13.2**~~ | ~~«UX-polering 2»: ti småfiks fra funksjonsgjennomgangen (mobil-nav, rad-tak på /spillere, tomtilstander, datoformat, småtekst)~~ | **utført 4. sep — 809/809** | — |
+| **v1.14.0** | «Funksjonssveip»: 5–8 funksjoner bygget på FPL-felt appen ikke leser i dag (73 av 109 element-felt ubrukt) | 8 | planprompt til Fable klar 4. sep (økt 60) |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
 Kalenderlogikk: utviklingssporet (v1.3.0 → v1.3.1+) går uavbrutt;
@@ -229,6 +230,24 @@ stedet for den AI-kostende promptendringen (droppet). Rekkefølge:
   /live, 6 `--fs-xs` 12 px, 7 datoformat /nyheter, 8 details /innsikt, 9 neste
   avspark /live, 10 «Nå»-kolonna /overganger).
 
+### 8. v1.14.0 «Funksjonssveip»: ubrukte FPL-felt → funksjoner (besluttet 4. sep, økt 60)
+
+- **Hva:** retning B fra økt 57. FPL-API-et gir langt mer enn appen leser —
+  målt 4. sep: `bootstrap.elements[]` har 109 felt, appen bruker 36;
+  `events[]` 29/19 ubrukt, `teams[]` 22/13, `element-summary.history` 41/19,
+  live-stats 29/18, og hele `live.elements[].explain` (FPLs egen
+  poengoppdeling per spiller). Sveipen finner hvilke av disse som er ekte
+  funksjonalitet vi mangler, og bygger 5–8 av dem.
+- **Eier detaljene:** `docs/prompt-feltsveip-v1140.md` — planprompten til
+  **Fable** (fasit, målte felt-differ, ti kandidater, feller, ferdigkriterier).
+  Den leverer `docs/prompt-feltpakka-v1140.md` som kjøreprompt til Opus.
+- **Blokkert av:** ingenting. **0 nye FPL-kall** — kun felt fra endepunkter
+  appen alt kaller og cacher. 0 AI-kall, 0 nye avhengigheter, ingen ny side
+  (nav-en har alt 9 lenker). Deploy-vindu: aldri under kamp, aldri torsdag 19–21.
+- **Status:** planprompt skrevet 4. sep (økt 60). Fable kartlegger og lager
+  kjøreprompten; Opus bygger.
+- **Størrelse:** middels–stor (én minor, 5–8 funksjoner, hver ≤ ~2 timer).
+
 ## Dokumentkart — hvor alt bor
 
 Én eier per fil; alt uten leserverdi for en ny økt ligger i `docs/arkiv/`
@@ -245,6 +264,7 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 | `docs/arkiv/plan-idepakken-v16-v19.md` | beslutningsfasit for idépakken v1.7.0–v1.9.0 (utført, arkivert 2. sep) |
 | `docs/arkiv/plan-sluttpakka-v183-v1120.md` | utført plan for v1.8.3–v1.12.0 (T-tasks, testnavn, 9-punkts fasit) — alt ute 2. sep |
 | `docs/qa-chrome-prompt.md` | prompten til Claude for Chrome: full prod-QA etter sluttpakka (STEG 1–10, rapportformat, fasit) |
+| `docs/prompt-feltsveip-v1140.md` | planprompt til Fable for v1.14.0 (§ 8): fasit, målte felt-differ mot live API, ti kandidater, feller — slettes når kjøreprompten til Opus er skrevet |
 | `docs/arkiv/qa-rapport-v1121.md` | re-QA-rapporten fra Claude for Chrome 2. sep (11/11 FIKSET, målte kontraster og `dataAlder`) |
 | `docs/arkiv/roadmap-utfort-v010-v134.md` | ROADMAPs «Utført»-historikk v0.1.0 → v1.3.4, flyttet verbatim 2. sep 2026 (økt 56) |
 | `docs/arkiv/plan-spillere-redesign-v181.md` | utført detaljplan for v1.8.1 (redesign av /spillere, T1–T12) |
