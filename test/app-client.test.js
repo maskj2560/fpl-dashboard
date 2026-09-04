@@ -538,3 +538,34 @@ test('nextSortDir veksler descending → ascending og alt annet → descending',
   assert.equal(app.nextSortDir('none'), 'descending');
   assert.equal(app.nextSortDir(null), 'descending');
 });
+
+// v1.14.0 (T2): FPLs poengoppdeling per spiller på /live — summen fikk aldri
+// forklare seg selv. Teksten står i navnecellens <details>.
+test('explainText formaterer oppdelingen med × for antall og gir tom streng uten data', () => {
+  assert.equal(
+    app.explainText([
+      { label: 'Minutter', points: 2, value: 90 },
+      { label: 'Mål', points: 8, value: 2 },
+      { label: 'Bonus', points: 3, value: 3 },
+    ]),
+    'Minutter 90′ +2 · Mål ×2 +8 · Bonus +3',
+    'minutter får apostrof, tellbare over 1 får ×',
+  );
+  assert.equal(
+    app.explainText([
+      { label: 'Nullere', points: 4, value: 1 },
+      { label: 'Gult kort', points: -1, value: 1 },
+    ]),
+    'Nullere +4 · Gult kort −1',
+    'verdi 1 vises uten ×, negative poeng med minustegn',
+  );
+  assert.equal(app.explainText([]), '');
+  assert.equal(app.explainText(undefined), '');
+});
+
+test('app.js sorterer på data-sort før celletekst', () => {
+  const code = fs.readFileSync(new URL('../public/app.js', import.meta.url), 'utf8');
+  assert.match(code, /dataset\.sort \?\? /, 'applySort må lese data-sort før textContent');
+  assert.match(code, /data-sort="/, 'render må sette data-sort på navnecellen');
+  assert.match(code, /openExplain/, 'åpne forklaringer må huskes mellom tikkene');
+});

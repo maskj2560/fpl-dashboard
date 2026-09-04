@@ -16,6 +16,11 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   FPLs sannsynlighet og netto bytter per time. Låste spillere vises med
   tidspunktet de er låst til, og prognosen lover aldri en endring. 0 nye
   FPL-kall — feltene kommer fra bootstrap, som allerede hentes hvert kvarter.
+- **Poengoppdeling på «Live»** — hver spiller i troppen kan nå folde ut hvorfor
+  poengsummen ble som den ble: «Minutter 90′ +2 · Mål ×2 +8 · Bonus +3». Tallene
+  er FPLs egne (`explain`), som allerede lå i live-svaret uten å bli lest.
+  Dobbeltrunder viser begge kampene, og forklaringer du har åpnet holder seg
+  åpne når tabellen oppdaterer seg. Sorteringen bruker fortsatt bare navnet.
 
 ## [1.13.2] - 2026-09-04
 

@@ -108,6 +108,23 @@ function playerCardHtml(d, shirtHtml) {
  * rendret via clubAssets-vokteren. Delt av spillerkortet (Modul 9) og
  * duellen (Modul 10) — klienten skriver aldri en <img> i blinde.
  */
+/**
+ * FPLs poengoppdeling som én linje: «Minutter 90′ +2 · Mål ×2 +8 · Bonus +3».
+ * Minutter får apostrof. Antallet vises bare når det sier noe poengsummen ikke
+ * gjør — bonus er 3 poeng for 3 bonus, og «×3» der er bare støy.
+ */
+function explainText(explain) {
+  if (!explain || explain.length === 0) return '';
+  return explain
+    .map(function (r) {
+      const poeng = (r.points < 0 ? '−' : '+') + Math.abs(r.points);
+      if (r.label === 'Minutter') return r.label + ' ' + r.value + '′ ' + poeng;
+      const antall = r.value > 1 && r.value !== r.points ? ' ×' + r.value : '';
+      return r.label + antall + ' ' + poeng;
+    })
+    .join(' · ');
+}
+
 function shirtHtmlFor(lagId, erKeeper) {
   if (lagId == null || lagId === '') return '';
   const attr = erKeeper ? 'data-shirt-keeper' : 'data-shirt';
@@ -414,9 +431,11 @@ function initEdgeFades(el, prefix) {
     const tbody = table.tBodies[0];
     const rows = [...tbody.rows];
     rows.sort((a, b) => {
+      // data-sort vinner over celleteksten: navnecellen på /live rommer også
+      // poengoppdelingen, og den skal aldri forurense sorteringsnøkkelen.
       const cmp = compareCells(
-        a.cells[index].textContent.trim(),
-        b.cells[index].textContent.trim(),
+        (a.cells[index].dataset.sort ?? a.cells[index].textContent).trim(),
+        (b.cells[index].dataset.sort ?? b.cells[index].textContent).trim(),
         type,
       );
       return dir === 'descending' ? -cmp : cmp;
@@ -594,6 +613,16 @@ function initEdgeFades(el, prefix) {
   );
 
 
+  // Radene bygges på nytt ved hvert tikk, så åpne forklaringer må huskes
+  // per spillernavn — ellers lukker de seg selv midt i en kamp.
+  const openExplain = new Set();
+  playersBody.addEventListener('toggle', function (e) {
+    const d = e.target;
+    if (!d || d.tagName !== 'DETAILS' || !d.dataset.navn) return;
+    if (d.open) openExplain.add(d.dataset.navn);
+    else openExplain.delete(d.dataset.navn);
+  }, true);
+
   function render(live) {
     if (totalEl) totalEl.textContent = live.totalLive == null ? '–' : live.totalLive;
     playersBody.innerHTML = live.myPlayers
@@ -608,9 +637,16 @@ function initEdgeFades(el, prefix) {
             : p.bonusEst > 0
               ? 'Estimat fra BPS'
               : '';
+        const hvem = '<strong>' + escapeHtml(p.name) + '</strong>' +
+          (p.isCaptain ? ' <b class="cap">C</b>' : '') + ' ' + clubBadgeHtml(p.team, p.teamCode, imgVersion);
+        const why = explainText(p.explain);
+        const navnCelle = why
+          ? '<td data-sort="' + escapeHtml(p.name) + '"><details class="hint-details live-why" data-navn="' +
+            escapeHtml(p.name) + '"' + (openExplain.has(p.name) ? ' open' : '') + '><summary>' + hvem +
+            '</summary><span class="dim">' + escapeHtml(why) + '</span></details></td>'
+          : '<td data-sort="' + escapeHtml(p.name) + '">' + hvem + '</td>';
         return (
-          '<tr' + (p.onBench ? ' class="row-bench"' : '') + '><td><strong>' + escapeHtml(p.name) + '</strong>' +
-          (p.isCaptain ? ' <b class="cap">C</b>' : '') + ' ' + clubBadgeHtml(p.team, p.teamCode, imgVersion) + '</td>' +
+          '<tr' + (p.onBench ? ' class="row-bench"' : '') + '>' + navnCelle +
           '<td class="num">' + p.minutes + "'</td>" +
           '<td class="num">' + p.points + '</td>' +
           '<td class="num' + (bonus > 0 ? ' accent' : '') + '"' + (title ? ' title="' + title + '"' : '') + '>' +

@@ -77,6 +77,45 @@ export function topBps(fixture, elementsById, teamsById, myIds = new Set()) {
  * `nextKickoff` lar klienten vekke seg selv ved avspark i stedet for å polle
  * utenfor kampvinduer.
  */
+/**
+ * FPLs egne identifikatorer i `live.elements[].explain[].stats[]`, på norsk.
+ * Ukjent identifikator vises som seg selv — FPL legger til nye statistikker
+ * midt i sesongen (`defensive_contribution` kom i 2025/26).
+ */
+export const EXPLAIN_LABELS = Object.freeze({
+  minutes: 'Minutter',
+  goals_scored: 'Mål',
+  assists: 'Assist',
+  clean_sheets: 'Nullere',
+  goals_conceded: 'Baklengs',
+  yellow_cards: 'Gult kort',
+  red_cards: 'Rødt kort',
+  saves: 'Redninger',
+  bonus: 'Bonus',
+  defensive_contribution: 'Forsvarsbidrag',
+  own_goals: 'Selvmål',
+  penalties_missed: 'Straffebom',
+  penalties_saved: 'Straffe reddet',
+});
+
+/**
+ * Poengoppdelingen for én spiller, flatet over rundens kamper (dobbeltrunde
+ * gir to sett). Innslag uten både poeng og verdi utelates — FPL sender med
+ * nullrader. `points_modification` er alltid 0 og droppes.
+ */
+function explainRows(explain) {
+  const rows = [];
+  for (const fixture of explain ?? []) {
+    for (const s of fixture?.stats ?? []) {
+      const points = s.points ?? 0;
+      const value = s.value ?? 0;
+      if (points === 0 && value === 0) continue;
+      rows.push({ label: EXPLAIN_LABELS[s.identifier] ?? s.identifier, points, value });
+    }
+  }
+  return rows;
+}
+
 export function buildLive({ bootstrap, gw, fixtures = [], live = null, picks = null, leagues = [] }) {
   if (!gw) return emptyLive();
 
@@ -84,7 +123,7 @@ export function buildLive({ bootstrap, gw, fixtures = [], live = null, picks = n
   const finished = Boolean(bootstrap.events?.find((e) => e.id === gw)?.finished);
   const teamsById = byId(bootstrap.teams);
   const elementsById = byId(bootstrap.elements);
-  const liveById = new Map((live?.elements ?? []).map((e) => [e.id, e.stats]));
+  const liveById = new Map((live?.elements ?? []).map((e) => [e.id, { stats: e.stats, explain: e.explain }]));
 
   const anyLive = fixtures.some((f) => f.started && !matchDone(f));
   const nextKickoff =
@@ -120,7 +159,8 @@ export function buildLive({ bootstrap, gw, fixtures = [], live = null, picks = n
   let totalLive = null;
   if (picks) {
     myPlayers = resolvePicks(picks.picks, elementsById).map(({ pick, player }) => {
-      const stats = liveById.get(pick.element) ?? { total_points: 0, minutes: 0, bonus: 0 };
+      const entry = liveById.get(pick.element);
+      const stats = entry?.stats ?? { total_points: 0, minutes: 0, bonus: 0 };
       const bonus = bonusEst.get(pick.element) ?? 0;
       const multiplier = pick.multiplier || (pick.position >= 12 ? 0 : 1);
       return {
@@ -133,6 +173,7 @@ export function buildLive({ bootstrap, gw, fixtures = [], live = null, picks = n
         points: stats.total_points,
         bonusEst: bonus,
         bonusPublished: bonusPub.get(pick.element) ?? 0,
+        explain: explainRows(entry?.explain),
         effective: (stats.total_points + bonus) * multiplier,
       };
     });
