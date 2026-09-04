@@ -10,21 +10,24 @@
 merget — ti fiks, 809/809)
 
 ## Status akkurat nå
-- **v1.13.2 «UX-polering 2» (økt 60)** på `feat/ux-polering-v1132`: ti småfiks
-  fra gjennomgangen i økt 59. **809/809 + lint 0** (baseline 792), asset-hash
-  `781ffae6`. Hver fiks sett i Playwright ved 390 px i BEGGE temaer.
-  **Tre avvik fra kjøreprompten, funnet i premissverifiseringen:**
-  (1) `colspan="4"` i Prisgevinst krysset «Nå»-kolonna — med kolonna skjult
-  krevde raden én kolonne mer enn de andre og lagde en fantomkolonne (målt:
-  kolonner per rad `[4, 5]` mot `[4]` etter splitting);
-  (2) `poll()`s feilsti returnerte uten å røre statuslinja når `interval` gikk
-  — altså nettopp under kamp;
-  (3) `nextKickoff` var `null` i prod (GW2 ferdig, GW3 ikke aktiv), så fiks 9
-  ble bevist med server/klient-parittet i stedet for et skjermbilde.
-  **Målte etter-tall:** nav 173 → 265 px (3 hele lenker mot 1–2; ikke 4 — å
-  presse inn en fjerde krever mindre padding på lenkene, som alt er under
-  44 px tapphøyde). /spillere: 100 av 652 rader i første render, last 334 ms
-  mot 988 ms i planøktens måling. Ligatabellen 391 → 335 px = boksbredden.
+- **v1.13.2 «UX-polering 2» i prod 4. sep 04:57 (økt 60)**: ti småfiks fra
+  gjennomgangen i økt 59. **809/809 + lint 0** (baseline 792), asset-hash
+  `781ffae6`. CI-kjøring `33831271617` på merge-commiten grønn på Node 22 og 24.
+  Prod-sjekk 04:58: footer v1.13.2, `<script` 2 på `/`, /health 200 med
+  `aiStats` (19 kall, 0 failures), hash `fpl-781ffae6` fra `/sw.js`, 9 sider
+  200, og alle fiksene bekreftet i prod-HTML-en (`#players-more`,
+  `.dim.manager` ×5, `.hint-details` ×3, `.col-now` ×17, 0 treff på sekunder
+  i /nyheter). Hver fiks sett i Playwright ved 390 px i BEGGE temaer.
+  **Tre avvik fra kjøreprompten, funnet i premissverifiseringen:** (1)
+  `colspan="4"` i Prisgevinst krysset «Nå»-kolonna — med kolonna skjult krevde
+  raden én kolonne mer enn de andre og lagde en fantomkolonne (målt: kolonner
+  per rad `[4, 5]` mot `[4]` etter splitting); (2) `poll()`s feilsti returnerte
+  uten å røre statuslinja når `interval` gikk — altså nettopp under kamp; (3)
+  `nextKickoff` var `null` i prod, så fiks 9 ble bevist med server/klient-paritet.
+  **Etter-tall:** nav 173 → 265 px (3 hele lenker mot 1–2; ikke 4 — en fjerde
+  krever mindre padding på lenker som alt er under 44 px tapphøyde). /spillere:
+  100 av 652 rader i første render, last 334 ms mot 988 ms i planøktens måling.
+  Ligatabellen 391 → 335 px = boksbredden.
 - **v1.13.1 «Sikkerhetsnett» i prod 4. sep 02:37 (økt 58)**: `createApp()` i
   `src/app.js`, `test/app.test.js` (hele stacken på loopback mot
   `test/fixtures/fpl-world.js`), CI på Node 22 + 24, pre-push-hook. 792/792,
