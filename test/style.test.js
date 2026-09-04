@@ -216,3 +216,16 @@ test('style.css: smale tabeller krymper til innholdet', () => {
   assert.match(block('table.data.data--fit'), /width: auto/);
   assert.match(block('table.data.data--fit'), /min-width: min\(100%, 30rem\)/);
 });
+
+// v1.13.2 (fiks 1): nav-en hadde 173 px av de 596 px den trenger på 390 px —
+// «FPLdashboard» + temabryteren spiste 217 px. Ordmerket kortes til «FPL».
+test('style.css: logoen kortes til FPL på mobil så menyen får plass', () => {
+  const mobile = css.slice(css.indexOf('@media (max-width: 480px)'));
+  assert.match(mobile, /\.wordmark span \{[^}]*display: none;/);
+});
+
+// v1.13.2 (fiks 6): 0.7rem = 11,2 px på th, .stat-lbl, .lbl, label, .status
+// og code — under lesbarhetsgrensa på 12 px.
+test('style.css: --fs-xs er minst 12 px', () => {
+  assert.match(block(':root'), /--fs-xs: 0\.75rem;/);
+});

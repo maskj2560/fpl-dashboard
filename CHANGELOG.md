@@ -7,6 +7,14 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Changed
+
+- Mobilmenyen får plass: ordmerket kortes til «FPL» under 480 px, så nav-en
+  vokser fra 173 til 265 px og viser tre lenker i stedet for én–to. Full logo
+  fra 481 px og opp (fiks 1).
+- Minste tekststørrelse (`--fs-xs`) er hevet fra 11,2 til 12 px. Gjelder
+  tabellhoder, statetiketter, statuspiller og kodetekst (fiks 6).
+
 ## [1.13.1] - 2026-09-04
 
 «Sikkerhetsnett» (`docs/prompt-sikkerhetsnett-v1131.md`) på
