@@ -50,7 +50,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.13.0**~~ | ~~AI-kall-statistikk per funksjon i `DATA_DIR/ai-stats.json`, vist som `aiStats` på `/health` (gjør P4 målbart)~~ | **utført 2. sep — 767/767** | — |
 | ~~**v1.13.1**~~ | ~~«Sikkerhetsnett»: `createApp()` i `src/app.js`, rute-tester for alle sider mot falsk FPL-verden, CI-workflow (Node 22/24), pre-push-hook~~ | **utført 4. sep — 792/792, CI grønn** | — |
 | ~~**v1.13.2**~~ | ~~«UX-polering 2»: ti småfiks fra funksjonsgjennomgangen (mobil-nav, rad-tak på /spillere, tomtilstander, datoformat, småtekst)~~ | **utført 4. sep — 809/809** | — |
-| **v1.14.0** | «Funksjonssveip»: 5–8 funksjoner bygget på FPL-felt appen ikke leser i dag (73 av 109 element-felt ubrukt) | 8 | planprompt til Fable klar 4. sep (økt 60) |
+| **v1.14.0** | «Funksjonssveip»: 8 funksjoner på FPL-felt appen ikke leser i dag — prisprognose, poengoppdeling på /live, runden i tall, topp X %, forsvarsbidrag, spillerkort-pakka, låneklausul, dine plasseringer | 8 | kjøreprompt til Opus klar 4. sep (økt 61) |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
 Kalenderlogikk: utviklingssporet (v1.3.0 → v1.3.1+) går uavbrutt;
@@ -238,15 +238,24 @@ stedet for den AI-kostende promptendringen (droppet). Rekkefølge:
   live-stats 29/18, og hele `live.elements[].explain` (FPLs egen
   poengoppdeling per spiller). Sveipen finner hvilke av disse som er ekte
   funksjonalitet vi mangler, og bygger 5–8 av dem.
-- **Eier detaljene:** `docs/prompt-feltsveip-v1140.md` — planprompten til
-  **Fable** (fasit, målte felt-differ, ti kandidater, feller, ferdigkriterier).
-  Den leverer `docs/prompt-feltpakka-v1140.md` som kjøreprompt til Opus.
+- **Eier detaljene:** `docs/prompt-feltpakka-v1140.md` — kjøreprompten til
+  **Opus** (fasit med Marius' valg, målte premisser per funksjon med fil:linje,
+  cache-nøkkel og dekningstall, T0–T9 med testnavn, feller, ferdigkriterier).
+  Planprompten til Fable er konsumert (`git show 2347ea1:docs/prompt-feltsveip-v1140.md`).
 - **Blokkert av:** ingenting. **0 nye FPL-kall** — kun felt fra endepunkter
   appen alt kaller og cacher. 0 AI-kall, 0 nye avhengigheter, ingen ny side
-  (nav-en har alt 9 lenker). Deploy-vindu: aldri under kamp, aldri torsdag 19–21.
-- **Status:** planprompt skrevet 4. sep (økt 60). Fable kartlegger og lager
-  kjøreprompten; Opus bygger.
-- **Størrelse:** middels–stor (én minor, 5–8 funksjoner, hver ≤ ~2 timer).
+  (nav-en har alt 9 lenker). Deploy-vindu: aldri under kamp (GW3 fre 4. → søn
+  6. sep; push tidligst mandag 7. sep), aldri torsdag 19–21.
+- **Status:** kjøreprompt skrevet 4. sep (økt 61, Fable): felt-diff reprodusert
+  mot live API (73/109 element-felt ubrukt), ti funn A–J verifisert med grep,
+  Marius valgte «Bygg» på alle; F+G+J slått sammen → 8 T-tasks. Strøket med
+  bevis: lagstyrke (`strength_attack_*`/`strength_defence_*` = 0 for alle lag),
+  `chance_of_playing_this_round`/`ep_this`, autobytter, månedens manager,
+  `game_settings` — fem kandidater under «Senere / idéer». Opus bygger.
+- **Størrelse:** stor (én minor, 8 T-tasks à ≤ ~2 timer: prisprognose
+  /overganger, poengoppdeling /live, runden i tall /, topp X % /lag,
+  forsvarsbidrag /spillere, spillerkort-pakka, låneklausul + nyhetsdato i
+  Lagsjekk, dine plasseringer /liga).
 
 ## Dokumentkart — hvor alt bor
 
@@ -264,7 +273,7 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 | `docs/arkiv/plan-idepakken-v16-v19.md` | beslutningsfasit for idépakken v1.7.0–v1.9.0 (utført, arkivert 2. sep) |
 | `docs/arkiv/plan-sluttpakka-v183-v1120.md` | utført plan for v1.8.3–v1.12.0 (T-tasks, testnavn, 9-punkts fasit) — alt ute 2. sep |
 | `docs/qa-chrome-prompt.md` | prompten til Claude for Chrome: full prod-QA etter sluttpakka (STEG 1–10, rapportformat, fasit) |
-| `docs/prompt-feltsveip-v1140.md` | planprompt til Fable for v1.14.0 (§ 8): fasit, målte felt-differ mot live API, ti kandidater, feller — slettes når kjøreprompten til Opus er skrevet |
+| `docs/prompt-feltpakka-v1140.md` | kjøreprompt til Opus for v1.14.0 (§ 8): Marius' valg, målte premisser mot live API med dekningstall, T0–T9 med testnavn, feller — slettes når v1.14.0 er i prod |
 | `docs/arkiv/qa-rapport-v1121.md` | re-QA-rapporten fra Claude for Chrome 2. sep (11/11 FIKSET, målte kontraster og `dataAlder`) |
 | `docs/arkiv/roadmap-utfort-v010-v134.md` | ROADMAPs «Utført»-historikk v0.1.0 → v1.3.4, flyttet verbatim 2. sep 2026 (økt 56) |
 | `docs/arkiv/plan-spillere-redesign-v181.md` | utført detaljplan for v1.8.1 (redesign av /spillere, T1–T12) |
@@ -292,6 +301,15 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 - Meny-knapp (hamburger) for mobil-navigasjonen — endrer interaksjonsmodellen
   fra v1.3 (scrollende meny); v1.13.2 korter logoen i stedet
 - Kopier-knapp for webcal-adressen (hero på / og /brief) — trenger JS
+- Lagstyrke i motstanderanalysen (`strength_attack_*`/`strength_defence_*` i
+  `bootstrap.teams[]`) — 0 for alle 20 lag 4. sep 2026; bygges når FPL fyller feltene
+- Månedens manager i miniligaen — `phases[]` + `leagues-classic/{id}/standings/?phase=N`
+  (nytt endepunkt-parameter; egen rank ligger i `entry.leagues.classic[].active_phases`)
+- Autobytter fra FPL (`picks.automatic_subs[]`) som fasit mot simuleringen i baseline.js
+- Regler fra `bootstrap.game_settings` (`max_extra_free_transfers` 4, `squad_team_limit` 3,
+  `transfers_sell_on_fee` 0.5) i stedet for hardkoding i scenarios.js/pricing.js
+- Per-90-tall i spillerkortet og «oppdatert HH:MM» (`last_updated_data`) på /liga —
+  når sesongen har flere runder (notert i funksjonssveipen 4. sep, økt 61)
 
 ---
 

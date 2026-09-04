@@ -1875,3 +1875,13 @@ designvalg endret) — verbatim fra HANDOVER.md:
 - 2026-09-02 (økt 55): «Er det noe du kunne anbefalt å gjøre som du kan
   gjøre? … skriv en planleggingsprompt til fable» → seks kandidater med bevis,
   Marius valgte 1–4 (ingen ekstra) → `docs/prompt-vedlikehold-v1122-v1130.md` + § 5.
+- 2026-09-04 (økt 59, Fable): Marius limte inn planprompten for v1.13.2. Handling:
+  tre Explore-agenter + tverrgående, curl/Playwright-målinger lokalt (/health
+  ai:false), 10 funn i tre puljer — alle «Fiks», fire idéer til Senere. Premiss
+  for funn 2 endret underveis (`content-visibility` virker ikke på `<tr>` →
+  rad-tak). Kjøreprompt skrevet, 0 kode, 0 AI-kall, ingenting pushet.
+- 2026-09-04 (økt 60, Opus): Marius limte inn kjøreprompten for v1.13.2.
+  Handling: premissene verifisert mot koden (tre avvik funnet — se statusblokka),
+  plan godkjent, ti fiks bygget med rød test først, én commit per fiks. Alle
+  sett i Playwright ved 390 px i begge temaer fra scratchpad. 792 → 809 tester,
+  lint 0. Prompten slettet. «Fortsett» midtveis etter et avbrutt verktøykall.

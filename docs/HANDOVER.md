@@ -6,9 +6,12 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-09-04 (økt 60, Opus: v1.13.2 i prod + planprompt for § 8)
+**Sist oppdatert:** 2026-09-04 (økt 61, Fable: kjøreprompt for v1.14.0 «Funksjonssveip»)
 
 ## Status akkurat nå
+- **v1.14.0 «Funksjonssveip» planlagt 4. sep (økt 61, Fable)**: kjøreprompt i
+  `docs/prompt-feltpakka-v1140.md` — 8 T-tasks (funn A–J), premisser målt mot
+  live FPL-API med dekningstall. 0 kode, 0 AI-kall, `main` 2 docs-commits foran origin.
 - **v1.13.2 «UX-polering 2» i prod 4. sep 04:57 (økt 60)**: ti småfiks fra
   gjennomgangen i økt 59. **809/809 + lint 0** (baseline 792), asset-hash
   `781ffae6`. CI-kjøring `33831271617` på merge-commiten grønn på Node 22 og 24.
@@ -55,12 +58,12 @@
 v1.12.2/v1.13.0 (`git show d34e3c8:docs/prompt-vedlikehold-v1122-v1130.md`),
 v1.13.1 (`git show e63bd4b:…`) og v1.13.2 (`git show 162ca4d:…`).
 
-**Neste: ROADMAP § 8 — v1.14.0 «Funksjonssveip»** (retning B, valgt 4. sep).
-Planprompt til Fable i `docs/prompt-feltsveip-v1140.md` — lim den inn i et
-Fable-vindu; den kartlegger, henter dine valg og skriver kjøreprompten til
-Opus. Målt: 73 av 109 element-felt i bootstrap er ubrukt, pluss 19 event-felt,
-13 team-felt og hele `live.elements[].explain`. Etter B gjenstår D (slanking av
-style.css/app.js), ikke besluttet.
+**Neste: ROADMAP § 8 — v1.14.0 «Funksjonssveip».** Lim
+`docs/prompt-feltpakka-v1140.md` inn i en Opus-økt (plan-modus): den
+verifiserer premissene, bygger T1–T8 med rød test først, pusher og gjør
+prod-sjekk. Deploy-vindu: GW3 spilles fre 4.–søn 6. sep → push til `main`
+tidligst mandag 7. sep. Etter B gjenstår D (slanking av style.css/app.js),
+ikke besluttet.
 
 **Majors ikke oppgradert (Marius' fasit 2. sep):** `ejs` 6, `eslint` 10, `globals` 17 — vurderingen i historikkfila (økt 58).
 
@@ -187,14 +190,11 @@ style.css/app.js), ikke besluttet.
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
-- 2026-09-04 (økt 59, Fable): Marius limte inn planprompten for v1.13.2. Handling:
-  tre Explore-agenter + tverrgående, curl/Playwright-målinger lokalt (/health
-  ai:false), 10 funn i tre puljer — alle «Fiks», fire idéer til Senere. Premiss
-  for funn 2 endret underveis (`content-visibility` virker ikke på `<tr>` →
-  rad-tak). Kjøreprompt skrevet, 0 kode, 0 AI-kall, ingenting pushet.
-- 2026-09-04 (økt 60, Opus): Marius limte inn kjøreprompten for v1.13.2.
-  Handling: premissene verifisert mot koden (tre avvik funnet — se statusblokka),
-  plan godkjent, ti fiks bygget med rød test først, én commit per fiks. Alle
-  sett i Playwright ved 390 px i begge temaer fra scratchpad. 792 → 809 tester,
-  lint 0. Prompten slettet. «Fortsett» midtveis etter et avbrutt verktøykall.
+- 2026-09-04 (økt 61, Fable): Marius limte inn planprompten for v1.14.0 +
+  «Når planen er godkjent skriv en kjøreprompt til opus». Handling: alle 12
+  endepunkter curlet til scratchpad, felt-diff reprodusert (73/109), fire
+  Explore-agenter, ti funn A–J verifisert med grep (agent (c) meldte
+  `most_captained` ubrukt — grep viste insights.js:164), tre puljer → alle
+  «Bygg», F+G+J slått sammen. Plan godkjent → kjøreprompt skrevet, ROADMAP § 8
+  + Senere ajour, planprompten slettet. 0 kode, 0 AI-kall, ingenting pushet.
 
