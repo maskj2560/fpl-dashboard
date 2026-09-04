@@ -7,6 +7,20 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+
+- Rute-tester for hele stacken (`test/app.test.js`, 23 tester): appen
+  bygges med `createApp()`, lytter på loopback (port 0) og møter en falsk
+  FPL-verden (`test/fixtures/fpl-world.js`) i stedet for nettet. Dekker
+  alle ti sider (200, nøyaktig to kjørbare `<script>`, CSP-noncen i
+  headeren = noncen i HTML-en, `<main id="innhold">`, ingen stale- eller
+  503-banner), 404-siden, `/health` med features av, `/api` med
+  `no-store` og `dataAlder`, element-summary-økonomien på
+  `/api/spiller/:id`, scenario-CRUD mot `DATA_DIR`, statisk cache
+  (immutable vs. no-cache), `/sw.js`, FPLs 503-vindu, RSS nede, 413 og
+  429 med `Retry-After`. AI og Discord er slått av med tomme nøkler, og
+  testene beviser at ingen forespørsel går dit.
+
 ### Fixed
 
 - Feilsidene (503, 500 og 4xx fra body-parser) rendres igjen som ekte
