@@ -46,24 +46,24 @@
 
 **Ferdig og i prod — ROADMAP § 0, § 5, § 6, § 7:** sluttpakka v1.8.3–v1.12.0
 (`docs/arkiv/plan-sluttpakka-v183-v1120.md`, 9-punkts fasit — ikke re-spør),
-v1.12.2/v1.13.0 (`git show d34e3c8:docs/prompt-vedlikehold-v1122-v1130.md`),
-v1.13.1 (`git show e63bd4b:…`) og v1.13.2 (`git show 162ca4d:…`).
+v1.12.2/v1.13.0 (`git show d34e3c8:…`), v1.13.1 (`git show e63bd4b:…`) og
+v1.13.2 (`git show 162ca4d:…`).
 
 **Neste: slipp v1.14.0 (ROADMAP § 8).** Koden er ferdig og grønn på
-`feat/funksjonssveip-v1140`. Mandag 7. sep eller senere, i denne rekkefølgen:
+`feat/funksjonssveip-v1140`; **CI-kjøring `33885599446` på `d947a04` er grønn på
+Node 22 OG 24**, branchen ligger på origin og `main` er urørt. Mandag 7. sep
+eller senere, i denne rekkefølgen:
 
 1. `GET https://fpl.marsk.no/api/live.json` → `anyLive` MÅ være `false`; aldri tor. 19–21.
-2. ~~Push branch → CI~~ **gjort 4. sep: kjøring `33885599446` på `d947a04` grønn på
-   Node 22 OG 24.** Branchen ligger på origin, `main` er urørt.
-3. `git switch main && git merge --no-ff -m "…" feat/funksjonssveip-v1140`, annotert tag
+2. `git switch main && git merge --no-ff -m "…" feat/funksjonssveip-v1140`, annotert tag
    `v1.14.0`, push `main` + tag, slett branchen begge steder.
-5. Prod-sjekk: footer v1.14.0, `<script` = 2 på `/`, `/health` 200 med `aiStats`, ny
+3. Prod-sjekk: footer v1.14.0, `<script` = 2 på `/`, `/health` 200 med `aiStats`, ny
    asset-hash fra `/sw.js` noteres her, 9 sider 200, og grep i prod-HTML: `id="prisprognose"`,
    `live-why` + `explain` i `/api/live.json`, `id="runden-i-tall"`, «topp » i hero-flisen,
    `data-dc`, «Tidligere sesonger» i `/api/spiller/1`, «Låneklausul» i `/api/spiller/160`,
    `id="plasseringer"`.
-6. `git rm docs/prompt-feltpakka-v1140.md` + fjern dokumentkart-raden, sett
-   ROADMAP-raden til «utført», og skriv CI-run-ID + hash inn her.
+4. `git rm docs/prompt-feltpakka-v1140.md` + fjern dokumentkart-raden, sett ROADMAP-raden
+   til «utført», og skriv merge-commitens CI-run-ID + den nye asset-hashen inn her.
 
 Etter B gjenstår **D** fra økt 57: slanking av `style.css` (2612 linjer) og
 `app.js` (1503 linjer — større etter T2/T5/T6). Ikke besluttet.
@@ -108,9 +108,8 @@ Etter B gjenstår **D** fra økt 57: slanking av `style.css` (2612 linjer) og
   `createShutdown` er `kill 1` den trygge måten å bevise ryddig avslutning — containeren
   restartes av `unless-stopped` og BEHOLDER loggen. Aldri `docker stop`/`kill` på prod.
 - **Restart serveren etter endringer i `src/`** — ESM lastes én gang.
-- **Sjekk `git status -sb`, ikke anta at `main` = `origin/main`:** ved
-  starten av økt 30 lå `main` 2 docs-commits foran origin (loggføring fra
-  økt 29) selv om prompten sa «main = origin/main».
+- **Sjekk `git status -sb`, ikke anta at `main` = `origin/main`:** ved starten av økt 30
+  lå `main` 2 docs-commits foran origin selv om prompten sa «main = origin/main».
 - **Klubbgrafikken hentes på nytt hver sesong:** `npm run fetch-clubs` + bump
   `IMG_VERSION` i `src/middleware.js` i SAMME commit, ellers serverer
   Cloudflare fjorårets drakter som `immutable`. Rutine: DEPLOY.md.
