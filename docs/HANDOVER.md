@@ -35,8 +35,7 @@ merget — ti fiks, 809/809)
   var ren tekst siden v1.4.0) er fikset og låst i `middleware.test.js`.
   Detaljene: historikkfila.
 - **v1.13.0 og v1.8.3–v1.12.2 i prod 2. sep** (655 → 767 tester) — detaljene i
-  historikkfila. Prisvarslene: første Discord-melding var ventet natt til
-  4. sep — sjekk at den kom.
+  historikkfila. Prisvarslene: første Discord-melding var ventet natt til 4. sep.
 - **Feilsiden i prod er ikke visuelt bevist ennå** (fiksen er låst av tester).
   Neste gang FPL har et 503-vindu: sjekk at `/` viser «FPL oppdaterer spillet»
   og ikke ren tekst.
@@ -47,18 +46,16 @@ merget — ti fiks, 809/809)
 - **Helsesjekken:** alt. a aktiv (Coolifys sjekk AV, Dockerfilens gjelder).
 - **Kostnad: måleuka DROPPET** (28. aug) — følges i `console.anthropic.com`,
   terskler i `docs/sjekkpunkt-d-kostnad.md`. Takt **~49–53 AI-kall/uke**.
-- **Git:** de 13 gamle lokale branchene er slettet (10 med `-d`, 3 med `-D`
-  etter Marius' beslutning) — kun `main` finnes (alle fem feature-branchene
-  i sluttpakka er merget `--no-ff` og slettet). Tagger t.o.m. `v1.12.0`.
+- **Git:** kun `main` finnes lokalt og på origin — hver feature-branch merges
+  `--no-ff` og slettes begge steder. Tagger t.o.m. `v1.13.2`.
 - Eldre status og alle detaljer: `docs/arkiv/HANDOVER-historikk.md`.
 
 ## Neste steg (start her)
 
-**Ferdig og i prod:** sluttpakka v1.8.3–v1.12.0 (plan: `docs/arkiv/plan-sluttpakka-v183-v1120.md`,
-9-punkts fasit — ikke re-spør), vedlikeholdspakka v1.12.2/v1.13.0 (prompt: `git show
-d34e3c8:docs/prompt-vedlikehold-v1122-v1130.md`) og § 6 v1.13.1 (økt 58, prompt: `git show
-e63bd4b:docs/prompt-sikkerhetsnett-v1131.md`). ROADMAP § 0, § 5 og § 6 er ferdige.
-§ 7 (v1.13.2) er utført i økt 60 — begge prompter er konsumert og slettet
+**Ferdig og i prod — ROADMAP § 0, § 5, § 6 og § 7:** sluttpakka v1.8.3–v1.12.0
+(plan: `docs/arkiv/plan-sluttpakka-v183-v1120.md`, 9-punkts fasit — ikke re-spør),
+vedlikeholdspakka v1.12.2/v1.13.0 (`git show d34e3c8:docs/prompt-vedlikehold-v1122-v1130.md`),
+v1.13.1 (`git show e63bd4b:docs/prompt-sikkerhetsnett-v1131.md`) og v1.13.2
 (`git show 162ca4d:docs/prompt-ux-polering-v1132.md`). **Køen er tom.**
 Ikke valgt ennå (notert i økt 57): B funksjonssveip mot ubrukte FPL-felt,
 D slanking av style.css/app.js. «Senere / idéer» i ROADMAP har de fire større
