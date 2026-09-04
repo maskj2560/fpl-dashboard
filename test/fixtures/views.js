@@ -169,7 +169,8 @@ const diffRow = (id, navn, over = {}) => ({
 
 export const players = {
   teamsById, clubAssets, POSITIONS, POSITIONS_SHORT, STATUS_LABELS, formatPrice, teams,
-  players: [player(1, 'Saka', { penalties_order: 1 }), player(2, 'Salah', { team: 2, status: 'd' })],
+  // Salah har ingen defensive_contribution — feltet mangler helt hos ~halvparten.
+  players: [player(1, 'Saka', { penalties_order: 1, defensive_contribution: 34 }), player(2, 'Salah', { team: 2, status: 'd' })],
   differentials: {
     terskler: [
       { prosent: 5, rows: [diffRow(1, 'Saka')] },

@@ -97,6 +97,16 @@ export function buildPlayerCard({ element, teamsById, summary }) {
       hjorner: element.corners_and_indirect_freekicks_order ?? null,
       frispark: element.direct_freekicks_order ?? null,
     },
+    // Forsvarsbidrag (poenggivende fra 2025/26): summen og delene den er
+    // bygget av. Under halvparten av spillerne har verdi — 0 er en ekte
+    // tilstand, ikke manglende data, så feltene er alltid tall.
+    forsvar: {
+      dc: element.defensive_contribution ?? 0,
+      cbi: element.clearances_blocks_interceptions ?? 0,
+      rec: element.recoveries ?? 0,
+      tk: element.tackles ?? 0,
+      per90: element.defensive_contribution_per_90 ?? 0,
+    },
     sisteKamper,
     kommende,
   };

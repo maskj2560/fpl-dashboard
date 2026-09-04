@@ -61,6 +61,15 @@ function playerCardHtml(d, shirtHtml) {
     stat('Eid %', d.eid) + stat('xG', d.xg) + stat('xA', d.xa) +
     stat('Minutter', d.minutter) + '</div>';
 
+  // Forsvarsbidrag (v1.14.0): poenggivende fra 2025/26 — 2 p ved 10 (forsvar)
+  // eller 12 (midt, spiss) i én kamp. Vises bare når spilleren faktisk har noe.
+  if (d.forsvar && d.forsvar.dc > 0) {
+    html += '<p class="kort-dc">Forsvarsbidrag <strong>' + e(d.forsvar.dc) + '</strong> ' +
+      '<span class="dim">(CBI ' + e(d.forsvar.cbi) + ' · Rec ' + e(d.forsvar.rec) +
+      ' · Tk ' + e(d.forsvar.tk) + ') · ' + e(d.forsvar.per90) + ' per 90</span></p>' +
+      '<p class="hint">Gir 2 poeng i en kamp med 10 bidrag (forsvarere) eller 12 (midtbane og spisser).</p>';
+  }
+
   const roller = DODBALL_ETIKETTER.filter(([key]) => d.dodball && d.dodball[key] != null);
   if (roller.length > 0) {
     html += '<h3>Dødball</h3><ul class="kort-dodball">' +

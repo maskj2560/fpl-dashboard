@@ -110,6 +110,7 @@ test('buildPlayerCard mapper hele payloaden til norske feltnavn', () => {
     nytt: null,
     spillesjanse: null,
     dodball: { straffer: 1, hjorner: null, frispark: null },
+    forsvar: { dc: 0, cbi: 0, rec: 0, tk: 0, per90: 0 },
     sisteKamper: [
       {
         runde: 2,
@@ -489,4 +490,26 @@ describe('assemblePlayerCard', () => {
     assert.equal(await assemblePlayerCard(999999), null);
     assert.deepEqual(calls.filter((u) => /element-summary/.test(u)), []);
   });
+});
+
+// ---- v1.14.0 (T5): forsvarsbidrag ------------------------------------------
+
+test('buildPlayerCard tar med forsvarsbidraget med delene og per 90', () => {
+  const kort = buildPlayerCard({
+    element: el({
+      element_type: 2,
+      defensive_contribution: 34,
+      defensive_contribution_per_90: 17,
+      clearances_blocks_interceptions: 32,
+      recoveries: 4,
+      tackles: 2,
+    }),
+    teamsById,
+    summary: { fixtures: [], history: [] },
+  });
+  assert.deepEqual(kort.forsvar, { dc: 34, cbi: 32, rec: 4, tk: 2, per90: 17 });
+
+  // 339 av 652 spillere hadde ingen verdi 4. sep — nullene må være tall, ikke undefined.
+  const uten = buildPlayerCard({ element: el(), teamsById, summary: { fixtures: [], history: [] } });
+  assert.deepEqual(uten.forsvar, { dc: 0, cbi: 0, rec: 0, tk: 0, per90: 0 });
 });

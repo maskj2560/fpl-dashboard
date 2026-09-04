@@ -71,6 +71,7 @@
           <th scope="col" data-type="num" class="num" aria-sort="none">Eid&nbsp;%</th>
           <th scope="col" data-type="num" class="num" aria-sort="none">xG</th>
           <th scope="col" data-type="num" class="num" aria-sort="none">xA</th>
+          <th scope="col" data-type="num" class="num" aria-sort="none" title="Forsvarsbidrag: clearances, blocks, interceptions + recoveries + tackles">DC</th>
           <th scope="col" data-type="text" aria-sort="none">Status</th>
         </tr>
       </thead>
@@ -91,6 +92,7 @@
             data-eid="<%= p.selected_by_percent %>"
             data-xg="<%= p.expected_goals %>"
             data-xa="<%= p.expected_assists %>"
+            data-dc="<%= p.defensive_contribution ?? 0 %>"
             data-min="<%= p.minutes %>"
             data-bonus="<%= p.bonus %>"
             data-straffer="<%= p.penalties_order == null ? '' : p.penalties_order %>"
@@ -108,6 +110,7 @@
             <td class="num"><%= p.selected_by_percent %></td>
             <td class="num"><%= p.expected_goals %></td>
             <td class="num"><%= p.expected_assists %></td>
+            <td class="num"><%= p.defensive_contribution ?? 0 %></td>
             <td><% if (p.status !== 'a') { %><span class="status status-<%= p.status %>"><%= STATUS_LABELS[p.status] ?? p.status %></span><% } %></td>
           </tr>
         <% } %>

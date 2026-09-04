@@ -569,3 +569,22 @@ test('app.js sorterer på data-sort før celletekst', () => {
   assert.match(code, /data-sort="/, 'render må sette data-sort på navnecellen');
   assert.match(code, /openExplain/, 'åpne forklaringer må huskes mellom tikkene');
 });
+
+// v1.14.0 (T5): forsvarsbidrag — poenggivende fra 2025/26, aldri vist før.
+test('playerCardHtml viser forsvarsbidraget som linje med CBI, Rec og Tk', () => {
+  const kort = {
+    lag: { navn: 'Everton' }, posisjon: 'Forsvar', pris: '4.5', status: 'a', statusTekst: 'Klar',
+    spillesjanse: null, nytt: null, form: '5.0', totalPoeng: 12, poengPerKamp: '6.0',
+    eid: '3.0', xg: '0.10', xa: '0.20', minutter: 180,
+    forsvar: { dc: 34, cbi: 32, rec: 4, tk: 2, per90: 17 },
+    dodball: {}, sisteKamper: [], kommende: [],
+  };
+  const html = app.playerCardHtml(kort, '');
+  assert.match(html, /Forsvarsbidrag/, 'linja mangler');
+  assert.match(html, /<strong>34<\/strong>/, 'summen mangler');
+  assert.match(html, /CBI 32 · Rec 4 · Tk 2/, 'delene mangler');
+  assert.match(html, /17 per 90/, 'per 90 mangler');
+
+  const uten = app.playerCardHtml({ ...kort, forsvar: { dc: 0, cbi: 0, rec: 0, tk: 0, per90: 0 } }, '');
+  assert.ok(!uten.includes('Forsvarsbidrag'), 'ingen linje når spilleren ikke har bidrag');
+});

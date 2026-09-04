@@ -31,6 +31,11 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   under rankgrafen står en ny tabell med poeng, rundens snitt, rundens høyeste,
   rangering og topp-prosent per runde. Runder der du slo snittet er uthevet.
   Tallene er FPLs egne `percentile_rank` og `overall_rank_percentage`.
+- **Forsvarsbidrag på «Spillere»** — ny sorterbar DC-kolonne i spillertabellen,
+  og en linje i spillerkortet som bryter tallet ned i clearances/blocks/
+  interceptions, recoveries og tackles, med per 90 og hva som skal til for
+  poeng. Statistikken ble poenggivende i 2025/26 og var ikke vist noe sted.
+  313 av 652 spillere har en verdi i dag; resten viser 0.
 
 ## [1.13.2] - 2026-09-04
 

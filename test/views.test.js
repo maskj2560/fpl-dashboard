@@ -449,6 +449,17 @@ test('transfers.ejs viser prisendringene i natt med troppen først', async () =>
   assert.ok(html.includes('Sjekkes hver time'), 'hintet mangler');
 });
 
+// v1.14.0 (T5): forsvarsbidrag som kolonne — 313 av 652 spillere har verdi.
+test('players.ejs har DC-kolonna med data-dc på radene', async () => {
+  const html = await renderView('players', fx.players);
+  assert.match(html, /<th scope="col" data-type="num" class="num" aria-sort="none" title="Forsvarsbidrag[^"]*">DC<\/th>/, 'kolonneoverskriften mangler');
+  const dc = html.indexOf('>DC<');
+  const status = html.indexOf('>Status<');
+  assert.ok(dc > 0 && status > dc, 'DC skal stå før Status');
+  assert.match(html, /data-dc="34"/, 'raden mangler data-dc');
+  assert.match(html, /data-dc="0"/, 'spiller uten bidrag skal få 0, ikke tom verdi');
+});
+
 // v1.14.0 (T4): FPLs percentile_rank — «du var i topp X %» — per runde.
 test('team.ejs viser topp-prosenten i hero og tabellen under rankgrafen', async () => {
   const html = await renderView('team', fx.team);
@@ -658,7 +669,9 @@ test('players.ejs: alle kolonneoverskrifter beholder data-type og aria-sort (sor
   // har sine egne overskrifter og sorteres ikke.
   const head = html.slice(html.indexOf('id="players-table"'), html.indexOf('</thead>'));
   const ths = head.match(/<th[ >][^>]*>/g) ?? [];
-  assert.equal(ths.length, 12, 'antall kolonner endret — app.js Modul 2 sorterer på indeks');
+  // 13 fra v1.14.0 (DC). Modul 2 leser indeksen fra cellIndex, ikke en konstant,
+  // så en ny kolonne er trygg — men antallet står her som en bevisst kontrakt.
+  assert.equal(ths.length, 13, 'antall kolonner endret — app.js Modul 2 sorterer på indeks');
   const [duell, ...sorterbare] = ths;
   assert.match(duell, /data-nosort/, 'duell-kolonnen skal unntas sorteringen');
   for (const th of sorterbare) {
