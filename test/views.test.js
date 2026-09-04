@@ -449,6 +449,21 @@ test('transfers.ejs viser prisendringene i natt med troppen først', async () =>
   assert.ok(html.includes('Sjekkes hver time'), 'hintet mangler');
 });
 
+// v1.14.0 (T8): de globale ligaene /liga filtrerte bort.
+test('league.ejs viser dine plasseringer over ligatabellene og skjuler kortet uten data', async () => {
+  const html = await renderView('league', fx.league);
+  assert.ok(html.includes('id="plasseringer"'), 'kortet mangler');
+  const plass = html.indexOf('id="plasseringer"');
+  const tabeller = html.indexOf('Ligatabell');
+  assert.ok(plass > 0 && tabeller > plass, 'kortet skal stå over ligatabellene');
+  assert.ok(html.includes('Globalt') && html.includes('Norge'), 'norske navn mangler');
+  assert.ok(html.includes('rank-down') && html.includes('rank-same'), 'trendpilene mangler');
+  assert.ok(html.includes('35 %'), 'topp-prosenten mangler');
+
+  const tom = await renderView('league', { ...fx.league, standingsGlobal: [] });
+  assert.ok(!tom.includes('id="plasseringer"'), 'ingen kort uten globale ligaer');
+});
+
 // v1.14.0 (T7): låneklausul i Lagsjekk og nyhetsdato i Ukens flagg.
 test('brief.ejs viser klausul-funnet', async () => {
   const html = await renderView('brief', {

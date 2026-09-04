@@ -49,6 +49,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - **Nyhetsdato flere steder** — «Ukens flagg» på dashbordet og skadedetaljene i
   «Lagsjekk» viser når FPL meldte nyheten, så en skade fra juli ikke lenger ser
   like fersk ut som en fra i går.
+- **«Dine plasseringer» på «Miniligaer»** — nytt kort øverst med plasseringen din
+  i de globale ligaene FPL melder alle inn i (Globalt, Norge, klubbligaen,
+  oppstartsrunden), med antall deltakere, topp-prosent og trend mot forrige
+  runde. Disse ligaene ble tidligere filtrert bort og vist ingen steder.
 
 ## [1.13.2] - 2026-09-04
 

@@ -210,6 +210,11 @@ const radarPlayer = (id, name, eventPoints) => ({
 });
 
 export const league = {
+  standingsGlobal: [
+    { id: 314, name: 'Globalt', rank: 3345863, lastRank: 2201654, percentile: 35, count: 9904802, trend: 'ned' },
+    { id: 276, name: 'Gameweek 1', rank: 100, lastRank: 100, percentile: 40, count: 8899691, trend: 'lik' },
+    { id: 181, name: 'Norge', rank: 92709, lastRank: 95000, percentile: 45, count: 208834, trend: 'opp' },
+  ],
   teamsById, clubAssets,
   formatNumber, formatSigned, formatDateTime,
   myEntry: 123,
