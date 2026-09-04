@@ -49,6 +49,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.12.2**~~ | ~~Vedlikehold: `npm audit fix` (qs), `node:24-alpine`, egne `:hist`-cache-nøkler (rotårsaken bak QA-funn 6)~~ | **utført 2. sep — 758/758, ute i prod 20:52** | — |
 | ~~**v1.13.0**~~ | ~~AI-kall-statistikk per funksjon i `DATA_DIR/ai-stats.json`, vist som `aiStats` på `/health` (gjør P4 målbart)~~ | **utført 2. sep — 767/767** | — |
 | ~~**v1.13.1**~~ | ~~«Sikkerhetsnett»: `createApp()` i `src/app.js`, rute-tester for alle sider mot falsk FPL-verden, CI-workflow (Node 22/24), pre-push-hook~~ | **utført 4. sep — 792/792, CI grønn** | — |
+| **v1.13.2** | «UX-polering 2»: småfiks fra funksjonsgjennomgang (tetthet, mobil-nav, tomtilstander, lastetid) | 7 | Fable-planøkt → Opus-kjøreprompt |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
 Kalenderlogikk: utviklingssporet (v1.3.0 → v1.3.1+) går uavbrutt;
@@ -202,6 +203,21 @@ stedet for den AI-kostende promptendringen (droppet). Rekkefølge:
   branch: feilsidene falt ned til ren tekst fordi `staleSince` manglet i
   layout-locals. Prompten er konsumert og slettet.
 
+### 7. v1.13.2 «UX-polering 2»: funksjonsgjennomgang → småfiks (besluttet 4. sep, økt 57)
+
+- **Hva:** samme form som v1.7.1 (økt 46): full gjennomgang av alle 9 sider +
+  tverrgående som bruker — tetthet, mobil-navigasjon (9 nav-lenker ved
+  390 px), tomtilstander, lastetid (målt lokalt med curl), forklaringer og
+  konsistens. Funn i tabeller med fil:linje, Marius velger «Fiks»/«Behold» i
+  puljer, 10–15 småfiks bygges som én patch. Større funn → «Senere / idéer».
+- **Eier detaljene:** `docs/prompt-ux-gjennomgang-v1132.md` — planprompt til en
+  **Fable-økt** (0 kode) som leverer `docs/prompt-ux-polering-v1132.md`,
+  kjøreprompten til **Opus** som bygger. Kjede: Fable planlegger → Opus bygger.
+- **Blokkert av:** ingenting. 0 AI-kall, 0 nye avhengigheter; asset-hashen
+  endres (CSS/JS). Deploy-vindu: aldri under kamp, aldri torsdag 19–21.
+- **Status:** planprompt skrevet 4. sep (økt 57). Gjennomgangen ikke startet.
+- **Størrelse:** middels (én patch-release, ~12 fiks).
+
 ## Dokumentkart — hvor alt bor
 
 Én eier per fil; alt uten leserverdi for en ny økt ligger i `docs/arkiv/`
@@ -218,6 +234,7 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 | `docs/arkiv/plan-idepakken-v16-v19.md` | beslutningsfasit for idépakken v1.7.0–v1.9.0 (utført, arkivert 2. sep) |
 | `docs/arkiv/plan-sluttpakka-v183-v1120.md` | utført plan for v1.8.3–v1.12.0 (T-tasks, testnavn, 9-punkts fasit) — alt ute 2. sep |
 | `docs/qa-chrome-prompt.md` | prompten til Claude for Chrome: full prod-QA etter sluttpakka (STEG 1–10, rapportformat, fasit) |
+| `docs/prompt-ux-gjennomgang-v1132.md` | planprompt til Fable for v1.13.2 (§ 7): gjennomgang, målinger, puljer til Marius, leverer kjøreprompt til Opus — slettes når den er levert |
 | `docs/arkiv/qa-rapport-v1121.md` | re-QA-rapporten fra Claude for Chrome 2. sep (11/11 FIKSET, målte kontraster og `dataAlder`) |
 | `docs/arkiv/roadmap-utfort-v010-v134.md` | ROADMAPs «Utført»-historikk v0.1.0 → v1.3.4, flyttet verbatim 2. sep 2026 (økt 56) |
 | `docs/arkiv/plan-spillere-redesign-v181.md` | utført detaljplan for v1.8.1 (redesign av /spillere, T1–T12) |

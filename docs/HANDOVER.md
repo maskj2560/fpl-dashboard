@@ -6,8 +6,8 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-09-04 (økt 58, Opus: v1.13.1 «Sikkerhetsnett» —
-app-fabrikk, 23 rute-tester, CI på Node 22/24, pre-push-hook)
+**Sist oppdatert:** 2026-09-04 (økt 57 del 2, Fable: planprompt for v1.13.2
+«UX-polering 2» → ROADMAP § 7; v1.13.1 i prod fra økt 58)
 
 ## Status akkurat nå
 - **v1.13.1 «Sikkerhetsnett» i prod 4. sep 02:37 (økt 58)** på `feat/sikkerhetsnett-v1131`:
@@ -56,9 +56,9 @@ v1.13.0 20:59, docs-slanking) er ute; prompten er konsumert og slettet (git
 bevarer den: `git show d34e3c8:docs/prompt-vedlikehold-v1122-v1130.md`).
 **§ 6 (v1.13.1 «Sikkerhetsnett») er utført 4. sep (økt 58)** — prompten er
 konsumert og slettet (`git show e63bd4b:docs/prompt-sikkerhetsnett-v1131.md`).
-Køen har ingen ublokkerte kodepunkter igjen: kun P4 og Marius' egne punkter.
-Kandidater notert i økt 57 (ikke besluttet): B funksjonssveip mot ubrukte
-FPL-felt, C funksjonsgjennomgang → småfiks, D slanking av style.css/app.js.
+**Neste: ROADMAP § 7 — v1.13.2 «UX-polering 2»** (valgt 4. sep, økt 57). Planprompt
+til en Fable-økt: `docs/prompt-ux-gjennomgang-v1132.md` (gjennomgang → Marius
+velger → kjøreprompt til Opus). Ikke valgt ennå: B funksjonssveip, D slanking.
 
 **Majors vurdert 2. sep, ikke oppgradert (Marius' fasit):** `ejs` 6, `eslint` 10
 og `globals` 17 — vurderingen med risiko per pakke er rotert til
@@ -188,10 +188,10 @@ og `globals` 17 — vurderingen med risiko per pakke er rotert til
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
 - 2026-09-04 (økt 57, Fable): «Jeg vil forbedre siden. Hva kan du gjøre?» →
-  fire retninger (A–D); «Lag en plan for å gjennomføre A»; «send planen til
-  opus. Gjør den veldig bra». Handling: premisser målt, ett spørsmålssett
-  (alle anbefalinger valgt) → `docs/prompt-sikkerhetsnett-v1131.md` + § 6,
-  økt 55-loggen rotert. 0 kode, én docs-commit, ikke pushet (spares til v1.13.1).
+  fire retninger (A–D). «Lag en plan for A» / «send planen til opus» →
+  `docs/prompt-sikkerhetsnett-v1131.md` + § 6 (bygget i økt 58). Så «C … lag en
+  prompt til fable som skal planlegge dette», «fable-planen skal lage en
+  kjøreprompt til opus», «ikke denne økten» → `docs/prompt-ux-gjennomgang-v1132.md` + § 7.
 - 2026-09-04 (økt 58, Opus): Marius limte inn kjøreprompten for v1.13.1.
   Handling: premissene verifisert mot koden (server.js var 148 linjer, ikke
   138), plan godkjent → app-fabrikk, falsk FPL-verden, 23 rute-tester, CI og
