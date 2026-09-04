@@ -6,34 +6,39 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-09-04 (økt 59, Fable: UX-gjennomgangen for v1.13.2 utført,
-kjøreprompt til Opus i `docs/prompt-ux-polering-v1132.md`; v1.13.1 i prod fra økt 58)
+**Sist oppdatert:** 2026-09-04 (økt 60, Opus: v1.13.2 «UX-polering 2» bygget og
+merget — ti fiks, 809/809)
 
 ## Status akkurat nå
-- **v1.13.1 «Sikkerhetsnett» i prod 4. sep 02:37 (økt 58)** på `feat/sikkerhetsnett-v1131`:
-  `createApp()` i `src/app.js` (ren fabrikk — lytter aldri, starter ingen
-  timer), `src/server.js` er den eneste fila som lytter og starter schedulere.
-  `test/app.test.js` (23 tester, 0,8 s) kjører hele stacken på loopback mot
-  `test/fixtures/fpl-world.js`. `.github/workflows/ci.yml` (Node 22 + 24) og
-  `.githooks/pre-push` + `npm run hooks`. **792/792 + lint 0** (baseline 767).
-  CI-kjøring `33822168239` på merge-commiten grønn på både Node 22 og 24.
-  Prod-sjekk 02:41: footer v1.13.1, `<script` 2, /health 200 med `aiStats`
-  (13 kall, 0 failures), hash `ba91839a` (uendret), 9 sider 200.
-  **Bonusfunn fikset:** `createErrorHandler` sendte aldri `staleSince` til
-  `layout.ejs`, som leser den ubetinget → EJS kastet og alle feilsider (503,
-  500, 413) falt ned til ren tekst «Noe gikk galt.». Gjaldt i prod siden
-  v1.4.0. Regresjonstest i `middleware.test.js`.
-- **v1.13.0 «AI-statistikk» i prod 2. sep 20:59 (økt 56)**: teller per cacheKey
-  i `ai.js` → `DATA_DIR/ai-stats.json`, `aiStats` på /health via
-  `healthPayload()`. **767/767 + lint 0**. Prod-sjekk 21:03 grønn.
-- **v1.8.3–v1.12.2 i prod 2. sep** (655 → 758 tester) — statusblokkene i historikkfila.
-  Prisvarslene: første Discord-melding var ventet natt til 4. sep — sjekk at den kom.
+- **v1.13.2 «UX-polering 2» (økt 60)** på `feat/ux-polering-v1132`: ti småfiks
+  fra gjennomgangen i økt 59. **809/809 + lint 0** (baseline 792), asset-hash
+  `781ffae6`. Hver fiks sett i Playwright ved 390 px i BEGGE temaer.
+  **Tre avvik fra kjøreprompten, funnet i premissverifiseringen:**
+  (1) `colspan="4"` i Prisgevinst krysset «Nå»-kolonna — med kolonna skjult
+  krevde raden én kolonne mer enn de andre og lagde en fantomkolonne (målt:
+  kolonner per rad `[4, 5]` mot `[4]` etter splitting);
+  (2) `poll()`s feilsti returnerte uten å røre statuslinja når `interval` gikk
+  — altså nettopp under kamp;
+  (3) `nextKickoff` var `null` i prod (GW2 ferdig, GW3 ikke aktiv), så fiks 9
+  ble bevist med server/klient-parittet i stedet for et skjermbilde.
+  **Målte etter-tall:** nav 173 → 265 px (3 hele lenker mot 1–2; ikke 4 — å
+  presse inn en fjerde krever mindre padding på lenkene, som alt er under
+  44 px tapphøyde). /spillere: 100 av 652 rader i første render, last 334 ms
+  mot 988 ms i planøktens måling. Ligatabellen 391 → 335 px = boksbredden.
+- **v1.13.1 «Sikkerhetsnett» i prod 4. sep 02:37 (økt 58)**: `createApp()` i
+  `src/app.js`, `test/app.test.js` (hele stacken på loopback mot
+  `test/fixtures/fpl-world.js`), CI på Node 22 + 24, pre-push-hook. 792/792,
+  CI-kjøring `33822168239` grønn, hash `ba91839a`. Bonusfunnet (alle feilsider
+  var ren tekst siden v1.4.0) er fikset og låst i `middleware.test.js`.
+  Detaljene: historikkfila.
+- **v1.13.0 og v1.8.3–v1.12.2 i prod 2. sep** (655 → 767 tester) — detaljene i
+  historikkfila. Prisvarslene: første Discord-melding var ventet natt til
+  4. sep — sjekk at den kom.
 - **Feilsiden i prod er ikke visuelt bevist ennå** (fiksen er låst av tester).
   Neste gang FPL har et 503-vindu: sjekk at `/` viser «FPL oppdaterer spillet»
   og ikke ren tekst.
-- **Asset-hashen i prod er `ba91839a` etter v1.12.1** (v1.12.0 `b6c8f095`,
-  v1.11.0 `4718ea73`, v1.9/1.10 `82d7c7a2`, v1.8.3 `6a3b2714`). Regnes fra
-  git-blobbene. Prod-sjekk v1.12.1 (2. sep 17:20): 12/12 OK, sw.js no-store.
+- **Asset-hashen i prod er `781ffae6` etter v1.13.2** (v1.12.1–v1.13.1
+  `ba91839a`, v1.12.0 `b6c8f095`, eldre i historikkfila). Regnes fra git-blobbene.
 - **Ekte SIGTERM-bevis mangler.** Beviset er `kill 1` i containerterminalen — de
   to avslutningslinjene skal stå der. Lokalt bevist med `SIGINT`, exit 0.
 - **Helsesjekken:** alt. a aktiv (Coolifys sjekk AV, Dockerfilens gjelder).
@@ -50,10 +55,12 @@ kjøreprompt til Opus i `docs/prompt-ux-polering-v1132.md`; v1.13.1 i prod fra �
 9-punkts fasit — ikke re-spør), vedlikeholdspakka v1.12.2/v1.13.0 (prompt: `git show
 d34e3c8:docs/prompt-vedlikehold-v1122-v1130.md`) og § 6 v1.13.1 (økt 58, prompt: `git show
 e63bd4b:docs/prompt-sikkerhetsnett-v1131.md`). ROADMAP § 0, § 5 og § 6 er ferdige.
-**Neste: ROADMAP § 7 — v1.13.2 «UX-polering 2».** Gjennomgangen er utført (økt 59, Fable):
-10 funn, alle valgt «Fiks», kjøreprompt til Opus i `docs/prompt-ux-polering-v1132.md`
-(lim inn i en Opus-økt i plan-modus — den bygger, pusher og gjør prod-sjekk).
-Ikke valgt ennå: B funksjonssveip, D slanking.
+§ 7 (v1.13.2) er utført i økt 60 — begge prompter er konsumert og slettet
+(`git show 162ca4d:docs/prompt-ux-polering-v1132.md`). **Køen er tom.**
+Ikke valgt ennå (notert i økt 57): B funksjonssveip mot ubrukte FPL-felt,
+D slanking av style.css/app.js. «Senere / idéer» i ROADMAP har de fire større
+UX-idéene fra gjennomgangen: desimalkomma i norsk UI, server-side paginering på
+/spillere, meny-knapp for mobil-nav, kopier-knapp for webcal-adressen.
 
 **Majors ikke oppgradert (Marius' fasit 2. sep):** `ejs` 6, `eslint` 10, `globals` 17 — vurderingen i historikkfila (økt 58).
 
@@ -180,19 +187,14 @@ Ikke valgt ennå: B funksjonssveip, D slanking.
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
-- 2026-09-04 (økt 57, Fable): «Jeg vil forbedre siden. Hva kan du gjøre?» →
-  fire retninger (A–D). «Lag en plan for A» / «send planen til opus» →
-  `docs/prompt-sikkerhetsnett-v1131.md` + § 6 (bygget i økt 58). Så «C … lag en
-  prompt til fable som skal planlegge dette», «fable-planen skal lage en
-  kjøreprompt til opus», «ikke denne økten» → `docs/prompt-ux-gjennomgang-v1132.md` + § 7.
-- 2026-09-04 (økt 58, Opus): Marius limte inn kjøreprompten for v1.13.1.
-  Handling: premissene verifisert mot koden (server.js var 148 linjer, ikke
-  138), plan godkjent → app-fabrikk, falsk FPL-verden, 23 rute-tester, CI og
-  pre-push-hook. Rute-testene avdekket at feilsidene har vært ren tekst siden
-  v1.4.0 — fikset i samme branch. 792/792, CI grønn, prompten slettet.
 - 2026-09-04 (økt 59, Fable): Marius limte inn planprompten for v1.13.2. Handling:
   tre Explore-agenter + tverrgående, curl/Playwright-målinger lokalt (/health
   ai:false), 10 funn i tre puljer — alle «Fiks», fire idéer til Senere. Premiss
   for funn 2 endret underveis (`content-visibility` virker ikke på `<tr>` →
   rad-tak). Kjøreprompt skrevet, 0 kode, 0 AI-kall, ingenting pushet.
+- 2026-09-04 (økt 60, Opus): Marius limte inn kjøreprompten for v1.13.2.
+  Handling: premissene verifisert mot koden (tre avvik funnet — se statusblokka),
+  plan godkjent, ti fiks bygget med rød test først, én commit per fiks. Alle
+  sett i Playwright ved 390 px i begge temaer fra scratchpad. 792 → 809 tester,
+  lint 0. Prompten slettet. «Fortsett» midtveis etter et avbrutt verktøykall.
 

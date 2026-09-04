@@ -20,12 +20,12 @@ Mobil (390 px): [dashbord](docs/img/dashbord-mobil.png) ·
 | Side | Innhold | Status |
 |---|---|---|
 | `/` | Deadline-nedtelling, ukens flagg, toppform, mest kjøpt/solgt, FDR-matrise | ✅ |
-| `/spillere` | Full spillertabell med sortering, filtrering og søk | ✅ |
+| `/spillere` | Full spillertabell med sortering, filtrering og søk (viser 100 rader om gangen) | ✅ |
 | `/lag` | Mitt lag, kaptein- og transferanbefalinger, chip-planlegger | ✅ |
 | `/liga` | Miniliga-tabeller, differensial-analyse, liga-innsikt og «Rundens rapport» | ✅ |
 | `/overganger` | Regnskap for byttene, prisgevinst, «laget uten bytter», hva hvis-planlegger, prisendringer i natt | ✅ |
 | `/innsikt` | Sesonginnsikt: FPL-karrieren, merkedager, benkesløsing, kapteinsfasit, flaks, rundens XI | ✅ |
-| `/live` | Live-poeng under pågående gameweek + bonuskamp (BPS) per kamp | ✅ |
+| `/live` | Live-poeng under pågående gameweek + bonuskamp (BPS) per kamp; mellom runder vises neste avspark | ✅ |
 | `/brief` | Gameweek-brief (data + valgfri AI) + «Lagsjekk» før deadline | ✅ |
 | `/nyheter` | FPL-nyheter fra RSS + valgfri AI-oppsummering | ✅ |
 | `/api/brief.json` | Briefen som JSON | ✅ |

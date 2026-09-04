@@ -7,6 +7,13 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.13.2] - 2026-09-04
+
+«UX-polering 2» på `feat/ux-polering-v1132`: ti småfiks fra
+funksjonsgjennomgangen i økt 59. Rød test først. 809/809, lint 0. Hver fiks
+sett i nettleser ved 390 px i begge temaer. 0 nye AI-kall, 0 nye avhengigheter,
+ingen nye FPL-kall.
+
 ### Changed
 
 - Mobilmenyen får plass: ordmerket kortes til «FPL» under 480 px, så nav-en
@@ -21,7 +28,6 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Ligatabellen setter managernavnet på egen linje under lagnavnet på mobil, og
   rangkolonna reserverer litt mindre plass til pila. «#», «Lag», «GW» og
   «Totalt» får dermed plass innenfor 390 px uten sidescroll (fiks 3).
-
 - «Nå»-kolonna i Prisgevinst på /overganger skjules under 480 px, så Spiller,
   Kjøpt, Salg og Gevinst får plass uten sidescroll. Fra 481 px vises alle fem.
   Raden for ukjent kjøpspris er samtidig delt i egne celler og sier «ukjent»
