@@ -42,6 +42,22 @@ export const dashboard = {
   inForm: [player(2, 'Salah', { team: 2 })],
   boughtMost: [player(3, 'Haaland')],
   soldMost: [player(4, 'Watkins')],
+  roundStats: {
+    gw: 2,
+    average: 81,
+    highest: 161,
+    mostSelected: 'João Pedro',
+    mostTransferredIn: 'De Cuyper',
+    topPlayer: { name: 'B.Fernandes', points: 23 },
+    mostCaptained: 'Haaland',
+    mostViceCaptained: 'Raya',
+    transfersMade: 11562127,
+    chips: [
+      { chip: 'bboost', label: 'Bench Boost', count: 338660 },
+      { chip: '3xc', label: 'Triple Captain', count: 233946 },
+    ],
+    rankedCount: 9904815,
+  },
   matrix: {
     gameweeks: [1, 2],
     rows: [{
@@ -61,6 +77,7 @@ export const dashboardEmpty = {
   inForm: [],
   boughtMost: [],
   soldMost: [],
+  roundStats: null,
   matrix: { gameweeks: [], rows: [{ team: teamsById.get(2), cells: [], avgDifficulty: null }] },
   newsPoints: [],
 };

@@ -7,12 +7,9 @@ import { fixtureGrid } from './analysis.js';
 /** FPL-navnene slik de står i entry-history `chips[].name`. */
 export const CHIPS = ['bboost', '3xc', 'freehit', 'wildcard'];
 
-export const CHIP_LABELS = {
-  bboost: 'Bench Boost',
-  '3xc': 'Triple Captain',
-  freehit: 'Free Hit',
-  wildcard: 'Wildcard',
-};
+// Etikettene bor i analysis.js (importerer ingenting) — re-eksporteres her
+// fordi resten av koden har lest dem herfra siden v1.9.0.
+export { CHIP_LABELS } from './analysis.js';
 
 const isGw = (n) => Number.isInteger(n) && n >= 1 && n <= 38;
 

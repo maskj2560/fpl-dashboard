@@ -6,6 +6,7 @@ import {
   flaggedPlayers,
   topForm,
   mostTransferredIn,
+  roundInNumbers,
   mostTransferredOut,
   translateFplNews,
   fdrMatrix,
@@ -721,4 +722,71 @@ test('formationOf tåler tom liste', () => {
 test('rankGraph flagger ett-punkts-grafen', () => {
   assert.equal(rankGraph([{ event: 1, overall_rank: 5 }], 600, 140).single, true);
   assert.equal(rankGraph([{ event: 1, overall_rank: 100 }, { event: 2, overall_rank: 50 }], 600, 140).single, false);
+});
+
+// ---- v1.14.0 (T3): «Runden i tall» fra bootstrap.events[] -------------------
+
+const rundeEvents = [
+  { id: 1, name: 'Gameweek 1', finished: true, average_entry_score: 50, highest_score: 131, most_selected: 411, most_transferred_in: 115, top_element_info: { id: 115, points: 17 }, most_captained: 411, most_vice_captained: 1, transfers_made: 1_000_000, chip_plays: [{ chip_name: 'bboost', num_played: 814_606 }], ranked_count: 8_903_411 },
+  {
+    id: 2,
+    name: 'Gameweek 2',
+    finished: true,
+    average_entry_score: 81,
+    highest_score: 161,
+    most_selected: 165,
+    most_transferred_in: 115,
+    top_element_info: { id: 426, points: 23 },
+    most_captained: 411,
+    most_vice_captained: 1,
+    transfers_made: 11_562_127,
+    chip_plays: [
+      { chip_name: 'bboost', num_played: 338_660 },
+      { chip_name: '3xc', num_played: 233_946 },
+    ],
+    ranked_count: 9_904_815,
+  },
+  { id: 3, name: 'Gameweek 3', is_next: true, finished: false, average_entry_score: 0, highest_score: null, chip_plays: [], ranked_count: 0 },
+];
+
+const rundeElements = new Map([
+  [411, { id: 411, web_name: 'Haaland' }],
+  [165, { id: 165, web_name: 'João Pedro' }],
+  [115, { id: 115, web_name: 'De Cuyper' }],
+  [426, { id: 426, web_name: 'B.Fernandes' }],
+  [1, { id: 1, web_name: 'Raya' }],
+]);
+
+test('roundInNumbers velger siste ferdige runde og slår opp navnene', () => {
+  const r = roundInNumbers(rundeEvents, rundeElements);
+  assert.equal(r.gw, 2, 'kommende runde har average 0 og skal aldri velges');
+  assert.equal(r.average, 81);
+  assert.equal(r.highest, 161);
+  assert.equal(r.mostSelected, 'João Pedro');
+  assert.equal(r.mostTransferredIn, 'De Cuyper');
+  assert.deepEqual(r.topPlayer, { name: 'B.Fernandes', points: 23 });
+  assert.equal(r.mostCaptained, 'Haaland');
+  assert.equal(r.mostViceCaptained, 'Raya');
+  assert.equal(r.transfersMade, 11_562_127);
+  assert.equal(r.rankedCount, 9_904_815);
+  assert.deepEqual(r.chips, [
+    { chip: 'bboost', label: 'Bench Boost', count: 338_660 },
+    { chip: '3xc', label: 'Triple Captain', count: 233_946 },
+  ]);
+});
+
+test('roundInNumbers gir null før første runde er ferdig eller når FPL ikke har fylt tallene', () => {
+  assert.equal(roundInNumbers([rundeEvents[2]], rundeElements), null, 'ingen ferdig runde');
+  assert.equal(roundInNumbers([], rundeElements), null);
+  assert.equal(roundInNumbers(undefined, rundeElements), null);
+  const tomFerdig = [{ id: 1, name: 'Gameweek 1', finished: true, average_entry_score: 0 }];
+  assert.equal(roundInNumbers(tomFerdig, rundeElements), null, 'ferdig runde uten snitt er ikke fylt ennå');
+  const ukjent = roundInNumbers(
+    [{ id: 1, name: 'Gameweek 1', finished: true, average_entry_score: 40, most_selected: 999, top_element_info: null }],
+    rundeElements,
+  );
+  assert.equal(ukjent.mostSelected, '–', 'ukjent id gir tankestrek, ikke krasj');
+  assert.equal(ukjent.topPlayer, null);
+  assert.deepEqual(ukjent.chips, [], 'ingen chip_plays gir tom liste');
+  assert.equal(ukjent.highest, null);
 });

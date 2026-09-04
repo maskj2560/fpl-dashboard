@@ -21,6 +21,11 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   er FPLs egne (`explain`), som allerede lå i live-svaret uten å bli lest.
   Dobbeltrunder viser begge kampene, og forklaringer du har åpnet holder seg
   åpne når tabellen oppdaterer seg. Sorteringen bruker fortsatt bare navnet.
+- **«Runden i tall» på dashbordet** — nytt kort med FPLs egen fasit for siste
+  ferdigspilte runde: snitt, høyeste poengsum, mest valgt, mest kjøpt, rundens
+  beste spiller, mest kapteinet og visekapteinet, antall bytter, antall lag med
+  rangering og hvor mange som spilte hver chip. Spillernavnene lenker videre til
+  «Spillere». Tomtilstand før første runde er ferdig.
 
 ## [1.13.2] - 2026-09-04
 

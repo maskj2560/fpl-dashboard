@@ -7,6 +7,7 @@ import {
   topForm,
   mostTransferredIn,
   mostTransferredOut,
+  roundInNumbers,
   fdrMatrix,
   formatPrice,
   POSITIONS_SHORT,
@@ -44,6 +45,8 @@ router.get('/', async (req, res, next) => {
       inForm: topForm(elements),
       boughtMost: mostTransferredIn(elements),
       soldMost: mostTransferredOut(elements),
+      // «Runden i tall» (v1.14.0): FPLs fasit for siste ferdige runde.
+      roundStats: roundInNumbers(events, byId(elements)),
       matrix: fdrMatrix(teams, fixtures, fromGw, 5),
       newsPoints: (news?.points ?? []).slice(0, 3),
       teamsById,

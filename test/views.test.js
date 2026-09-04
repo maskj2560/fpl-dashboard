@@ -449,6 +449,20 @@ test('transfers.ejs viser prisendringene i natt med troppen først', async () =>
   assert.ok(html.includes('Sjekkes hver time'), 'hintet mangler');
 });
 
+// v1.14.0 (T3): FPLs fasit for siste ferdige runde, som kort på dashbordet.
+test('dashboard.ejs viser runden i tall og tomtilstanden', async () => {
+  const html = await renderView('dashboard', fx.dashboard);
+  assert.ok(html.includes('id="runden-i-tall"'), 'kortet mangler');
+  assert.ok(html.includes('Runde 2 i tall'), 'overskriften skal navngi runden');
+  assert.ok(html.includes('João Pedro') && html.includes('B.Fernandes'), 'navnene mangler');
+  assert.ok(html.includes('Bench Boost'), 'chip-etiketten mangler');
+  assert.ok(html.includes('/spillere?sok=Haaland'), 'spillernavn skal lenke til /spillere');
+
+  const tom = await renderView('dashboard', fx.dashboardEmpty);
+  assert.ok(tom.includes('Tallene kommer når første runde er ferdigspilt.'), 'tomtilstand mangler');
+  assert.ok(!tom.includes('Runde 2 i tall'), 'tom tilstand skal ikke navngi en runde');
+});
+
 // v1.14.0 (T1): prognosen står under prisendringene og lover aldri en endring.
 test('transfers.ejs viser prisprognosen med troppen først og tomtilstand', async () => {
   const html = await renderView('transfers', fx.transfers);
