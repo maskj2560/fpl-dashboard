@@ -22,6 +22,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   rangkolonna reserverer litt mindre plass til pila. «#», «Lag», «GW» og
   «Totalt» får dermed plass innenfor 390 px uten sidescroll (fiks 3).
 
+### Fixed
+
+- Lagsjekk-kortet på /brief sier fra når hentingen glapp, i stedet for å
+  forsvinne sporløst. Uten `FPL_TEAM_ID` er kortet borte som før — ruta skiller
+  nå de to tilfellene med et eget flagg (fiks 4).
+
 ## [1.13.1] - 2026-09-04
 
 «Sikkerhetsnett» (`docs/prompt-sikkerhetsnett-v1131.md`) på

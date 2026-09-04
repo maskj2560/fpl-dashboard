@@ -87,6 +87,19 @@ const layoutLocals = (path) => ({
   startedAt: '19.08.2026, 21:00', cspNonce: 'testnonce', iconVersion: '1',
 });
 
+// v1.13.2 (fiks 4): assembleDeadlineCheck gir null både uten team-id og når
+// hentingen feiler. Uten et eget flagg forsvant kortet sporløst i feiltilfellet.
+test('brief.ejs viser tomtilstand når lagsjekken feilet', async () => {
+  const html = await renderView('brief', { ...fx.brief, deadlineCheck: null, deadlineCheckFailed: true });
+  assert.match(html, /id="lagsjekk"/);
+  assert.match(html, /Lagsjekken er utilgjengelig akkurat nå/);
+});
+
+test('brief.ejs skjuler Lagsjekk-kortet uten team-id', async () => {
+  const html = await renderView('brief', { ...fx.brief, deadlineCheck: null, deadlineCheckFailed: false });
+  assert.doesNotMatch(html, /id="lagsjekk"/);
+});
+
 // v1.13.2 (fiks 3): lagnavn og managernavn på samme linje gjorde «Lag»-kolonna
 // så bred at «Totalt» falt utenfor 390 px. Managernavnet får egen klasse så
 // mobilregelen kan bryte det ned på egen linje.
