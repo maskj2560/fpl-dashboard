@@ -30,10 +30,9 @@ app-fabrikk, 23 rute-tester, CI på Node 22/24, pre-push-hook)
   til historikkfila. `git merge -F -` leser IKKE stdin — bruk `-m`.
 - **v1.8.3–v1.11.0 i prod 2. sep** (655 → 729 tester): statusblokkene rotert
   til historikkfila. Prisvarslene: første melding ventes natt til 4. sep.
-- **Feilsiden i prod er ikke visuelt bevist ennå.** Fiksen er låst av tester
-  (rute-test + `middleware.test.js`), men et ekte 503-vindu fra FPL er eneste
-  måte å se den styltes siden i prod. Neste gang FPL oppdaterer: sjekk at `/`
-  viser «FPL oppdaterer spillet» og ikke ren tekst.
+- **Feilsiden i prod er ikke visuelt bevist ennå** (fiksen er låst av tester).
+  Neste gang FPL har et 503-vindu: sjekk at `/` viser «FPL oppdaterer spillet»
+  og ikke ren tekst.
 - **Asset-hashen i prod er `ba91839a` etter v1.12.1** (v1.12.0 `b6c8f095`,
   v1.11.0 `4718ea73`, v1.9/1.10 `82d7c7a2`, v1.8.3 `6a3b2714`). Regnes fra
   git-blobbene. Prod-sjekk v1.12.1 (2. sep 17:20): 12/12 OK, sw.js no-store.
@@ -41,8 +40,7 @@ app-fabrikk, 23 rute-tester, CI på Node 22/24, pre-push-hook)
   to avslutningslinjene skal stå der. Lokalt bevist med `SIGINT`, exit 0.
 - **Helsesjekken:** alt. a aktiv (Coolifys sjekk AV, Dockerfilens gjelder).
 - **Kostnad: måleuka DROPPET** (28. aug) — følges i `console.anthropic.com`,
-  terskler i `docs/sjekkpunkt-d-kostnad.md`. Takt **~49–53 AI-kall/uke**;
-  alt i sluttpakka legger til **0**.
+  terskler i `docs/sjekkpunkt-d-kostnad.md`. Takt **~49–53 AI-kall/uke**.
 - **Git:** de 13 gamle lokale branchene er slettet (10 med `-d`, 3 med `-D`
   etter Marius' beslutning) — kun `main` finnes (alle fem feature-branchene
   i sluttpakka er merget `--no-ff` og slettet). Tagger t.o.m. `v1.12.0`.
