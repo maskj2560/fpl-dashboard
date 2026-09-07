@@ -75,8 +75,9 @@ kall, men loggen trengs ikke lenger (100 linjer, nullstilles ved deploy).
 
 ### Neste måling — etter GW4 (fra 15. sep)
 
-- `league-report:4` skal finnes i `byKey` med 1 kall (første runde med
-  `finished && data_checked` siden tellingen startet).
+- `league-report:3` fyrte 7. sep 14:12Z (1 kall, første rapport i tellingen —
+  GW3 ble ferdig samme ettermiddag); etter GW4 skal `league-report:4` komme
+  til med 1 kall.
 - En docs-push (samme versjon) skal ikke øke `totals.calls`; loggen skal vise
   «AI-cache lastet fra disk: 3 tekster».
 - **[Marius]** Anthropic-konsollen: Cost 2.–7. sep mot $0,51 — bekrefter at

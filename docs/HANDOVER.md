@@ -9,12 +9,15 @@
 **Sist oppdatert:** 2026-09-07 (økt 64, Fable: sjekkpunkt D remålt, v1.15.0 «Kostnadskontroll» bygget)
 
 ## Status akkurat nå
-- **v1.15.0 «Kostnadskontroll» bygget 7. sep (økt 64, Fable) — IKKE deployet ennå.**
-  Sjekkpunkt D remålt fra prod-`aiStats`: $0,76/uke brutto, men 24–36 av 52 kall var
-  deploystøy (3 kall per restart — cachen bodde i minnet). Fiks: AI-cachen persisteres i
-  `DATA_DIR/ai-cache.json` merket med `config.version` (docs-push = 0 kall), pluss
-  `npm run ai-kostnad` + `aiCost.js`. 861 tester (860 + 1 hoppet over lokalt: krever tom
-  nøkkel, CI dekker den), lint 0. Branch `feat/ai-cache-kostnad-v1150`.
+- **v1.15.0 «Kostnadskontroll» i prod 7. sep 16:12 (økt 64, Fable).** Sjekkpunkt D remålt
+  fra prod-`aiStats`: $0,76/uke brutto, men 24–36 av 52 kall var deploystøy (3 kall per
+  restart — cachen bodde i minnet). Fiks: AI-cachen persisteres i `DATA_DIR/ai-cache.json`
+  merket med `config.version` (docs-push = 0 kall), pluss `npm run ai-kostnad` + `aiCost.js`.
+  861 tester (860 + 1 hoppet over lokalt: krever tom nøkkel; CI 861/861), lint 0. Merge
+  `e1cb27b`, CI `34131434797` (branch) + `34131602485` (main) grønne på Node 22 + 24.
+  Prod-sjekk 16:12: footer v1.15.0, `<script` 2, `/health` 200; deployen kostet de ventede
+  3 kallene (14:12Z: brief-gw4, nyheter, overgang) — `league-report:3` fyrte samtidig (GW3
+  ferdig, organisk). **0-kall-beviset måles med docs-pushen etter denne (se loggen).**
 - **v1.14.0 «Funksjonssveip» i prod 7. sep 13:33 (økt 63, Fable).** Åtte funksjoner
   på FPL-felt appen alt hentet, men aldri leste: prisprognose (/overganger),
   poengoppdeling (/live), «Runden i tall» (/), «Topp X %» (/lag), forsvarsbidrag
@@ -30,8 +33,8 @@
   v1.8.3–v1.12.2 (2. sep)** — detaljene i historikkfila.
 - **Feilsiden i prod er ikke visuelt bevist ennå** (fiksen er låst av tester).
   Ved neste 503-vindu: sjekk at `/` viser «FPL oppdaterer spillet», ikke ren tekst.
-- **Asset-hash i prod: `90e9512f`** (v1.13.2 `781ffae6`, v1.12.1–v1.13.1 `ba91839a`,
-  eldre i historikkfila). Regnes fra git-blobbene (LF), ikke arbeidstreet (CRLF).
+- **Asset-hash i prod: `90e9512f`** (v1.14.0 og v1.15.0 — ingen klientendring; v1.13.2
+  `781ffae6`, eldre i historikkfila). Regnes fra git-blobbene (LF), ikke arbeidstreet (CRLF).
 - **Ekte SIGTERM-bevis mangler.** Beviset er `kill 1` i containerterminalen — de
   to avslutningslinjene skal stå der. Lokalt bevist med `SIGINT`, exit 0.
 - **Helsesjekken:** alt. a aktiv (Coolifys sjekk AV, Dockerfilens gjelder).
@@ -39,7 +42,7 @@
   (ingen økning 1. sep — dokumentets «$3/$15» var feil). Følges i `console.anthropic.com`;
   `npm run ai-kostnad` regner fra `/health`. Takt **~49–53 organiske AI-kall/uke**.
 - **Git:** kun `main` finnes lokalt og på origin — hver feature-branch merges
-  `--no-ff` og slettes begge steder. Tagger t.o.m. `v1.14.0`.
+  `--no-ff` og slettes begge steder. Tagger t.o.m. `v1.15.0`.
 - Eldre status og alle detaljer: `docs/arkiv/HANDOVER-historikk.md`.
 
 ## Neste steg (start her)
@@ -49,15 +52,11 @@
 v1.12.2/v1.13.0 (`git show d34e3c8:…`), v1.13.1 (`git show e63bd4b:…`),
 v1.13.2 (`git show 162ca4d:…`) og v1.14.0 (`git show 225f053:docs/prompt-feltpakka-v1140.md`).
 
-**Neste: slipp v1.15.0** (branchen er ferdig): push → CI grønn → `anyLive:false` → merge
-`--no-ff` → tag → push → prod-sjekk (footer, `<script` 2, `/health`: `totals.calls` = før + 3,
-sw-hash). **Beviset for 0-kall-deploy:** push prod-bevis-docs-commiten for seg og se at
-`totals.calls` står stille og loggen sier «AI-cache lastet fra disk: 3 tekster».
-Deploy-vindu: GW3 ferdig ~8. sep; **ikke fre 11. sep 13:30–15:30** (auto-brief GW4 ~14:30),
-ikke lør 12. sep 11:00–14:30 (Lagsjekk + deadline), ikke under kampene lør 12.–man 14.
-Deretter ikke besluttet: kandidat **D** fra økt 57 — slanking av `style.css` (2612 linjer)
-og `app.js` (1503 linjer), krever brainstorming med Marius først (ett spørsmålssett om
-gangen, anbefaling først). Andre kandidater under «Senere / idéer» i ROADMAP.
+**Neste: ikke besluttet — køen i ROADMAP er tom.** Kandidat **D** fra økt 57: slanking av
+`style.css` (2612 linjer) og `app.js` (1503 linjer), krever brainstorming med Marius først
+(ett spørsmålssett om gangen, anbefaling først). Andre kandidater under «Senere / idéer».
+Deploy-vindu framover: **ikke fre 11. sep 13:30–15:30** (auto-brief GW4 ~14:30), ikke lør
+12. sep 11:00–14:30 (Lagsjekk + deadline), ikke under kampene lør 12.–man 14. sep.
 
 **Majors ikke oppgradert (Marius' fasit 2. sep):** `ejs` 6, `eslint` 10, `globals` 17 — vurderingen i historikkfila (økt 58).
 
@@ -185,7 +184,8 @@ gangen, anbefaling først). Andre kandidater under «Senere / idéer» i ROADMAP
   prod-`aiStats` hentet, priser live-verifisert (ingen økning 1. sep), deploystøyen påvist
   (3 kall per restart). Ett spørsmålssett: scope (måling + doc + v1.15.0 med skript) og
   invalidering (ved versjonsbytte) — Marius valgte anbefalingene. Bygget med rød test først
-  (841 → 861), docs ajour. Ikke pushet ennå.
+  (841 → 861), docs ajour, push → CI grønn → `anyLive:false` → merge `e1cb27b` → tag → prod
+  16:12 (footer, `<script` 2, `/health` 200, +3 kall som ventet). Branch slettet begge steder.
 
 - 2026-09-07 (økt 63, Fable): «lag en oppsummering av hva som trengs», «er v1.14 ferdig
   eller må det gjøres noe?», «da kan vi slippe v1.14.0». Handling: slippelista kjørt i

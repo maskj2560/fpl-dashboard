@@ -51,7 +51,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.13.1**~~ | ~~«Sikkerhetsnett»: `createApp()` i `src/app.js`, rute-tester for alle sider mot falsk FPL-verden, CI-workflow (Node 22/24), pre-push-hook~~ | **utført 4. sep — 792/792, CI grønn** | — |
 | ~~**v1.13.2**~~ | ~~«UX-polering 2»: ti småfiks fra funksjonsgjennomgangen (mobil-nav, rad-tak på /spillere, tomtilstander, datoformat, småtekst)~~ | **utført 4. sep — 809/809** | — |
 | ~~**v1.14.0**~~ | ~~«Funksjonssveip»: 8 funksjoner på FPL-felt appen ikke leser — prisprognose, poengoppdeling på /live, runden i tall, topp X %, forsvarsbidrag, spillerkort-pakka, låneklausul, dine plasseringer~~ | **utført 7. sep — 841/841, ute i prod 13:33, CI grønn Node 22 + 24** | — |
-| **v1.15.0** | «Kostnadskontroll»: AI-cachen overlever restart (docs-deploy = 0 AI-kall), `npm run ai-kostnad`, sjekkpunkt D remålt | **bygget 7. sep — 861 tester, lint 0; deploy i vindu før GW4** | deploy-vindu |
+| ~~**v1.15.0**~~ | ~~«Kostnadskontroll»: AI-cachen overlever restart (docs-deploy = 0 AI-kall), `npm run ai-kostnad`, sjekkpunkt D remålt~~ | **utført 7. sep — 861 tester, ute i prod 16:12, CI grønn Node 22 + 24** | — |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
 Kalenderlogikk: utviklingssporet (v1.3.0 → v1.3.1+) går uavbrutt;

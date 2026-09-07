@@ -27,7 +27,7 @@ går ut i drift for seg:
 Ingen av delene bruker AI, så kostnaden er uendret. Til slutt får du én
 ferdig prompt til Claude for Chrome som tester alt i drift.
 
-## Nytt: v1.15.0 — billigere drift (7. september, på vei ut)
+## Nytt: v1.15.0 — billigere drift (7. september)
 
 Kostnadssjekken viste at dashbordet i seg selv koster under en halv dollar i
 uka i AI, men at hver oppdatering av tjenesten kostet tre ekstra AI-kall fordi
