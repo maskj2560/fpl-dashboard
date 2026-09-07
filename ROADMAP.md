@@ -50,7 +50,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.13.0**~~ | ~~AI-kall-statistikk per funksjon i `DATA_DIR/ai-stats.json`, vist som `aiStats` på `/health` (gjør P4 målbart)~~ | **utført 2. sep — 767/767** | — |
 | ~~**v1.13.1**~~ | ~~«Sikkerhetsnett»: `createApp()` i `src/app.js`, rute-tester for alle sider mot falsk FPL-verden, CI-workflow (Node 22/24), pre-push-hook~~ | **utført 4. sep — 792/792, CI grønn** | — |
 | ~~**v1.13.2**~~ | ~~«UX-polering 2»: ti småfiks fra funksjonsgjennomgangen (mobil-nav, rad-tak på /spillere, tomtilstander, datoformat, småtekst)~~ | **utført 4. sep — 809/809** | — |
-| ~~**v1.14.0**~~ | ~~«Funksjonssveip»: 8 funksjoner på FPL-felt appen ikke leser — prisprognose, poengoppdeling på /live, runden i tall, topp X %, forsvarsbidrag, spillerkort-pakka, låneklausul, dine plasseringer~~ | **bygget 4. sep — 841/841; merge til main venter på deploy-vinduet mandag 7. sep** | — |
+| ~~**v1.14.0**~~ | ~~«Funksjonssveip»: 8 funksjoner på FPL-felt appen ikke leser — prisprognose, poengoppdeling på /live, runden i tall, topp X %, forsvarsbidrag, spillerkort-pakka, låneklausul, dine plasseringer~~ | **utført 7. sep — 841/841, ute i prod 13:33, CI grønn Node 22 + 24** | — |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
 Kalenderlogikk: utviklingssporet (v1.3.0 → v1.3.1+) går uavbrutt;
@@ -238,20 +238,22 @@ stedet for den AI-kostende promptendringen (droppet). Rekkefølge:
   live-stats 29/18, og hele `live.elements[].explain` (FPLs egen
   poengoppdeling per spiller). Sveipen finner hvilke av disse som er ekte
   funksjonalitet vi mangler, og bygger 5–8 av dem.
-- **Eier detaljene:** `docs/prompt-feltpakka-v1140.md` — kjøreprompten til
-  **Opus** (fasit med Marius' valg, målte premisser per funksjon med fil:linje,
-  cache-nøkkel og dekningstall, T0–T9 med testnavn, feller, ferdigkriterier).
+- **Eier detaljene:** `git show 225f053:docs/prompt-feltpakka-v1140.md` — kjøreprompten
+  til **Opus** (fasit med Marius' valg, målte premisser per funksjon med fil:linje,
+  cache-nøkkel og dekningstall, T0–T9 med testnavn, feller, ferdigkriterier); slettet
+  fra treet 7. sep da v1.14.0 var i prod.
   Planprompten til Fable er konsumert (`git show 2347ea1:docs/prompt-feltsveip-v1140.md`).
 - **Blokkert av:** ingenting. **0 nye FPL-kall** — kun felt fra endepunkter
   appen alt kaller og cacher. 0 AI-kall, 0 nye avhengigheter, ingen ny side
   (nav-en har alt 9 lenker). Deploy-vindu: aldri under kamp (GW3 fre 4. → søn
   6. sep; push tidligst mandag 7. sep), aldri torsdag 19–21.
-- **Status: FERDIG (bygget 4. sep, økt 62, Opus).** Alle åtte T-tasks bygget med
-  rød test først på `feat/funksjonssveip-v1140`: 809 → **841 tester**, lint 0.
-  Hver funksjon sett i nettleser ved 390 px i BEGGE temaer, 0 px vannrett
-  overflow. 0 nye FPL-kall (`fplClient.js` urørt), kildelåsen i routes.test.js
-  uendret grønn, 0 nye avhengigheter. Merge til `main` + tag venter på
-  deploy-vinduet mandag 7. sep (GW3 spilles fre 4. → søn 6. sep).
+- **Status: UTFØRT — i prod 7. sep 13:33 (økt 63, Fable).** Alle åtte T-tasks bygget
+  med rød test først i økt 62 (Opus): 809 → **841 tester**, lint 0. Hver funksjon
+  sett i nettleser ved 390 px i BEGGE temaer, 0 px vannrett overflow. 0 nye
+  FPL-kall (`fplClient.js` urørt), kildelåsen i routes.test.js uendret grønn, 0 nye
+  avhengigheter. Merget `--no-ff` (`7e50060`), tag `v1.14.0`, CI `34117185708`
+  grønn på Node 22 og 24, prod-sjekk grønn (alle åtte bekreftet i prod-HTML/JSON),
+  asset-hash `90e9512f`.
   Strøket med bevis i planleggingen: lagstyrke (`strength_attack_*`/
   `strength_defence_*` = 0 for alle lag), `chance_of_playing_this_round`/
   `ep_this`, autobytter, månedens manager, `game_settings` — fem kandidater
@@ -277,7 +279,6 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 | `docs/arkiv/plan-idepakken-v16-v19.md` | beslutningsfasit for idépakken v1.7.0–v1.9.0 (utført, arkivert 2. sep) |
 | `docs/arkiv/plan-sluttpakka-v183-v1120.md` | utført plan for v1.8.3–v1.12.0 (T-tasks, testnavn, 9-punkts fasit) — alt ute 2. sep |
 | `docs/qa-chrome-prompt.md` | prompten til Claude for Chrome: full prod-QA etter sluttpakka (STEG 1–10, rapportformat, fasit) |
-| `docs/prompt-feltpakka-v1140.md` | kjøreprompt til Opus for v1.14.0 (§ 8): Marius' valg, målte premisser mot live API med dekningstall, T0–T9 med testnavn, feller. **Bygget 4. sep — beholdes til v1.14.0 er merget og prod-sjekket mandag 7. sep, så slettes den** |
 | `docs/arkiv/qa-rapport-v1121.md` | re-QA-rapporten fra Claude for Chrome 2. sep (11/11 FIKSET, målte kontraster og `dataAlder`) |
 | `docs/arkiv/roadmap-utfort-v010-v134.md` | ROADMAPs «Utført»-historikk v0.1.0 → v1.3.4, flyttet verbatim 2. sep 2026 (økt 56) |
 | `docs/arkiv/plan-spillere-redesign-v181.md` | utført detaljplan for v1.8.1 (redesign av /spillere, T1–T12) |

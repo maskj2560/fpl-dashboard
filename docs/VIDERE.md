@@ -3,7 +3,7 @@
 > Enkel oversikt for Marius — oppdateres når noe blir ferdig eller planlagt.
 > (Tekniske detaljer bor i ROADMAP.md; dette er kortversjonen.)
 
-**Sist oppdatert:** 2. september 2026
+**Sist oppdatert:** 7. september 2026
 
 ## Planen videre: fem oppdateringer på rad («Sluttpakka», 1. september)
 
@@ -27,7 +27,32 @@ går ut i drift for seg:
 Ingen av delene bruker AI, så kostnaden er uendret. Til slutt får du én
 ferdig prompt til Claude for Chrome som tester alt i drift.
 
-## Nytt: v1.12.2 og v1.13.0 — vedlikehold under panseret (2. september)
+## Nytt: v1.14.0 — åtte funksjoner fra data appen alt hadde (7. september)
+
+FPL sender mye mer data enn dashbordet brukte. Denne oppdateringen leser
+det som lå ubrukt og lager funksjoner av det — uten ett eneste nytt kall
+mot FPL og uten AI, så kostnaden er uendret:
+
+- **Overganger:** FPLs egen prisprognose per spiller («svært trolig opp/ned»).
+- **Live:** klikk på en spiller og se hvor poengene kom fra (minutter, mål,
+  bonus, …) — FPLs egen oppdeling.
+- **Forsiden:** «Runden i tall» — snitt, høyeste score og rundens beste spiller.
+- **Lag:** «topp X %» per runde — hvor du ligger blant alle managerne.
+- **Spillere:** forsvarsbidrag som egen kolonne, og spillerkortet viser nå
+  rangering blant spillere i samme posisjon, tidligere sesonger med prisreise,
+  og hvor nyheten kommer fra.
+- **Lagsjekk og Ukens flagg:** varsler om låneklausul (spilleren kan ikke møte
+  moderklubben) og når skadenyheten ble meldt.
+- **Liga:** «Dine plasseringer» — global rank og alle ligaene du er med i.
+
+Rett før, 4. september, kom to mindre oppdateringer: v1.13.1 (sikkerhetsnett
+i form av automatiske tester før hver push) og v1.13.2 (ti småfiks — bedre
+mobilmeny, raskere Spillere-side, ryddigere datoer).
+
+Neste steg er ikke bestemt ennå. Kandidaten er en opprydning i stilarket og
+klientkoden, som ikke gir nye funksjoner, men gjør videre arbeid lettere.
+
+## Før det: v1.12.2 og v1.13.0 — vedlikehold under panseret (2. september)
 
 To små oppdateringer du knapt merker, men som gjør drifta tryggere:
 

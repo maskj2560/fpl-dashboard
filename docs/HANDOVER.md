@@ -6,24 +6,20 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-09-04 (økt 62, Opus: v1.14.0 «Funksjonssveip» bygget — venter på deploy-vinduet)
+**Sist oppdatert:** 2026-09-07 (økt 63, Fable: v1.14.0 «Funksjonssveip» sluppet og prod-sjekket)
 
 ## Status akkurat nå
-- **v1.14.0 «Funksjonssveip» BYGGET 4. sep (økt 62, Opus) — IKKE I PROD ENNÅ.**
-  Åtte funksjoner på FPL-felt appen alt hentet, men aldri leste, alle på
-  branchen `feat/funksjonssveip-v1140` (9 commits): prisprognose (/overganger),
+- **v1.14.0 «Funksjonssveip» i prod 7. sep 13:33 (økt 63, Fable).** Åtte funksjoner
+  på FPL-felt appen alt hentet, men aldri leste: prisprognose (/overganger),
   poengoppdeling (/live), «Runden i tall» (/), «Topp X %» (/lag), forsvarsbidrag
   (/spillere + kort), spillerkort-pakka, låneklausul + nyhetsdato (Lagsjekk, Ukens
-  flagg), «Dine plasseringer» (/liga). **841/841 + lint 0** (baseline 809), rød test
-  først på hver. **0 nye FPL-kall** — `fplClient.js` og `src/pwa/` er urørt
-  (`git diff main --stat` tom); kildelåsen i routes.test.js uendret grønn; 0 nye
-  avhengigheter. Hver funksjon sett i Playwright ved 390 px i BEGGE temaer, 0 px
-  vannrett overflow. Lokal sveip: 11 ruter 200, `<script` = 2 på `/`, `/health` →
-  `ai:false, discord:false`.
-  **Gjenstår (Marius eller neste økt):** push branch → CI grønn → merge `--no-ff`
-  → annotert tag `v1.14.0` → push `main` **tidligst mandag 7. sep** (GW3 spilles
-  fre 4. sep 21:00 → søn 6. sep) → prod-sjekk → `git rm docs/prompt-feltpakka-v1140.md`.
-  CHANGELOG-datoen står som 2026-09-07 — juster hvis mergen glipper til en annen dag.
+  flagg), «Dine plasseringer» (/liga). Bygget i økt 62 (Opus) med rød test først:
+  **841/841 + lint 0** (baseline 809), 0 nye FPL-kall, 0 nye avhengigheter. Merge
+  `7e50060`, CI `34117185708` grønn på Node 22 og 24, hash `90e9512f`. Prod-sjekk
+  13:40: footer v1.14.0, `<script` 2 på `/`, `/health` 200 med `aiStats` (48 kall,
+  0 failures), 9 sider 200, alle åtte bekreftet (`explain` ×15 i live-json,
+  `klausuler: [16,27]` på spiller 160, Raya 5 sesonger + nr. 3 av 71 keepere).
+  Kjøreprompten: `git show 225f053:docs/prompt-feltpakka-v1140.md`.
 - **v1.13.2 i prod 4. sep 04:57** (ti småfiks, 809/809, hash `781ffae6`, CI `33831271617`)
   og **v1.13.1 i prod 4. sep 02:37** (`createApp()`, `app.test.js`, CI Node 22+24,
   pre-push-hook, 792/792, hash `ba91839a`). Fulle detaljer i historikkfila.
@@ -31,42 +27,30 @@
   historikkfila. Prisvarslene: første Discord-melding var ventet natt til 4. sep.
 - **Feilsiden i prod er ikke visuelt bevist ennå** (fiksen er låst av tester).
   Ved neste 503-vindu: sjekk at `/` viser «FPL oppdaterer spillet», ikke ren tekst.
-- **Asset-hash i prod: `781ffae6`** (v1.12.1–v1.13.1 `ba91839a`, eldre i
-  historikkfila). Regnes fra git-blobbene (LF), ikke arbeidstreet (CRLF).
+- **Asset-hash i prod: `90e9512f`** (v1.13.2 `781ffae6`, v1.12.1–v1.13.1 `ba91839a`,
+  eldre i historikkfila). Regnes fra git-blobbene (LF), ikke arbeidstreet (CRLF).
 - **Ekte SIGTERM-bevis mangler.** Beviset er `kill 1` i containerterminalen — de
   to avslutningslinjene skal stå der. Lokalt bevist med `SIGINT`, exit 0.
 - **Helsesjekken:** alt. a aktiv (Coolifys sjekk AV, Dockerfilens gjelder).
 - **Kostnad: måleuka DROPPET** (28. aug) — følges i `console.anthropic.com`,
   terskler i `docs/sjekkpunkt-d-kostnad.md`. Takt **~49–53 AI-kall/uke**.
 - **Git:** kun `main` finnes lokalt og på origin — hver feature-branch merges
-  `--no-ff` og slettes begge steder. Tagger t.o.m. `v1.13.2`.
+  `--no-ff` og slettes begge steder. Tagger t.o.m. `v1.14.0`.
 - Eldre status og alle detaljer: `docs/arkiv/HANDOVER-historikk.md`.
 
 ## Neste steg (start her)
 
-**Ferdig og i prod — ROADMAP § 0, § 5, § 6, § 7:** sluttpakka v1.8.3–v1.12.0
+**Ferdig og i prod — ROADMAP § 0, § 5, § 6, § 7, § 8:** sluttpakka v1.8.3–v1.12.0
 (`docs/arkiv/plan-sluttpakka-v183-v1120.md`, 9-punkts fasit — ikke re-spør),
-v1.12.2/v1.13.0 (`git show d34e3c8:…`), v1.13.1 (`git show e63bd4b:…`) og
-v1.13.2 (`git show 162ca4d:…`).
+v1.12.2/v1.13.0 (`git show d34e3c8:…`), v1.13.1 (`git show e63bd4b:…`),
+v1.13.2 (`git show 162ca4d:…`) og v1.14.0 (`git show 225f053:docs/prompt-feltpakka-v1140.md`).
 
-**Neste: slipp v1.14.0 (ROADMAP § 8).** Koden er ferdig og grønn på
-`feat/funksjonssveip-v1140`; **CI-kjøring `33885599446` på `d947a04` er grønn på
-Node 22 OG 24**, branchen ligger på origin og `main` er urørt. Mandag 7. sep
-eller senere, i denne rekkefølgen:
-
-1. `GET https://fpl.marsk.no/api/live.json` → `anyLive` MÅ være `false`; aldri tor. 19–21.
-2. `git switch main && git merge --no-ff -m "…" feat/funksjonssveip-v1140`, annotert tag
-   `v1.14.0`, push `main` + tag, slett branchen begge steder.
-3. Prod-sjekk: footer v1.14.0, `<script` = 2 på `/`, `/health` 200 med `aiStats`, ny
-   asset-hash fra `/sw.js` noteres her, 9 sider 200, og grep i prod-HTML: `id="prisprognose"`,
-   `live-why` + `explain` i `/api/live.json`, `id="runden-i-tall"`, «topp » i hero-flisen,
-   `data-dc`, «Tidligere sesonger» i `/api/spiller/1`, «Låneklausul» i `/api/spiller/160`,
-   `id="plasseringer"`.
-4. `git rm docs/prompt-feltpakka-v1140.md` + fjern dokumentkart-raden, sett ROADMAP-raden
-   til «utført», og skriv merge-commitens CI-run-ID + den nye asset-hashen inn her.
-
-Etter B gjenstår **D** fra økt 57: slanking av `style.css` (2612 linjer) og
-`app.js` (1503 linjer — større etter T2/T5/T6). Ikke besluttet.
+**Neste: ikke besluttet — køen i ROADMAP er tom.** Kandidat **D** fra økt 57:
+slanking av `style.css` (2612 linjer) og `app.js` (1503 linjer). Krever brainstorming
+med Marius først (ett spørsmålssett om gangen, anbefaling først). Andre kandidater
+ligger under «Senere / idéer» i ROADMAP (desimalkomma i norsk UI, fem strøkne
+feltkandidater fra § 8). Deploy-vindu for neste slipp: GW4 spilles lør 12.–man
+14. sep (sjekk `anyLive` i `/api/live.json`), aldri torsdag 19–21.
 
 **Majors ikke oppgradert (Marius' fasit 2. sep):** `ejs` 6, `eslint` 10, `globals` 17 — vurderingen i historikkfila (økt 58).
 
@@ -184,6 +168,13 @@ Etter B gjenstår **D** fra økt 57: slanking av `style.css` (2612 linjer) og
   Coolify sammen med `ANTHROPIC_API_KEY` og `DISCORD_WEBHOOK_URL`.
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
+
+- 2026-09-07 (økt 63, Fable): «lag en oppsummering av hva som trengs», «er v1.14 ferdig
+  eller må det gjøres noe?», «da kan vi slippe v1.14.0». Handling: slippelista kjørt i
+  rekkefølge — 841/841 + lint 0 på branchen, `anyLive: false` målt, merge `--no-ff`
+  `7e50060`, tag `v1.14.0`, push, branch slettet begge steder, CI `34117185708` grønn
+  (22 + 24), prod-sjekk grønn med alle åtte funksjoner bekreftet, hash `90e9512f`,
+  kjøreprompten slettet, docs ajour. 0 kode.
 
 - 2026-09-04 (økt 62, Opus): Marius limte inn kjøreprompten for v1.14.0. Handling:
   premissene verifisert mot koden og ferskt curl-svar (åtte avvik justert — bl.a.
