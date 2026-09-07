@@ -17,6 +17,12 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   forkaster den, så en docs-push koster 0 kall og en kodeutgivelse 3 som før.
   Tekster eldre enn 7 døgn ryddes ved lesing. En diskfeil velter aldri en
   generering. 0 nye AI-kall, 0 nye avhengigheter.
+- **Kostnadsmodell for `aiStats`** (`src/services/aiCost.js`, ren) — kostnad per
+  nøkkel og per AI-funksjon, ukestakt, Haiku-alternativet, andel ut-tokens,
+  organisk anslag (brutto minus restarts × 3 kall) og planens terskelverdict
+  ($1 / $4 per uke). Prisene er live-verifisert 7. sep 2026: Sonnet 5 $2/$10,
+  Haiku 4.5 $1/$5 — «$3/$15 fra 1. sep» i sjekkpunkt D-dokumentet ble aldri
+  bekreftet og er forkastet.
 
 ### Changed
 
