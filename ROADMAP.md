@@ -21,7 +21,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**P1**~~ | ~~Marius: bekreft auto-briefen 20. aug i Discord~~ | **utført 25. aug — brief bekreftet i kanalen** | — |
 | **P2** | Marius: README-skjermbilder + mobil-QA | 3 | **skjermbilder utført 26. aug** — gjenstår mobil-QA på ekte telefon |
 | ~~**P3**~~ | ~~Etter GW2: transfers-skjema mot ekte data~~ | **utført 2. sep — verifisert read-only mot en rivals transfers, feltene stemmer** | — |
-| **P4** | Kostnadsmåling uken etter 1. sep | 1 | dato |
+| ~~**P4**~~ | ~~Kostnadsmåling uken etter 1. sep~~ | **remålt 7. sep — $0,76/uke brutto, ~$0,3 organisk, under terskelen, ingen tiltak** | — |
 | ~~**v1.2.5**~~ | ~~Brief-kvalitetstrioen~~ | **utført 24. aug** | — |
 | ~~**v1.3.0**~~ | ~~UI-overhaling, etappe 1: fundament (tokens i to temaer, temabryter, lilla topbar)~~ | **utført 24. aug** | — |
 | ~~**v1.3.1**~~ | ~~UI-overhaling, etappe 2: klubbgrafikk (merker + drakter, selvhostet)~~ | **utført 24. aug** | — |
@@ -51,6 +51,7 @@ funn blir en `fix:`-commit som rir neste ledige patchnummer.
 | ~~**v1.13.1**~~ | ~~«Sikkerhetsnett»: `createApp()` i `src/app.js`, rute-tester for alle sider mot falsk FPL-verden, CI-workflow (Node 22/24), pre-push-hook~~ | **utført 4. sep — 792/792, CI grønn** | — |
 | ~~**v1.13.2**~~ | ~~«UX-polering 2»: ti småfiks fra funksjonsgjennomgangen (mobil-nav, rad-tak på /spillere, tomtilstander, datoformat, småtekst)~~ | **utført 4. sep — 809/809** | — |
 | ~~**v1.14.0**~~ | ~~«Funksjonssveip»: 8 funksjoner på FPL-felt appen ikke leser — prisprognose, poengoppdeling på /live, runden i tall, topp X %, forsvarsbidrag, spillerkort-pakka, låneklausul, dine plasseringer~~ | **utført 7. sep — 841/841, ute i prod 13:33, CI grønn Node 22 + 24** | — |
+| **v1.15.0** | «Kostnadskontroll»: AI-cachen overlever restart (docs-deploy = 0 AI-kall), `npm run ai-kostnad`, sjekkpunkt D remålt | **bygget 7. sep — 861 tester, lint 0; deploy i vindu før GW4** | deploy-vindu |
 | *(uten nr)* | Senere/idéer | — | ikke planlagt |
 
 Kalenderlogikk: utviklingssporet (v1.3.0 → v1.3.1+) går uavbrutt;
@@ -95,6 +96,12 @@ portene fyres når dato/Marius tillater, uten å blokkere sporet.
   (`since`, `totals`, `byKey` per AI-funksjon: calls/inputTokens/
   outputTokens/failures/lastAt/model), persistert i volumets
   `ai-stats.json` — Coolify-loggen trengs ikke.
+- **Remålt 7. sep (økt 64):** $0,76/uke brutto på Sonnet 5, men 24–36 av
+  52 kall var deploystøy (3 kall per restart, cachen bodde i minnet) →
+  organisk ~$0,3/uke. Under terskelen, ingen tiltak. Priser live-verifisert
+  $2/$10 — ingen økning 1. sep. Rapport: `npm run ai-kostnad --
+  https://fpl.marsk.no/health --restarts N`. v1.15.0 fjerner støyen
+  (cachen i volumet). Neste sjekk etter GW4: `league-report:4` = 1 kall.
 - **Blokkert av:** ingenting — løpende oppfølging hos Marius.
 - **Størrelse:** liten.
 
@@ -274,7 +281,7 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 | `docs/HANDOVER.md` | nåtilstand + lærdommer + beslutninger (tak 200 linjer) |
 | `docs/VIDERE.md` | Marius' ikke-tekniske kortversjon |
 | `docs/arkiv/plan-v130-ui-overhaul.md` | godkjent plan for v1.3.0–v1.3.3 (UI-overhaling), utføres etappevis |
-| `docs/sjekkpunkt-d-kostnad.md` | metode + skript for P4-målingen |
+| `docs/sjekkpunkt-d-kostnad.md` | metode, terskler og målingene for P4 (`npm run ai-kostnad`) |
 | `docs/arkiv/plan-sluttspurt.md` | utført plan: robusthetsreleasene, portene og docs-ryddingen |
 | `docs/arkiv/plan-idepakken-v16-v19.md` | beslutningsfasit for idépakken v1.7.0–v1.9.0 (utført, arkivert 2. sep) |
 | `docs/arkiv/plan-sluttpakka-v183-v1120.md` | utført plan for v1.8.3–v1.12.0 (T-tasks, testnavn, 9-punkts fasit) — alt ute 2. sep |

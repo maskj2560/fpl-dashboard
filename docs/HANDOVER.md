@@ -6,9 +6,15 @@
 > lærdommer — **tak: 200 linjer.** Sprenges taket: roter eldste logg/status
 > til `docs/arkiv/HANDOVER-historikk.md`. Utførte planer: `docs/arkiv/`.
 
-**Sist oppdatert:** 2026-09-07 (økt 63, Fable: v1.14.0 «Funksjonssveip» sluppet og prod-sjekket)
+**Sist oppdatert:** 2026-09-07 (økt 64, Fable: sjekkpunkt D remålt, v1.15.0 «Kostnadskontroll» bygget)
 
 ## Status akkurat nå
+- **v1.15.0 «Kostnadskontroll» bygget 7. sep (økt 64, Fable) — IKKE deployet ennå.**
+  Sjekkpunkt D remålt fra prod-`aiStats`: $0,76/uke brutto, men 24–36 av 52 kall var
+  deploystøy (3 kall per restart — cachen bodde i minnet). Fiks: AI-cachen persisteres i
+  `DATA_DIR/ai-cache.json` merket med `config.version` (docs-push = 0 kall), pluss
+  `npm run ai-kostnad` + `aiCost.js`. 861 tester (860 + 1 hoppet over lokalt: krever tom
+  nøkkel, CI dekker den), lint 0. Branch `feat/ai-cache-kostnad-v1150`.
 - **v1.14.0 «Funksjonssveip» i prod 7. sep 13:33 (økt 63, Fable).** Åtte funksjoner
   på FPL-felt appen alt hentet, men aldri leste: prisprognose (/overganger),
   poengoppdeling (/live), «Runden i tall» (/), «Topp X %» (/lag), forsvarsbidrag
@@ -20,11 +26,8 @@
   0 failures), 9 sider 200, alle åtte bekreftet (`explain` ×15 i live-json,
   `klausuler: [16,27]` på spiller 160, Raya 5 sesonger + nr. 3 av 71 keepere).
   Kjøreprompten: `git show 225f053:docs/prompt-feltpakka-v1140.md`.
-- **v1.13.2 i prod 4. sep 04:57** (ti småfiks, 809/809, hash `781ffae6`, CI `33831271617`)
-  og **v1.13.1 i prod 4. sep 02:37** (`createApp()`, `app.test.js`, CI Node 22+24,
-  pre-push-hook, 792/792, hash `ba91839a`). Fulle detaljer i historikkfila.
-- **v1.13.0 og v1.8.3–v1.12.2 i prod 2. sep** (655 → 767 tester) — detaljene i
-  historikkfila. Prisvarslene: første Discord-melding var ventet natt til 4. sep.
+- **v1.13.2 (4. sep, 809/809, hash `781ffae6`), v1.13.1 (4. sep, 792/792) og v1.13.0 +
+  v1.8.3–v1.12.2 (2. sep)** — detaljene i historikkfila.
 - **Feilsiden i prod er ikke visuelt bevist ennå** (fiksen er låst av tester).
   Ved neste 503-vindu: sjekk at `/` viser «FPL oppdaterer spillet», ikke ren tekst.
 - **Asset-hash i prod: `90e9512f`** (v1.13.2 `781ffae6`, v1.12.1–v1.13.1 `ba91839a`,
@@ -32,8 +35,9 @@
 - **Ekte SIGTERM-bevis mangler.** Beviset er `kill 1` i containerterminalen — de
   to avslutningslinjene skal stå der. Lokalt bevist med `SIGINT`, exit 0.
 - **Helsesjekken:** alt. a aktiv (Coolifys sjekk AV, Dockerfilens gjelder).
-- **Kostnad: måleuka DROPPET** (28. aug) — følges i `console.anthropic.com`,
-  terskler i `docs/sjekkpunkt-d-kostnad.md`. Takt **~49–53 AI-kall/uke**.
+- **Kostnad: remålt 7. sep — under $1/uke, ingen tiltak.** Priser live-verifisert $2/$10
+  (ingen økning 1. sep — dokumentets «$3/$15» var feil). Følges i `console.anthropic.com`;
+  `npm run ai-kostnad` regner fra `/health`. Takt **~49–53 organiske AI-kall/uke**.
 - **Git:** kun `main` finnes lokalt og på origin — hver feature-branch merges
   `--no-ff` og slettes begge steder. Tagger t.o.m. `v1.14.0`.
 - Eldre status og alle detaljer: `docs/arkiv/HANDOVER-historikk.md`.
@@ -45,12 +49,15 @@
 v1.12.2/v1.13.0 (`git show d34e3c8:…`), v1.13.1 (`git show e63bd4b:…`),
 v1.13.2 (`git show 162ca4d:…`) og v1.14.0 (`git show 225f053:docs/prompt-feltpakka-v1140.md`).
 
-**Neste: ikke besluttet — køen i ROADMAP er tom.** Kandidat **D** fra økt 57:
-slanking av `style.css` (2612 linjer) og `app.js` (1503 linjer). Krever brainstorming
-med Marius først (ett spørsmålssett om gangen, anbefaling først). Andre kandidater
-ligger under «Senere / idéer» i ROADMAP (desimalkomma i norsk UI, fem strøkne
-feltkandidater fra § 8). Deploy-vindu for neste slipp: GW4 spilles lør 12.–man
-14. sep (sjekk `anyLive` i `/api/live.json`), aldri torsdag 19–21.
+**Neste: slipp v1.15.0** (branchen er ferdig): push → CI grønn → `anyLive:false` → merge
+`--no-ff` → tag → push → prod-sjekk (footer, `<script` 2, `/health`: `totals.calls` = før + 3,
+sw-hash). **Beviset for 0-kall-deploy:** push prod-bevis-docs-commiten for seg og se at
+`totals.calls` står stille og loggen sier «AI-cache lastet fra disk: 3 tekster».
+Deploy-vindu: GW3 ferdig ~8. sep; **ikke fre 11. sep 13:30–15:30** (auto-brief GW4 ~14:30),
+ikke lør 12. sep 11:00–14:30 (Lagsjekk + deadline), ikke under kampene lør 12.–man 14.
+Deretter ikke besluttet: kandidat **D** fra økt 57 — slanking av `style.css` (2612 linjer)
+og `app.js` (1503 linjer), krever brainstorming med Marius først (ett spørsmålssett om
+gangen, anbefaling først). Andre kandidater under «Senere / idéer» i ROADMAP.
 
 **Majors ikke oppgradert (Marius' fasit 2. sep):** `ejs` 6, `eslint` 10, `globals` 17 — vurderingen i historikkfila (økt 58).
 
@@ -58,10 +65,12 @@ feltkandidater fra § 8). Deploy-vindu for neste slipp: GW4 spilles lør 12.–m
 1. `kill 1` i containerterminalen → «SIGTERM mottatt — lukker serveren» +
    «Serveren lukket ryddig» (siste bevis for v1.3.5).
 2. Mobil-QA på ekte telefon (Chrome-QA-en emulerer 390 px, ikke ekte touch).
-3. Kostnad i `console.anthropic.com` (P4, løpende).
-4. Chrome-QA-rest (re-QA 11/11 bestått 2. sep): STEG 7 (/live under kamp,
-   fre 4. sep fra 21:00), 9c (installer-tilbud), 9e (offline i DevTools);
-   etter første bytte: stat-fliser på /overganger (390 px) + «−0,3» i Prisgevinst.
+3. Kostnad i `console.anthropic.com` (P4, løpende). Nå: Cost 2.–7. sep mot `aiStats`
+   sine $0,51 — bekrefter at telleren fanger alt. Etter GW4 (fra 15. sep):
+   `npm run ai-kostnad -- https://fpl.marsk.no/health` → `league-report:4` = 1 kall.
+4. Chrome-QA-rest (re-QA 11/11 bestått 2. sep): STEG 7 (/live under kamp), 9c
+   (installer-tilbud), 9e (offline i DevTools); etter første bytte: stat-fliser på
+   /overganger (390 px) + «−0,3» i Prisgevinst.
 
 ## Driftslærdommer (ikke glem disse)
 
@@ -106,16 +115,19 @@ feltkandidater fra § 8). Deploy-vindu for neste slipp: GW4 spilles lør 12.–m
   `ANTHROPIC_API_KEY=` og `DISCORD_WEBHOOK_URL=` TOMME i `process.env` før start —
   fra Git Bash (`ANTHROPIC_API_KEY= DISCORD_WEBHOOK_URL= node src/server.js`);
   PowerShell SLETTER tomme `$env:`-variabler. Verifiser: `/health` → `ai:false, discord:false`.
-- **Aldri push/deploy torsdag 19:00–21:00** — auto-briefen sendes ~19:30.
-  Aldri push mens kamper pågår.
+- **Aldri push/deploy i timen rundt auto-briefen** (24 t før `deadline_time`: torsdag
+  ~19:30 for en fredagsdeadline, **fredag ~14:30 for en lørdagsdeadline som GW4**) eller
+  Lagsjekken (3 t før). Aldri push mens kamper pågår.
 - **`/health` først** ved «virker lokalt, ikke i prod» — viser hvilke
   valgfrie funksjoner som er på, aldri verdiene.
 - **Prod-rutesveip er GRATIS fra v1.3.4** (verifisert i prod 25. aug):
   `/brief` og `/nyheter` leser kun cachen. T.o.m. v1.3.3 kostet hvert besøk
   et AI-kall. Unntaket består: klikk ALDRI «Spør AI om råd» på `/lag` i en
   verifisering — det er det eneste stedet et klikk kan utløse et kall.
-- **Hver deploy koster 2 AI-kall** (oppstartstikket: brief + nyheter; målt på
-  `/health` 2. sep: calls 2 → 4 over én docs-deploy). Bundle docs-pusher.
+- **Hver restart kostet 3 AI-kall t.o.m. v1.14.0** (oppstartstikket: brief + nyheter +
+  overgangskommentar — cachen bodde i minnet; 24–36 av 52 kall 2.–7. sep). Fra v1.15.0
+  ligger tekstene i volumets `ai-cache.json` merket med versjon: docs-push = 0 kall, ny
+  versjon = 3. Bundle likevel docs-pusher.
 - **Per-funksjon-AI-kostnad leses på `/health` (fra v1.13.0):** `aiStats`
   har `since`, `totals` og `byKey.<cacheKey>` (calls/inputTokens/
   outputTokens/failures/lastAt/model), persistert i volumets
@@ -169,23 +181,16 @@ feltkandidater fra § 8). Deploy-vindu for neste slipp: GW4 spilles lør 12.–m
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
+- 2026-09-07 (økt 64, Fable): «Lag en planlegging for sjekkpunkt D». Handling: plan mode —
+  prod-`aiStats` hentet, priser live-verifisert (ingen økning 1. sep), deploystøyen påvist
+  (3 kall per restart). Ett spørsmålssett: scope (måling + doc + v1.15.0 med skript) og
+  invalidering (ved versjonsbytte) — Marius valgte anbefalingene. Bygget med rød test først
+  (841 → 861), docs ajour. Ikke pushet ennå.
+
 - 2026-09-07 (økt 63, Fable): «lag en oppsummering av hva som trengs», «er v1.14 ferdig
   eller må det gjøres noe?», «da kan vi slippe v1.14.0». Handling: slippelista kjørt i
   rekkefølge — 841/841 + lint 0 på branchen, `anyLive: false` målt, merge `--no-ff`
   `7e50060`, tag `v1.14.0`, push, branch slettet begge steder, CI `34117185708` grønn
   (22 + 24), prod-sjekk grønn med alle åtte funksjoner bekreftet, hash `90e9512f`,
   kjøreprompten slettet, docs ajour. 0 kode.
-
-- 2026-09-04 (økt 62, Opus): Marius limte inn kjøreprompten for v1.14.0. Handling:
-  premissene verifisert mot koden og ferskt curl-svar (åtte avvik justert — bl.a.
-  at test-verdenen FAKTISK har en type-s-liga og `news_added: null`, og at
-  `routes/league.js` ikke hadde noen `Promise.all` å henge `getEntry` på), plan
-  godkjent, T1–T8 bygget med rød test først (809 → 841), hver sett i nettleser ved
-  390 px i begge temaer. Docs oppdatert. IKKE pushet: deploy-vinduet er mandag 7. sep.
-
-- 2026-09-04 (økt 61, Fable): planprompten for v1.14.0 + «skriv en kjøreprompt til
-  opus». Handling: alle 12 endepunkter curlet, felt-diff reprodusert (73/109), ti funn
-  A–J verifisert med grep (en agent meldte `most_captained` ubrukt — grep viste
-  insights.js:164), tre puljer → alle «Bygg», F+G+J slått sammen. Kjøreprompt skrevet,
-  ROADMAP § 8 ajour, planprompten slettet. 0 kode, 0 AI-kall, ingenting pushet.
 

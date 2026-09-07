@@ -27,7 +27,19 @@ går ut i drift for seg:
 Ingen av delene bruker AI, så kostnaden er uendret. Til slutt får du én
 ferdig prompt til Claude for Chrome som tester alt i drift.
 
-## Nytt: v1.14.0 — åtte funksjoner fra data appen alt hadde (7. september)
+## Nytt: v1.15.0 — billigere drift (7. september, på vei ut)
+
+Kostnadssjekken viste at dashbordet i seg selv koster under en halv dollar i
+uka i AI, men at hver oppdatering av tjenesten kostet tre ekstra AI-kall fordi
+tekstene måtte lages på nytt etter omstart. Nå husker serveren tekstene
+mellom omstarter, så en oppdatering koster ingenting ekstra. En ny kommando
+(`npm run ai-kostnad`) regner ut kostnaden per funksjon rett fra `/health`.
+
+Neste steg etter dette er ikke bestemt ennå. Kandidaten er en opprydning i
+stilarket og klientkoden, som ikke gir nye funksjoner, men gjør videre arbeid
+lettere.
+
+## Før det: v1.14.0 — åtte funksjoner fra data appen alt hadde (7. september)
 
 FPL sender mye mer data enn dashbordet brukte. Denne oppdateringen leser
 det som lå ubrukt og lager funksjoner av det — uten ett eneste nytt kall
@@ -48,9 +60,6 @@ mot FPL og uten AI, så kostnaden er uendret:
 Rett før, 4. september, kom to mindre oppdateringer: v1.13.1 (sikkerhetsnett
 i form av automatiske tester før hver push) og v1.13.2 (ti småfiks — bedre
 mobilmeny, raskere Spillere-side, ryddigere datoer).
-
-Neste steg er ikke bestemt ennå. Kandidaten er en opprydning i stilarket og
-klientkoden, som ikke gir nye funksjoner, men gjør videre arbeid lettere.
 
 ## Før det: v1.12.2 og v1.13.0 — vedlikehold under panseret (2. september)
 

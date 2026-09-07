@@ -53,6 +53,7 @@ npm start              # produksjon
 npm test               # tester (node:test)
 npm run lint           # ESLint
 npm run hooks          # aktiver pre-push-hooken (test + lint før push) — én gang per maskin
+npm run ai-kostnad     # AI-kostnad per funksjon fra /health (stdin, fil eller URL; --restarts N)
 ```
 
 ## Miljøvariabler

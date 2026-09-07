@@ -7,6 +7,14 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.15.0] - 2026-09-07
+
+«Kostnadskontroll» på `feat/ai-cache-kostnad-v1150`: sjekkpunkt D remålt fra
+prod-`aiStats` (4,71 døgn, 52 kall, $0,510 → **$0,76/uke brutto**, under
+terskelen), deploystøyen som sto for 24–36 av kallene fjernet ved roten, og
+målingen gjort til én kommando. Rød test først. 861 tester, lint 0. 0 nye
+AI-kall i kjøretid, 0 nye avhengigheter.
+
 ### Added
 
 - **AI-cachen overlever restart** — tekstene (brief, nyheter, overgangskommentar,
@@ -32,6 +40,11 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 - **`config.version`** — appens versjon leses fra `package.json` ett sted
   (`src/config.js`); `app.js` bruker den i footeren i stedet for egen lesing.
+- **`docs/sjekkpunkt-d-kostnad.md`** skrevet om: live-verifiserte priser,
+  `aiStats` + `npm run ai-kostnad` som metode, resultatet fra 7. sep med
+  deploystøy-analysen, «neste måling» etter GW4. Deploy-vindu-regelen i
+  CLAUDE.md/HANDOVER generalisert: timen rundt auto-briefen (24 t før
+  `deadline_time` — fredag ettermiddag for en lørdagsdeadline), ikke «torsdag».
 
 ## [1.14.0] - 2026-09-07
 
