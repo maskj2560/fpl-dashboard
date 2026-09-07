@@ -2,9 +2,13 @@ import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { refreshDecision, startAiRefresher, _tick, _setNow, _reset } from '../src/services/refresh.js';
 import * as ai from '../src/services/ai.js';
+import { briefCacheKey } from '../src/services/brief.js';
+import { transferCommentCacheKey } from '../src/services/transfers.js';
 import { clear as cacheClear } from '../src/services/cache.js';
 
-ai._setHooks({ load: () => null, save: () => {} }); // v1.13.0: AI-statistikken skriver aldri til ekte DATA_DIR i tester
+// v1.13.0/v1.15.0: verken AI-statistikken eller AI-cachen rører ekte DATA_DIR i tester.
+const diskOff = () => ai._setHooks({ load: () => null, save: () => {} });
+diskOff();
 
 const MIN = 60_000;
 const HOUR = 60 * MIN;
@@ -134,6 +138,7 @@ afterEach(() => {
   ai._setClient(null);
   ai._setNow(null);
   ai._reset();
+  diskOff();
   _reset();
   _setNow(null);
   cacheClear();
@@ -155,16 +160,38 @@ test('to tikk etter hverandre gir én generering per nøkkel', async () => {
   assert.equal(aiCalls.length, 2, 'ingenting er utgått ved andre tikk');
 });
 
-// Oppstartsvarmingen er hele poenget med det første tikket: AI-cachen bor i
-// minnet, så den er tom etter hver deploy. (At startAiRefresher er en no-op
-// uten nøkkel kan ikke testes her — `npm test` kjøres med utviklerens `.env`,
-// der nøkkelen finnes. Røyktesten med tomme nøkler dekker det.)
-test('startAiRefresher varmer begge tekstene med en gang', async () => {
+// Oppstartsvarmingen er poenget med det første tikket: etter en deploy er
+// AI-cachen enten lastet fra disk (samme versjon, v1.15.0) eller tom — tikket
+// avgjør hva som faktisk må genereres. (At startAiRefresher er en no-op uten
+// nøkkel kan ikke testes her — `npm test` kjøres med utviklerens `.env`, der
+// nøkkelen finnes. Røyktesten med tomme nøkler dekker det.)
+test('startAiRefresher varmer begge tekstene med en gang når cachen er tom', async () => {
   startAiRefresher();
   for (let i = 0; i < 100 && aiCalls.length < 2; i++) {
     await new Promise((r) => setTimeout(r, 5));
   }
   assert.equal(aiCalls.length, 2, 'ett tikk kjøres ved oppstart, ikke først etter 30 min');
+});
+
+// v1.15.0: hver restart kostet tre betalte kall fordi cachen bare bodde i
+// minnet. Med ferske tekster på disk (samme appVersion) koster tikket ingenting.
+test('persistert fersk cache gir 0 kall ved oppstartstikket', async () => {
+  const fresh = (text) => ({ text, generatedAt: NOW - 5 * MIN });
+  ai._setHooks({
+    load: () => null,
+    save: () => {},
+    loadCache: () => ({
+      entries: {
+        [briefCacheKey({ gameweek: { id: 2 } })]: fresh('brief fra disk'),
+        'news-summary': fresh('- **Haaland** er ute.'),
+        [transferCommentCacheKey()]: fresh('kommentar fra disk'),
+      },
+    }),
+  });
+  await _tick();
+  await ai._flush();
+  assert.equal(aiCalls.length, 0, 'ingenting er utgått — deployen kostet 0 kall');
+  assert.equal(ai.getCached('news-summary').text, '- **Haaland** er ute.');
 });
 
 test('overgangskommentaren friskes opp én gang i døgnet, aldri etter sesongslutt', () => {
