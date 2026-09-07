@@ -23,6 +23,10 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   ($1 / $4 per uke). Prisene er live-verifisert 7. sep 2026: Sonnet 5 $2/$10,
   Haiku 4.5 $1/$5 — «$3/$15 fra 1. sep» i sjekkpunkt D-dokumentet ble aldri
   bekreftet og er forkastet.
+- **`npm run ai-kostnad`** (`scripts/ai-kostnad.mjs`, CLI) — leser `/health`-JSON
+  fra stdin, fil eller URL og skriver rapporten: tabell per funksjon, ukestakt,
+  Haiku-alternativet, `--restarts N` for organisk anslag, og verdict mot
+  tersklene. Erstatter det gamle loggskriptet i `docs/sjekkpunkt-d-kostnad.md`.
 
 ### Changed
 
