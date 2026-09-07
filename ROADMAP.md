@@ -270,6 +270,20 @@ stedet for den AI-kostende promptendringen (droppet). Rekkefølge:
   forsvarsbidrag /spillere, spillerkort-pakka, låneklausul + nyhetsdato i
   Lagsjekk, dine plasseringer /liga).
 
+### 9. Kandidat D «Slanking»: style.css + app.js (planlegges — prompt skrevet 7. sep, økt 64)
+
+- **Hva:** `public/style.css` (2612 linjer, 58,6 kB) og `public/app.js` (1503 linjer,
+  60,3 kB) har vokst gjennom 30 releaser uten én opprydning. Mål: mindre og ryddigere
+  kode med identisk oppførsel og utseende — ingen nye funksjoner, ingen designendring,
+  ingen byggesteg. Målt 7. sep: 14 av 218 klassenavn i style.css er ikke referert i
+  views/app.js/src (noen er trolig dynamiske prefikser — verifiseres).
+- **Eier detaljene:** `docs/prompt-plan-slanking-kandidat-d.md` — planprompt til
+  **Fable** (måler, brainstormer med Marius ett spørsmålssett om gangen, skriver
+  kjøreprompt til **Opus** når planen er godkjent). Fem retninger: død kode, struktur,
+  deling (krever ja), konsolidering, vakt-test.
+- **Blokkert av:** Marius' valg i brainstormingen (ambisjonsnivå, versjon, deling).
+- **Størrelse:** ukjent til planen finnes — trolig én patch (`v1.15.1`), minor ved deling.
+
 ## Dokumentkart — hvor alt bor
 
 Én eier per fil; alt uten leserverdi for en ny økt ligger i `docs/arkiv/`
@@ -282,6 +296,7 @@ eller git. En ny økt leser `docs/HANDOVER.md` → køen her → resten ved beho
 | `docs/VIDERE.md` | Marius' ikke-tekniske kortversjon |
 | `docs/arkiv/plan-v130-ui-overhaul.md` | godkjent plan for v1.3.0–v1.3.3 (UI-overhaling), utføres etappevis |
 | `docs/sjekkpunkt-d-kostnad.md` | metode, terskler og målingene for P4 (`npm run ai-kostnad`) |
+| `docs/prompt-plan-slanking-kandidat-d.md` | planprompt til Fable for § 9 (konsumeres → slettes) |
 | `docs/arkiv/plan-sluttspurt.md` | utført plan: robusthetsreleasene, portene og docs-ryddingen |
 | `docs/arkiv/plan-idepakken-v16-v19.md` | beslutningsfasit for idépakken v1.7.0–v1.9.0 (utført, arkivert 2. sep) |
 | `docs/arkiv/plan-sluttpakka-v183-v1120.md` | utført plan for v1.8.3–v1.12.0 (T-tasks, testnavn, 9-punkts fasit) — alt ute 2. sep |

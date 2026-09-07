@@ -1936,3 +1936,9 @@ designvalg endret) — verbatim fra HANDOVER.md:
   A–J verifisert med grep (en agent meldte `most_captained` ubrukt — grep viste
   insights.js:164), tre puljer → alle «Bygg», F+G+J slått sammen. Kjøreprompt skrevet,
   ROADMAP § 8 ajour, planprompten slettet. 0 kode, 0 AI-kall, ingenting pushet.
+- 2026-09-07 (økt 63, Fable): «lag en oppsummering av hva som trengs», «er v1.14 ferdig
+  eller må det gjøres noe?», «da kan vi slippe v1.14.0». Handling: slippelista kjørt i
+  rekkefølge — 841/841 + lint 0 på branchen, `anyLive: false` målt, merge `--no-ff`
+  `7e50060`, tag `v1.14.0`, push, branch slettet begge steder, CI `34117185708` grønn
+  (22 + 24), prod-sjekk grønn med alle åtte funksjoner bekreftet, hash `90e9512f`,
+  kjøreprompten slettet, docs ajour. 0 kode. (Rotert i økt 64, del 2.)

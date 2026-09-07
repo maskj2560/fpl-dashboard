@@ -54,9 +54,9 @@
 v1.12.2/v1.13.0 (`git show d34e3c8:…`), v1.13.1 (`git show e63bd4b:…`),
 v1.13.2 (`git show 162ca4d:…`) og v1.14.0 (`git show 225f053:docs/prompt-feltpakka-v1140.md`).
 
-**Neste: ikke besluttet — køen i ROADMAP er tom.** Kandidat **D** fra økt 57: slanking av
-`style.css` (2612 linjer) og `app.js` (1503 linjer), krever brainstorming med Marius først
-(ett spørsmålssett om gangen, anbefaling først). Andre kandidater under «Senere / idéer».
+**Neste: planlegg kandidat D «Slanking»** (`style.css` 2612 linjer, `app.js` 1503) —
+planprompten ligger i `docs/prompt-plan-slanking-kandidat-d.md` (Fable, plan-modus, 0 kode:
+brainstorming med Marius → kjøreprompt til Opus). Andre kandidater under «Senere / idéer».
 Deploy-vindu framover: **ikke fre 11. sep 13:30–15:30** (auto-brief GW4 ~14:30), ikke lør
 12. sep 11:00–14:30 (Lagsjekk + deadline), ikke under kampene lør 12.–man 14. sep.
 
@@ -182,6 +182,10 @@ Deploy-vindu framover: **ikke fre 11. sep 13:30–15:30** (auto-brief GW4 ~14:30
 
 ## Logg over brukerbeskjeder (siste økter — eldre: `docs/arkiv/HANDOVER-historikk.md`)
 
+- 2026-09-07 (økt 64, Fable, del 2): «lag en kjapp prompt til fable for å planlegge eller
+  brainstorme kandidat D, be den lage en kjøreprompt til opus når planen er godkjent».
+  Handling: `docs/prompt-plan-slanking-kandidat-d.md` (rammer, målte premisser — 14 av 218
+  klassenavn uten referanse, fem retninger, åpne valg), ROADMAP § 9, HANDOVER ajour. 0 kode.
 - 2026-09-07 (økt 64, Fable): «Lag en planlegging for sjekkpunkt D». Handling: plan mode —
   prod-`aiStats` hentet, priser live-verifisert (ingen økning 1. sep), deploystøyen påvist
   (3 kall per restart). Ett spørsmålssett: scope (måling + doc + v1.15.0 med skript) og
@@ -189,11 +193,4 @@ Deploy-vindu framover: **ikke fre 11. sep 13:30–15:30** (auto-brief GW4 ~14:30
   (841 → 861), docs ajour, push → CI grønn → `anyLive:false` → merge `e1cb27b` → tag → prod
   16:12 (footer, `<script` 2, `/health` 200, +3 kall som ventet). Branch slettet begge steder.
   Docs-push 16:14 → 0 nye kall (56 → 56): første deploy i prosjektet som ikke kostet AI.
-
-- 2026-09-07 (økt 63, Fable): «lag en oppsummering av hva som trengs», «er v1.14 ferdig
-  eller må det gjøres noe?», «da kan vi slippe v1.14.0». Handling: slippelista kjørt i
-  rekkefølge — 841/841 + lint 0 på branchen, `anyLive: false` målt, merge `--no-ff`
-  `7e50060`, tag `v1.14.0`, push, branch slettet begge steder, CI `34117185708` grønn
-  (22 + 24), prod-sjekk grønn med alle åtte funksjoner bekreftet, hash `90e9512f`,
-  kjøreprompten slettet, docs ajour. 0 kode.
 
