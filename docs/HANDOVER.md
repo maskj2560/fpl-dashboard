@@ -17,7 +17,9 @@
   `e1cb27b`, CI `34131434797` (branch) + `34131602485` (main) grønne på Node 22 + 24.
   Prod-sjekk 16:12: footer v1.15.0, `<script` 2, `/health` 200; deployen kostet de ventede
   3 kallene (14:12Z: brief-gw4, nyheter, overgang) — `league-report:3` fyrte samtidig (GW3
-  ferdig, organisk). **0-kall-beviset måles med docs-pushen etter denne (se loggen).**
+  ferdig, organisk). **0-kall-deploy bevist 16:14:** docs-push `15011ac` → ny container
+  (footer «sist oppdatert 16:11» → «16:14»), `totals.calls` 56 → 56 og alle `lastAt` uendret
+  målt 80 s etter oppstart. Coolify-loggen skal si «AI-cache lastet fra disk: 4 tekster».
 - **v1.14.0 «Funksjonssveip» i prod 7. sep 13:33 (økt 63, Fable).** Åtte funksjoner
   på FPL-felt appen alt hentet, men aldri leste: prisprognose (/overganger),
   poengoppdeling (/live), «Runden i tall» (/), «Topp X %» (/lag), forsvarsbidrag
@@ -186,6 +188,7 @@ Deploy-vindu framover: **ikke fre 11. sep 13:30–15:30** (auto-brief GW4 ~14:30
   invalidering (ved versjonsbytte) — Marius valgte anbefalingene. Bygget med rød test først
   (841 → 861), docs ajour, push → CI grønn → `anyLive:false` → merge `e1cb27b` → tag → prod
   16:12 (footer, `<script` 2, `/health` 200, +3 kall som ventet). Branch slettet begge steder.
+  Docs-push 16:14 → 0 nye kall (56 → 56): første deploy i prosjektet som ikke kostet AI.
 
 - 2026-09-07 (økt 63, Fable): «lag en oppsummering av hva som trengs», «er v1.14 ferdig
   eller må det gjøres noe?», «da kan vi slippe v1.14.0». Handling: slippelista kjørt i

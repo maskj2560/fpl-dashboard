@@ -78,8 +78,9 @@ kall, men loggen trengs ikke lenger (100 linjer, nullstilles ved deploy).
 - `league-report:3` fyrte 7. sep 14:12Z (1 kall, første rapport i tellingen —
   GW3 ble ferdig samme ettermiddag); etter GW4 skal `league-report:4` komme
   til med 1 kall.
-- En docs-push (samme versjon) skal ikke øke `totals.calls`; loggen skal vise
-  «AI-cache lastet fra disk: 3 tekster».
+- [x] En docs-push (samme versjon) øker ikke `totals.calls` — **bevist 7. sep
+      16:14:** `15011ac` ga ny container, `totals.calls` 56 → 56, alle `lastAt`
+      uendret 80 s etter oppstart. Loggen skal si «AI-cache lastet fra disk: 4 tekster».
 - **[Marius]** Anthropic-konsollen: Cost 2.–7. sep mot $0,51 — bekrefter at
   `aiStats` teller alt dashbordet bruker.
 
