@@ -105,8 +105,9 @@ export async function _tick() {
 /** Inaktiv uten ANTHROPIC_API_KEY. */
 export function startAiRefresher() {
   if (!ai.isEnabled()) return;
-  // Første tikk med en gang: etter en deploy er AI-cachen tom, og uten dette
-  // ville første besøkende sett data-briefen i opptil 30 minutter.
+  // Første tikk med en gang: etter en deploy er AI-cachen enten lastet fra
+  // disk (samme versjon, v1.15.0 — da koster tikket ingenting) eller tom, og
+  // uten dette ville første besøkende sett data-briefen i opptil 30 minutter.
   _tick();
   timer = setInterval(_tick, TICK_INTERVAL_MS);
   timer.unref?.();

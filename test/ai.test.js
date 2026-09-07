@@ -10,6 +10,8 @@ import {
   getStats,
   statsFile,
   parseStatsFile,
+  cacheFile,
+  parseCacheFile,
   _flush,
   _setClient,
   _setNow,
@@ -155,17 +157,158 @@ test('statsFile ligger i config.dataDir', () => {
   assert.equal(statsFile(), path.join(config.dataDir, 'ai-stats.json'));
 });
 
-// Kildelås: en test som injiserer klienten registrerer statistikk — uten hooks
-// ville den skrevet til ekte DATA_DIR (data/ lokalt).
-test('hver testfil som injiserer AI-klienten kobler fra ai-stats-disken med _setHooks', () => {
+// Kildelås: en test som injiserer klienten registrerer statistikk, og en som
+// bare importerer ai.js kan lese den persisterte cachen (v1.15.0) — uten hooks
+// ville de truffet ekte DATA_DIR (data/ lokalt). _setHooks kobler fra begge.
+test('hver testfil som bruker ai.js kobler fra stats- og cache-disken med _setHooks', () => {
   const testDir = new URL('./', import.meta.url);
   for (const file of fs.readdirSync(testDir).filter((f) => f.endsWith('.test.js'))) {
     const code = fs.readFileSync(new URL(file, testDir), 'utf8');
-    if (/_setClient\(/.test(code)) {
-      assert.match(code, /_setHooks\(/, `${file}: sett ai._setHooks({ load, save }) før klienten injiseres`);
+    if (/_setClient\(/.test(code) || /services\/ai\.js'/.test(code)) {
+      assert.match(code, /_setHooks\(/, `${file}: kall ai._setHooks({ load, save }) på modulnivå — kobler fra ai-stats.json og ai-cache.json`);
     }
   }
 });
+
+// ---- v1.15.0: AI-cachen overlever restart (DATA_DIR/ai-cache.json) ----
+// Hver restart kostet 3 betalte kall (brief + nyheter + overgangskommentar)
+// fordi cachen bare bodde i minnet — 24–36 av 52 kall i sjekkpunkt D-målingen
+// 7. sep var deploystøy. Fila merkes med package.json-versjonen: en annen
+// versjon (nye prompter) forkaster den. Disken injiseres som for stats.
+
+test('config.version er package.json-versjonen', () => {
+  const pkg = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
+  assert.equal(config.version, pkg.version);
+});
+
+const diskHooks = (extra = {}) => _setHooks({ load: () => null, save: () => {}, ...extra });
+
+test('persistert fersk tekst brukes etter restart: generate innen minIntervalMs koster 0 kall', async () => {
+  diskHooks({
+    loadCache: () => ({ entries: { test: { text: 'fra disk', generatedAt: clock - 10_000 } } }),
+    saveCache: () => {},
+  });
+  const calls = fakeClient(() => textResponse('ny tekst'));
+  assert.equal(getCached('test').text, 'fra disk', 'getCached ser den persisterte teksten');
+  const r = await generate(opts);
+  assert.equal(r.text, 'fra disk');
+  assert.equal(calls.length, 0, 'ingen betalt kall så lenge den persisterte teksten er fersk');
+
+  clock += 60_000; // forbi minIntervalMs — tidsstempelet fra disk gjelder
+  const r2 = await generate(opts);
+  assert.equal(r2.text, 'ny tekst');
+  assert.equal(calls.length, 1);
+});
+
+test('persistert tekst fra en annen appVersion forkastes', async () => {
+  const file = JSON.stringify({
+    version: 1,
+    appVersion: '0.0.0-annen',
+    entries: { test: { text: 'gammel prompt', generatedAt: clock - 10_000 } },
+  });
+  assert.equal(parseCacheFile(file, { appVersion: config.version, nowMs: clock }), null);
+
+  diskHooks({ loadCache: () => parseCacheFile(file, { appVersion: config.version, nowMs: clock }), saveCache: () => {} });
+  const calls = fakeClient(() => textResponse('ny'));
+  assert.equal(getCached('test'), null);
+  await generate(opts);
+  assert.equal(calls.length, 1, 'tom cache → én generering');
+});
+
+test('cache-fila skrives etter hver vellykkede generering med version, appVersion og entries', async () => {
+  const saved = [];
+  diskHooks({ loadCache: () => null, saveCache: (file) => saved.push(file) });
+  fakeClient((n) => textResponse(`svar ${n}`));
+  await generate({ ...opts, cacheKey: 'brief' });
+  clock += 1000;
+  await generate({ ...opts, cacheKey: 'news' });
+  assert.equal(saved.length, 2);
+  assert.deepEqual(saved[1], {
+    version: 1,
+    appVersion: config.version,
+    entries: {
+      brief: { text: 'svar 1', generatedAt: 1_000_000 },
+      news: { text: 'svar 2', generatedAt: 1_001_000 },
+    },
+  });
+});
+
+test('parseCacheFile: ugyldig JSON, feil version eller manglende entries gir null uten å kaste', () => {
+  const ctx = { appVersion: config.version, nowMs: clock };
+  assert.equal(parseCacheFile('{ikke json', ctx), null);
+  assert.equal(parseCacheFile(JSON.stringify({ version: 2, appVersion: config.version, entries: {} }), ctx), null);
+  assert.equal(parseCacheFile(JSON.stringify({ version: 1, appVersion: config.version }), ctx), null);
+});
+
+test('parseCacheFile dropper tom tekst, tidsstempel i framtida og tekst eldre enn 7 døgn — resten beholdes', () => {
+  const DAY = 24 * 60 * 60_000;
+  const file = JSON.stringify({
+    version: 1,
+    appVersion: config.version,
+    entries: {
+      tom: { text: '   ', generatedAt: clock - 1000 },
+      framtid: { text: 'x', generatedAt: clock + 1 },
+      gammel: { text: 'y', generatedAt: clock - 8 * DAY },
+      tull: { text: 'z', generatedAt: 'i går' },
+      ok: { text: 'fersk', generatedAt: clock - 1000 },
+    },
+  });
+  assert.deepEqual(parseCacheFile(file, { appVersion: config.version, nowMs: clock }), {
+    entries: { ok: { text: 'fersk', generatedAt: clock - 1000 } },
+  });
+});
+
+test('loadCache som kaster gir tom cache, saveCache som kaster velter ikke genereringen', async () => {
+  diskHooks({
+    loadCache: () => {
+      throw new Error('disk');
+    },
+    saveCache: () => {
+      throw new Error('disk full');
+    },
+  });
+  const calls = fakeClient(() => textResponse('hei'));
+  assert.equal(getCached('test'), null);
+  const r = await generate(opts);
+  assert.equal(r.text, 'hei');
+  assert.equal(calls.length, 1);
+});
+
+test('feilet og tomt svar skriver ikke cache-fila', async () => {
+  const saved = [];
+  diskHooks({ loadCache: () => null, saveCache: (file) => saved.push(file) });
+  fakeClient((n) => {
+    if (n === 1) return textResponse('');
+    throw new Error('nede');
+  });
+  await generate(opts);
+  clock += 6 * 60_000;
+  await generate(opts);
+  assert.equal(saved.length, 0);
+});
+
+test('cacheFile ligger i config.dataDir', () => {
+  assert.equal(cacheFile(), path.join(config.dataDir, 'ai-cache.json'));
+});
+
+// Uten AI (ingen nøkkel, ingen injisert klient) skal disken aldri leses —
+// app.test.js kjører hele stacken slik. Kan bare måles der nøkkelen mangler
+// (`npm test` lokalt leser utviklerens .env); CI-en har ingen nøkkel.
+test(
+  'AI av: getCached leser aldri cache-disken',
+  { skip: config.anthropicApiKey ? 'ANTHROPIC_API_KEY er satt i .env — CI-en dekker denne' : false },
+  () => {
+    let reads = 0;
+    diskHooks({
+      loadCache: () => {
+        reads++;
+        return { entries: { test: { text: 'fra disk', generatedAt: clock } } };
+      },
+    });
+    assert.equal(getCached('test'), null);
+    assert.equal(reads, 0);
+  }
+);
 
 test('feilet kall gir backoff: neste generate koster ingen nye tokens', async () => {
   const calls = fakeClient(() => {

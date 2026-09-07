@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 import compression from 'compression';
+import config from './config.js';
 import { isGameUpdating, staleInfo } from './services/fplClient.js';
 import { loadClubAssets } from './services/clubAssets.js';
 import { formatDateTime, formatTime } from './services/format.js';
@@ -40,7 +41,7 @@ export function createApp() {
 
   // Versjon og oppstartstidspunkt vises i footeren. Oppstartstidspunktet er
   // deploy-tidspunktet i praksis: Coolify starter en ny container per push.
-  const { version } = JSON.parse(fs.readFileSync(path.join(rootDir, 'package.json'), 'utf8'));
+  const { version } = config;
   const startedAt = formatDateTime(new Date().toISOString());
 
   // Innholdshash av CSS + JS. Endres en av filene, endres hashen — og dermed

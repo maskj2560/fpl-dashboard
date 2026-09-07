@@ -1922,3 +1922,17 @@ designvalg endret) — verbatim fra HANDOVER.md:
   plan godkjent, ti fiks bygget med rød test først, én commit per fiks. Alle
   sett i Playwright ved 390 px i begge temaer fra scratchpad. 792 → 809 tester,
   lint 0. Prompten slettet. «Fortsett» midtveis etter et avbrutt verktøykall.
+
+## Rotert 2026-09-07 (økt 64): loggpostene fra økt 61–62 (verbatim fra HANDOVER.md)
+
+- 2026-09-04 (økt 62, Opus): Marius limte inn kjøreprompten for v1.14.0. Handling:
+  premissene verifisert mot koden og ferskt curl-svar (åtte avvik justert — bl.a.
+  at test-verdenen FAKTISK har en type-s-liga og `news_added: null`, og at
+  `routes/league.js` ikke hadde noen `Promise.all` å henge `getEntry` på), plan
+  godkjent, T1–T8 bygget med rød test først (809 → 841), hver sett i nettleser ved
+  390 px i begge temaer. Docs oppdatert. IKKE pushet: deploy-vinduet er mandag 7. sep.
+- 2026-09-04 (økt 61, Fable): planprompten for v1.14.0 + «skriv en kjøreprompt til
+  opus». Handling: alle 12 endepunkter curlet, felt-diff reprodusert (73/109), ti funn
+  A–J verifisert med grep (en agent meldte `most_captained` ubrukt — grep viste
+  insights.js:164), tre puljer → alle «Bygg», F+G+J slått sammen. Kjøreprompt skrevet,
+  ROADMAP § 8 ajour, planprompten slettet. 0 kode, 0 AI-kall, ingenting pushet.

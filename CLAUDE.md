@@ -14,6 +14,7 @@ npm run lint         # ESLint (flat config)
 npm run fetch-clubs  # klubbgrafikk fra FPL, én gang per sesong (CLI, aldri kjøretid)
 npm run make-icons   # PWA-ikoner som PNG (kun node:zlib); committes + ICON_VERSION-bump
 npm run hooks        # aktiverer .githooks (pre-push: test + lint) — én gang per maskin
+npm run ai-kostnad   # AI-kostnad per funksjon fra /health-JSON (stdin | fil | URL, --restarts N) — CLI
 ```
 
 ## Arkitektur
@@ -30,7 +31,7 @@ src/middleware.js  rene, testbare byggere: cacheControlFor, createErrorHandler, 
                    layout.ejs er ENESTE inline-script; aldri unsafe-inline) + sikkerhetshoder,
                    rateLimitWrites (30 POST/DELETE per IP per 5 min på /api), IMG_/ICON_VERSION
 src/config.js      env: PORT, FPL_TEAM_ID, LEAGUE_IDS, TZ, NEWS_FEEDS, AI_MODEL, ANTHROPIC_API_KEY og
-                   DISCORD_WEBHOOK_URL (valgfrie), BRIEF_/DEADLINE_CHECK_HOURS, DATA_DIR (`data`)
+                   DISCORD_WEBHOOK_URL (valgfrie), BRIEF_/DEADLINE_CHECK_HOURS, DATA_DIR; version (package.json)
 src/routes/        tynne ruter: én per side + api.js (JSON, no-store), calendar.js (/kalender.ics),
                    pwa.js (/sw.js med ekte asset-hash, no-store; /offline), health.js (healthPayload():
                    features av/på — aldri verdier — + aiStats fra ai.getStats())
@@ -44,9 +45,8 @@ src/services/
                    CHIP_LABELS bor her fordi fila importerer INGENTING; chips.js re-eksporterer den
   brief.js         buildBrief (ren) / assembleBrief (henter) / generateAiBrief (AI-teksten)
   prompts.js       rene promptbyggere + sanitizeBriefText
-  live.js          buildLive (ren) / assembleLive (ferdig runde via getLiveHistoric +
-                   staleInfo(gw, { finished })) / topBps (bonuskamp). explain per spiller
-                   (EXPLAIN_LABELS), flatet over kampene; ukjent identifikator vises rått
+  live.js          buildLive (ren) / assembleLive (ferdig runde: getLiveHistoric + staleInfo(gw, { finished }))
+                   / topBps (bonuskamp). explain per spiller (EXPLAIN_LABELS) flatet over kampene; ukjent id rått
   transfers.js     «Overganger»: analyse, side (delseksjoner feiler mykt), generateTransferComment
                    (kun via refresh.js). Aldri element-summary
   pricing.js / baseline.js  rene prisfunksjoner (sellingPrice = FPLs halveringsregel); «laget uten bytter» (ren autosub-simulering)
@@ -67,19 +67,20 @@ src/services/
   deadline.js      «Lagsjekk»: applyTransfers (picks N−1 + bytter) + funn + Discord-tekst; funnet
                    «klausul» leser scout_risks.gameweek (FPLs notes er feil)
   calendar.js      buildCalendar (VALARM, troppens kamper; CRLF, UTC, foldLine 75 oktetter)
-  prices.js        prisvarsler: diff-funksjoner + startPriceWatcher (oppstart, så hver time, ≤ 1 cachet
-                   bootstrap-kall/time); price-state.json, maks 1 melding/dato. buildPriceForecast =
-                   FPLs prognosefelt (pct/likelihood/rate/locked), 0 kall
+  prices.js        prisvarsler: diff-funksjoner + startPriceWatcher (oppstart, så hver time, ≤ 1 cachet bootstrap-
+                   kall/time); price-state.json, maks 1 melding/dato. buildPriceForecast = FPLs prognosefelt, 0 kall
   clubAssets.js    hvilke klubbbilder som finnes — partialene skriver aldri <img> i blinde
-  ai.js            felles Claude-service: lazy init, cache med minimumsintervall, swr, 5 min
-                   backoff. AI-statistikk per cacheKey (calls/tokens/failures/lastAt/model + since)
-                   i DATA_DIR/ai-stats.json, lagret per registrering og lest lazy; getStats() er synkron
+  ai.js            felles Claude-service: lazy init, cache med minimumsintervall, swr, 5 min backoff.
+                   Statistikk per cacheKey (calls/tokens/failures/lastAt/model + since) i DATA_DIR/
+                   ai-stats.json; getStats() synkron. Cachen persisteres i DATA_DIR/ai-cache.json merket
+                   med config.version (annen versjon forkastes, > 7 døgn ryddes) → restart = 0 AI-kall
+  aiCost.js        ren kostnadsmodell for aiStats (priser, terskler $1/$4, deploystøy); kun scripts + tester
   news.js          RSS + valgfri AI-oppsummering (cachet)
   notify.js        6 t-scheduler + Discord: auto-brief, rundens rapport, Lagsjekk; markører i DATA_DIR/*-state.json (aldri dobbel-post)
   refresh.js       timer-styrt oppfrisking av AI-tekstene (oppstart + hver 30. min). Aldri Discord
 views/             EJS: layout.ejs + én per side; partials/ (theme-toggle, club-badge, club-shirt)
 public/            style.css (farger = tokens), app.js, fonts/ (lokal Archivo), img/clubs/ (?v=IMG_VERSION), manifest + PWA-ikoner (?v=ICON_VERSION)
-scripts/           fetch-club-assets.mjs, make-pwa-icons.mjs — CLI, aldri kjøretid; eneste nettverkskall utenfor fplClient.js
+scripts/           fetch-club-assets.mjs, make-pwa-icons.mjs, ai-kostnad.mjs — CLI, aldri kjøretid; eneste nettverkskall utenfor fplClient.js
 test/              node:test, ingen nettverkskall. Fakes via test-hooks (_setNow/_flush/clear i cache.js;
                    _setClient/_setNow/_setHooks/_reset i ai.js; _setHooks i notify/prices) eller mocket fetch.
                    app.test.js: hele stacken på loopback mot fixtures/fpl-world.js (fremmede verter kaster)
@@ -100,9 +101,9 @@ Base `https://fantasy.premierleague.com/api/` — åpent, ingen nøkkel.
   samme endepunkt, **egne nøkler med suffiks `:hist`**, 6 t TTL (immutable) — ellers ga
   «første skriver setter TTL-en» `getLive` 6 t-verdien som fersk (falskt stale-banner).
   Kun `finished`-runder; egen FPL_TEAM_ID alltid via `getEntryHistory`.
-- `dream-team/{gw}/` (`dreamteam:${gw}`, 6 t) og `element-summary/{id}/`
-  (`element:${id}`, 30 min). Element-summary hentes KUN lazy per klikk via
-  `GET /api/spiller/:id` — aldri i bulk: /spillere koster 0 slike kall.
+- `dream-team/{gw}/` (`dreamteam:${gw}`, 6 t) og `element-summary/{id}/` (`element:${id}`,
+  30 min). Element-summary hentes KUN lazy per klikk via `GET /api/spiller/:id` — aldri i
+  bulk: /spillere koster 0 slike kall.
 - `entry/{id}/event/{gw}/picks/` for KOMMENDE runde gir 404 før deadline.
   Alt som viser «laget for runde N» før deadline bruker picks fra N−1 +
   `entry/{id}/transfers/`. `event_transfers_cost` ligger i `history.current`.
@@ -135,7 +136,7 @@ med `ANTHROPIC_API_KEY`:
 **Kostnadsregel: timer-styrt, ikke besøks-styrt.** En sidevisning utløser aldri et
 AI-kall og blokkerer aldri på et — den leser cachen (`ai.getCached`); utgått tekst
 serveres straks og fornyes i bakgrunnen (`swr`). Unntaket er rådgiverklikket. Takt
-~49–53 kall/uke + ett tikk ved oppstart; måles på `/health` → `aiStats`. **Kildelås**
+~49–53 kall/uke + 3 ved oppstart av NY versjon (samme: 0); `/health` → `aiStats`, `npm run ai-kostnad`. **Kildelås**
 i `test/routes.test.js`: ingen rute kaller generering, og players.js, chips.js,
 deadline.js, calendar.js og prices.js importerer aldri `ai.js`. Uten nøkkel vises rå
 data: AI er alltid et tillegg, aldri et krav.
@@ -179,11 +180,10 @@ data: AI er alltid et tillegg, aldri et krav.
 
 ## Handover (VIKTIG — les først i ny økt)
 
-`docs/HANDOVER.md` er den levende overleveringsfila: status, åpne punkter,
-driftslærdommer og Marius' beslutninger (ikke re-spør dem). **Start alltid en ny økt
-med å lese den + køen øverst i ROADMAP.md.** Tak **200 linjer** (roter til
-`docs/arkiv/HANDOVER-historikk.md`); utførte planer i `docs/arkiv/`, konsumerte
-prompter slettes. Nær usage-grensen (~95 %): oppdater HANDOVER, commit.
+`docs/HANDOVER.md` er den levende overleveringsfila: status, åpne punkter, driftslærdommer
+og Marius' beslutninger (ikke re-spør dem). **Start alltid en ny økt med å lese den + køen
+øverst i ROADMAP.md.** Tak **200 linjer** (roter til `docs/arkiv/HANDOVER-historikk.md`);
+utførte planer i `docs/arkiv/`, konsumerte prompter slettes. Nær ~95 % usage: oppdater HANDOVER, commit.
 
 ## Deploy
 
@@ -191,9 +191,10 @@ Coolify bygger fra Dockerfile ved push til `main` — det som merges går rett i
 hold `main` grønn: hooken og CI-en (`.github/workflows/ci.yml`, Node 22 + 24) er
 sikkerhetsnettet. Env-variabler settes i Coolify, aldri i repoet; `.env` er gitignored,
 `.env.example` holdes oppdatert. `DATA_DIR` er et volum (`/app/data`):
-brief-/report-/check-/price-state, scenarios og ai-stats.
-**Deploy-vindu: aldri torsdag 19:00–21:00 (auto-briefen), aldri mens kamper pågår**
-(`/api/live.json` → `anyLive` må være `false`). Prod-sjekk etter hver deploy: footer
-viser ny versjon, `<script`-telling på `/` er nøyaktig 2, `/health` er 200, hash fra
-`/sw.js` noteres i HANDOVER. Lokal røyktest: `config.js` leser repoets `.env` uansett
+brief-/report-/check-/price-state, scenarios, ai-stats og ai-cache.
+**Deploy-vindu: aldri i timen rundt auto-briefen (24 t før `deadline_time` — fredag ~14:30
+for en lørdagsdeadline) eller Lagsjekken (3 t før), aldri mens kamper pågår** (`/api/live.json`
+→ `anyLive` må være `false`). Prod-sjekk etter hver deploy: footer viser ny versjon, `<script`-
+telling på `/` er nøyaktig 2, `/health` er 200, hash fra `/sw.js` noteres i HANDOVER; en
+docs-deploy lar `aiStats.totals.calls` stå. Lokal røyktest: `config.js` leser repoets `.env` uansett
 — sett `ANTHROPIC_API_KEY=` og `DISCORD_WEBHOOK_URL=` tomme (`--env-file`).

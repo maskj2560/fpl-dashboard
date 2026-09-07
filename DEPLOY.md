@@ -164,6 +164,13 @@ AI-funksjon (`calls`, `inputTokens`, `outputTokens`, `failures`, `lastAt`,
 `model`) siden `since`, vist som `aiStats` på `/health`. Uten volum starter
 tellingen på null ved hver deploy — appen krasjer aldri av det.
 
+Fra v1.15.0 ligger også `ai-cache.json` der: de genererte AI-tekstene (brief,
+nyheter, overgangskommentar, rådgiver, ligarapport) med tidsstempel, merket
+med appens versjon. Med volum koster en redeploy av **samme** versjon 0
+AI-kall — oppstartstikket finner ferske tekster og loggen sier «AI-cache
+lastet fra disk: N tekster». Ny versjon, manglende volum eller tekster eldre
+enn 7 døgn gir de tre kallene som før. Uten volum krasjer appen aldri av det.
+
 Oppsett i Coolify (én gang): **Storages → Add → destination path**
 `/app/data`. Satt opp 26. aug 2026 — navngitt volum
 `liq9mdauin1nj74631t37aaz-fpl-data` (Coolify prefikser med app-UUID).

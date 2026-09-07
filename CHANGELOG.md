@@ -7,6 +7,45 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.15.0] - 2026-09-07
+
+«Kostnadskontroll» på `feat/ai-cache-kostnad-v1150`: sjekkpunkt D remålt fra
+prod-`aiStats` (4,71 døgn, 52 kall, $0,510 → **$0,76/uke brutto**, under
+terskelen), deploystøyen som sto for 24–36 av kallene fjernet ved roten, og
+målingen gjort til én kommando. Rød test først. 861 tester, lint 0. 0 nye
+AI-kall i kjøretid, 0 nye avhengigheter.
+
+### Added
+
+- **AI-cachen overlever restart** — tekstene (brief, nyheter, overgangskommentar,
+  rådgiver, ligarapport) persisteres i `DATA_DIR/ai-cache.json` og lastes ved
+  første bruk etter oppstart. Hver restart kostet før tre betalte AI-kall fra
+  oppstartstikket; i sjekkpunkt D-målingen 7. sep var 24–36 av 52 kall slik
+  deploystøy. Fila er merket med appens versjon: en ny versjon (nye prompter)
+  forkaster den, så en docs-push koster 0 kall og en kodeutgivelse 3 som før.
+  Tekster eldre enn 7 døgn ryddes ved lesing. En diskfeil velter aldri en
+  generering. 0 nye AI-kall, 0 nye avhengigheter.
+- **Kostnadsmodell for `aiStats`** (`src/services/aiCost.js`, ren) — kostnad per
+  nøkkel og per AI-funksjon, ukestakt, Haiku-alternativet, andel ut-tokens,
+  organisk anslag (brutto minus restarts × 3 kall) og planens terskelverdict
+  ($1 / $4 per uke). Prisene er live-verifisert 7. sep 2026: Sonnet 5 $2/$10,
+  Haiku 4.5 $1/$5 — «$3/$15 fra 1. sep» i sjekkpunkt D-dokumentet ble aldri
+  bekreftet og er forkastet.
+- **`npm run ai-kostnad`** (`scripts/ai-kostnad.mjs`, CLI) — leser `/health`-JSON
+  fra stdin, fil eller URL og skriver rapporten: tabell per funksjon, ukestakt,
+  Haiku-alternativet, `--restarts N` for organisk anslag, og verdict mot
+  tersklene. Erstatter det gamle loggskriptet i `docs/sjekkpunkt-d-kostnad.md`.
+
+### Changed
+
+- **`config.version`** — appens versjon leses fra `package.json` ett sted
+  (`src/config.js`); `app.js` bruker den i footeren i stedet for egen lesing.
+- **`docs/sjekkpunkt-d-kostnad.md`** skrevet om: live-verifiserte priser,
+  `aiStats` + `npm run ai-kostnad` som metode, resultatet fra 7. sep med
+  deploystøy-analysen, «neste måling» etter GW4. Deploy-vindu-regelen i
+  CLAUDE.md/HANDOVER generalisert: timen rundt auto-briefen (24 t før
+  `deadline_time` — fredag ettermiddag for en lørdagsdeadline), ikke «torsdag».
+
 ## [1.14.0] - 2026-09-07
 
 «Funksjonssveip» på `feat/funksjonssveip-v1140`: åtte funksjoner bygget på
