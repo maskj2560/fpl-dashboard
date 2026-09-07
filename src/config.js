@@ -1,4 +1,6 @@
 // Leser .env (hvis den finnes) og eksporterer validert, frosset config.
+import { readFileSync } from 'node:fs';
+
 try {
   process.loadEnvFile();
 } catch {
@@ -21,7 +23,12 @@ if (!process.env.TZ) process.env.TZ = 'Europe/Oslo';
 
 const fplTeamId = toNumber(process.env.FPL_TEAM_ID, null);
 
+// Appens versjon (package.json) — vises i footeren og merker den persisterte
+// AI-cachen (v1.15.0): en annen versjon har kanskje andre prompter.
+const { version } = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
+
 const config = Object.freeze({
+  version,
   port: toNumber(process.env.PORT, 3000),
   fplTeamId,
   hasTeamId: fplTeamId != null && fplTeamId > 0,

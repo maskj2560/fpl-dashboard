@@ -7,6 +7,22 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+
+- **AI-cachen overlever restart** — tekstene (brief, nyheter, overgangskommentar,
+  rådgiver, ligarapport) persisteres i `DATA_DIR/ai-cache.json` og lastes ved
+  første bruk etter oppstart. Hver restart kostet før tre betalte AI-kall fra
+  oppstartstikket; i sjekkpunkt D-målingen 7. sep var 24–36 av 52 kall slik
+  deploystøy. Fila er merket med appens versjon: en ny versjon (nye prompter)
+  forkaster den, så en docs-push koster 0 kall og en kodeutgivelse 3 som før.
+  Tekster eldre enn 7 døgn ryddes ved lesing. En diskfeil velter aldri en
+  generering. 0 nye AI-kall, 0 nye avhengigheter.
+
+### Changed
+
+- **`config.version`** — appens versjon leses fra `package.json` ett sted
+  (`src/config.js`); `app.js` bruker den i footeren i stedet for egen lesing.
+
 ## [1.14.0] - 2026-09-07
 
 «Funksjonssveip» på `feat/funksjonssveip-v1140`: åtte funksjoner bygget på
