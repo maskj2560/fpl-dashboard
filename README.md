@@ -19,14 +19,14 @@ Mobil (390 px): [dashbord](docs/img/dashbord-mobil.png) ·
 
 | Side | Innhold | Status |
 |---|---|---|
-| `/` | Deadline-nedtelling, ukens flagg, toppform, mest kjøpt/solgt, FDR-matrise | ✅ |
-| `/spillere` | Full spillertabell med sortering, filtrering og søk (viser 100 rader om gangen) | ✅ |
-| `/lag` | Mitt lag, kaptein- og transferanbefalinger, chip-planlegger | ✅ |
-| `/liga` | Miniliga-tabeller, differensial-analyse, liga-innsikt og «Rundens rapport» | ✅ |
-| `/overganger` | Regnskap for byttene, prisgevinst, «laget uten bytter», hva hvis-planlegger, prisendringer i natt | ✅ |
+| `/` | Deadline-nedtelling, ukens flagg (med når nyheten ble meldt), toppform, mest kjøpt/solgt, «Runden i tall», FDR-matrise | ✅ |
+| `/spillere` | Full spillertabell med sortering, filtrering og søk (viser 100 rader om gangen), inkludert forsvarsbidrag. Spillerkortet viser statistikk etter posisjon, rank blant posisjonen, tidligere sesonger med prisreise og nyhetskilde | ✅ |
+| `/lag` | Mitt lag, kaptein- og transferanbefalinger, chip-planlegger, poeng og topp-prosent per runde | ✅ |
+| `/liga` | «Dine plasseringer» i de globale ligaene, miniliga-tabeller, differensial-analyse, liga-innsikt og «Rundens rapport» | ✅ |
+| `/overganger` | Regnskap for byttene, prisgevinst, «laget uten bytter», hva hvis-planlegger, prisendringer i natt og prisprognose | ✅ |
 | `/innsikt` | Sesonginnsikt: FPL-karrieren, merkedager, benkesløsing, kapteinsfasit, flaks, rundens XI | ✅ |
-| `/live` | Live-poeng under pågående gameweek + bonuskamp (BPS) per kamp; mellom runder vises neste avspark | ✅ |
-| `/brief` | Gameweek-brief (data + valgfri AI) + «Lagsjekk» før deadline | ✅ |
+| `/live` | Live-poeng med utfoldbar poengoppdeling per spiller + bonuskamp (BPS) per kamp; mellom runder vises neste avspark | ✅ |
+| `/brief` | Gameweek-brief (data + valgfri AI) + «Lagsjekk» før deadline (skade, karantene, blank runde, låneklausul) | ✅ |
 | `/nyheter` | FPL-nyheter fra RSS + valgfri AI-oppsummering | ✅ |
 | `/api/brief.json` | Briefen som JSON | ✅ |
 | `/api/live.json` | Live-data som JSON (polles kun under kamper) | ✅ |

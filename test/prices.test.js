@@ -7,6 +7,9 @@ import {
   priceDecision,
   parsePriceFile,
   buildPriceChanges,
+  buildPriceForecast,
+  FORECAST_MIN_PCT,
+  FORECAST_MARKET_PCT,
   priceChangesText,
   getLastPriceChanges,
   _tick,
@@ -148,6 +151,99 @@ test('buildPriceChanges takler spiller som forsvant fra bootstrap', () => {
   assert.deepEqual(c.risers.map((r) => r.name), ['Palmer']);
   assert.equal(c.countUp, 1, 'ukjent spiller telles ikke');
   assert.deepEqual(c.mine, []);
+});
+
+// --- Prognosen (v1.14.0) -----------------------------------------------------
+
+// FPLs egne prognosefelt: pct er progresjon mot terskelen (±100 ≈ endring),
+// likelihood er et heltall −5..+5, rate er netto bytter per time.
+function fc(id, name, team, cost, pct, likelihood, rate, extra = {}) {
+  return {
+    id,
+    web_name: name,
+    team,
+    now_cost: cost,
+    cost_change_event: 0,
+    price_change_percent: String(pct),
+    price_change_hourly_rate: rate,
+    price_change_projections: [
+      { offset: 0, projected_percent: String(pct), likelihood },
+      { offset: 1, projected_percent: String(pct), likelihood },
+    ],
+    ...extra,
+  };
+}
+
+const forecastPool = [
+  fc(1, 'Cherki', 1, 65, 91.5, 5, 4215),
+  fc(2, 'Haaland', 1, 141, 58.1, 3, 1200),
+  fc(3, 'Gross', 2, 63, 58.1, 3, 900), // lik pct som Haaland → rate bryter
+  fc(4, 'Gvardiol', 3, 60, 27.9, 2, 300),
+  fc(5, 'Rice', 2, 66, 12.0, 1, 40), // under terskelen for troppen
+  fc(6, 'Mbeumo', 1, 79, -101.6, -5, -2002, { cost_change_event: -1 }),
+  fc(7, 'Wirtz', 3, 100, -84.8, -3, -700),
+  fc(8, 'Shaw', 2, 45, -66.7, -3, -500),
+  fc(9, 'Bowen', 1, 76, -30.0, -2, -120),
+];
+
+test('buildPriceForecast sorterer stigere på pct og fallere på pct, troppen først med terskel', () => {
+  const f = buildPriceForecast({
+    elements: forecastPool,
+    squadIds: [2, 3, 5, 6],
+    teamsById,
+  });
+  assert.equal(FORECAST_MIN_PCT, 20);
+  assert.equal(FORECAST_MARKET_PCT, 50);
+  assert.deepEqual(
+    f.mine.map((r) => r.name),
+    ['Haaland', 'Gross', 'Mbeumo'],
+    'troppen: over terskelen, stigere først, rate bryter lik pct — Rice (12 %) faller utenfor',
+  );
+  assert.deepEqual(f.mine[0], {
+    id: 2,
+    name: 'Haaland',
+    teamShort: 'MCI',
+    teamCode: 43,
+    cost: 141,
+    pct: 58.1,
+    likelihood: 3,
+    rate: 1200,
+    lockedUntil: null,
+    changed: 0,
+  });
+  assert.equal(f.mine[2].changed, -1, 'cost_change_event følger med');
+  assert.deepEqual(f.risers.map((r) => r.name), ['Cherki', 'Haaland', 'Gross']);
+  assert.deepEqual(f.fallers.map((r) => r.name), ['Mbeumo', 'Wirtz', 'Shaw']);
+  assert.equal(f.countRising, 3, 'kun de over markedsterskelen telles');
+  assert.equal(f.countFalling, 3);
+  assert.equal(f.lockedCount, 0);
+});
+
+test('buildPriceForecast hopper over spillere uten prisfelt og holder låste utenfor topplistene', () => {
+  const laast = fc(10, 'Raya', 2, 55, 0, 0, 0, { price_change_locked_until: '2026-09-04T19:30:00Z' });
+  const f = buildPriceForecast({
+    elements: [
+      ...forecastPool,
+      laast,
+      { id: 11, web_name: 'Ukjent', team: 1, now_cost: 45 }, // test-verdenen: ingen prisfelt
+      fc(12, 'Isak', 3, 92, 99.9, 5, 5000, { price_change_locked_until: '2026-09-07T14:00:00Z' }),
+    ],
+    squadIds: [10, 11],
+    teamsById,
+  });
+  assert.deepEqual(f.mine.map((r) => r.name), ['Raya'], 'låst spiller vises i troppen, spiller uten felt hoppes over');
+  assert.equal(f.mine[0].lockedUntil, '2026-09-04T19:30:00Z');
+  assert.ok(!f.risers.some((r) => r.name === 'Isak'), 'låste holdes utenfor topplistene');
+  assert.equal(f.countRising, 3, 'låste telles ikke som stigere');
+  assert.equal(f.lockedCount, 2);
+  assert.deepEqual(buildPriceForecast({ elements: [], teamsById }), {
+    mine: [],
+    risers: [],
+    fallers: [],
+    countRising: 0,
+    countFalling: 0,
+    lockedCount: 0,
+  });
 });
 
 test('priceChangesText nevner troppen først og «Ingen endringer i troppen din» når tom', () => {

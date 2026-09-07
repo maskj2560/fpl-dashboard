@@ -449,6 +449,104 @@ test('transfers.ejs viser prisendringene i natt med troppen først', async () =>
   assert.ok(html.includes('Sjekkes hver time'), 'hintet mangler');
 });
 
+// v1.14.0 (T8): de globale ligaene /liga filtrerte bort.
+test('league.ejs viser dine plasseringer over ligatabellene og skjuler kortet uten data', async () => {
+  const html = await renderView('league', fx.league);
+  assert.ok(html.includes('id="plasseringer"'), 'kortet mangler');
+  const plass = html.indexOf('id="plasseringer"');
+  const tabeller = html.indexOf('Ligatabell');
+  assert.ok(plass > 0 && tabeller > plass, 'kortet skal stå over ligatabellene');
+  assert.ok(html.includes('Globalt') && html.includes('Norge'), 'norske navn mangler');
+  assert.ok(html.includes('rank-down') && html.includes('rank-same'), 'trendpilene mangler');
+  assert.ok(html.includes('35 %'), 'topp-prosenten mangler');
+
+  const tom = await renderView('league', { ...fx.league, standingsGlobal: [] });
+  assert.ok(!tom.includes('id="plasseringer"'), 'ingen kort uten globale ligaer');
+});
+
+// v1.14.0 (T7): låneklausul i Lagsjekk og nyhetsdato i Ukens flagg.
+test('brief.ejs viser klausul-funnet', async () => {
+  const html = await renderView('brief', {
+    ...fx.brief,
+    deadlineCheck: {
+      ...fx.brief.deadlineCheck,
+      ok: false,
+      findings: [{ type: 'klausul', player: { name: 'Garnacho', teamShort: 'AVL', teamCode: 7 }, detail: 'kan ikke møte moderklubben i runden (låneklausul)' }],
+    },
+  });
+  assert.match(html, /Låneklausul/, 'etiketten mangler');
+  assert.match(html, /Garnacho/);
+  assert.ok(!/Garnacho<\/strong>[\s\S]{0,200}>er /.test(html), 'klausul-linja skal ikke få «er»');
+});
+
+test('dashboard.ejs viser nyhetsdatoen i Ukens flagg', async () => {
+  const html = await renderView('dashboard', fx.dashboard);
+  assert.match(html, /meldt torsdag 23\. juli/, 'nyhetsdatoen mangler');
+});
+
+// v1.14.0 (T5): forsvarsbidrag som kolonne — 313 av 652 spillere har verdi.
+test('players.ejs har DC-kolonna med data-dc på radene', async () => {
+  const html = await renderView('players', fx.players);
+  assert.match(html, /<th scope="col" data-type="num" class="num" aria-sort="none" title="Forsvarsbidrag[^"]*">DC<\/th>/, 'kolonneoverskriften mangler');
+  const dc = html.indexOf('>DC<');
+  const status = html.indexOf('>Status<');
+  assert.ok(dc > 0 && status > dc, 'DC skal stå før Status');
+  assert.match(html, /data-dc="34"/, 'raden mangler data-dc');
+  assert.match(html, /data-dc="0"/, 'spiller uten bidrag skal få 0, ikke tom verdi');
+});
+
+// v1.14.0 (T4): FPLs percentile_rank — «du var i topp X %» — per runde.
+test('team.ejs viser topp-prosenten i hero og tabellen under rankgrafen', async () => {
+  const html = await renderView('team', fx.team);
+  assert.ok(html.includes('topp 34 % av'), 'hero-flisen mangler topp-prosenten');
+  assert.ok(html.includes('Topp %'), 'tabellkolonna mangler');
+  const graf = html.indexOf('rank-graph');
+  const tabell = html.indexOf('Topp %');
+  assert.ok(graf > 0 && tabell > graf, 'tabellen skal stå under grafen');
+  assert.ok(html.includes('25 %') && html.includes('50 %'), 'percentil per runde mangler');
+
+  const tom = await renderView('team', fx.teamEmpty);
+  assert.ok(!tom.includes('Topp %'), 'ingen tabell uten historikk');
+  assert.ok(!tom.includes('topp 34 % av'), 'ingen underlinje uten historikk');
+});
+
+// v1.14.0 (T3): FPLs fasit for siste ferdige runde, som kort på dashbordet.
+test('dashboard.ejs viser runden i tall og tomtilstanden', async () => {
+  const html = await renderView('dashboard', fx.dashboard);
+  assert.ok(html.includes('id="runden-i-tall"'), 'kortet mangler');
+  assert.ok(html.includes('Runde 2 i tall'), 'overskriften skal navngi runden');
+  assert.ok(html.includes('João Pedro') && html.includes('B.Fernandes'), 'navnene mangler');
+  assert.ok(html.includes('Bench Boost'), 'chip-etiketten mangler');
+  assert.ok(html.includes('/spillere?sok=Haaland'), 'spillernavn skal lenke til /spillere');
+
+  const tom = await renderView('dashboard', fx.dashboardEmpty);
+  assert.ok(tom.includes('Tallene kommer når første runde er ferdigspilt.'), 'tomtilstand mangler');
+  assert.ok(!tom.includes('Runde 2 i tall'), 'tom tilstand skal ikke navngi en runde');
+});
+
+// v1.14.0 (T1): prognosen står under prisendringene og lover aldri en endring.
+test('transfers.ejs viser prisprognosen med troppen først og tomtilstand', async () => {
+  const html = await renderView('transfers', fx.transfers);
+  assert.ok(html.includes('id="prisprognose"'), 'prognosekortet mangler');
+  const endringer = html.indexOf('id="prisendringer"');
+  const prognose = html.indexOf('id="prisprognose"');
+  assert.ok(endringer > 0 && prognose > endringer, 'prognosen skal stå under prisendringene');
+  const mine = html.indexOf('Din tropp', prognose);
+  const opp = html.indexOf('Stiger (1 av 4)');
+  const ned = html.indexOf('Faller (1 av 6)');
+  assert.ok(mine > prognose && opp > mine && ned > opp, 'rekkefølgen skal være troppen, stiger, faller');
+  assert.ok(html.includes('svært trolig'), 'likelihood 5 mangler etiketten');
+  assert.ok(html.includes('trolig'), 'likelihood 3 mangler etiketten');
+  assert.ok(html.includes('Cherki') && html.includes('Mbeumo'), 'markedsradene mangler');
+  assert.ok(html.includes('låst til'), 'låst spiller mangler tidspunktet');
+  assert.ok(!/100 % gir en prisendring|garantert/.test(html), 'prognosen skal aldri love en endring');
+
+  const tom = await renderView('transfers', fx.transfersEmpty);
+  assert.ok(tom.includes('id="prisprognose"'), 'kortet vises også uten data');
+  assert.ok(tom.includes('Ingen i troppen din er nær en prisendring.'), 'tomtilstand for troppen mangler');
+  assert.ok(tom.includes('Stiger (0 av 0)'), 'tomme markedslister mangler');
+});
+
 test('transfers.ejs skjuler priskortet uten snapshot og sier fra om tom tropp', async () => {
   const none = await renderView('transfers', { ...fx.transfers, priceChanges: null });
   assert.ok(!none.includes('id="prisendringer"'), 'priskortet vises uten data');
@@ -606,7 +704,9 @@ test('players.ejs: alle kolonneoverskrifter beholder data-type og aria-sort (sor
   // har sine egne overskrifter og sorteres ikke.
   const head = html.slice(html.indexOf('id="players-table"'), html.indexOf('</thead>'));
   const ths = head.match(/<th[ >][^>]*>/g) ?? [];
-  assert.equal(ths.length, 12, 'antall kolonner endret — app.js Modul 2 sorterer på indeks');
+  // 13 fra v1.14.0 (DC). Modul 2 leser indeksen fra cellIndex, ikke en konstant,
+  // så en ny kolonne er trygg — men antallet står her som en bevisst kontrakt.
+  assert.equal(ths.length, 13, 'antall kolonner endret — app.js Modul 2 sorterer på indeks');
   const [duell, ...sorterbare] = ths;
   assert.match(duell, /data-nosort/, 'duell-kolonnen skal unntas sorteringen');
   for (const th of sorterbare) {

@@ -10,6 +10,15 @@ export const POSITIONS = Object.freeze({
 
 export const POSITIONS_SHORT = Object.freeze({ 1: 'K', 2: 'F', 3: 'M', 4: 'A' });
 
+// Bor her, ikke i chips.js: analysis.js importerer ingenting, så alle andre
+// moduler kan lese den uten å lage en sykel. chips.js re-eksporterer den.
+export const CHIP_LABELS = Object.freeze({
+  bboost: 'Bench Boost',
+  '3xc': 'Triple Captain',
+  freehit: 'Free Hit',
+  wildcard: 'Wildcard',
+});
+
 /** FPL-ens `status`-koder på norsk. Delt av dashbordet og spillerlista. */
 export const STATUS_LABELS = Object.freeze({
   a: 'Klar',
@@ -113,6 +122,37 @@ export function mostTransferredIn(elements, limit = 10) {
     .filter((p) => p.transfers_in_event > 0)
     .sort((a, b) => b.transfers_in_event - a.transfers_in_event)
     .slice(0, limit);
+}
+
+/**
+ * «Runden i tall»: FPLs egen fasit for siste ferdigspilte runde, fra
+ * `bootstrap.events[]`. Feltene fylles først etter at runden er over —
+ * kommende runde har `average_entry_score` 0 og `chip_plays` [], så den
+ * velges aldri. Ukjent spiller-id gir «–», ikke et kast.
+ */
+export function roundInNumbers(events, elementsById) {
+  const ferdige = (events ?? []).filter((e) => e.finished && (e.average_entry_score ?? 0) > 0);
+  const e = ferdige[ferdige.length - 1];
+  if (!e) return null;
+  const navn = (id) => (id == null ? '–' : (elementsById?.get(id)?.web_name ?? '–'));
+  const top = e.top_element_info;
+  return {
+    gw: e.id,
+    average: e.average_entry_score,
+    highest: e.highest_score ?? null,
+    mostSelected: navn(e.most_selected),
+    mostTransferredIn: navn(e.most_transferred_in),
+    topPlayer: top ? { name: navn(top.id), points: top.points } : null,
+    mostCaptained: navn(e.most_captained),
+    mostViceCaptained: navn(e.most_vice_captained),
+    transfersMade: e.transfers_made ?? null,
+    chips: (e.chip_plays ?? []).map((c) => ({
+      chip: c.chip_name,
+      label: CHIP_LABELS[c.chip_name] ?? c.chip_name,
+      count: c.num_played,
+    })),
+    rankedCount: e.ranked_count ?? null,
+  };
 }
 
 export function mostTransferredOut(elements, limit = 10) {
@@ -351,6 +391,39 @@ export function transferInCandidates(outPlayer, elements, squadIds, bankTenths, 
     })
     .sort((a, b) => b.score - a.score)
     .slice(0, limit);
+}
+
+/**
+ * Rundetabellen bak rankgrafen: dine poeng mot rundens snitt og høyeste, med
+ * FPLs egen `percentile_rank` («du var i topp X % denne runden»). `overall`
+ * er siste rads totalrangering med `overall_rank_percentage` — feltene lå i
+ * `entry/{id}/history.current[]`, men ble aldri lest før v1.14.0.
+ * Manglende felt gir `null` i cellen; tom historikk gir `null`.
+ */
+export function rankTable(historyCurrent, events = [], totalPlayers) {
+  const rows = historyCurrent ?? [];
+  if (rows.length === 0) return null;
+  const eventsById = new Map((events ?? []).map((e) => [e.id, e]));
+  const last = rows[rows.length - 1];
+  return {
+    rows: rows.map((h) => {
+      const e = eventsById.get(h.event);
+      return {
+        gw: h.event,
+        points: h.points ?? null,
+        average: e?.average_entry_score ?? null,
+        highest: e?.highest_score ?? null,
+        rank: h.rank ?? null,
+        overallRank: h.overall_rank ?? null,
+        percentile: h.percentile_rank ?? null,
+      };
+    }),
+    overall: {
+      rank: last.overall_rank ?? null,
+      percentage: last.overall_rank_percentage ?? null,
+      totalPlayers: totalPlayers ?? null,
+    },
+  };
 }
 
 /** SVG-polyline for overall rank per GW. Lavere rank = bedre = høyere i grafen. */

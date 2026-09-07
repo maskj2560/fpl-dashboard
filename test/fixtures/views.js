@@ -31,6 +31,7 @@ const player = (id, name, extra = {}) => ({
 
 const shared = {
   teamsById, clubAssets, STATUS_LABELS, POSITIONS_SHORT, formatDateTime, formatPrice, formatNumber,
+  formatDay: () => 'torsdag 23. juli',
   translateFplNews,
 };
 
@@ -38,10 +39,26 @@ export const dashboard = {
   ...shared,
   deadlineEvent: { name: 'Runde 1', deadline_time: '2026-08-21T17:30:00Z' },
   calendarUrl: 'webcal://fpl.marsk.no/kalender.ics',
-  flagged: [player(1, 'Saka', { status: 'i', news: 'Knee injury - 25% chance of playing', chance_of_playing_next_round: 25 })],
+  flagged: [player(1, 'Saka', { status: 'i', news: 'Knee injury - 25% chance of playing', news_added: '2026-07-23T12:01:23Z', chance_of_playing_next_round: 25 })],
   inForm: [player(2, 'Salah', { team: 2 })],
   boughtMost: [player(3, 'Haaland')],
   soldMost: [player(4, 'Watkins')],
+  roundStats: {
+    gw: 2,
+    average: 81,
+    highest: 161,
+    mostSelected: 'João Pedro',
+    mostTransferredIn: 'De Cuyper',
+    topPlayer: { name: 'B.Fernandes', points: 23 },
+    mostCaptained: 'Haaland',
+    mostViceCaptained: 'Raya',
+    transfersMade: 11562127,
+    chips: [
+      { chip: 'bboost', label: 'Bench Boost', count: 338660 },
+      { chip: '3xc', label: 'Triple Captain', count: 233946 },
+    ],
+    rankedCount: 9904815,
+  },
   matrix: {
     gameweeks: [1, 2],
     rows: [{
@@ -61,6 +78,7 @@ export const dashboardEmpty = {
   inForm: [],
   boughtMost: [],
   soldMost: [],
+  roundStats: null,
   matrix: { gameweeks: [], rows: [{ team: teamsById.get(2), cells: [], avgDifficulty: null }] },
   newsPoints: [],
 };
@@ -86,6 +104,13 @@ export const team = {
     bench: [{ pick: {}, player: player(5, 'Turner', { element_type: 1 }) }],
   },
   graph: { points: '0,0 600,140', area: '0,0 600,140 600,140 0,140', min: 400000, max: 500000, last: 500000, gwFirst: 1, gwLast: 2 },
+  rankTable: {
+    rows: [
+      { gw: 1, points: 58, average: 50, highest: 131, rank: 2201657, overallRank: 2201654, percentile: 25 },
+      { gw: 2, points: 81, average: 81, highest: null, rank: 4714786, overallRank: 3345863, percentile: 50 },
+    ],
+    overall: { rank: 3345863, percentage: '34', totalPlayers: 10412270 },
+  },
   chips: [],
   CHIPS, CHIP_LABELS, describeRec,
   chipPlan: {
@@ -127,6 +152,7 @@ export const teamEmpty = {
   gw: null,
   squadView: null,
   graph: null,
+  rankTable: null,
   recommendations: null,
   chipPlan: null,
 };
@@ -144,7 +170,8 @@ const diffRow = (id, navn, over = {}) => ({
 
 export const players = {
   teamsById, clubAssets, POSITIONS, POSITIONS_SHORT, STATUS_LABELS, formatPrice, teams,
-  players: [player(1, 'Saka', { penalties_order: 1 }), player(2, 'Salah', { team: 2, status: 'd' })],
+  // Salah har ingen defensive_contribution — feltet mangler helt hos ~halvparten.
+  players: [player(1, 'Saka', { penalties_order: 1, defensive_contribution: 34 }), player(2, 'Salah', { team: 2, status: 'd' })],
   differentials: {
     terskler: [
       { prosent: 5, rows: [diffRow(1, 'Saka')] },
@@ -183,6 +210,11 @@ const radarPlayer = (id, name, eventPoints) => ({
 });
 
 export const league = {
+  standingsGlobal: [
+    { id: 314, name: 'Globalt', rank: 3345863, lastRank: 2201654, percentile: 35, count: 9904802, trend: 'ned' },
+    { id: 276, name: 'Gameweek 1', rank: 100, lastRank: 100, percentile: 40, count: 8899691, trend: 'lik' },
+    { id: 181, name: 'Norge', rank: 92709, lastRank: 95000, percentile: 45, count: 208834, trend: 'opp' },
+  ],
   teamsById, clubAssets,
   formatNumber, formatSigned, formatDateTime,
   myEntry: 123,
@@ -436,13 +468,29 @@ export const priceChanges = {
   countDown: 5,
 };
 
+// v1.14.0: FPLs egne prognosefelt. Låst spiller har alltid pct 0.
+const priceForecast = {
+  mine: [
+    { id: 1, name: 'Haaland', teamShort: 'MCI', teamCode: 43, cost: 141, pct: 58.1, likelihood: 3, rate: 1200, lockedUntil: null, changed: 0 },
+    { id: 2, name: 'Mbeumo', teamShort: 'MUN', teamCode: 1, cost: 79, pct: -101.6, likelihood: -5, rate: -2002, lockedUntil: null, changed: -1 },
+    { id: 9, name: 'Raya', teamShort: 'ARS', teamCode: 3, cost: 55, pct: 0, likelihood: 0, rate: 0, lockedUntil: '2026-09-04T19:30:00Z', changed: 0 },
+  ],
+  risers: [{ id: 3, name: 'Cherki', teamShort: 'MCI', teamCode: 43, cost: 65, pct: 91.5, likelihood: 5, rate: 4215, lockedUntil: null, changed: 0 }],
+  fallers: [{ id: 2, name: 'Mbeumo', teamShort: 'MUN', teamCode: 1, cost: 79, pct: -101.6, likelihood: -5, rate: -2002, lockedUntil: null, changed: -1 }],
+  countRising: 4,
+  countFalling: 6,
+  lockedCount: 1,
+};
+
 export const transfers = {
   title: 'Overganger',
   clubAssets,
   formatSigned: (n) => String(n),
   formatPrice: (n) => (n / 10).toFixed(1),
   formatDay: () => 'torsdag 3. september',
+  formatTime: () => '21:30',
   priceChanges,
+  priceForecast,
   aiComment: { text: "Byttene treffer — **Haaland** inn var rett.", generatedAt: 1 },
   scenarios: [
     {
@@ -498,6 +546,7 @@ export const transfersEmpty = {
   clubAssets,
   formatSigned: (n) => String(n),
   formatPrice: (n) => (n / 10).toFixed(1),
+  priceForecast: { mine: [], risers: [], fallers: [], countRising: 0, countFalling: 0, lockedCount: 0 },
   priceReport: null,
   baseline: null,
   scenarios: [],

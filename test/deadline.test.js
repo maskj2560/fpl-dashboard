@@ -172,3 +172,61 @@ test('deadlineCheckText nevner deadline, grunnlag, hvert funn og footeren', () =
   assert.match(text, /- Salah \(LIV\) har ingen kamp i runden/);
   assert.match(text, /_Gratisbytter igjen: 2 \(0 brukt\) · Chip: ingen_/);
 });
+
+// ---- v1.14.0 (T7): låneklausul + nyhetsdato --------------------------------
+
+test('buildDeadlineCheck gir funnet klausul når en starter har scout_risks for runden — og ikke for andre runder', () => {
+  const elements = baseElements();
+  elements.set(2, {
+    ...elements.get(2),
+    scout_risks: [
+      { property: 'loan_ineligible', gameweek: 3, notes: 'This player will not be available to face their parent club in Gameweek 12.' },
+      { property: 'loan_ineligible', gameweek: 27, notes: 'senere runde' },
+    ],
+  });
+  const funn = check({ elementsById: elements }).findings;
+  assert.deepEqual(funn.map((f) => f.type), ['klausul']);
+  assert.equal(funn[0].player.name, 'Saka');
+  assert.match(funn[0].detail, /moderklubben/, 'notes fra FPL er upålitelig — vi skriver teksten selv');
+
+  // Klausul i en annen runde skal ikke gi funn i denne.
+  const annen = baseElements();
+  annen.set(2, { ...annen.get(2), scout_risks: [{ property: 'loan_ineligible', gameweek: 16 }] });
+  assert.deepEqual(check({ elementsById: annen }).findings, []);
+
+  // Benken (posisjon 12) sjekkes aldri.
+  const benk = baseElements();
+  benk.set(6, { ...benk.get(6), scout_risks: [{ property: 'loan_ineligible', gameweek: 3 }] });
+  assert.deepEqual(check({ elementsById: benk }).findings, []);
+
+  // Andre risikotyper er ikke låneklausul.
+  const annenType = baseElements();
+  annenType.set(2, { ...annenType.get(2), scout_risks: [{ property: 'noe_annet', gameweek: 3 }] });
+  assert.deepEqual(check({ elementsById: annenType }).findings, []);
+});
+
+test('deadlineCheckText skriver klausul-linja uten «er»', () => {
+  const elements = baseElements();
+  elements.set(2, { ...elements.get(2), scout_risks: [{ property: 'loan_ineligible', gameweek: 3 }] });
+  const tekst = deadlineCheckText(check({ elementsById: elements }), 3);
+  assert.match(tekst, /- Saka \(ARS\) kan ikke møte moderklubben/, 'linja skal ikke få «er» foran');
+  assert.ok(!/Saka \(ARS\) er kan ikke/.test(tekst));
+});
+
+test('statusDetail tar med når nyheten ble meldt', () => {
+  const elements = baseElements();
+  elements.set(2, {
+    ...elements.get(2),
+    status: 'i',
+    news: 'Groin injury - Unknown return date',
+    news_added: '2026-07-23T12:01:23Z',
+  });
+  const funn = check({ elementsById: elements }).findings;
+  assert.equal(funn[0].type, 'ute');
+  assert.match(funn[0].detail, /\(meldt .*juli\)$/, 'datoen står bakerst i detaljen');
+
+  // news_added uten news gir ingen dato — og null skal ikke kaste.
+  const uten = baseElements();
+  uten.set(2, { ...uten.get(2), status: 'i', news: '', news_added: null });
+  assert.ok(!/meldt/.test(check({ elementsById: uten }).findings[0].detail));
+});

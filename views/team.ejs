@@ -6,7 +6,14 @@
 <div class="stat-strip">
   <div class="stat"><span class="stat-val"><%= squadView ? squadView.entryHistory.points : '–' %></span><span class="stat-lbl">GW-poeng</span></div>
   <div class="stat"><span class="stat-val"><%= squadView ? formatNumber(entry.summary_overall_points) : '–' %></span><span class="stat-lbl">Totalt</span></div>
-  <div class="stat"><span class="stat-val"><%= squadView ? formatNumber(entry.summary_overall_rank) : '–' %></span><span class="stat-lbl">Totalrangering</span></div>
+  <div class="stat">
+    <span class="stat-val"><%= squadView ? formatNumber(entry.summary_overall_rank) : '–' %></span>
+    <span class="stat-lbl">Totalrangering</span>
+    <%# «Topp X %» (v1.14.0): FPLs overall_rank_percentage fra history.current. %>
+    <% if (typeof rankTable !== 'undefined' && rankTable?.overall.percentage) { %>
+      <span class="dim stat-sub">topp <%= rankTable.overall.percentage %> % av <%= formatNumber(rankTable.overall.totalPlayers) %></span>
+    <% } %>
+  </div>
   <div class="stat"><span class="stat-val"><%= squadView ? formatPrice(squadView.entryHistory.value - squadView.entryHistory.bank) : '–' %></span><span class="stat-lbl">Lagverdi (£m)</span></div>
   <div class="stat"><span class="stat-val"><%= squadView ? formatPrice(squadView.entryHistory.bank) : '–' %></span><span class="stat-lbl">Bank (£m)</span></div>
 </div>
@@ -73,6 +80,36 @@
     </div>
     </div>
     <p class="hint">Best: <%= formatNumber(graph.min) %> · Nå: <%= formatNumber(graph.last) %> (lavere er bedre — toppen av grafen er best)</p>
+    <%# Rundetabellen (v1.14.0): dine poeng mot snittet, med FPLs percentile_rank. %>
+    <% if (typeof rankTable !== 'undefined' && rankTable) { %>
+      <div class="table-scroll">
+        <table class="data data--fit">
+          <caption class="sr-only">Poeng og rangering per runde</caption>
+          <thead>
+            <tr>
+              <th scope="col">Runde</th>
+              <th scope="col" class="num">Poeng</th>
+              <th scope="col" class="num">Snitt</th>
+              <th scope="col" class="num">Høyeste</th>
+              <th scope="col" class="num">Rank</th>
+              <th scope="col" class="num">Topp %</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (const r of rankTable.rows) { %>
+              <tr>
+                <td><%= r.gw %></td>
+                <td class="num <%= r.average != null && r.points >= r.average ? 'accent' : '' %>"><strong><%= r.points == null ? '–' : r.points %></strong></td>
+                <td class="num"><%= r.average == null ? '–' : r.average %></td>
+                <td class="num"><%= r.highest == null ? '–' : formatNumber(r.highest) %></td>
+                <td class="num"><%= r.overallRank == null ? '–' : formatNumber(r.overallRank) %></td>
+                <td class="num"><%= r.percentile == null ? '–' : r.percentile + ' %' %></td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
   </section>
 <% } %>
 

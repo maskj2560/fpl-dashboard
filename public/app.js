@@ -38,6 +38,20 @@ const DODBALL_ETIKETTER = [
   ['frispark', 'Direkte frispark'],
 ];
 
+/**
+ * Nyhetslinja i kortet: teksten, når FPL meldte den, og en lenke til klubbens
+ * egen sak når `scout_news_link` finnes. Serveren slipper bare https gjennom.
+ */
+function nyhetsLinje(d) {
+  if (!d.nytt) return '';
+  const e = escapeHtml;
+  const naar = d.nyttMeldt ? ' — meldt ' + e(d.nyttMeldt) : '';
+  const kilde = d.nyttKilde
+    ? ' · <a href="' + e(d.nyttKilde) + '" rel="noopener noreferrer" target="_blank">Kilde</a>'
+    : '';
+  return '<p class="dim">' + e(d.nytt) + naar + kilde + '</p>';
+}
+
 function playerCardHtml(d, shirtHtml) {
   const e = escapeHtml;
   const stat = (navn, verdi, stor) =>
@@ -51,8 +65,21 @@ function playerCardHtml(d, shirtHtml) {
     ' · £' + e(d.pris) + 'm</p>' +
     '<p><span class="status status-' + e(d.status) + '">' + e(d.statusTekst) + '</span>' +
     (d.spillesjanse == null ? '' : ' <span class="dim">' + e(d.spillesjanse) + ' % sjanse</span>') +
-    '</p>' + (d.nytt ? '<p class="dim">' + e(d.nytt) + '</p>' : '') +
+    '</p>' + nyhetsLinje(d) +
     '</div></div>';
+
+  // Rank blant spillerne på samme posisjon (v1.14.0) — «nr. 4 av alle
+  // midtbaner på form» er billigere å lese enn å sortere seg fram til det.
+  if (d.rangering) {
+    const r = d.rangering;
+    const deler = [
+      'Form nr. ' + e(r.form.nr) + ' av ' + e(r.form.av) + ' ' + e(r.posisjonFlertall),
+      r.poengPerKamp == null ? null : 'P/K nr. ' + e(r.poengPerKamp),
+      r.eid == null ? null : 'Eid nr. ' + e(r.eid),
+      r.pris == null ? null : 'Pris nr. ' + e(r.pris),
+    ].filter(Boolean);
+    html += '<p class="dim">' + deler.join(' · ') + '</p>';
+  }
 
   html += '<div class="kort-stats kort-stats--primar">' +
     stat('Form', d.form, true) + stat('Poeng', d.totalPoeng, true) +
@@ -60,6 +87,28 @@ function playerCardHtml(d, shirtHtml) {
     '<div class="kort-stats">' +
     stat('Eid %', d.eid) + stat('xG', d.xg) + stat('xA', d.xa) +
     stat('Minutter', d.minutter) + '</div>';
+
+  // Statraden som faktisk sier noe om posisjonen (v1.14.0). 0 vises — det er
+  // en ekte verdi, ikke manglende data.
+  if (d.stats && d.stats.length > 0) {
+    html += '<div class="kort-stats">' + d.stats.map((s) => stat(s.navn, s.verdi)).join('') + '</div>';
+  }
+
+  // Forsvarsbidrag (v1.14.0): poenggivende fra 2025/26 — 2 p ved 10 (forsvar)
+  // eller 12 (midt, spiss) i én kamp. Vises bare når spilleren faktisk har noe.
+  if (d.forsvar && d.forsvar.dc > 0) {
+    html += '<p class="kort-dc">Forsvarsbidrag <strong>' + e(d.forsvar.dc) + '</strong> ' +
+      '<span class="dim">(CBI ' + e(d.forsvar.cbi) + ' · Rec ' + e(d.forsvar.rec) +
+      ' · Tk ' + e(d.forsvar.tk) + ') · ' + e(d.forsvar.per90) + ' per 90</span></p>' +
+      '<p class="hint">Gir 2 poeng i en kamp med 10 bidrag (forsvarere) eller 12 (midtbane og spisser).</p>';
+  }
+
+  // Låneklausul (v1.14.0): rundene spilleren ikke får møte moderklubben sin.
+  if (d.klausuler && d.klausuler.length > 0) {
+    const r = d.klausuler.map(String);
+    const liste = r.length === 1 ? r[0] : r.slice(0, -1).join(', ') + ' og ' + r[r.length - 1];
+    html += '<p class="dim">Låneklausul: kan ikke spille runde ' + e(liste) + '</p>';
+  }
 
   const roller = DODBALL_ETIKETTER.filter(([key]) => d.dodball && d.dodball[key] != null);
   if (roller.length > 0) {
@@ -76,14 +125,35 @@ function playerCardHtml(d, shirtHtml) {
     html += '<div class="table-scroll"><table class="data"><caption class="sr-only">Siste kamper</caption><thead><tr>' +
       '<th>Runde</th><th>Mot</th><th class="num">P</th><th class="num">Min</th>' +
       '<th class="num">Mål</th><th class="num">A</th><th class="num">xG</th>' +
-      '<th class="num">xA</th><th class="num">Bonus</th></tr></thead><tbody>' +
+      '<th class="num">xA</th><th class="num">Bonus</th><th class="num">Pris</th></tr></thead><tbody>' +
       d.sisteKamper.map((k) =>
         '<tr><td>' + e(k.runde) + '</td><td>' + e(k.motstander || '–') +
         (k.hjemme == null ? '' : ' <span class="dim">' + (k.hjemme ? 'H' : 'B') + '</span>') +
         '</td><td class="num"><strong>' + e(k.poeng) + '</strong></td>' +
         '<td class="num">' + e(k.minutter) + '</td><td class="num">' + e(k.mal) + '</td>' +
         '<td class="num">' + e(k.assists) + '</td><td class="num">' + e(k.xg) + '</td>' +
-        '<td class="num">' + e(k.xa) + '</td><td class="num">' + e(k.bonus) + '</td></tr>').join('') +
+        '<td class="num">' + e(k.xa) + '</td><td class="num">' + e(k.bonus) + '</td>' +
+        '<td class="num">' + (k.pris == null ? '–' : '£' + e(k.pris) + 'm') + '</td></tr>').join('') +
+      '</tbody></table></div>';
+  }
+
+  // Tidligere sesonger (v1.14.0): history_past lå i element-summary uten å bli
+  // lest. Prisreisen start_cost → end_cost sier hvor markedet endte forrige år.
+  html += '<h3>Tidligere sesonger</h3>';
+  if (!d.sesonger || d.sesonger.length === 0) {
+    html += '<p class="empty">Første sesong i Premier League.</p>';
+  } else {
+    html += '<div class="table-scroll"><table class="data"><caption class="sr-only">Tidligere sesonger</caption><thead><tr>' +
+      '<th>Sesong</th><th class="num">P</th><th class="num">Min</th><th class="num">Mål</th>' +
+      '<th class="num">A</th><th class="num">Nullere</th><th class="num">Bonus</th>' +
+      '<th class="num">Pris</th></tr></thead><tbody>' +
+      d.sesonger.map((s) =>
+        '<tr><td>' + e(s.sesong) + '</td><td class="num"><strong>' + e(s.poeng) + '</strong></td>' +
+        '<td class="num">' + e(s.minutter) + '</td><td class="num">' + e(s.mal) + '</td>' +
+        '<td class="num">' + e(s.assists) + '</td><td class="num">' + e(s.nullere) + '</td>' +
+        '<td class="num">' + e(s.bonus) + '</td><td class="num">' +
+        (s.prisStart == null ? '–' : e(s.prisStart) + ' → ' + e(s.prisSlutt)) +
+        '</td></tr>').join('') +
       '</tbody></table></div>';
   }
 
@@ -108,6 +178,23 @@ function playerCardHtml(d, shirtHtml) {
  * rendret via clubAssets-vokteren. Delt av spillerkortet (Modul 9) og
  * duellen (Modul 10) — klienten skriver aldri en <img> i blinde.
  */
+/**
+ * FPLs poengoppdeling som én linje: «Minutter 90′ +2 · Mål ×2 +8 · Bonus +3».
+ * Minutter får apostrof. Antallet vises bare når det sier noe poengsummen ikke
+ * gjør — bonus er 3 poeng for 3 bonus, og «×3» der er bare støy.
+ */
+function explainText(explain) {
+  if (!explain || explain.length === 0) return '';
+  return explain
+    .map(function (r) {
+      const poeng = (r.points < 0 ? '−' : '+') + Math.abs(r.points);
+      if (r.label === 'Minutter') return r.label + ' ' + r.value + '′ ' + poeng;
+      const antall = r.value > 1 && r.value !== r.points ? ' ×' + r.value : '';
+      return r.label + antall + ' ' + poeng;
+    })
+    .join(' · ');
+}
+
 function shirtHtmlFor(lagId, erKeeper) {
   if (lagId == null || lagId === '') return '';
   const attr = erKeeper ? 'data-shirt-keeper' : 'data-shirt';
@@ -414,9 +501,11 @@ function initEdgeFades(el, prefix) {
     const tbody = table.tBodies[0];
     const rows = [...tbody.rows];
     rows.sort((a, b) => {
+      // data-sort vinner over celleteksten: navnecellen på /live rommer også
+      // poengoppdelingen, og den skal aldri forurense sorteringsnøkkelen.
       const cmp = compareCells(
-        a.cells[index].textContent.trim(),
-        b.cells[index].textContent.trim(),
+        (a.cells[index].dataset.sort ?? a.cells[index].textContent).trim(),
+        (b.cells[index].dataset.sort ?? b.cells[index].textContent).trim(),
         type,
       );
       return dir === 'descending' ? -cmp : cmp;
@@ -594,6 +683,16 @@ function initEdgeFades(el, prefix) {
   );
 
 
+  // Radene bygges på nytt ved hvert tikk, så åpne forklaringer må huskes
+  // per spillernavn — ellers lukker de seg selv midt i en kamp.
+  const openExplain = new Set();
+  playersBody.addEventListener('toggle', function (e) {
+    const d = e.target;
+    if (!d || d.tagName !== 'DETAILS' || !d.dataset.navn) return;
+    if (d.open) openExplain.add(d.dataset.navn);
+    else openExplain.delete(d.dataset.navn);
+  }, true);
+
   function render(live) {
     if (totalEl) totalEl.textContent = live.totalLive == null ? '–' : live.totalLive;
     playersBody.innerHTML = live.myPlayers
@@ -608,9 +707,16 @@ function initEdgeFades(el, prefix) {
             : p.bonusEst > 0
               ? 'Estimat fra BPS'
               : '';
+        const hvem = '<strong>' + escapeHtml(p.name) + '</strong>' +
+          (p.isCaptain ? ' <b class="cap">C</b>' : '') + ' ' + clubBadgeHtml(p.team, p.teamCode, imgVersion);
+        const why = explainText(p.explain);
+        const navnCelle = why
+          ? '<td data-sort="' + escapeHtml(p.name) + '"><details class="hint-details live-why" data-navn="' +
+            escapeHtml(p.name) + '"' + (openExplain.has(p.name) ? ' open' : '') + '><summary>' + hvem +
+            '</summary><span class="dim">' + escapeHtml(why) + '</span></details></td>'
+          : '<td data-sort="' + escapeHtml(p.name) + '">' + hvem + '</td>';
         return (
-          '<tr' + (p.onBench ? ' class="row-bench"' : '') + '><td><strong>' + escapeHtml(p.name) + '</strong>' +
-          (p.isCaptain ? ' <b class="cap">C</b>' : '') + ' ' + clubBadgeHtml(p.team, p.teamCode, imgVersion) + '</td>' +
+          '<tr' + (p.onBench ? ' class="row-bench"' : '') + '>' + navnCelle +
           '<td class="num">' + p.minutes + "'</td>" +
           '<td class="num">' + p.points + '</td>' +
           '<td class="num' + (bonus > 0 ? ' accent' : '') + '"' + (title ? ' title="' + title + '"' : '') + '>' +

@@ -7,6 +7,62 @@ og prosjektet følger [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.14.0] - 2026-09-07
+
+«Funksjonssveip» på `feat/funksjonssveip-v1140`: åtte funksjoner bygget på
+FPL-felt appen allerede hentet, men aldri leste — 73 av 109 felt i
+`bootstrap.elements[]`, hele `explain` i live-svaret, `history_past` i
+element-summary og de globale ligaene i `entry`. **0 nye FPL-kall**, 0 nye
+AI-kall, 0 nye avhengigheter, 0 nye ruter. Rød test først. 841/841, lint 0.
+Hver funksjon sett i nettleser ved 390 px i begge temaer.
+
+### Added
+
+- **Prisprognose på «Overganger»** — nytt kort under Prisendringer som viser
+  hvor nær en prisendring spillerne er, før den skjer. Troppen din først (fra
+  20 % mot terskelen), så de fem største bevegelsene hver vei i markedet.
+  Kolonnene er FPLs egne, udokumenterte prognosefelt: prosent mot endring,
+  FPLs sannsynlighet og netto bytter per time. Låste spillere vises med
+  tidspunktet de er låst til, og prognosen lover aldri en endring. 0 nye
+  FPL-kall — feltene kommer fra bootstrap, som allerede hentes hvert kvarter.
+- **Poengoppdeling på «Live»** — hver spiller i troppen kan nå folde ut hvorfor
+  poengsummen ble som den ble: «Minutter 90′ +2 · Mål ×2 +8 · Bonus +3». Tallene
+  er FPLs egne (`explain`), som allerede lå i live-svaret uten å bli lest.
+  Dobbeltrunder viser begge kampene, og forklaringer du har åpnet holder seg
+  åpne når tabellen oppdaterer seg. Sorteringen bruker fortsatt bare navnet.
+- **«Runden i tall» på dashbordet** — nytt kort med FPLs egen fasit for siste
+  ferdigspilte runde: snitt, høyeste poengsum, mest valgt, mest kjøpt, rundens
+  beste spiller, mest kapteinet og visekapteinet, antall bytter, antall lag med
+  rangering og hvor mange som spilte hver chip. Spillernavnene lenker videre til
+  «Spillere». Tomtilstand før første runde er ferdig.
+- **«Topp X %» på «Mitt lag»** — hero-flisen «Totalrangering» viser nå også hvor
+  stor andel av alle managere du ligger foran («topp 34 % av 10 412 270»), og
+  under rankgrafen står en ny tabell med poeng, rundens snitt, rundens høyeste,
+  rangering og topp-prosent per runde. Runder der du slo snittet er uthevet.
+  Tallene er FPLs egne `percentile_rank` og `overall_rank_percentage`.
+- **Forsvarsbidrag på «Spillere»** — ny sorterbar DC-kolonne i spillertabellen,
+  og en linje i spillerkortet som bryter tallet ned i clearances/blocks/
+  interceptions, recoveries og tackles, med per 90 og hva som skal til for
+  poeng. Statistikken ble poenggivende i 2025/26 og var ikke vist noe sted.
+  313 av 652 spillere har en verdi i dag; resten viser 0.
+- **Rikere spillerkort** — kortet viser nå statistikk som faktisk passer
+  posisjonen (keepere får redninger, nullere, baklengs, xGC og straffer reddet;
+  forsvarere nullere og kort; midtbane og spisser xGI, BPS og straffebom, alle
+  med ICT, drømmelag og poeng per £m), rangeringen blant spillerne på samme
+  posisjon («Form nr. 2 av 78 spisser»), tidligere sesonger med prisreise
+  («5.5 → 6.2»), prisen spilleren hadde i hver av de siste kampene, og når FPL
+  meldte en nyhet — med lenke til klubbens egen sak når den finnes.
+- **Låneklausul i «Lagsjekk»** — sjekken før deadline fanger nå også startere
+  som ikke får møte moderklubben sin i runden på grunn av lånevilkår. Samme
+  funn går til Discord-meldingen. Spillerkortet viser hvilke runder det gjelder.
+- **Nyhetsdato flere steder** — «Ukens flagg» på dashbordet og skadedetaljene i
+  «Lagsjekk» viser når FPL meldte nyheten, så en skade fra juli ikke lenger ser
+  like fersk ut som en fra i går.
+- **«Dine plasseringer» på «Miniligaer»** — nytt kort øverst med plasseringen din
+  i de globale ligaene FPL melder alle inn i (Globalt, Norge, klubbligaen,
+  oppstartsrunden), med antall deltakere, topp-prosent og trend mot forrige
+  runde. Disse ligaene ble tidligere filtrert bort og vist ingen steder.
+
 ## [1.13.2] - 2026-09-04
 
 «UX-polering 2» på `feat/ux-polering-v1132`: ti småfiks fra

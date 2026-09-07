@@ -48,7 +48,20 @@ function playerRef(el, teamsById) {
 function statusDetail(el) {
   const label = STATUS_LABELS[el.status] ?? el.status;
   const news = translateFplNews(el.news);
-  return news ? `${label} — ${news}` : label;
+  if (!news) return label;
+  // Når nyheten ble meldt sier hvor fersk den er — en skade meldt i juli er
+  // noe annet enn en meldt i går. Datoen finnes kun sammen med teksten.
+  const naar = el.news_added ? ` (meldt ${formatDay(el.news_added)})` : '';
+  return `${label} — ${news}${naar}`;
+}
+
+/**
+ * Låneklausulen for denne runden, om den finnes. FPLs `notes` er upålitelig
+ * (Dansos tekst sa «Gameweek 12» for både runde 12 og 23 den 4. sep 2026) —
+ * `gameweek`-feltet er fasit, og teksten skriver vi selv.
+ */
+function loanRiskFor(el, gw) {
+  return (el.scout_risks ?? []).find((r) => r?.property === 'loan_ineligible' && r.gameweek === gw);
 }
 
 /**
@@ -108,6 +121,9 @@ export function buildDeadlineCheck({
     if (teamsPlaying.size > 0 && !teamsPlaying.has(el.team)) {
       add('blank', el, 'har ingen kamp i runden');
     }
+    if (loanRiskFor(el, gw)) {
+      add('klausul', el, 'kan ikke møte moderklubben i runden (låneklausul)');
+    }
   }
 
   const ledger = buildFtLedger({ history: entryHistory, chips });
@@ -129,7 +145,8 @@ const FINDING_PREFIX = { kaptein: 'Kaptein: ', vise: 'Visekaptein: ' };
 
 function findingLine(f) {
   const who = `${FINDING_PREFIX[f.type] ?? ''}${f.player.name} (${f.player.teamShort})`;
-  return f.type === 'blank' ? `- ${who} ${f.detail}` : `- ${who} er ${f.detail}`;
+  // «blank» og «klausul» er formulert som hele setninger — de får ikke «er».
+  return f.type === 'blank' || f.type === 'klausul' ? `- ${who} ${f.detail}` : `- ${who} er ${f.detail}`;
 }
 
 /** Discord-teksten. Ren — samme innhold som kortet på /brief. */

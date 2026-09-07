@@ -14,6 +14,39 @@ export async function resolveLeagueIds() {
   return entry.leagues.classic.filter((l) => l.league_type === 'x').map((l) => l.id);
 }
 
+// De globale gigaligaene FPL melder alle inn i. Navnene er engelske og
+// generiske — de to vi kjenner får norske navn, resten står som de er.
+const GLOBALE_NAVN = { Overall: 'Globalt', Norway: 'Norge' };
+
+/**
+ * «Dine plasseringer» (v1.14.0): de globale ligaene (`league_type === 's'`)
+ * som `resolveLeagueIds` filtrerer bort. Sortert på størrelse, størst først;
+ * ligaer uten `rank_count` (test-verdenen) havner sist. `trend` sammenligner
+ * plasseringen mot forrige runde — lavere rank er bedre.
+ */
+export function globalStandings(entry) {
+  const alle = entry?.leagues?.classic ?? [];
+  return alle
+    .filter((l) => l.league_type === 's')
+    .map((l) => ({
+      id: l.id,
+      name: GLOBALE_NAVN[l.name] ?? l.name,
+      rank: l.entry_rank ?? null,
+      lastRank: l.entry_last_rank ?? null,
+      percentile: l.entry_percentile_rank ?? null,
+      count: l.rank_count ?? null,
+      trend: trendAv(l.entry_rank, l.entry_last_rank),
+    }))
+    .sort((a, b) => (b.count ?? -1) - (a.count ?? -1));
+}
+
+function trendAv(rank, lastRank) {
+  if (rank == null || lastRank == null) return null;
+  if (rank < lastRank) return 'opp';
+  if (rank > lastRank) return 'ned';
+  return 'lik';
+}
+
 // Siste kjente antall ligaer. Starter på config-verdien, oppdateres av
 // bakgrunnsoppslag. /health leser dette i stedet for å vente på FPL.
 let lastKnownLeagues = config.leagueIds.length;

@@ -5,6 +5,48 @@
   <% } %>
 </section>
 
+<%# «Dine plasseringer» (v1.14.0): de globale gigaligaene FPL melder alle inn i.
+    Ikke rendret når lista er tom — kortet skal ikke stå der som et tomt skall. %>
+<% if (typeof standingsGlobal !== 'undefined' && standingsGlobal.length > 0) { %>
+  <section class="card card-wide" id="plasseringer">
+    <h2>Dine plasseringer</h2>
+    <div class="table-scroll">
+      <table class="data data--fit">
+        <caption class="sr-only">Plasseringen din i de globale ligaene</caption>
+        <thead>
+          <tr>
+            <th scope="col">Liga</th>
+            <th scope="col" class="num">Plass</th>
+            <th scope="col" class="num">Av</th>
+            <th scope="col" class="num">Topp %</th>
+            <th scope="col">Trend</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for (const l of standingsGlobal) { %>
+            <tr>
+              <td><strong><%= l.name %></strong></td>
+              <td class="num"><%= l.rank == null ? '–' : formatNumber(l.rank) %></td>
+              <td class="num"><%= l.count == null ? '–' : formatNumber(l.count) %></td>
+              <td class="num"><%= l.percentile == null ? '–' : l.percentile + ' %' %></td>
+              <td>
+                <% if (l.trend === 'opp') { %>
+                  <span class="rank-up" aria-label="opp <%= formatNumber(l.lastRank - l.rank) %> plasser">▲</span>
+                <% } else if (l.trend === 'ned') { %>
+                  <span class="rank-down" aria-label="ned <%= formatNumber(l.rank - l.lastRank) %> plasser">▼</span>
+                <% } else if (l.trend === 'lik') { %>
+                  <span class="rank-same" aria-label="uendret plassering">–</span>
+                <% } else { %>–<% } %>
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+    <p class="hint">Ligaene FPL melder alle inn i automatisk. «Topp %» er FPLs egen percentil for den ligaen.</p>
+  </section>
+<% } %>
+
 <% if (leagues.length === 0) { %>
   <section class="card"><p class="empty">Fant ingen private miniligaer. Ligaene hentes automatisk fra laget ditt — mangler noen, sett <code>LEAGUE_IDS</code> i miljøvariablene.</p></section>
 <% } %>

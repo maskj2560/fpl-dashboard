@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildLive, topBps, assembleLive } from '../src/services/live.js';
+import { buildLive, topBps, assembleLive, EXPLAIN_LABELS } from '../src/services/live.js';
 import { clear as cacheClear, _setNow as cacheSetNow, _flush as cacheFlush } from '../src/services/cache.js';
 import { _setNow as fplSetNow } from '../src/services/fplClient.js';
 
@@ -25,7 +25,7 @@ function confirmedBonus(pairs) {
 }
 
 const liveStats = (entries) => ({
-  elements: entries.map(([id, stats]) => ({ id, stats })),
+  elements: entries.map(([id, stats, explain]) => (explain ? { id, stats, explain } : { id, stats })),
 });
 
 // ---- v1.11.0: bonuskamp (BPS-race) per kamp --------------------------------
@@ -127,6 +127,64 @@ test('effective ganger med kapteinsmultiplikator og nuller benken', () => {
   );
   assert.equal(result.totalLive, 21);
   assert.equal(result.myPlayers[0].team, 'ARS');
+});
+
+// v1.14.0 (T2): FPLs egen poengoppdeling per spiller — /live viste bare summen.
+test('buildLive legger poengoppdelingen på hver spiller med norske etiketter og tåler tomt explain', () => {
+  const result = buildLive({
+    bootstrap,
+    gw: 1,
+    fixtures: [{ event: 1, team_h: 1, team_a: 2, started: true, finished: true, minutes: 90 }],
+    live: liveStats([
+      [
+        10,
+        { total_points: 13, minutes: 90, bonus: 3 },
+        // Dobbeltrunde: to kamper flates til én liste.
+        [
+          {
+            fixture: 1,
+            stats: [
+              { identifier: 'minutes', points: 2, value: 90, points_modification: 0 },
+              { identifier: 'goals_scored', points: 8, value: 2, points_modification: 0 },
+              { identifier: 'bonus', points: 3, value: 3, points_modification: 0 },
+              { identifier: 'yellow_cards', points: 0, value: 0, points_modification: 0 },
+            ],
+          },
+          { fixture: 2, stats: [{ identifier: 'defensive_contribution', points: 2, value: 13, points_modification: 0 }] },
+        ],
+      ],
+      [11, { total_points: 0, minutes: 0, bonus: 0 }, []],
+      [12, { total_points: 2, minutes: 90, bonus: 0 }, [{ fixture: 1, stats: [{ identifier: 'nytt_felt', points: 1, value: 4 }] }]],
+    ]),
+    picks: {
+      picks: [
+        { element: 10, position: 1, multiplier: 1, is_captain: false },
+        { element: 11, position: 2, multiplier: 1, is_captain: false },
+        { element: 12, position: 3, multiplier: 1, is_captain: false },
+      ],
+    },
+  });
+
+  assert.deepEqual(result.myPlayers[0].explain, [
+    { label: 'Minutter', points: 2, value: 90 },
+    { label: 'Mål', points: 8, value: 2 },
+    { label: 'Bonus', points: 3, value: 3 },
+    { label: 'Forsvarsbidrag', points: 2, value: 13 },
+  ], 'gult kort uten poeng og verdi utelates; begge kampene er med');
+  assert.deepEqual(result.myPlayers[1].explain, [], 'tomt explain gir tom liste, aldri undefined');
+  assert.deepEqual(result.myPlayers[2].explain, [{ label: 'nytt_felt', points: 1, value: 4 }], 'ukjent identifikator vises som seg selv');
+  assert.equal(EXPLAIN_LABELS.clean_sheets, 'Nullere');
+  assert.equal(EXPLAIN_LABELS.penalties_saved, 'Straffe reddet');
+
+  // Spiller uten innslag i live-svaret (ikke spilt ennå) skal ikke kaste.
+  const utenLive = buildLive({
+    bootstrap,
+    gw: 1,
+    fixtures: [],
+    live: liveStats([]),
+    picks: { picks: [{ element: 10, position: 1, multiplier: 1 }] },
+  });
+  assert.deepEqual(utenLive.myPlayers[0].explain, []);
 });
 
 test('pick uten element i bootstrap dropper spilleren, ikke siden', () => {
@@ -418,6 +476,7 @@ test('payloaden har ingen døde felter', () => {
     'bonusEst',
     'bonusPublished',
     'effective',
+    'explain',
     'isCaptain',
     'minutes',
     'name',

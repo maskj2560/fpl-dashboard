@@ -1398,6 +1398,13 @@ table.sortable th[aria-sort='ascending']::after {
   overflow-wrap: normal; /* aldri «TOTALRANGE / RING» — brekk kun på mellomrom (QA-funn 9) */
 }
 
+/* v1.14.0: «topp 34 % av 10 412 270» under Totalrangering. Egen, mindre grad
+   enn .stat-lbl så flisen ikke vokser ut av raden på 390 px (QA-funn 9). */
+.stat-sub {
+  font-size: var(--fs-xs);
+  overflow-wrap: normal;
+}
+
 /* Banen: klippestriper, midtsirkel-bue nederst og 16-meter øverst — diskret
    nok til at spillerkortene fortsatt er det man leser først. */
 .pitch {

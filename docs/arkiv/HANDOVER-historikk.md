@@ -5,6 +5,43 @@
 > sjekkpunkt-tabellen, versjonshistorikken, utdaterte åpne punkter og hele
 > loggen over brukerbeskjeder til og med økt 22. Nyere logg: HANDOVER.md.
 
+## Rotert 2026-09-04 (økt 62): to Coolify-driftslærdommer fra 25. aug (verbatim fra HANDOVER.md)
+
+- **401 med `Basic realm="traefik"`: sjekk FØRST om «HTTP Basic Authentication»
+  er huket av for appen i Coolify.** Haken rammer ALLE stier, også `/health`;
+  realmnavnet er Traefiks standard, ikke tegn på manglende rute (som ville gitt
+  404). Redeploy hjelper ikke — fjern haken (løst 25. aug).
+- **Coolifys «Running (healthy)» sier bare at appen svarer INNE i containeren.**
+  Coolifys egen HTTP-sjekk overstyrte Dockerfilens og brukte `curl` (finnes ikke
+  i alpine-imaget) → «healthy» mens prod svarte 401 (fikset 25. aug: sjekken AV).
+  «Prod svarer rart» feilsøkes ALLTID utenfra først.
+
+## Rotert 2026-09-04 (økt 62, v1.14.0): statusblokkene for v1.13.2 og v1.13.1 (verbatim fra HANDOVER.md)
+
+- **v1.13.2 «UX-polering 2» i prod 4. sep 04:57 (økt 60)**: ti småfiks fra
+  gjennomgangen i økt 59. **809/809 + lint 0** (baseline 792), asset-hash
+  `781ffae6`. CI-kjøring `33831271617` på merge-commiten grønn på Node 22 og 24.
+  Prod-sjekk 04:58: footer v1.13.2, `<script` 2 på `/`, /health 200 med
+  `aiStats` (19 kall, 0 failures), hash `fpl-781ffae6` fra `/sw.js`, 9 sider
+  200, og alle fiksene bekreftet i prod-HTML-en (`#players-more`,
+  `.dim.manager` ×5, `.hint-details` ×3, `.col-now` ×17, 0 treff på sekunder
+  i /nyheter). Hver fiks sett i Playwright ved 390 px i BEGGE temaer.
+  **Tre avvik fra kjøreprompten, funnet i premissverifiseringen:** (1)
+  `colspan="4"` i Prisgevinst krysset «Nå»-kolonna — med kolonna skjult krevde
+  raden én kolonne mer enn de andre og lagde en fantomkolonne (målt: kolonner
+  per rad `[4, 5]` mot `[4]` etter splitting); (2) `poll()`s feilsti returnerte
+  uten å røre statuslinja når `interval` gikk — altså nettopp under kamp; (3)
+  `nextKickoff` var `null` i prod, så fiks 9 ble bevist med server/klient-paritet.
+  **Etter-tall:** nav 173 → 265 px (3 hele lenker mot 1–2; ikke 4 — en fjerde
+  krever mindre padding på lenker som alt er under 44 px tapphøyde). /spillere:
+  100 av 652 rader i første render, last 334 ms mot 988 ms i planøktens måling.
+  Ligatabellen 391 → 335 px = boksbredden.
+- **v1.13.1 «Sikkerhetsnett» i prod 4. sep 02:37 (økt 58)**: `createApp()` i
+  `src/app.js`, `test/app.test.js` (hele stacken på loopback mot
+  `test/fixtures/fpl-world.js`), CI på Node 22 + 24, pre-push-hook. 792/792,
+  CI-kjøring `33822168239` grønn, hash `ba91839a`. Bonusfunnet (alle feilsider
+  var ren tekst siden v1.4.0) er fikset og låst i `middleware.test.js`.
+  Detaljene: historikkfila.
 ## Rotert 2026-09-04 (økt 60, v1.13.2): statusblokkene v1.13.1, v1.13.0 og v1.8.3–v1.12.2 samt loggpostene for økt 57 og 58 (verbatim fra HANDOVER.md)
 
 - **v1.13.1 «Sikkerhetsnett» i prod 4. sep 02:37 (økt 58)** på `feat/sikkerhetsnett-v1131`:

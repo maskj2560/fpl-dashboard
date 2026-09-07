@@ -37,7 +37,11 @@
               <tr>
                 <td>
                   <strong><%= p.web_name %></strong>
-                  <% if (p.news) { %><span class="news"><%= translateFplNews(p.news) %></span><% } %>
+                  <% if (p.news) { %>
+                    <span class="news"><%= translateFplNews(p.news) %></span>
+                    <%# Når FPL meldte det (v1.14.0): en skade fra juli er noe annet enn en fra i går. %>
+                    <% if (p.news_added) { %><span class="dim">meldt <%= formatDay(p.news_added) %></span><% } %>
+                  <% } %>
                 </td>
                 <td><%- include('partials/club-badge', { team: teamsById.get(p.team) }) %></td>
                 <td class="num"><%= p.selected_by_percent %> %</td>
@@ -127,6 +131,61 @@
           </tbody>
         </table>
       </div>
+    <% } %>
+  </section>
+
+  <%# «Runden i tall» (v1.14.0): FPLs egen fasit fra bootstrap.events[].
+      Kommende runde har alltid snitt 0, så roundInNumbers velger siste ferdige. %>
+  <section class="card" id="runden-i-tall">
+    <% if (typeof roundStats === 'undefined' || !roundStats) { %>
+      <h2><span class="h2-title">Runden i tall</span></h2>
+      <p class="empty">Tallene kommer når første runde er ferdigspilt.</p>
+    <% } else {
+      // Navn fra FPL escapes som overalt ellers — aldri rå interpolasjon.
+      const navnerader = [
+        ['Mest valgt', roundStats.mostSelected, null],
+        ['Mest kjøpt', roundStats.mostTransferredIn, null],
+        ['Rundens beste', roundStats.topPlayer?.name ?? '–', roundStats.topPlayer ? `${roundStats.topPlayer.points} p` : null],
+        ['Mest kapteinet', roundStats.mostCaptained, null],
+        ['Mest visekapteinet', roundStats.mostViceCaptained, null],
+      ];
+    %>
+      <h2>
+        <span class="h2-title">Runde <%= roundStats.gw %> i tall</span>
+      </h2>
+      <div class="stat-strip">
+        <div class="stat"><span class="stat-val"><%= roundStats.average %></span><span class="stat-lbl">Snitt</span></div>
+        <div class="stat"><span class="stat-val"><%= roundStats.highest == null ? '–' : formatNumber(roundStats.highest) %></span><span class="stat-lbl">Høyeste</span></div>
+      </div>
+      <div class="table-scroll">
+        <table class="data data--fit"><caption class="sr-only">Runde <%= roundStats.gw %> i tall</caption>
+          <tbody>
+            <% for (const [etikett, navn, ekstra] of navnerader) { %>
+              <tr>
+                <th scope="row"><%= etikett %></th>
+                <td>
+                  <% if (navn && navn !== '–') { %>
+                    <a href="/spillere?sok=<%= encodeURIComponent(navn) %>"><%= navn %></a>
+                  <% } else { %>–<% } %>
+                  <% if (ekstra) { %><span class="dim"><%= ekstra %></span><% } %>
+                </td>
+              </tr>
+            <% } %>
+            <tr><th scope="row">Bytter</th><td><%= roundStats.transfersMade == null ? '–' : formatNumber(roundStats.transfersMade) %></td></tr>
+            <tr><th scope="row">Lag med rangering</th><td><%= roundStats.rankedCount == null ? '–' : formatNumber(roundStats.rankedCount) %></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3 class="sub-head">Chips spilt</h3>
+      <% if (roundStats.chips.length === 0) { %>
+        <p class="empty">Ingen chips er registrert i denne runden.</p>
+      <% } else { %>
+        <ul class="rec-list">
+          <% for (const c of roundStats.chips) { %>
+            <li><%= c.label %> <span class="dim"><%= formatNumber(c.count) %></span></li>
+          <% } %>
+        </ul>
+      <% } %>
     <% } %>
   </section>
 </div>
